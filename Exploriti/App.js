@@ -24,7 +24,11 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import ApolloClient from 'apollo-boost';
+
 const App: () => React$Node = () => {
+  const client = new ApolloClient();
+
   return (
     <>
       <StatusBar barStyle="dark-content" />

@@ -10,6 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "apollo-boost": "^0.4.7",
+    "graphql": "^15.0.0",
+    "graphql-tag": "^2.10.3",
     "react": "16.11.0",
     "react-native": "0.62.2"
   },
