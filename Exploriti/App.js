@@ -6,22 +6,28 @@
  * @format
  * @flow strict-local
  */
-
+import 'react-native-gesture-handler';
 import React from 'react';
 import { SafeAreaView, Text, StatusBar, View } from 'react-native';
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
+import Orientation from './components/Orientation';
 
 const client = new ApolloClient();
+
+const Stack = createStackNavigator();
+
 
 const App: () => React$Node = () => {
   return (
     <ApolloProvider client={client}>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-          <Text>Orientation / Dashboard</Text>
-      </SafeAreaView>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component=Orientation />
+        </Stack.Navigator>
+      </NavigationContainer>
     </ApolloProvider>
   );
 };
