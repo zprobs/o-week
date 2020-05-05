@@ -19,13 +19,21 @@ const client = new ApolloClient();
 
 const Stack = createStackNavigator();
 
+function HomeScreen() {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Home Screen</Text>
+        </View>
+    );
+}
+
 
 const App: () => React$Node = () => {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Home" component=Orientation />
+          <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>
