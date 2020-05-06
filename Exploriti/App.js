@@ -20,25 +20,39 @@ import Orientation from './components/Orientation';
 
 const client = new ApolloClient();
 
+
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeScreen({ navigation }) {
-    return (
-        <Tab.Navigator>
-            <Tab.Screen name="Orientation" component={Orientation} />
-            <Tab.Screen name="Explore" component={Explore} />
-            <Tab.Screen name="MyProfile" component={MyProfile} />
-        </Tab.Navigator>
-    );
+    // Create const on a separate line to pass in Drawer Navigation and avoid warning
+  const ExploreComponent = () => (
+    <Explore toggleDrawer={navigation.toggleDrawer} />
+  );
+
+  const OrientationComponent = () => (
+    <Orientation toggleDrawer={navigation.toggleDrawer} />
+  );
+
+  const MyProfileComponent = () => (
+    <MyProfile toggleDrawer={navigation.toggleDrawer} />
+  );
+
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Orientation" component={OrientationComponent} />
+      <Tab.Screen name="Explore" component={ExploreComponent} />
+      <Tab.Screen name="MyProfile" component={MyProfileComponent} />
+    </Tab.Navigator>
+  );
 }
 
 const App: () => React$Node = () => {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Home">
-          <Drawer.Screen name="Home" component={HomeScreen}  />
+        <Drawer.Navigator initialRouteName="Home" edgeWidth={0} >
+          <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Admin" component={HomeScreen} />
             <Drawer.Screen name="Settings" component={HomeScreen} />
             <Drawer.Screen name="About" component={HomeScreen} />
