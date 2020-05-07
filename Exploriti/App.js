@@ -6,26 +6,26 @@
  * @format
  * @flow strict-local
  */
-import 'react-native-gesture-handler';
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
-import Explore from './components/Explore';
-import MyProfile from './components/MyProfile';
-import Orientation from './components/Orientation';
+import "react-native-gesture-handler";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
+import Explore from "./components/Explore";
+import MyProfile from "./components/MyProfile";
+import Orientation from "./components/Orientation";
 
-const client = new ApolloClient();
-
+const client = new ApolloClient({
+  uri: "https://exploriti.herokuapp.com/v1/graphql",
+});
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeScreen({ navigation }) {
-    // Create const on a separate line to pass in Drawer Navigation and avoid warning
+  // Create const on a separate line to pass in Drawer Navigation and avoid warning
   const ExploreComponent = () => (
     <Explore toggleDrawer={navigation.toggleDrawer} />
   );
@@ -51,12 +51,12 @@ const App: () => React$Node = () => {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Home" edgeWidth={0} >
+        <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
           <Drawer.Screen name="Home" component={HomeScreen} />
-            <Drawer.Screen name="Admin" component={HomeScreen} />
-            <Drawer.Screen name="Settings" component={HomeScreen} />
-            <Drawer.Screen name="About" component={HomeScreen} />
-            <Drawer.Screen name="Logout" component={HomeScreen} />
+          <Drawer.Screen name="Admin" component={HomeScreen} />
+          <Drawer.Screen name="Settings" component={HomeScreen} />
+          <Drawer.Screen name="About" component={HomeScreen} />
+          <Drawer.Screen name="Logout" component={HomeScreen} />
         </Drawer.Navigator>
       </NavigationContainer>
     </ApolloProvider>

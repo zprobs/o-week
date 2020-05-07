@@ -2,7 +2,5 @@
   "name": "Explore",
   "version": "1.0.0",
   "main": "./Explore.js",
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }
