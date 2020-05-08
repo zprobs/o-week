@@ -18,6 +18,9 @@
 		2DCD954D1E0B4F2C00145EB5 /* ExploritiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ExploritiTests.m */; };
 		655931469F4642FDEDC1EE81 /* libPods-Exploriti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C87FD336C82990FD6C51DF77 /* libPods-Exploriti.a */; };
 		6B749CBC7BC772C5AA23A316 /* libPods-Exploriti-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B527C58D4F7F03A670C9F5 /* libPods-Exploriti-tvOSTests.a */; };
+		BB227E5D2465B8F10064F4D6 /* SFProDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB227E5A2465B8F10064F4D6 /* SFProDisplay-Bold.ttf */; };
+		BB227E5E2465B8F10064F4D6 /* SFProDisplay-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB227E5B2465B8F10064F4D6 /* SFProDisplay-Light.ttf */; };
+		BB227E5F2465B8F10064F4D6 /* SFProDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB227E5C2465B8F10064F4D6 /* SFProDisplay-Regular.ttf */; };
 		F11CFA7214BE3D91EBA099DA /* libPods-Exploriti-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B806B36EE709FB902EB6308B /* libPods-Exploriti-tvOS.a */; };
 		F8B26E251093C6906D6B15AF /* libPods-Exploriti-ExploritiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB50DA49595F281A4EE7668A /* libPods-Exploriti-ExploritiTests.a */; };
 /* End PBXBuildFile section */
@@ -62,6 +65,9 @@
 		AB50DA49595F281A4EE7668A /* libPods-Exploriti-ExploritiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exploriti-ExploritiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B47B77E1CDAF77933C0B49C8 /* Pods-Exploriti-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exploriti-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Exploriti-tvOS/Pods-Exploriti-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		B806B36EE709FB902EB6308B /* libPods-Exploriti-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exploriti-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB227E5A2465B8F10064F4D6 /* SFProDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFProDisplay-Bold.ttf"; path = "../assets/fonts/SFProDisplay-Bold.ttf"; sourceTree = "<group>"; };
+		BB227E5B2465B8F10064F4D6 /* SFProDisplay-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFProDisplay-Light.ttf"; path = "../assets/fonts/SFProDisplay-Light.ttf"; sourceTree = "<group>"; };
+		BB227E5C2465B8F10064F4D6 /* SFProDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFProDisplay-Regular.ttf"; path = "../assets/fonts/SFProDisplay-Regular.ttf"; sourceTree = "<group>"; };
 		BB79FA0C2462382100B476A6 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		BCE4E1143910995873BFA627 /* Pods-Exploriti-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exploriti-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Exploriti-tvOS/Pods-Exploriti-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		C87FD336C82990FD6C51DF77 /* libPods-Exploriti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exploriti.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -202,6 +208,9 @@
 		BB79FA0B246237E700B476A6 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				BB227E5A2465B8F10064F4D6 /* SFProDisplay-Bold.ttf */,
+				BB227E5B2465B8F10064F4D6 /* SFProDisplay-Light.ttf */,
+				BB227E5C2465B8F10064F4D6 /* SFProDisplay-Regular.ttf */,
 				BB79FA0C2462382100B476A6 /* EvilIcons.ttf */,
 			);
 			name = Fonts;
@@ -349,8 +358,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB227E5D2465B8F10064F4D6 /* SFProDisplay-Bold.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				BB227E5F2465B8F10064F4D6 /* SFProDisplay-Regular.ttf in Resources */,
+				BB227E5E2465B8F10064F4D6 /* SFProDisplay-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
