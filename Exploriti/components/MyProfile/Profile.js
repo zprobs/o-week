@@ -19,6 +19,8 @@ const GET_USER = gql`
   }
 `;
 
+const {colours} = Theme.light;
+
 export default function Profile() {
   // const { loading, error, data } = useQuery(GET_USER);
   //
@@ -33,13 +35,13 @@ export default function Profile() {
 
 
   return (
-   <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={""}></ProfileCard>
+   <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={"https://reactjs.org/logo-og.png"}></ProfileCard>
   );
 }
 
 const EditProfile = ({ onEdit }) => {
   return (
-      <TouchableOpacity activeOpacity={1} onPress={onEdit} style={styles(Theme).editProfile}>
+      <TouchableOpacity activeOpacity={1} onPress={onEdit} style={styles().editProfile}>
         <Icon name='pencil' size={16} color={ThemeStatic.white} />
       </TouchableOpacity>
   );
@@ -47,40 +49,40 @@ const EditProfile = ({ onEdit }) => {
 
 const Connections = ({ total, type, onPress }) => {
   return (
-      <TouchableOpacity activeOpacity={0.95} onPress={onPress} style={styles(Theme).connections}>
-        <Text style={styles(Theme).connectionsText}>{total}</Text>
-        <Text style={styles(Theme).connectionsType}>{type}</Text>
+      <TouchableOpacity activeOpacity={0.95} onPress={onPress} style={styles().connections}>
+        <Text style={styles().connectionsText}>{total}</Text>
+        <Text style={styles().connectionsType}>{type}</Text>
       </TouchableOpacity>
   );
 };
 
 const ProfileCard = ({ avatar, editable, onEdit, onFollowingOpen, onFollowersOpen, name, handle, renderInteractions, about }) => {
   return (
-      <View style={styles(Theme).container}>
-        <View style={styles(Theme).info}>
+      <View style={styles().container}>
+        <View style={styles().info}>
           <Connections onPress={onFollowingOpen} total={0} type='FRIENDS' />
           <ImageBackground
               source={{ uri: avatar ? avatar : '' }}
-              style={styles(Theme).avatar}
-              imageStyle={styles(Theme).avatarImage}>
+              style={styles().avatar}
+              imageStyle={styles().avatarImage}>
             {editable && <EditProfile onEdit={onEdit} />}
           </ImageBackground>
           <Connections onPress={onFollowersOpen} total={0} type='GROUPS' />
         </View>
-        <View style={styles(Theme).name}>
-          <Text style={styles(Theme).usernameText}>{name}</Text>
-          <Text style={styles(Theme).handleText}>{handle}</Text>
+        <View style={styles().name}>
+          <Text style={styles().usernameText}>{name}</Text>
+          <Text style={styles().handleText}>{handle}</Text>
         </View>
         {renderInteractions && renderInteractions()}
-        <View style={styles(Theme).about}>
-          <Text style={styles(Theme).aboutTitle}>About</Text>
-          <Text style={styles(Theme).aboutText}>{about}</Text>
+        <View style={styles().about}>
+          <Text style={styles().aboutTitle}>About</Text>
+          <Text style={styles().aboutText}>{about}</Text>
         </View>
       </View>
   );
 };
 
-const styles = (theme) => StyleSheet.create({
+const styles = () => StyleSheet.create({
   container: {
     paddingTop: 10,
     paddingBottom: 4,
@@ -96,7 +98,7 @@ const styles = (theme) => StyleSheet.create({
     width: 120
   },
   avatarImage: {
-    backgroundColor: theme.placeholder,
+    backgroundColor: colours.placeholder,
     borderRadius: 120,
   },
   editProfile: {
@@ -109,8 +111,8 @@ const styles = (theme) => StyleSheet.create({
     width: 60,
     height: 32,
     borderWidth: 2,
-    borderColor: theme.base,
-    backgroundColor: theme.accent
+    borderColor: colours.base,
+    backgroundColor: colours.accent
   },
   connections: {
     alignItems: 'center',
@@ -119,12 +121,12 @@ const styles = (theme) => StyleSheet.create({
   connectionsText: {
     ...FontWeights.Regular,
     ...FontSizes.SubHeading,
-    color: theme.text01
+    color: colours.text01
   },
   connectionsType: {
     ...FontWeights.Bold,
     ...FontSizes.Caption,
-    color: theme.text02,
+    color: colours.text02,
     marginTop: 5
   },
   name: {
@@ -135,32 +137,31 @@ const styles = (theme) => StyleSheet.create({
   usernameText: {
     ...FontWeights.Bold,
     ...FontSizes.SubHeading,
-    color: theme.text01
+    color: colours.text01
   },
   handleText: {
     ...FontWeights.Bold,
     ...FontSizes.Body,
-    color: theme.text02,
+    color: colours.text02,
     marginTop: 5
   },
   about: {
     padding: 16,
     marginTop: 16,
-    backgroundColor: theme.accent,
+    backgroundColor: colours.accent,
     borderRadius: 10,
     marginBottom: 10
   },
   aboutTitle: {
     ...FontWeights.Regular,
     ...FontSizes.Body,
-    color: theme.white,
+    color: colours.white,
   },
   aboutText: {
     ...FontWeights.Light,
     ...FontSizes.Body,
-    color: theme.white,
+    color: colours.white,
     marginTop: 5,
   }
 });
 
-// unlink proj
