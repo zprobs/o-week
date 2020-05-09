@@ -7,7 +7,7 @@ import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
 import {ThemeStatic} from '../../theme/Colours';
 import Icon from "react-native-vector-icons/EvilIcons";
-
+import {useState} from 'react'
 const { FontWeights, FontSizes } = Fonts;
 
 const GET_USER = gql`
@@ -27,6 +27,9 @@ export default function Profile() {
   // if (loading) return <Text>Loading...</Text>;
   // if (error) return <Error e={error} />;
 
+  const [someVariable, setSomeVariable] = useState(0);
+
+
   // ToDo: Load user info form {data} into Profile Card once API ready
 
   const about = "This is a description about the user";
@@ -42,7 +45,7 @@ export default function Profile() {
 const EditProfile = ({ onEdit }) => {
   return (
       <TouchableOpacity activeOpacity={1} onPress={onEdit} style={styles().editProfile}>
-        <Icon name='pencil' size={16} color={ThemeStatic.white} />
+        <Icon name='pencil' size={25} color={ThemeStatic.white} />
       </TouchableOpacity>
   );
 };
@@ -78,15 +81,22 @@ const ProfileCard = ({ avatar, editable, onEdit, onFollowingOpen, onFollowersOpe
           <Text style={styles().aboutTitle}>About</Text>
           <Text style={styles().aboutText}>{about}</Text>
         </View>
+        <BottomSheet visable={true} content={editProfile} onDismiss={()=>{console.log('dismissed')}}/>
       </View>
   );
 };
 
+const editProfile = () => {
+  return (
+      <Text>This is editing the profile</Text>
+  )
+}
+
 const styles = () => StyleSheet.create({
   container: {
-    paddingTop: 10,
+    paddingTop: 30,
     paddingBottom: 4,
-    paddingHorizontal: 10
+    paddingHorizontal: 15
   },
   info: {
     flexDirection: 'row',
