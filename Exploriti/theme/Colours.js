@@ -4,12 +4,6 @@
  */
 
 
-export const ThemeVariant = {
-    light: 'light',
-    dark: 'dark'
-};
-
-
 export const DynamicStatusBar = {
     light: {
         barStyle: 'dark-content',
@@ -35,26 +29,11 @@ export const ThemeStatic = {
     badge: '#F24'
 };
 
-type ThemeType = {
-    type: string,
-    colors: ThemeColors
-};
 
-type ThemeColors = {
-    accent: string,
-    base: string,
-    text01: string,
-    text02: string,
-    placeholder: string,
-    white: string
-};
-
-export const Theme: {
-    [key: string]: ThemeType
-} = {
+export const Theme = {
     light: {
         type: 'light',
-        colors: {
+        colours: {
             accent: '#846BE2',
             base: '#FFFFFF',
             text01: '#000000',
@@ -65,7 +44,7 @@ export const Theme: {
     },
     dark: {
         type: 'dark',
-        colors: {
+        colours: {
             accent: '#846BE2',
             base: '#121212',
             text01: '#FFFFFF',
@@ -76,12 +55,4 @@ export const Theme: {
     }
 };
 
-export const HandleAvailableColor = {
-    true: '#05b714',
-    false: '#EF5350'
-};
 
-export const OnlineDotColor  = {
-    true: '#4caf50',
-    false: '#BBBBBB'
-};
