@@ -1,3 +1,4 @@
+
 import React from "react";
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ImageBackground } from "react-native";
 import gql from "graphql-tag";
@@ -11,10 +12,16 @@ import Icon from "react-native-vector-icons/EvilIcons";
 const { FontWeights, FontSizes } = Fonts;
 
 const GET_USER = gql`
-  {
-    users {
-      id
-      name
+  query getUser($id: uuid!) {
+    user (id: $id) {
+        name
+        description
+        programs {
+            program {
+                id
+                name
+            }
+        }
     }
   }
 `;
@@ -22,21 +29,21 @@ const GET_USER = gql`
 const {colours} = Theme.light;
 
 export default function Profile() {
-  // const { loading, error, data } = useQuery(GET_USER);
-  //
-  // if (loading) return <Text>Loading...</Text>;
-  // if (error) return <Error e={error} />;
+    const userId = "43fa570f-0125-416e-8ec4-84b43c20da16";
+    const { loading, error, data } = useQuery(GET_USER, {
+        variables: { id: userId },
+    });
+  
+    if (loading) return <Text>Loading...</Text>;
+    if (error) return <Error e={error} />;
 
-  // ToDo: Load user info form {data} into Profile Card once API ready
-
-  const about = "This is a description about the user";
-  const name = "Zachary Probst";
-  const handle = "Comp. Sci and Economics"
-
-
-  return (
-   <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={"https://reactjs.org/logo-og.png"}></ProfileCard>
-  );
+    const about = data.user.description;
+    const name = data.user.name;
+    const handle = data.user.programs.map(i => i.program.name).join(', ');
+   
+    return (
+        <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={"https://reactjs.org/logo-og.png"}></ProfileCard>
+    );
 }
 
 const EditProfile = ({ onEdit }) => {
