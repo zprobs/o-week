@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef} from "react";
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ImageBackground } from "react-native";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
@@ -8,6 +8,8 @@ import {Theme} from '../../theme/Colours';
 import {ThemeStatic} from '../../theme/Colours';
 import Icon from "react-native-vector-icons/EvilIcons";
 import {useState} from 'react'
+import EditProfileBottomModal from './EditProfileBottomModal';
+
 const { FontWeights, FontSizes } = Fonts;
 
 const GET_USER = gql`
@@ -32,13 +34,27 @@ export default function Profile() {
 
   // ToDo: Load user info form {data} into Profile Card once API ready
 
+  const editProfileBottomModalRef = useRef();
+
   const about = "This is a description about the user";
   const name = "Zachary Probst";
-  const handle = "Comp. Sci and Economics"
+  const handle = "Comp. Sci and Economics";
+  const avatar = "https://reactjs.org/logo-og.png"
+  const onEdit = () => editProfileBottomModalRef.current.open();
 
 
   return (
-   <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={"https://reactjs.org/logo-og.png"}></ProfileCard>
+      <>
+        <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={avatar} onEdit={onEdit}></ProfileCard>
+        <EditProfileBottomModal
+            ref={editProfileBottomModalRef}
+            avatar={avatar}
+            name={name}
+            handle={handle}
+            about={about}
+        />
+      </>
+
   );
 }
 
@@ -81,16 +97,11 @@ const ProfileCard = ({ avatar, editable, onEdit, onFollowingOpen, onFollowersOpe
           <Text style={styles().aboutTitle}>About</Text>
           <Text style={styles().aboutText}>{about}</Text>
         </View>
-        <BottomSheet visable={true} content={editProfile} onDismiss={()=>{console.log('dismissed')}}/>
+
       </View>
   );
 };
 
-const editProfile = () => {
-  return (
-      <Text>This is editing the profile</Text>
-  )
-}
 
 const styles = () => StyleSheet.create({
   container: {
