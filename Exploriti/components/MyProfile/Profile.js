@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ImageBackground } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground } from "react-native";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import Error from "../Error";
@@ -13,10 +13,16 @@ import EditProfileBottomModal from './EditProfileBottomModal';
 const { FontWeights, FontSizes } = Fonts;
 
 const GET_USER = gql`
-  {
-    users {
-      id
-      name
+  query getUser($id: uuid!) {
+    user (id: $id) {
+        name
+        description
+        programs {
+            program {
+                id
+                name
+            }
+        }
     }
   }
 `;
@@ -24,38 +30,34 @@ const GET_USER = gql`
 const {colours} = Theme.light;
 
 export default function Profile() {
-  // const { loading, error, data } = useQuery(GET_USER);
-  //
-  // if (loading) return <Text>Loading...</Text>;
-  // if (error) return <Error e={error} />;
 
-  const [someVariable, setSomeVariable] = useState(0);
+    const userId = "43fa570f-0125-416e-8ec4-84b43c20da16";
+    const { loading, error, data } = useQuery(GET_USER, {
+        variables: { id: userId },
+    });
 
+    if (loading) return <Text>Loading...</Text>;
+    if (error) return <Error e={error} />;
 
-  // ToDo: Load user info form {data} into Profile Card once API ready
+    const about = data.user.description;
+    const name = data.user.name;
+    const handle = data.user.programs.map(i => i.program.name).join(', ');
+    const avatar = "https://reactjs.org/logo-og.png";
 
-  const editProfileBottomModalRef = useRef();
+    const editProfileBottomModalRef = useRef();
+    const onEdit = () => editProfileBottomModalRef.current.open();
 
-  const about = "This is a description about the user";
-  const name = "Zachary Probst";
-  const handle = "Comp. Sci and Economics";
-  const avatar = "https://reactjs.org/logo-og.png"
-  const onEdit = () => editProfileBottomModalRef.current.open();
-
-
-  return (
-      <>
-        <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={avatar} onEdit={onEdit}></ProfileCard>
-        <EditProfileBottomModal
-            ref={editProfileBottomModalRef}
-            avatar={avatar}
-            name={name}
-            handle={handle}
-            about={about}
-        />
-      </>
-
-  );
+    return (
+        <>
+            <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={avatar} onEdit={onEdit}></ProfileCard>
+            <EditProfileBottomModal
+                ref={editProfileBottomModalRef}
+                avatar={avatar}
+                name={name}
+                handle={handle}
+                about={about}
+            />
+        </>    );
 }
 
 const EditProfile = ({ onEdit }) => {

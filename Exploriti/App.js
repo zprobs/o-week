@@ -18,7 +18,7 @@ import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
 
 const client = new ApolloClient({
-  uri: "https://exploriti.herokuapp.com/v1/graphql",
+  uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
 });
 
 const Drawer = createDrawerNavigator();
