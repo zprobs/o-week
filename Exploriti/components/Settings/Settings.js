@@ -1,24 +1,23 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import SettingsList from "./SettingsList.js";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import Profile from "./Profile";
-
 
 /**
- * One of the three primary tab components. Contains the current user's profile
+ * Orientation is a one of the three primary tab components. It contains all things Orientation.
  * @param props The toggleDrawer is a reference to the navigation.toggleDrawer() method of the Drawer Navigator
- * @returns Stack Navigator of My Profile
+ * @returns Stack Navigator of Orientation
  * @constructor
  */
-export default function MyProfile(props) {
+export default function Settings(props) {
   const Stack = createStackNavigator();
   const { toggleDrawer } = props;
 
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="My Profile"
-        component={Profile}
+        name="Settings"
+        component={SettingsList}
         options={{
           headerLeft: () => <DrawerIcon toggleDrawer={toggleDrawer} />,
         }}

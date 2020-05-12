@@ -16,6 +16,8 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
+import Settings from "./components/Settings";
+
 
 const client = new ApolloClient({
   uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
@@ -26,6 +28,10 @@ const Tab = createBottomTabNavigator();
 
 function HomeScreen({ navigation }) {
   // Create const on a separate line to pass in Drawer Navigation and avoid warning
+  const SettingsComponent = () => (
+    <Settings toggleDrawer={navigation.toggleDrawer} />
+  );
+
   const ExploreComponent = () => (
     <Explore toggleDrawer={navigation.toggleDrawer} />
   );
@@ -43,6 +49,8 @@ function HomeScreen({ navigation }) {
       <Tab.Screen name="Orientation" component={OrientationComponent} />
       <Tab.Screen name="Explore" component={ExploreComponent} />
       <Tab.Screen name="MyProfile" component={MyProfileComponent} />
+      <Tab.Screen name="Settings" component={SettingsComponent} />
+
     </Tab.Navigator>
   );
 }

@@ -1,0 +1,6 @@
+{
+  "name": "Settings",
+  "version": "1.0.0",
+  "main": "Settings.js",
+  "dependencies": {}
+}
