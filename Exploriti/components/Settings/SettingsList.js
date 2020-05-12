@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { Text, View, Button, Switch, StyleSheet} from "react-native";
 import {SettingToggle} from "../ReusableComponents/SettingToggle.js";
-import { ThemeProvider, createGlobalStyle } from 'styled-components';
+
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
  * @returns The UI view for Dashboard
@@ -19,7 +19,7 @@ function SettingsList() {
    );
  };
 
-const settingsItem = ()
+
 
  const styles = StyleSheet.create({
 
