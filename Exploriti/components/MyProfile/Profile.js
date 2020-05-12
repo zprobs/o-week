@@ -9,6 +9,7 @@ import {ThemeStatic} from '../../theme/Colours';
 import Icon from "react-native-vector-icons/EvilIcons";
 import {useState} from 'react'
 import EditProfileBottomModal from './EditProfileBottomModal';
+import UsersBottomModal from '../UsersBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -24,6 +25,7 @@ const GET_USER = gql`
             }
         }
         image
+        
     }
   }
 `;
@@ -38,6 +40,7 @@ export default function Profile() {
     });
 
     const editProfileBottomModalRef = useRef();
+    const usersBottomModalRef = useRef();
 
     if (loading) return <Text>Loading...</Text>;
     if (error) return <Error e={error} />;
@@ -49,10 +52,12 @@ export default function Profile() {
     //const avatar = data.user.image;
 
     const onEdit = () => editProfileBottomModalRef.current.open();
+    const onFriendsOpen = () => usersBottomModalRef.current.open();
+
 
     return (
         <>
-            <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={avatar} onEdit={onEdit}></ProfileCard>
+            <ProfileCard editable={true} about={about} name={name} handle={handle} avatar={avatar} onEdit={onEdit} onFriendsOpen={onFriendsOpen}></ProfileCard>
             <EditProfileBottomModal
                 ref={editProfileBottomModalRef}
                 avatar={avatar}
@@ -60,6 +65,12 @@ export default function Profile() {
                 handle={handle}
                 about={about}
             />
+            <UsersBottomModal
+                ref={usersBottomModalRef}
+                data={null}
+                type='Friends'
+            />
+
         </>    );
 }
 
@@ -80,18 +91,18 @@ const Connections = ({ total, type, onPress }) => {
   );
 };
 
-const ProfileCard = ({ avatar, editable, onEdit, onFollowingOpen, onFollowersOpen, name, handle, renderInteractions, about }) => {
+const ProfileCard = ({ avatar, editable, onEdit, onFriendsOpen, onGroupsOpen, name, handle, renderInteractions, about }) => {
   return (
       <View style={styles().container}>
         <View style={styles().info}>
-          <Connections onPress={onFollowingOpen} total={0} type='FRIENDS' />
+          <Connections onPress={onFriendsOpen} total={0} type='FRIENDS' />
           <ImageBackground
               source={{ uri: avatar ? avatar : '' }}
               style={styles().avatar}
               imageStyle={styles().avatarImage}>
             {editable && <EditProfile onEdit={onEdit} />}
           </ImageBackground>
-          <Connections onPress={onFollowersOpen} total={0} type='GROUPS' />
+          <Connections onPress={onGroupsOpen} total={0} type='GROUPS' />
         </View>
         <View style={styles().name}>
           <Text style={styles().usernameText}>{name}</Text>
@@ -117,7 +128,7 @@ const styles = () => StyleSheet.create({
   info: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-around'
   },
   avatar: {
     height: 120,
