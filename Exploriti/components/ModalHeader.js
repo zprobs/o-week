@@ -4,13 +4,13 @@ import { Theme } from "../theme/Colours";
 import Fonts from "../theme/Fonts";
 
 const { FontWeights, FontSizes } = Fonts;
-const { colours } = Theme;
+const { colours } = Theme.light;
 
 const ModalHeader = ({ heading, subHeading }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>{heading}</Text>
-      <Text style={styles.subHeading}>{subHeading}</Text>
+    <View style={styles().container}>
+      <Text style={styles().heading}>{heading}</Text>
+      <Text style={styles().subHeading}>{subHeading}</Text>
     </View>
   );
 };

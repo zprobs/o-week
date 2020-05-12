@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {View, ImageBackground, TouchableOpacity, Button, StyleSheet} from 'react-native';
+import {View, ImageBackground, TouchableOpacity, StyleSheet} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {Theme} from '../../theme/Colours';
 import ModalHeader from '../ModalHeader';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import {ThemeStatic} from '../../theme/Colours';
 import FormInput from '../FormInput';
+import Button from '../Button';
 
 const EditProfileBottomModal = React.forwardRef(({ avatar, name, handle, about }, ref) => {
 
@@ -36,7 +37,7 @@ const EditProfileBottomModal = React.forwardRef(({ avatar, name, handle, about }
 
 
     const onDone = async () => {
-        console.log('submit');
+        ref.current.close();
     };
 
     return (
@@ -64,14 +65,13 @@ const EditProfileBottomModal = React.forwardRef(({ avatar, name, handle, about }
                 <FormInput
                     ref={null}
                     label='Name'
-                    placeholder='example: Doggo'
                     value={editableName}
                     onChangeText={setEditableName}
                 />
                 <FormInput
                     ref={null}
-                    label='Username'
-                    placeholder='example: doggo'
+                    label='Program'
+                    placeholder='example: Math'
                     error={handleError}
                     value={editableHandle}
                     onChangeText={setHandle}>
@@ -79,7 +79,7 @@ const EditProfileBottomModal = React.forwardRef(({ avatar, name, handle, about }
                 </FormInput>
                 <FormInput
                     ref={null}
-                    label='About'
+                    label='Description'
                     placeholder='example: hey, I am a doggo'
                     value={editableAbout}
                     onChangeText={setEditableAbout}
