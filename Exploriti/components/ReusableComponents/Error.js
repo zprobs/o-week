@@ -1,6 +1,11 @@
 import React from "react";
 import { View, Text } from "react-native";
 
+/**
+ * A page for showing server errors.
+ * @param props a value {e} is the error you would like to display
+ * @constructor
+ */
 export default function Error(props) {
   const { e } = props;
   return (
