@@ -23,6 +23,7 @@ const GET_USER = gql`
                 name
             }
         }
+        image
     }
   }
 `;
@@ -36,15 +37,17 @@ export default function Profile() {
         variables: { id: userId },
     });
 
+    const editProfileBottomModalRef = useRef();
+
     if (loading) return <Text>Loading...</Text>;
     if (error) return <Error e={error} />;
 
-    const about = data.user.description;
-    const name = data.user.name;
-    const handle = data.user.programs.map(i => i.program.name).join(', ');
+     const about = data.user.description;
+     const name = data.user.name;
+     const handle = data.user.programs.map(i => i.program.name).join(', ');
     const avatar = "https://reactjs.org/logo-og.png";
+    //const avatar = data.user.image;
 
-    const editProfileBottomModalRef = useRef();
     const onEdit = () => editProfileBottomModalRef.current.open();
 
     return (
