@@ -17,7 +17,7 @@ import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
 import Settings from "./components/Settings";
-
+import Landing from './components/Authentication';
 
 const client = new ApolloClient({
   uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
@@ -50,6 +50,7 @@ function HomeScreen({ navigation }) {
       <Tab.Screen name="Explore" component={ExploreComponent} />
       <Tab.Screen name="MyProfile" component={MyProfileComponent} />
       <Tab.Screen name="Settings" component={SettingsComponent} />
+      <Tab.Screen name="Test" component={Landing} />
 
     </Tab.Navigator>
   );
