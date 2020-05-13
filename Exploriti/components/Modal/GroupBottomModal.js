@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, Dimensions, FlatList } from "react-native";
 import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
 import { Theme } from "../../theme/Colours";
+import ImgBanner from '../ReusableComponents/ImgBanner';
+import Images from '../../assets/images';
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -29,7 +31,13 @@ const GroupBottomModal = React.forwardRef(
       }
     }
 
-    const listEmptyComponent = () => <Text>No groups available</Text>;
+      const ListEmptyComponent = () => (
+          <ImgBanner
+              img={Images.emptyUsers}
+              placeholder='No groups found'
+              spacing={0.16}
+          />
+      );
 
     const renderItem = ({ item }) => {
       const { id, avatar, handle, name } = item;
@@ -48,7 +56,7 @@ const GroupBottomModal = React.forwardRef(
         flatListProps={{
           showsVerticalScrollIndicator: false,
           data: data,
-          ListEmptyComponent: listEmptyComponent,
+          ListEmptyComponent: ListEmptyComponent,
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,

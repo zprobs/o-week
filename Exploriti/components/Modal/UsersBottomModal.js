@@ -4,6 +4,9 @@ import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
 import UserCard from "./UserCard";
 import { Theme } from "../../theme/Colours";
+import Images from '../../assets/images';
+import ImgBanner from '../ReusableComponents/ImgBanner';
+
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -30,7 +33,11 @@ const UsersBottomModal = React.forwardRef(
       }
     }
 
-    const listEmptyComponent = () => <Text>No users found</Text>;
+    const listEmptyComponent = () => <ImgBanner
+        img={Images.emptyUsers}
+        placeholder='No users found'
+        spacing={0.16}
+    />;
 
     const renderItem = ({ item }) => {
       const { id, avatar, handle, name } = item;
