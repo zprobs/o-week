@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ImageBackground,
@@ -29,6 +29,13 @@ const EditProfileBottomModal = React.forwardRef(
     const [handleError, setHandleError] = useState("");
     const [editableAbout, setEditableAbout] = useState("");
     const [isUploading, setIsUploading] = useState(false);
+
+      useEffect(() => {
+          setEditableAvatar(avatar);
+          setEditableName(name);
+          setEditableHandle(handle);
+          setEditableAbout(about);
+      }, []);
 
     const setHandle = (handle: string) => {
       if (!handle) setHandleError("username cannot be empty");

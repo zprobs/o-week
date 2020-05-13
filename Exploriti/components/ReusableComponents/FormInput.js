@@ -30,7 +30,7 @@ const FormInput = React.forwardRef(
           onChangeText={onChangeText}
           value={value}
           multiline={multiline || false}
-          returnKeyType="done"
+          returnKeyType={ multiline ? "default" : "done"}
         />
       </>
     );
