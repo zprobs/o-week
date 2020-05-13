@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import Profile from "./Profile";
 
-
 /**
  * One of the three primary tab components. Contains the current user's profile
  * @param props The toggleDrawer is a reference to the navigation.toggleDrawer() method of the Drawer Navigator
