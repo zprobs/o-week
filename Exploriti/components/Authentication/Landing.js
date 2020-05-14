@@ -1,10 +1,14 @@
 import React, {useState} from 'react';
-import {ScrollView, Text, View, StyleSheet} from 'react-native';
+import {ScrollView, Text, View, StyleSheet, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import {Theme} from '../../theme/Colours';
+import Fonts from '../../theme/Fonts';
+import images from '../../assets/images';
 
 const {colours} = Theme.light;
+const {FontWeights, FontSizes} = Fonts;
+
 export default function Landing() {
 
     const [interval, setInterval] = useState(1);
@@ -28,7 +32,7 @@ export default function Landing() {
                 key={i}
                 style={{
                     ...styles.bullet,
-                    opacity: interval === i ? 0.9 : 0.1
+                    opacity: interval === i ? 0.9 : 0.15
                 }}
             >
                 &bull;
@@ -36,18 +40,23 @@ export default function Landing() {
         );
     }
 
-    const Slide = ({title}) => {
+    const Slide = ({title, content, img}) => {
 
         return (
             <View style={styles.slide}>
-                <Text style={{ ...styles.slideText }}>
+                <Image source={img} style={styles.image}/>
+                <Text style={styles.slideHeading}>
                     {title}
+                </Text>
+                <Text style={{ ...styles.slideText }}>
+                    {content}
                 </Text>
             </View>
         );
     };
 
     return (
+        <>
             <View style={styles.container}>
                 <ScrollView
                     horizontal={true}
@@ -60,18 +69,19 @@ export default function Landing() {
                     scrollEventThrottle={200}
                     decelerationRate="fast"
                     pagingEnabled>
-                    <Slide key={1} title={"Item 1"}/>
-                    <Slide key={2} title={"Item 2"}/>
-                    <Slide key={3} title={"Item 3"}/>
-                    <Slide key={4} title={"Item 4"}/>
+                    <Slide key={1} title={"Welcome to Exploriti!"} content={"Find out what's going on around you, and make the most out of your university experience, the simple way."} img={images.landing1}/>
+                    <Slide key={2} title={"Get Involved, Easily"} content={"Exploriti is your extracurricular concierge. University clubs, events, groups... Discover them all!"} img={images.landing2}/>
+                    <Slide key={3} title={"Relevant Results"} content={"Exploriti uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"} img={images.landing3}/>
+                    <Slide key={4} title={"Get Social"} content={"See what events and clubs all of your friends are involved in. Everything is more fun with friends, even Exploriti."} img={images.landing4}/>
                 </ScrollView>
+            </View>
 
                 <View style={styles.buttons}>
                     <View style={styles.bullets}>{bullets}</View>
                     <ButtonColour label={"Sign Up"} containerStyle={styles.signUp}/>
                     <ButtonColour label={"Log In"} containerStyle={styles.logIn} labelStyle={{color: colours.accent}} />
                 </View>
-            </View>
+            </>
     );
 }
 
@@ -81,24 +91,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     container: {
-        width: '100%',
-        height: '100%',
-        borderColor: '#ebebeb',
-        borderWidth: 1,
-        borderRadius: 8,
-        shadowColor: '#fcfcfc',
-        shadowOpacity: 1,
-        marginTop: 10,
-        shadowOffset: {
-            width: 0,
-            height: 5
-        },
+       flex: 4,
     },
     scrollView: {
         display: 'flex',
-        flexDirection: 'row',
+      //  flexDirection: 'row',
         overflow: 'hidden',
-        backgroundColor: '#f3f23f',
+     //   backgroundColor: '#f3f23f',
+        alignItems: 'stretch',
+
     },
     bullets: {
         position: 'absolute',
@@ -117,27 +118,35 @@ const styles = StyleSheet.create({
         fontSize: 28,
     },
     slide: {
+        //backgroundColor: '#ffffff',
         paddingHorizontal: 20,
-        paddingBottom: 10,
+        paddingBottom: 20,
         paddingTop: 30,
         flexBasis: '100%',
         flex: 1,
         maxWidth: '100%',
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         flexWrap: 'wrap',
         alignItems: 'center',
         alignContent: 'center',
-        justifyContent: 'center',
-        height: 200,
+        justifyContent: 'flex-end',
     },
     slideText: {
         width: '100%',
-        textAlign: 'left',
-        fontSize: 20,
+        textAlign: 'center',
+        ...FontSizes.Caption,
+            ...FontWeights.Regular,
+        color: colours.text02
+    },
+    slideHeading: {
+        textAlign: 'center',
+        ...FontSizes.SubHeading,
+            ...FontWeights.Bold,
+        paddingVertical: 10
     },
     buttons: {
-        flex: 0.4,
+        flex: 1,
         paddingHorizontal: 20
     },
     signUp: {
@@ -145,7 +154,12 @@ const styles = StyleSheet.create({
         bottom: -50
     },
     logIn: {
-        backgroundColor: 'rgba(52, 52, 52, 0)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
         bottom: -55
+    },
+    image: {
+        height: 400,
+        width: '100%',
+      //  backgroundColor: '#a3ffff',
     }
 });
