@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import {ScrollView, Text, View, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import {Theme} from '../../theme/Colours';
 
+const {colours} = Theme.light;
 export default function Landing() {
 
     const [interval, setInterval] = useState(1);
@@ -25,7 +28,7 @@ export default function Landing() {
                 key={i}
                 style={{
                     ...styles.bullet,
-                    opacity: interval === i ? 0.5 : 0.1
+                    opacity: interval === i ? 0.9 : 0.1
                 }}
             >
                 &bull;
@@ -42,10 +45,9 @@ export default function Landing() {
                 </Text>
             </View>
         );
-    }
+    };
 
     return (
-        <SafeAreaView>
             <View style={styles.container}>
                 <ScrollView
                     horizontal={true}
@@ -63,11 +65,13 @@ export default function Landing() {
                     <Slide key={3} title={"Item 3"}/>
                     <Slide key={4} title={"Item 4"}/>
                 </ScrollView>
-                <View style={styles.bullets}>{bullets}</View>
-                <View style={styles.buttons}/>
-            </View>
-        </SafeAreaView>
 
+                <View style={styles.buttons}>
+                    <View style={styles.bullets}>{bullets}</View>
+                    <ButtonColour label={"Sign Up"} containerStyle={styles.signUp}/>
+                    <ButtonColour label={"Log In"} containerStyle={styles.logIn} labelStyle={{color: colours.accent}} />
+                </View>
+            </View>
     );
 }
 
@@ -79,7 +83,6 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#fb2bfb',
         borderColor: '#ebebeb',
         borderWidth: 1,
         borderRadius: 8,
@@ -95,25 +98,23 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         overflow: 'hidden',
-        marginTop: 40,
+        backgroundColor: '#f3f23f',
     },
     bullets: {
         position: 'absolute',
+        alignSelf: 'center',
         top: 0,
-        right: 0,
         display: 'flex',
         justifyContent: 'flex-start',
         flexDirection: 'row',
         paddingHorizontal: 10,
         paddingTop: 5,
+        zIndex: 2
     },
     bullet: {
-        paddingHorizontal: 5,
-        fontSize: 20,
-    },
-    buttons: {
-        flex: 0.3,
-        backgroundColor: '#f3d21d'
+        paddingHorizontal: 4,
+        color: colours.accent,
+        fontSize: 28,
     },
     slide: {
         paddingHorizontal: 20,
@@ -135,4 +136,16 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 20,
     },
+    buttons: {
+        flex: 0.4,
+        paddingHorizontal: 20
+    },
+    signUp: {
+        alignItems: 'center',
+        bottom: -50
+    },
+    logIn: {
+        backgroundColor: 'rgba(52, 52, 52, 0)',
+        bottom: -55
+    }
 });

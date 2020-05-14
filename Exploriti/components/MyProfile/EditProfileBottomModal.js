@@ -11,7 +11,7 @@ import ModalHeader from "../Modal/ModalHeader";
 import Icon from "react-native-vector-icons/EvilIcons";
 import { ThemeStatic } from "../../theme/Colours";
 import FormInput from "../ReusableComponents/FormInput";
-import Button from "../ReusableComponents/Button";
+import ButtonColour from "../ReusableComponents/ButtonColour";
 
 /**
  * Modal for editing the logged in users data
@@ -105,7 +105,7 @@ const EditProfileBottomModal = React.forwardRef(
             multiline
             characterRestriction={200}
           />
-          <Button
+          <ButtonColour
             Icon={done}
             label="Done"
             title="done"

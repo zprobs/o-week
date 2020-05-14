@@ -14,7 +14,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @param labelStyle Additional style customization for button text
  * @constructor
  */
-const Button = ({
+const ButtonColour = ({
   Icon,
   label,
   onPress,
@@ -60,4 +60,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Button;
+export default ButtonColour;
