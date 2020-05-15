@@ -4,6 +4,7 @@ const images = {
     landing2: require("./LANDING2.png"),
     landing3: require("./LANDING3.png"),
     landing4: require("./LANDING4.png"),
+    login: require("./LOGIN.pdf"),
 
 };
 
