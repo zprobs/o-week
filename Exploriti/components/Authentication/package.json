@@ -2,7 +2,5 @@
   "name": "Authentication",
   "version": "1.0.0",
   "main": "Landing.js",
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }

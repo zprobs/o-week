@@ -1,9 +1,17 @@
-import React, {useState} from "react";
-import { Text, View, Button, Switch, StyleSheet, FlatList, TouchableOpacity} from "react-native";
-import {SettingToggle} from "../ReusableComponents/SettingToggle.js";
-import Fonts from '../../theme/Fonts';
-import {Theme} from '../../theme/Colours';
-import {ThemeStatic} from '../../theme/Colours';
+import React, { useState } from "react";
+import {
+  Text,
+  View,
+  Button,
+  Switch,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import { SettingToggle } from "../ReusableComponents/SettingToggle.js";
+import Fonts from "../../theme/Fonts";
+import { Theme } from "../../theme/Colours";
+import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
 
 /**
@@ -14,83 +22,88 @@ import Icon from "react-native-vector-icons/EvilIcons";
 
 function SettingsList() {
   const settingsItemList = [
-    {settingName: 'General', icon: 'gear'},
-    {settingName: 'Notifications', icon: 'bell'},
-    {settingName: 'Privacy', icon: 'unlock'},
-    {settingName: 'About', icon: 'exclamation'},
-    {settingName: 'Help', icon: 'question'},
+    { settingName: "General", icon: "gear" },
+    { settingName: "Notifications", icon: "bell" },
+    { settingName: "Privacy", icon: "unlock" },
+    { settingName: "About", icon: "exclamation" },
+    { settingName: "Help", icon: "question" },
   ];
 
-   return (
-        <View>
-          <FlatList
-          keyExtractor={(setting) => setting.settingName}
-          data={settingsItemList}
-          renderItem={({ item }) => {
-            return <SettingsItem settingName={item.settingName} icon={item.icon}/>
-          }} />
-        </View>
-   );
- };
-
-
-
-
-const SettingsItem = ({settingName, icon}) => {
-
-  return(
+  return (
     <View>
-      <View style = {styles().settingItemViewStyle}>
+      <FlatList
+        keyExtractor={setting => setting.settingName}
+        data={settingsItemList}
+        renderItem={({ item }) => {
+          return (
+            <SettingsItem settingName={item.settingName} icon={item.icon} />
+          );
+        }}
+      />
+    </View>
+  );
+}
+
+const SettingsItem = ({ settingName, icon }) => {
+  return (
+    <View>
+      <View style={styles().settingItemViewStyle}>
         <TouchableOpacity>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+          <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
             <Icon name={icon} size={30} />
             <Text style={styles().settingItemTextStyle}> {settingName} </Text>
           </View>
         </TouchableOpacity>
-          <View style={{justifyContent: 'flex-start'}}>
-            <Icon style={styles().settingItemChevronStyle} name='chevron-right' size={30} />
-          </View>
+        <View style={{ justifyContent: "flex-start" }}>
+          <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+          />
+        </View>
       </View>
-            <View style={{borderWidth: 0.3, borderColor: 'black', shadowOpacity:10, marginHorizontal: 25}}/>
+      <View
+        style={{
+          borderWidth: 0.3,
+          borderColor: "black",
+          shadowOpacity: 10,
+          marginHorizontal: 25,
+        }}
+      />
     </View>
   );
+};
 
-}
-
-
- const styles = () => StyleSheet.create({
-
-   settingItemViewStyle:{
-     //borderWidth: 1,
-     //borderColor: 'black',
-     flexDirection: 'row',
-     alignItems: 'center',
-     justifyContent: 'space-between',
-     margin: 7,
-   },
-   settingItemTextStyle:{
-     fontSize: 16,
-   },
-   settingItemChevronStyle: {
-
-   },
-   viewOneStyle: {
-     height: 50,
-     width: 50,
-     backgroundColor: 'red',
-
-   },
-   viewTwoStyle: {
-     height: 50,
-     width: 50,
-     backgroundColor: 'green',
-     alignSelf: 'flex-end',
-   },
-   viewThreeStyle: {
-     height: 50,
-     width: 50,
-     backgroundColor: 'purple',
-   }
- });
+const styles = () =>
+  StyleSheet.create({
+    settingItemViewStyle: {
+      //borderWidth: 1,
+      //borderColor: 'black',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      margin: 7,
+    },
+    settingItemTextStyle: {
+      fontSize: 16,
+    },
+    settingItemChevronStyle: {},
+    viewOneStyle: {
+      height: 50,
+      width: 50,
+      backgroundColor: "red",
+    },
+    viewTwoStyle: {
+      height: 50,
+      width: 50,
+      backgroundColor: "green",
+      alignSelf: "flex-end",
+    },
+    viewThreeStyle: {
+      height: 50,
+      width: 50,
+      backgroundColor: "purple",
+    },
+  });
 
 export default SettingsList;

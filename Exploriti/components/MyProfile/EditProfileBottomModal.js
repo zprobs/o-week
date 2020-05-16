@@ -30,12 +30,12 @@ const EditProfileBottomModal = React.forwardRef(
     const [editableAbout, setEditableAbout] = useState("");
     const [isUploading, setIsUploading] = useState(false);
 
-      useEffect(() => {
-          setEditableAvatar(avatar);
-          setEditableName(name);
-          setEditableHandle(handle);
-          setEditableAbout(about);
-      }, []);
+    useEffect(() => {
+      setEditableAvatar(avatar);
+      setEditableName(name);
+      setEditableHandle(handle);
+      setEditableAbout(about);
+    }, []);
 
     const setHandle = (handle: string) => {
       if (!handle) setHandleError("username cannot be empty");
@@ -112,6 +112,8 @@ const EditProfileBottomModal = React.forwardRef(
             onPress={onDone}
             loading={isUploading}
             containerStyle={styles().doneButton}
+            colour={ThemeStatic.accent}
+            light={true}
           />
         </View>
       </Modalize>
