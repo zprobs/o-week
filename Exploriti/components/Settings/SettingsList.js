@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Text, View, Button, Switch, StyleSheet, FlatList} from "react-native";
+import { Text, View, Button, Switch, StyleSheet, FlatList, TouchableOpacity} from "react-native";
 import {SettingToggle} from "../ReusableComponents/SettingToggle.js";
 import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
@@ -41,15 +41,17 @@ const SettingsItem = ({settingName, icon}) => {
   return(
     <View>
       <View style = {styles().settingItemViewStyle}>
-        <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-          <Icon name={icon} size={30} />
-          <Text style={styles().settingItemTextStyle}> {settingName} </Text>
-        </View>
-        <View style={{justifyContent: 'flex-start'}}>
-          <Icon style={styles().settingItemChevronStyle} name='chevron-right' size={30} />
-        </View>
+        <TouchableOpacity>
+          <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+            <Icon name={icon} size={30} />
+            <Text style={styles().settingItemTextStyle}> {settingName} </Text>
+          </View>
+        </TouchableOpacity>
+          <View style={{justifyContent: 'flex-start'}}>
+            <Icon style={styles().settingItemChevronStyle} name='chevron-right' size={30} />
+          </View>
       </View>
-      <View style={{borderWidth: 0.3, borderColor: 'black', shadowOpacity:10, marginHorizontal: 25}}/>
+            <View style={{borderWidth: 0.3, borderColor: 'black', shadowOpacity:10, marginHorizontal: 25}}/>
     </View>
   );
 
