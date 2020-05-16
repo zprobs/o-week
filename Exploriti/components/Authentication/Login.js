@@ -4,13 +4,14 @@ import images from '../../assets/images';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
+import TextLine from '../ReusableComponents/TextLine';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 const yMargin = height * 0.08;
-const xMargin = width * 0.08;
+const xMargin = width * 0.15;
 
 export default function Login() {
     return (
@@ -19,14 +20,9 @@ export default function Login() {
                 <View style={styles.logo}>
                     <Image style={{height: 160, width: 160, borderRadius: 80,}} source={images.logo}/>
                 </View>
-                <View style={styles.email}>
-                    <View style={styles.icons}>
-                        <Icon size={28} name={'envelope'} color={colours.white}/>
-                        <Text style={styles.label}>Email</Text>
-                    </View>
-                    <TextInput  placeholder={"first.last@utoronto.ca"} placeholderTextColor={'#f1f1f1'} style={styles.textBox} selectionColor={colours.white} />
+               <TextLine style={styles.textLine} label={"Email"} color={colours.white} icon={'envelope'} placeholder={'first.last@utoronto.ca'} type={'email'}/>
+                <TextLine style={styles.textLine} label={"Password"} color={colours.white} icon={'envelope'} placeholder={'(8+ characters)'} type={'email'}/>
 
-                </View>
             </ImageBackground>
         </View>
     )
@@ -61,36 +57,17 @@ const styles = StyleSheet.create({
           },
       }),
   },
-    email: {
-      alignSelf: 'center',
+    textLine: {
+        alignSelf: 'center',
         marginTop: 40,
-        flexDirection: 'row',
-        marginHorizontal: 60,
-        justifyContent: 'flex-start',
+        marginHorizontal: 20,
         width: width-xMargin,
         borderBottomColor: colours.white,
         borderBottomWidth: 1,
         paddingBottom: 5,
 
+    },
 
-
-    },
-    icons: {
-      height: 20,
-        flexDirection: 'column-reverse'
-
-    },
-    label: {
-      ...FontWeights.Bold,
-        ...FontSizes.Caption,
-        color: colours.white,
-    },
-    textBox: {
-      ...FontWeights.Light,
-    ...FontSizes.Body,
-      color: colours.white,
-        marginLeft: 5,
-    },
 
 
   forgot: {
