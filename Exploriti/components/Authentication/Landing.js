@@ -9,6 +9,11 @@ import images from "../../assets/images";
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
+/**
+ * Landing component is the first thing that users see when they open the app. Is only accessible once user is logged out
+ * @returns {*}
+ * @constructor
+ */
 export default function Landing() {
   const [interval, setInterval] = useState(1);
   const [width, setWidth] = React.useState(0);

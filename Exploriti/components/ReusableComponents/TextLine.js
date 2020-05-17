@@ -7,6 +7,17 @@ import { Theme } from "../../theme/Colours";
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * A custom Text Input with two possible states; 'email' and 'password'
+ * @param style Any custom styles for the container
+ * @param label The label which will appear above the icon to the left of the text input
+ * @param icon An icon which will appear to the left of the text input
+ * @param placeholder
+ * @param color The color of the text within the text input
+ * @param type State of the TextInput either 'email', 'password'
+ * @returns {*}
+ * @constructor
+ */
 export default function TextLine({
   style,
   label,

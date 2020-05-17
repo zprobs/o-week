@@ -24,6 +24,11 @@ const width = Dimensions.get("window").width;
 const yMargin = height * 0.08;
 const xMargin = width * 0.15;
 
+/**
+ * Login component which is reached via the landing page
+ * @returns {*}
+ * @constructor
+ */
 export default function Login() {
   return (
     <View style={styles.bg}>
