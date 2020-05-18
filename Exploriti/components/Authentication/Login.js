@@ -41,11 +41,11 @@ export default function Login() {
         </View>
         <TextLine
           style={styles.textLine}
-          label={"emailAddress"}
+          label={"Email"}
           color={colours.white}
           icon={"envelope"}
           placeholder={"first.last@utoronto.ca"}
-          type={"email"}
+          type={"emailAddress"}
         />
         <TextLine
           style={styles.textLine}
