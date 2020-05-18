@@ -41,7 +41,7 @@ export default function Login() {
         </View>
         <TextLine
           style={styles.textLine}
-          label={"Email"}
+          label={"emailAddress"}
           color={colours.white}
           icon={"envelope"}
           placeholder={"first.last@utoronto.ca"}

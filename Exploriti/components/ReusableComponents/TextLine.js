@@ -8,13 +8,13 @@ const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
 /**
- * A custom Text Input with two possible states; 'email' and 'password'
+ * A custom Text Input with three possible states: 'emailAddress', 'name', and 'password'
  * @param style Any custom styles for the container
  * @param label The label which will appear above the icon to the left of the text input
  * @param icon An icon which will appear to the left of the text input
  * @param placeholder
  * @param color The color of the text within the text input
- * @param type State of the TextInput either 'email', 'password'
+ * @param type State of the TextInput either 'emailAddress', 'password' or 'name'
  * @returns {*}
  * @constructor
  */
@@ -26,13 +26,20 @@ export default function TextLine({
   color,
   type,
 }) {
-  const keyboardType =
-    type == "email"
-      ? "email-address"
-      : Platform.OS == "ios"
-      ? "ascii-capable"
-      : "visible-password";
-  const secureTextEntry = type == "email" ? false : true;
+  const keyboardType = () => {
+    switch (type) {
+      case 'emailAddress':
+        return "email-address";
+      case 'password':
+        return Platform.OS == "ios" ? "ascii-capable" : "visible-password";
+      default:
+        return "default";
+    }
+  };
+
+  const autoCompleteType = type == "emailAddress" ? 'email' : type;
+
+  const secureTextEntry = type == "password" ? true : false;
 
   const styles = StyleSheet.create({
     container: {
@@ -50,7 +57,7 @@ export default function TextLine({
       color: colours.white,
     },
     textBox: {
-      ...FontWeights.Light,
+      ...FontWeights.Bold,
       color: color,
       flex: 1,
     },
@@ -73,8 +80,8 @@ export default function TextLine({
           style={styles.textBox}
           selectionColor={color}
           textContentType={type}
-          autoCompleteType={type}
-          keyboardType={keyboardType}
+          autoCompleteType={autoCompleteType}
+          keyboardType={keyboardType()}
           secureTextEntry={secureTextEntry}
           adjustFontSizeToFit
           returnKeyType={"done"}

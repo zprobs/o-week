@@ -26,7 +26,8 @@ export const ThemeStatic = {
     unlike: '#DDD',
     translucent: 'rgba(0, 0, 0, 0.1)',
     delete: '#F44336',
-    badge: '#F24'
+    badge: '#F24',
+    lightBlue: '#3D9CE3',
 };
 
 
@@ -39,7 +40,7 @@ export const Theme = {
             text01: '#000000',
             text02: '#BBBBBB',
             placeholder: '#F4F4F4',
-            white: '#FFFFFF'
+            white: '#FFFFFF',
         }
     },
     dark: {
