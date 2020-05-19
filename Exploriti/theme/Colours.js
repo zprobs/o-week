@@ -29,8 +29,9 @@ export const ThemeStatic = {
     badge: '#F24',
     lightBlue: '#3D9CE3',
     lightgray: '#F1F1F1',
-    purple: '#7d38c4',
-    pink: '#b040c2'
+    darkPurple: '#7d38c4',
+    lightPurple: '#b040c2',
+    pink: '#e84f8a',
 };
 
 

@@ -6,11 +6,8 @@ const images = {
     landing4: require("./LANDING4.png"),
     login: require("./LOGIN-1.png"),
     logo: require("./LOGOFINALWHITE.png"),
-    bg1: require("./backgroundOne-1.png"),
-    bg2: require("./backgroundTwo-1.png"),
-    bg3: require("./backgroundThree-1.png"),
-    bg4: require("./backgroundFour-1.png"),
     backArrow: require("./backArrow.png"),
+    bg: require("./background.png"),
 
 };
 

@@ -25,8 +25,9 @@ export default function Signup() {
                 </TouchableOpacity>
                 <Counter/>
             </View>
-            <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false} >
-                <ImageBackground source={images.bg1} style={styles.background}>
+                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false} >
+                    <ImageBackground source={images.bg} style={styles.background}>
+                <View style={styles.page}>
                     <View style={styles.form}>
                         <Text style={styles.title}>Create an Account</Text>
                         <View>
@@ -59,8 +60,8 @@ export default function Signup() {
                         <ButtonColour label={ index==0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button}/>
 
                     </View>
-                </ImageBackground>
-                <ImageBackground source={images.bg2} style={styles.background}>
+                </View>
+                <View style={styles.page}>
                     <View style={styles.form}>
                         <View>
                             <Text style={styles.title}>Tell us about yourself</Text>
@@ -71,8 +72,8 @@ export default function Signup() {
                         <Selection title={"Select your faculty"}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button}/>
                     </View>
-                </ImageBackground>
-                <ImageBackground source={images.bg3} style={styles.background}>
+                </View>
+                <View style={styles.page}>
                     <View style={styles.form}>
                         <View>
                             <Text style={styles.title}>Select your interests</Text>
@@ -85,8 +86,24 @@ export default function Signup() {
                         <Selection title={"Select interest five"}/>
                         <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button}/>
                     </View>
-                </ImageBackground>
-                <ImageBackground source={images.bg4} style={styles.background}></ImageBackground>
+                </View>
+                <View style={styles.page}>
+                    <View style={styles.form}>
+                        <View>
+                            <Text style={styles.title}>Finish Signing Up</Text>
+                            <Text style={styles.caption}>Your Exploriti account is ready to be created. Just add a profile picture and get started.</Text>
+                        </View>
+                        <View>
+                            <Image style={styles.profilePic} source={images.logo}/>
+                            <TouchableOpacity>
+                                <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <ButtonColour label={"Create Account"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel4} containerStyle={styles.button}/>
+                    </View>
+
+                </View>
+            </ImageBackground>
             </ScrollView>
         </View>
     );
@@ -108,8 +125,13 @@ const styles = StyleSheet.create({
         flex:1,
     },
     background: {
-        width: width,
-        height: height,
+        width: 4*width,
+        resizeMode: 'contain',
+        flexDirection: 'row',
+    },
+    page: {
+      height: height,
+      width: width
     },
     backArrow: {
         width: 40,
@@ -186,15 +208,15 @@ const styles = StyleSheet.create({
     },
     buttonLabel2: {
         ...FontWeights.Regular,
-        color: ThemeStatic.purple,
+        color: ThemeStatic.darkPurple,
     },
     buttonLabel3: {
         ...FontWeights.Regular,
-        color: ThemeStatic.pink
+        color: ThemeStatic.lightPurple,
     },
     buttonLabel4: {
         ...FontWeights.Regular,
-        color: ThemeStatic.lightBlue,
+        color: ThemeStatic.pink,
     },
     button: {
         marginBottom: 40,
@@ -206,5 +228,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         textAlign: 'center',
         marginTop: 5
-    }
+    },
+    profilePic: {
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        alignSelf: 'center'
+    },
+
 });
