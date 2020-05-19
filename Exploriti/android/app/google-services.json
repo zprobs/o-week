@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1078220397647",
+    "firebase_url": "https://exploriti-rotman.firebaseio.com",
+    "project_id": "exploriti-rotman",
+    "storage_bucket": "exploriti-rotman.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078220397647:android:9ba1b00705059308fa5e3a",
+        "android_client_info": {
+          "package_name": "com.exploriti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1078220397647-2tv4l210slglpb1jofn4rl7erlv9j2al.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2scZ6G3c-pmBzhq8yCiFZDJ6ZtYVpeEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1078220397647-2tv4l210slglpb1jofn4rl7erlv9j2al.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

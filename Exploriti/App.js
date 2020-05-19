@@ -7,22 +7,25 @@
  * @flow strict-local
  */
 import "react-native-gesture-handler";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ApolloClient from "apollo-boost";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import ApolloClient from "apollo-client";
+import { split } from "apollo-link";
+import { HttpLink } from "apollo-link-http";
+import { WebSocketLink } from "apollo-link-ws";
+import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "@apollo/react-hooks";
 import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
 import Settings from "./components/Settings";
-import Signup from './components/Authentication/Signup';
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/auth';
+import '@react-native-firebase/database';
 import Login from './components/Authentication/Login';
-
-const client = new ApolloClient({
-  uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
-});
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,26 +54,61 @@ function HomeScreen({ navigation }) {
       <Tab.Screen name="Explore" component={ExploreComponent} />
       <Tab.Screen name="MyProfile" component={MyProfileComponent} />
       <Tab.Screen name="Settings" component={SettingsComponent} />
-      <Tab.Screen name="Test" component={Signup} options={{tabBarVisible: false}} />
+      <Tab.Screen name="Test" component={Login} options={{tabBarVisible: false}} />
 
     </Tab.Navigator>
   );
 }
 
-const App: () => React$Node = () => {
-  return (
-    <ApolloProvider client={client}>
-      <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
-          <Drawer.Screen name="Home" component={HomeScreen} />
-          <Drawer.Screen name="Admin" component={HomeScreen} />
-          <Drawer.Screen name="Settings" component={HomeScreen} />
-          <Drawer.Screen name="About" component={HomeScreen} />
-          <Drawer.Screen name="Logout" component={HomeScreen} />
-        </Drawer.Navigator>
-      </NavigationContainer>
-    </ApolloProvider>
-  );
+const App: () => React$Node = ({ authState }) => {
+    const isIn = authState.status === "in";
+
+    const headers = isIn ? { Authorization: `Bearer ${authState.token}` } : {};
+
+    const httpLink = new HttpLink({
+        uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
+        headers
+    });
+
+    const wsLink = new WebSocketLink({
+        uri: "wss://exploriti-backend.herokuapp.com/v1alpha1/graphql",
+        options: {
+            reconnect: true,
+            connectionParams: {
+                headers
+            }
+        }
+    });
+
+    const link = split(
+        ({ query }) => {
+            const { kind, operation } = getMainDefinition(query);
+            return kind === "OperationDefinition" && operation === "subscription";
+        },
+        wsLink,
+        httpLink
+    );
+
+    const client = new ApolloClient({
+        link,
+        cache: new InMemoryCache()
+    });
+
+    return (
+        <ApolloProvider client={client}>
+            <NavigationContainer>
+                <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
+                    <Drawer.Screen name="Home" component={HomeScreen} />
+                    <Drawer.Screen name="Admin" component={HomeScreen} />
+                    <Drawer.Screen name="Settings" component={HomeScreen} />
+                    <Drawer.Screen name="About" component={HomeScreen} />
+                    <Drawer.Screen name="Logout" component={HomeScreen} />
+                </Drawer.Navigator>
+            </NavigationContainer>
+        </ApolloProvider>
+    );
+
+    return <Login />;
 };
 
 export default App;

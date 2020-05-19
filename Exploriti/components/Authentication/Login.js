@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -16,6 +16,8 @@ import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import TextLine from "../ReusableComponents/TextLine";
 import ButtonColour from "../ReusableComponents/ButtonColour";
+import auth from '@react-native-firebase/auth'
+import firebase from '@react-native-firebase/app';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -30,6 +32,55 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login() {
+  const [authState, setAuthState] = useState({ status: "loading" });
+
+  useEffect(() => {
+    return firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        const token = await user.getIdToken();
+        const idTokenResult = await user.getIdTokenResult();
+        const hasuraClaim = idTokenResult.claims["https://hasura.io/jwt/claims"];
+
+        if (hasuraClaim) {
+          setAuthState({ status: "in", user, token });
+        } else {
+          // Check if refresh is required.
+          const metadataRef = firebase.database()
+              .ref("metadata/" + user.uid + "/refreshTime");
+
+          metadataRef.on("value", async (data) => {
+            if(!data.exists) return
+            // Force refresh to pick up the latest custom claims changes.
+            const token = await user.getIdToken(true);
+            setAuthState({ status: "in", user, token });
+          });
+        }
+      } else {
+        setAuthState({ status: "out" });
+      }
+    });
+  }, []);
+
+  const processLogin = async () => {
+    try {
+      await auth().signInWithEmailAndPassword("s.shahid@mail.utoronto.ca", "salman11").then(res => {
+        console.log(res.user.uid)
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const processLogout = async () => {
+    try {
+      setAuthState({ status: "loading" });
+      await firebase.auth().signOut();
+      setAuthState({ status: "out" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <View style={styles.bg}>
       <ImageBackground source={images.login} style={styles.backgroundImage}>
@@ -60,6 +111,14 @@ export default function Login() {
           label={"Log in"}
           containerStyle={styles.login}
           labelStyle={styles.loginText}
+          onPress={processLogin}
+        />
+        <ButtonColour
+            colour={colours.white}
+            label={"Log out"}
+            containerStyle={styles.login}
+            labelStyle={styles.loginText}
+            onPress={processLogout}
         />
         <TouchableOpacity style={styles.touchable}>
           <Text style={styles.forgot}>Forgot your password?</Text>
