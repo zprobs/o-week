@@ -28,6 +28,9 @@ export const ThemeStatic = {
     delete: '#F44336',
     badge: '#F24',
     lightBlue: '#3D9CE3',
+    lightgray: '#F1F1F1',
+    purple: '#7d38c4',
+    pink: '#b040c2'
 };
 
 

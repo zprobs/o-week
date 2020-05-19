@@ -6,6 +6,7 @@ import Fonts from '../../theme/Fonts';
 import {ThemeStatic} from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
 import ButtonColour from '../ReusableComponents/ButtonColour';
+import Selection from '../ReusableComponents/Selection';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -55,12 +56,36 @@ export default function Signup() {
                             placeholder={"(8+ Characters)"}
                             type={"password"}
                         />
-                        <ButtonColour label={ index==0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel} containerStyle={styles.button}/>
+                        <ButtonColour label={ index==0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button}/>
 
                     </View>
                 </ImageBackground>
-                <ImageBackground source={images.bg2} style={styles.background}></ImageBackground>
-                <ImageBackground source={images.bg3} style={styles.background}></ImageBackground>
+                <ImageBackground source={images.bg2} style={styles.background}>
+                    <View style={styles.form}>
+                        <View>
+                            <Text style={styles.title}>Tell us about yourself</Text>
+                            <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
+                        </View>
+                        <Selection title={"Select your program"}/>
+                        <Selection title={"Select your year"}/>
+                        <Selection title={"Select your faculty"}/>
+                        <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button}/>
+                    </View>
+                </ImageBackground>
+                <ImageBackground source={images.bg3} style={styles.background}>
+                    <View style={styles.form}>
+                        <View>
+                            <Text style={styles.title}>Select your interests</Text>
+                            <Text style={styles.caption}>This will help us get to know you outside of just your major.</Text>
+                        </View>
+                        <Selection title={"Select interest one"}/>
+                        <Selection title={"Select interest two"}/>
+                        <Selection title={"Select interest three"}/>
+                        <Selection title={"Select interest four"}/>
+                        <Selection title={"Select interest five"}/>
+                        <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button}/>
+                    </View>
+                </ImageBackground>
                 <ImageBackground source={images.bg4} style={styles.background}></ImageBackground>
             </ScrollView>
         </View>
@@ -155,12 +180,31 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     //    paddingBottom: 5,
     },
-    buttonLabel: {
+    buttonLabel1: {
+        ...FontWeights.Regular,
+        color: ThemeStatic.lightBlue,
+    },
+    buttonLabel2: {
+        ...FontWeights.Regular,
+        color: ThemeStatic.purple,
+    },
+    buttonLabel3: {
+        ...FontWeights.Regular,
+        color: ThemeStatic.pink
+    },
+    buttonLabel4: {
         ...FontWeights.Regular,
         color: ThemeStatic.lightBlue,
     },
     button: {
         marginBottom: 40,
-
+    },
+    caption: {
+        ...FontWeights.Regular,
+        ...FontSizes.Caption,
+        color: ThemeStatic.lightgray,
+        paddingHorizontal: 30,
+        textAlign: 'center',
+        marginTop: 5
     }
 });

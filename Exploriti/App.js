@@ -51,7 +51,7 @@ function HomeScreen({ navigation }) {
       <Tab.Screen name="Explore" component={ExploreComponent} />
       <Tab.Screen name="MyProfile" component={MyProfileComponent} />
       <Tab.Screen name="Settings" component={SettingsComponent} />
-      <Tab.Screen name="Test" component={Login} options={{tabBarVisible: false}} />
+      <Tab.Screen name="Test" component={Signup} options={{tabBarVisible: false}} />
 
     </Tab.Navigator>
   );
