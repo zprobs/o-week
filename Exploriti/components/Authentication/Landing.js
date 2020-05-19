@@ -104,7 +104,7 @@ export default function Landing({navigation}) {
 
       <View style={styles.buttons}>
         <View style={styles.bullets}>{bullets}</View>
-        <ButtonColour label={"Sign Up"} containerStyle={styles.signUp} onPress={()=>{navigation.navigate('Signup')}} />
+        <ButtonColour label={"Sign Up"} containerStyle={styles.signUp} onPress={()=>{navigation.navigate('Signup')}} colour={colours.accent} light={true} />
         <ButtonColour
           label={"Log In"}
           containerStyle={styles.logIn}
