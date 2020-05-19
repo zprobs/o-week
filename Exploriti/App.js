@@ -11,6 +11,7 @@ import React, { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from '@react-navigation/stack';
 import { InMemoryCache } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
 import { split } from "apollo-link";
@@ -26,9 +27,13 @@ import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/database';
 import Login from './components/Authentication/Login';
+import Signup from './components/Authentication/Signup';
+import Landing from './components/Authentication';
+import StackNavigator from '@react-navigation/stack/src/navigators/createStackNavigator';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
   // Create const on a separate line to pass in Drawer Navigation and avoid warning
@@ -60,8 +65,34 @@ function HomeScreen({ navigation }) {
   );
 }
 
+function AuthStack() {
+
+    return (
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name={"Landing"} component={Landing}/>
+          <Stack.Screen name={"Signup"} component={Signup}/>
+          <Stack.Screen name={"Login"} component={Login}/>
+          <Stack.Screen name={"mainApp"} component={mainApp}/>
+      </Stack.Navigator>
+    );
+
+}
+
+function mainApp() {
+    return (
+        <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
+            <Drawer.Screen name="Home" component={HomeScreen} />
+            <Drawer.Screen name="Admin" component={HomeScreen} />
+            <Drawer.Screen name="Settings" component={HomeScreen} />
+            <Drawer.Screen name="About" component={HomeScreen} />
+            <Drawer.Screen name="Logout" component={HomeScreen} />
+        </Drawer.Navigator>
+    );
+}
+
 const App: () => React$Node = ({ authState }) => {
-    const isIn = authState.status === "in";
+    //const isIn = authState.status === "in";
+    const isIn = false;
 
     const headers = isIn ? { Authorization: `Bearer ${authState.token}` } : {};
 
@@ -97,18 +128,11 @@ const App: () => React$Node = ({ authState }) => {
     return (
         <ApolloProvider client={client}>
             <NavigationContainer>
-                <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
-                    <Drawer.Screen name="Home" component={HomeScreen} />
-                    <Drawer.Screen name="Admin" component={HomeScreen} />
-                    <Drawer.Screen name="Settings" component={HomeScreen} />
-                    <Drawer.Screen name="About" component={HomeScreen} />
-                    <Drawer.Screen name="Logout" component={HomeScreen} />
-                </Drawer.Navigator>
+                <AuthStack/>
             </NavigationContainer>
         </ApolloProvider>
     );
 
-    return <Login />;
 };
 
 export default App;

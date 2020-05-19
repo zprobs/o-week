@@ -31,7 +31,7 @@ const xMargin = width * 0.15;
  * @returns {*}
  * @constructor
  */
-export default function Login() {
+export default function Login({navigation}) {
   const [authState, setAuthState] = useState({ status: "loading" });
 
   useEffect(() => {
@@ -64,12 +64,14 @@ export default function Login() {
   const processLogin = async () => {
     try {
       await auth().signInWithEmailAndPassword("s.shahid@mail.utoronto.ca", "salman11").then(res => {
-        console.log(res.user.uid)
+        console.log(res.user.uid);
+        navigation.navigate('mainApp');
+
       })
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const processLogout = async () => {
     try {
@@ -79,7 +81,7 @@ export default function Login() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <View style={styles.bg}>

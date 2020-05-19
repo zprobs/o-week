@@ -14,7 +14,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-export default function Landing() {
+export default function Landing({navigation}) {
   const [interval, setInterval] = useState(1);
   const [width, setWidth] = React.useState(0);
 
@@ -104,11 +104,12 @@ export default function Landing() {
 
       <View style={styles.buttons}>
         <View style={styles.bullets}>{bullets}</View>
-        <ButtonColour label={"Sign Up"} containerStyle={styles.signUp} />
+        <ButtonColour label={"Sign Up"} containerStyle={styles.signUp} onPress={()=>{navigation.navigate('Signup')}} />
         <ButtonColour
           label={"Log In"}
           containerStyle={styles.logIn}
           labelStyle={{ color: colours.accent }}
+          onPress={()=>{navigation.navigate('Login')}}
         />
       </View>
     </>

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, FlatList, Text } from 'react-native';
 
 /**
- * A Vertical FlatList component with a searchbar at the top. Used for long lists
+ * A Vertical FlatList component with a search-bar at the top. Used for long lists
  * @param data an Array of data to be displayed in the List
  * @returns {*}
  * @constructor
