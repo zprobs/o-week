@@ -24,7 +24,7 @@ export default function TextLine({
   icon,
   placeholder,
   color,
-  type,
+  type, value, onChangeText
 }) {
   const keyboardType = () => {
     switch (type) {
@@ -85,6 +85,8 @@ export default function TextLine({
           secureTextEntry={secureTextEntry}
           adjustFontSizeToFit
           returnKeyType={"done"}
+          value={value}
+          onChangeText={onChangeText}
         />
       </View>
     </View>

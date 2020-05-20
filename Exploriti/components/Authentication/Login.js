@@ -28,11 +28,14 @@ const xMargin = width * 0.15;
 
 /**
  * Login component which is reached via the landing page
+ * @param navigation Reference to navigation object in Auth stack from App.js
  * @returns {*}
  * @constructor
  */
 export default function Login({navigation}) {
   const [authState, setAuthState] = useState({ status: "loading" });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     return firebase.auth().onAuthStateChanged(async user => {
@@ -99,6 +102,8 @@ export default function Login({navigation}) {
           icon={"envelope"}
           placeholder={"first.last@utoronto.ca"}
           type={"emailAddress"}
+          value={email}
+          onChangeText={setEmail}
         />
         <TextLine
           style={styles.textLine}
@@ -107,6 +112,8 @@ export default function Login({navigation}) {
           icon={"lock"}
           placeholder={"(8+ characters)"}
           type={"password"}
+          value={password}
+          onChangeText={setPassword}
         />
         <ButtonColour
           colour={colours.white}

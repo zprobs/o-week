@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ScrollView, Text, View, StyleSheet, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import { Theme } from "../../theme/Colours";
 import Fonts from "../../theme/Fonts";
@@ -11,12 +10,13 @@ const { FontWeights, FontSizes } = Fonts;
 
 /**
  * Landing component is the first thing that users see when they open the app. Is only accessible once user is logged out
+ * @param navigation The navigation reference to Auth stack in App.js
  * @returns {*}
  * @constructor
  */
 export default function Landing({navigation}) {
   const [interval, setInterval] = useState(1);
-  const [width, setWidth] = React.useState(0);
+  const [width, setWidth] = useState(0);
 
   const getInterval = offset => {
     for (let i = 1; i <= 4; i++) {
@@ -122,14 +122,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   container: {
-    flex: 4,
+    flex: 3,
   },
   scrollView: {
-    display: "flex",
-    //  flexDirection: 'row',
     overflow: "hidden",
-    //   backgroundColor: '#f3f23f',
-    alignItems: "stretch",
   },
   bullets: {
     position: "absolute",
@@ -148,22 +144,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   slide: {
-    //backgroundColor: '#ffffff',
     paddingHorizontal: 20,
-    paddingBottom: 20,
     paddingTop: 30,
-    flexBasis: "100%",
-    flex: 1,
     maxWidth: "100%",
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap",
     alignItems: "center",
-    alignContent: "center",
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
   slideText: {
-    width: "100%",
+    width: "80%",
     textAlign: "center",
     ...FontSizes.Caption,
     ...FontWeights.Regular,
@@ -178,18 +166,17 @@ const styles = StyleSheet.create({
   buttons: {
     flex: 1,
     paddingHorizontal: 20,
+    justifyContent: 'center'
   },
   signUp: {
     alignItems: "center",
-    bottom: -50,
   },
   logIn: {
     backgroundColor: "rgba(0, 0, 0, 0)",
-    bottom: -55,
+    marginTop: 10
   },
   image: {
     height: 400,
     width: "100%",
-    //  backgroundColor: '#a3ffff',
   },
 });

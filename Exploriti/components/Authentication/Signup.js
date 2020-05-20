@@ -12,15 +12,18 @@ const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
-export default function Signup() {
+export default function Signup({navigation}) {
 
     const [index, setIndex] = useState(0);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
 
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>{navigation.navigate('Landing')}}>
                     <Image source={images.backArrow} style={styles.backArrow}/>
                 </TouchableOpacity>
                 <Counter/>
@@ -40,6 +43,8 @@ export default function Signup() {
                             color={ThemeStatic.white}
                             icon={"user"}
                             type={"name"}
+                            value={name}
+                            onChangeText={setName}
                         />
                         <TextLine
                             style={styles.textLine}
@@ -48,6 +53,8 @@ export default function Signup() {
                             icon={"envelope"}
                             placeholder={"*****@utoronto.ca"}
                             type={"emailAddress"}
+                            value={email}
+                            onChangeText={setEmail}
                         />
                         <TextLine
                             style={styles.textLine}
@@ -56,6 +63,8 @@ export default function Signup() {
                             icon={"lock"}
                             placeholder={"(8+ Characters)"}
                             type={"password"}
+                            value={password}
+                            onChangeText={setPassword}
                         />
                         <ButtonColour label={ index==0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button}/>
 
