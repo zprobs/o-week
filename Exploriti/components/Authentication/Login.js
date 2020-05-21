@@ -112,7 +112,7 @@ export default function Login({navigation}) {
           icon={"lock"}
           placeholder={"(8+ characters)"}
           type={"password"}
-          value={password}
+          value={password  }
           onChangeText={setPassword}
         />
         <ButtonColour

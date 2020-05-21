@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, TouchableOpacity, Platform} from 'react-native';
 import SegmentedControl from '@react-native-community/segmented-control';
 import images from '../../assets/images';
@@ -7,6 +7,8 @@ import {ThemeStatic} from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
+import SearchableFlatList from '../Modal/SearchableFlatList';
+import {Modalize} from 'react-native-modalize';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -18,6 +20,9 @@ export default function Signup({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const programRef = useRef();
+
+    const onProgram = () => programRef.current.open();
 
 
     return (
@@ -76,7 +81,7 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Tell us about yourself</Text>
                             <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
                         </View>
-                        <Selection title={"Select your program"}/>
+                        <Selection title={"Select your program"} onPress={onProgram}/>
                         <Selection title={"Select your year"}/>
                         <Selection title={"Select your faculty"}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button}/>
@@ -114,7 +119,9 @@ export default function Signup({navigation}) {
                 </View>
             </ImageBackground>
             </ScrollView>
+            <SearchableFlatList ref={programRef} title={'program'} data={programs}/>
         </View>
+
     );
 }
 
@@ -244,5 +251,6 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         alignSelf: 'center'
     },
-
 });
+
+const programs = ['Math', 'Chemistry', 'English', 'Architecture'];

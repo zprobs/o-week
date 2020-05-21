@@ -6,15 +6,14 @@ import {ThemeStatic} from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
 const { FontWeights, FontSizes } = Fonts;
-export default function Selection({title}) {
+export default function Selection({title, onPress}) {
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
             <View style={styles.container}>
                 <View style={styles.content}>
                     <Text style={styles.title}>{title}</Text>
                     <Icon name={'chevron-down'} size={30} style={styles.icon}/>
-
                 </View>
             </View>
         </TouchableOpacity>
