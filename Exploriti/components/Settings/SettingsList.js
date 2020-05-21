@@ -20,7 +20,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
  * @constructor
  */
 
-function SettingsList() {
+function SettingsList(props) {
   const settingsItemList = [
     { settingName: "General", icon: "gear" },
     { settingName: "Notifications", icon: "bell" },
@@ -33,6 +33,7 @@ function SettingsList() {
     <View>
       <FlatList
         keyExtractor={setting => setting.settingName}
+        ItemSeperatorComponent = { ListItemSeperator }
         data={settingsItemList}
         renderItem={({ item }) => {
           return (
@@ -44,33 +45,38 @@ function SettingsList() {
   );
 }
 
+const ListItemSeperator = () => {
+  return(
+    <View
+      style={{
+        height:1,
+        width: '100%',
+        backgroundColor: "black",
+      }}
+    />
+  );
+};
+
 const SettingsItem = ({ settingName, icon }) => {
   return (
-    <View>
-      <View style={styles().settingItemViewStyle}>
-        <TouchableOpacity>
-          <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-            <Icon name={icon} size={30} />
-            <Text style={styles().settingItemTextStyle}> {settingName} </Text>
-          </View>
-        </TouchableOpacity>
-        <View style={{ justifyContent: "flex-start" }}>
-          <Icon
+    <TouchableOpacity>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={icon} size={30} />
+              <Text style={styles().settingItemTextStyle}> {settingName} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
             style={styles().settingItemChevronStyle}
             name="chevron-right"
             size={30}
-          />
+            />
+            </View>
         </View>
       </View>
-      <View
-        style={{
-          borderWidth: 0.3,
-          borderColor: "black",
-          shadowOpacity: 10,
-          marginHorizontal: 25,
-        }}
-      />
-    </View>
+    </TouchableOpacity>
   );
 };
 
