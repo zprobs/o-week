@@ -76,7 +76,8 @@ function AuthStack() {
 
 }
 
-function mainApp() {
+function MainApp() {
+  
     return (
         <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
             <Drawer.Screen name="Home" component={HomeScreen} />
@@ -126,7 +127,7 @@ const App: () => React$Node = ({ authState }) => {
     return (
         <ApolloProvider client={client}>
             <NavigationContainer>
-                <AuthStack/>
+                <MainApp/>
             </NavigationContainer>
         </ApolloProvider>
     );
@@ -134,4 +135,3 @@ const App: () => React$Node = ({ authState }) => {
 };
 
 export default App;
-
