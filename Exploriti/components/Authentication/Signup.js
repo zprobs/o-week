@@ -253,4 +253,4 @@ const styles = StyleSheet.create({
     },
 });
 
-const programs = ['Math', 'Chemistry', 'English', 'Architecture'];
+const programs = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing'];
