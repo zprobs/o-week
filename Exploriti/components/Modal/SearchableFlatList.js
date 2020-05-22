@@ -5,7 +5,6 @@ import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import ButtonColour from '../ReusableComponents/ButtonColour';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
@@ -22,14 +21,13 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
     const [query, setQuery] = useState('');
     const [filteredList, setFilteredList] = useState(data);
     const debounceQuery = useDebounce(query, 300);
-    const searchRef = useRef();
+        const [inputRef, setInputFocus] = useFocus();
         const [selected, setSelected] = useState(new Map());
 
         const onSelect = React.useCallback(
             item => {
                 const newSelected = new Map(selected);
                 newSelected.set(item, !selected.get(item));
-
                 setSelected(newSelected);
             },
             [selected],
@@ -43,7 +41,7 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
         const newData = data.filter((item) => item.toLowerCase().includes(lowerCaseQuery));
 
         setFilteredList(newData);
-        if (searchRef.current !== undefined) {searchRef.current.focus();}
+        //if (searchRef.current !== undefined) {searchRef.current.focus();}
     }, [debounceQuery]);
 
 
@@ -53,7 +51,7 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
          return (
         <TouchableOpacity onPress={() => onSelect(item)} style={{flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.item}>{item}</Text>
-            {isSelected ? <Icon name={"check"} style={styles.icon} size={20}/> : null }
+            {isSelected ? <Icon name={"check"} style={styles.icon} size={28}/> : null }
         </TouchableOpacity>
 
          );
@@ -62,14 +60,15 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
 
     const search = (
         <SearchBar
-            ref={searchRef}
+            ref={inputRef}
             placeholder={"Search for " + title + "..."}
             onChangeText={(q)=>setQuery(q)}
             text={query}
-            onSearchButtonPress={()=>{searchRef.current.blur()}}
-            showsCancelButton={false}
-            showsCancelButtonWhileEditing={false}
+           // onSearchButtonPress={()=>{console.log('search')}}
             hideBackground={true}
+            onCancelButtonPress={()=>ref.current.close()}
+            cancelButtonText={"Done"}
+            showsCancelButton={true}
         />
         );
 
@@ -86,11 +85,12 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
                     keyExtractor: item => item,
                     renderItem: renderItem,
                     marginTop: 10,
-                        ListHeaderComponent: search,
-                    ListFooterComponent: doneButton,
                     ItemSeparatorComponent: ItemSeparator,
                     extraData: selected,
                  }}
+                tapGestureEnabled={false}
+                HeaderComponent={search}
+                onOpened={setInputFocus}
             />
     );
 }
@@ -116,6 +116,13 @@ const useDebounce = (value: any, delay: number) => {
     }, [value, delay]);
 
     return debounceValue;
+};
+
+const useFocus = () => {
+    const htmlElRef = useRef(null)
+    const setFocus = () => {htmlElRef.current &&  htmlElRef.current.focus()}
+
+    return [ htmlElRef, setFocus ]
 };
 
 
@@ -147,9 +154,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const doneButton =  (
-        <ButtonColour colour={colours.accent} containerStyle={styles.done} light={true} label={"Done"}  />
-);
 
 export default SearchableFlatList;
 

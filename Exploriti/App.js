@@ -70,14 +70,14 @@ function AuthStack() {
           <Stack.Screen name={"Landing"} component={Landing}/>
           <Stack.Screen name={"Signup"} component={Signup}/>
           <Stack.Screen name={"Login"} component={Login}/>
-          <Stack.Screen name={"mainApp"} component={mainApp}/>
+          <Stack.Screen name={"MainApp"} component={MainApp}/>
       </Stack.Navigator>
     );
 
 }
 
 function MainApp() {
-  
+
     return (
         <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
             <Drawer.Screen name="Home" component={HomeScreen} />
@@ -127,7 +127,7 @@ const App: () => React$Node = ({ authState }) => {
     return (
         <ApolloProvider client={client}>
             <NavigationContainer>
-                <MainApp/>
+                <AuthStack/>
             </NavigationContainer>
         </ApolloProvider>
     );

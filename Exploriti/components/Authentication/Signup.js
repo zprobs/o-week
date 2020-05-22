@@ -9,6 +9,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {Modalize} from 'react-native-modalize';
+import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -21,8 +22,12 @@ export default function Signup({navigation}) {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const programRef = useRef();
+    const yearRef = useRef();
+    const facultyRef = useRef();
 
     const onProgram = () => programRef.current.open();
+    const onYearRef = () => yearRef.current.open();
+    const onFacultyRef = () => facultyRef.current.open();
 
 
     return (
@@ -82,8 +87,8 @@ export default function Signup({navigation}) {
                             <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
                         </View>
                         <Selection title={"Select your program"} onPress={onProgram}/>
-                        <Selection title={"Select your year"}/>
-                        <Selection title={"Select your faculty"}/>
+                        <Selection title={"Select your year"} onPress={onYearRef}/>
+                        <Selection title={"Select your faculty"} onPress={onFacultyRef}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button}/>
                     </View>
                 </View>
@@ -120,6 +125,8 @@ export default function Signup({navigation}) {
             </ImageBackground>
             </ScrollView>
             <SearchableFlatList ref={programRef} title={'program'} data={programs}/>
+            <RadioButtonFlatList ref={yearRef} title={'year'} data={years}/>
+            <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={faculties}/>
         </View>
 
     );
@@ -253,4 +260,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const programs = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing'];
+const programs = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing', 'Biology', 'Law', 'Medicine', 'Sociology'];
+const years = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
+const faculties = ['ABC', 'EFG', 'HIJ'];
