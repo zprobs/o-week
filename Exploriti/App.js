@@ -124,8 +124,8 @@ export default function App () {
         })
     }, []);
 
-    const isIn = authState.status === "in";
-    const headers = isIn ? { Authorization: `Bearer ${authState.token}` } : {};
+    const headers = authState.status === "in" ? { Authorization: `Bearer ${authState.token}` } : {};
+
     const httpLink = new HttpLink({
         uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
         headers
