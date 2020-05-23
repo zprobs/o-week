@@ -24,10 +24,12 @@ export default function Signup({navigation}) {
     const programRef = useRef();
     const yearRef = useRef();
     const facultyRef = useRef();
+    const interestRef = useRef();
 
-    const onProgram = () => programRef.current.open();
+    const onProgramRef = () => programRef.current.open();
     const onYearRef = () => yearRef.current.open();
     const onFacultyRef = () => facultyRef.current.open();
+    const onInterestRef = () => interestRef.current.open();
 
 
     return (
@@ -86,7 +88,7 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Tell us about yourself</Text>
                             <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
                         </View>
-                        <Selection title={"Select your program"} onPress={onProgram}/>
+                        <Selection title={"Select your program"} onPress={onProgramRef}/>
                         <Selection title={"Select your year"} onPress={onYearRef}/>
                         <Selection title={"Select your faculty"} onPress={onFacultyRef}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button}/>
@@ -98,11 +100,11 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Select your interests</Text>
                             <Text style={styles.caption}>This will help us get to know you outside of just your major.</Text>
                         </View>
-                        <Selection title={"Select interest one"}/>
-                        <Selection title={"Select interest two"}/>
-                        <Selection title={"Select interest three"}/>
-                        <Selection title={"Select interest four"}/>
-                        <Selection title={"Select interest five"}/>
+                        <Selection title={"Select interest one"} onPress={onInterestRef}/>
+                        <Selection title={"Select interest two"} onPress={onInterestRef}/>
+                        <Selection title={"Select interest three"} onPress={onInterestRef}/>
+                        <Selection title={"Select interest four"} onPress={onInterestRef}/>
+                        <Selection title={"Select interest five"} onPress={onInterestRef}/>
                         <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button}/>
                     </View>
                 </View>
@@ -127,6 +129,7 @@ export default function Signup({navigation}) {
             <SearchableFlatList ref={programRef} title={'program'} data={programs}/>
             <RadioButtonFlatList ref={yearRef} title={'year'} data={years}/>
             <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={faculties}/>
+            <SearchableFlatList ref={interestRef} title={'interest'} data={interests} />
         </View>
 
     );
@@ -263,3 +266,5 @@ const styles = StyleSheet.create({
 const programs = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing', 'Biology', 'Law', 'Medicine', 'Sociology'];
 const years = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
 const faculties = ['ABC', 'EFG', 'HIJ'];
+const interests = ["Aerospace", "Anthropology", "Architecture", "Artificial Intelligence", "Biochem", "Biology", "Chemistry", "Commerce", "Computer Science", "Electrical Engineering", "Engineering", "History", "Finance", "Kinesiology", "Math", "Medical", "Neuroscience", "Nursing", "Psychology", "Robotics", "STEM", "Tutoring", "Animation", "Band", "Calligraphy", "Culinary Arts", "Dance", "Drama", "Drawing", "Film", "Guitar", "Hip Hop", "Jazz", "Literature", "Multimedia Art", "Music", "Painting", "Performing Arts", "Philosophy", "Photography", "Piano", "Poetry", "Pottery", "Radio", "Rap", "Rock", "Sculpting", "Visual Arts", "Aerobics", "Aikido", "Airsoft", "Badminton", "Baseball", "Basketball", "Biking", "Body Building", "Bowling", "Boxing", "Cricket", "CrossFit", "Curling", "Diabetes", "Diving", "Dodgeball", "Dragon Boat", "Equestrian", "Fencing", "Fitness", "Football", "Frisbee", "Go Karting", "Golf", "Gym", "Health", "Hiking", "Hockey", "Japanese Martial Arts", "Judo", "Karate", "Kendo", "Krav Maga", "Kung Fu", "Lacrosse", "MMA", "Marathon", "Martial Arts", "Motor Sports", "Muay Thai", "Nutrition", "Olympics", "Paintball", "Parkour", "Pilates", "Power Lifting", "Rallycross", "Rock Climbing", "Rowing", "Rugby", "Running", "Skating", "Skiing", "Snowboarding", "Soccer", "Sports", "Squash", "Swimming", "Sword Fighting", "Table Tennis", "Tennis", "Track and Field", "Volleyball", "Water Polo", "Weightlifting", "Wrestling", "Yoga", "Chestnut Residence", "Innis College", "New College", "St Michael's College", "Trinity College", "University College", "Victoria College", "Woodsworth College", "Charity", "Foreign Students", "Homelessness", "Mental Illness", "Social Services", "Student Support", "Volunteering", "Afghan", "African", "Albanian", "Arab", "Argentinian", "Armenian", "Asian", "Autism", "Bangladeshi", "Bollywood", "Brazilian", "Canadian", "Caribbean", "Celtic", "Chinese", "Croatian", "Indian", "Indigenous ", "Japanese", "LGBTQ", "Latin", "Macedonian", "Mental Health", "Multi Ethnic", "Palestinian", "Persian", "Slavic", "Turkish", "Women", "Clean Energy", "Climate Change", "Food", "Marine Life", "Water and Resources", "Wildlife", "Airplanes", "Anime & Manga", "Board Games", "Books", "Card Games", "Chess", "Comics", "Cooking", "Dungeons & Dragons", "Hobbies", "MOBA", "Monopoly", "Movies", "Poker", "Pokémon", "Pop Culture", "Role Playing", "Scrabble", "Sport Games", "Story Telling", "Strategy Games", "Table Top Games", "Trivia", "Video Games", "eSports", "Community", "First Responders", "Forums", "Learning", "Networking", "Outreach", "Canadian Politics", "Communism", "Conservatives", "Current Events", "Debate", "Democrats", "Economics", "Global Affairs", "Green Party", "Labour", "Law", "Liberals", "New Democratic Party", "People's Party Of Canada", "Political Science", "Socialists", "United Nations", "Alliance", "Child Advocacy", "Ethics", "Human Rights", "Immigrants", "Refugee Aid", "Sexual Advocacy", "Baha'i", "Bible Study", "Buddhism", "Catholic", "Choir", "Christianity", "Falun Dafa", "Gospel", "Hanif", "Hinduism", "Islam", "Judaism", "Meditation", "Orthodox Christianity", "Religion", "Sahaja", "Secularity", "Shia", "Sikh", "Spiritual", "Stoicism", "Sufi", "Associations", "Student Governments", "Student Unions", "Students", "Career", "Research", "Work Experience"]
+
