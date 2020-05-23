@@ -29,7 +29,8 @@ import '@react-native-firebase/database';
 import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
-import StackNavigator from '@react-navigation/stack/src/navigators/createStackNavigator';
+import Loading from './components/Authentication/Loading';
+import { UserContext } from './components/UserContext';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -70,8 +71,15 @@ function AuthStack() {
           <Stack.Screen name={"Landing"} component={Landing}/>
           <Stack.Screen name={"Signup"} component={Signup}/>
           <Stack.Screen name={"Login"} component={Login}/>
-          <Stack.Screen name={"MainApp"} component={MainApp}/>
       </Stack.Navigator>
+    );
+}
+
+function MainStack() {
+    return (
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Screen name={"mainApp"} component={MainApp}/>
+        </Stack.Navigator>
     );
 
 }
@@ -89,12 +97,35 @@ function MainApp() {
     );
 }
 
-const App: () => React$Node = ({ authState }) => {
-    //const isIn = authState.status === "in";
-    const isIn = false;
+export default function App () {
+    const [authState, setAuthState] = React.useState({ status: "loading" });
 
+    useEffect(() => {
+        return firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                return user.getIdToken().then((token) => firebase.auth().currentUser.getIdTokenResult()
+                    .then((result) => {
+                        if (result.claims['https://hasura.io/jwt/claims']) {
+                            setAuthState({ status: "in", user, token });
+                        }
+                        const endpoint = 'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken'
+                        return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
+                            if (res.status === 200) {
+                                return user.getIdToken(true)
+                            }
+                            return res.json().then((e) => { throw e })
+                        })
+                    })).then((token) => {
+                    setAuthState({ status: "in", user, token });
+                }).catch(console.error)
+            } else {
+                setAuthState({ status: "out" });
+            }
+        })
+    }, []);
+
+    const isIn = authState.status === "in";
     const headers = isIn ? { Authorization: `Bearer ${authState.token}` } : {};
-
     const httpLink = new HttpLink({
         uri: "https://exploriti-backend.herokuapp.com/v1/graphql",
         headers
@@ -126,12 +157,17 @@ const App: () => React$Node = ({ authState }) => {
 
     return (
         <ApolloProvider client={client}>
-            <NavigationContainer>
-                <AuthStack/>
-            </NavigationContainer>
+            <UserContext.Provider value={{ authState, setAuthState }}>
+                <NavigationContainer>
+                    { authState.status === "loading" ? (
+                        <Loading/>
+                    ) : authState.status === "in" ? (
+                        <MainStack/>
+                    ) : (
+                        <AuthStack/>
+                    )}
+                </NavigationContainer>
+            </UserContext.Provider>
         </ApolloProvider>
     );
-
 };
-
-export default App;

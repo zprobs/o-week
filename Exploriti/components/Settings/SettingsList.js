@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -13,6 +13,9 @@ import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
+import firebase from '@react-native-firebase/app';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import {UserContext} from '../UserContext';
 
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
@@ -21,6 +24,8 @@ import Icon from "react-native-vector-icons/EvilIcons";
  */
 
 function SettingsList(props) {
+  const {authState, setAuthState} = useContext(UserContext);
+
   const settingsItemList = [
     { settingName: "General", icon: "gear" },
     { settingName: "Notifications", icon: "bell" },
@@ -28,6 +33,16 @@ function SettingsList(props) {
     { settingName: "About", icon: "exclamation" },
     { settingName: "Help", icon: "question" },
   ];
+
+  const processLogout = async () => {
+      try {
+          setAuthState({ status: "loading" });
+          await firebase.auth().signOut();
+          setAuthState({ status: "out" });
+      } catch (error) {
+          console.log(error);
+      }
+  };
 
   return (
     <View>
@@ -40,6 +55,10 @@ function SettingsList(props) {
             <SettingsItem settingName={item.settingName} icon={item.icon} />
           );
         }}
+      />
+      <ButtonColour
+          label={"Log out"}
+          onPress={processLogout}
       />
     </View>
   );

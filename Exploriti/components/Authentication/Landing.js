@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from 'react';
 import { ScrollView, Text, View, StyleSheet, Image } from "react-native";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import { Theme } from "../../theme/Colours";
 import Fonts from "../../theme/Fonts";
 import images from "../../assets/images";
+import firebase from '@react-native-firebase/app';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
