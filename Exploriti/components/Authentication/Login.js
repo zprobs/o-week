@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -16,8 +16,9 @@ import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import TextLine from "../ReusableComponents/TextLine";
 import ButtonColour from "../ReusableComponents/ButtonColour";
-import auth from '@react-native-firebase/auth'
+import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
+import { UserContext } from '../UserContext';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -33,43 +34,14 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login({navigation}) {
-  const [authState, setAuthState] = useState({ status: "loading" });
+  const {authState, setAuthState} = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    return firebase.auth().onAuthStateChanged(async user => {
-      if (user) {
-        const token = await user.getIdToken();
-        const idTokenResult = await user.getIdTokenResult();
-        const hasuraClaim = idTokenResult.claims["https://hasura.io/jwt/claims"];
-
-        if (hasuraClaim) {
-          setAuthState({ status: "in", user, token });
-        } else {
-          // Check if refresh is required.
-          const metadataRef = firebase.database()
-              .ref("metadata/" + user.uid + "/refreshTime");
-
-          metadataRef.on("value", async (data) => {
-            if(!data.exists) return
-            // Force refresh to pick up the latest custom claims changes.
-            const token = await user.getIdToken(true);
-            setAuthState({ status: "in", user, token });
-          });
-        }
-      } else {
-        setAuthState({ status: "out" });
-      }
-    });
-  }, []);
-
   const processLogin = async () => {
     try {
-      await auth().signInWithEmailAndPassword("s.shahid@mail.utoronto.ca", "salman11").then(res => {
+      await firebase.auth().signInWithEmailAndPassword(email, password).then(res => {
         console.log(res.user.uid);
-        navigation.navigate('mainApp');
-
       })
     } catch (error) {
       console.log(error);
@@ -112,7 +84,7 @@ export default function Login({navigation}) {
           icon={"lock"}
           placeholder={"(8+ characters)"}
           type={"password"}
-          value={password  }
+          value={password}
           onChangeText={setPassword}
         />
         <ButtonColour

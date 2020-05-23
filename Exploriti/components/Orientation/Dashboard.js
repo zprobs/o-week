@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useContext} from 'react';
 import { Text, View } from "react-native";
+import {UserContext} from '../UserContext';
 
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
@@ -7,9 +8,11 @@ import { Text, View } from "react-native";
  * @constructor
  */
 export default function Dashboard() {
-  return (
+    const {authState, setAuthState} = useContext(UserContext);
+
+    return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>This is the Orientation Dashboard</Text>
+      <Text>Welcome, {authState.user.uid}!</Text>
     </View>
   );
 }
