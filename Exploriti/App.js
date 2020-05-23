@@ -7,7 +7,7 @@
  * @flow strict-local
  */
 import "react-native-gesture-handler";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -92,10 +92,28 @@ function MainApp() {
             <Drawer.Screen name="Admin" component={HomeScreen} />
             <Drawer.Screen name="Settings" component={HomeScreen} />
             <Drawer.Screen name="About" component={HomeScreen} />
-            <Drawer.Screen name="Logout" component={HomeScreen} />
+            <Drawer.Screen name="Logout" component={logout} />
         </Drawer.Navigator>
     );
 }
+
+function logout() {
+    processLogout();
+    return (<Loading/>);
+}
+
+// salman.shahid@jectoronto.org zachattack
+
+const processLogout = async () => {
+    const {authState, setAuthState} = useContext(UserContext);
+    try {
+        setAuthState({ status: "loading" });
+        await firebase.auth().signOut();
+        setAuthState({ status: "out" });
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 export default function App () {
     const [authState, setAuthState] = React.useState({ status: "loading" });

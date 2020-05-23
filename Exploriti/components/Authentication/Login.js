@@ -7,11 +7,10 @@ import {
   Text,
   Image,
   Platform,
-  TextInput,
   TouchableOpacity,
+    Alert
 } from "react-native";
 import images from "../../assets/images";
-import Icon from "react-native-vector-icons/EvilIcons";
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import TextLine from "../ReusableComponents/TextLine";
@@ -45,22 +44,26 @@ export default function Login({navigation}) {
       })
     } catch (error) {
       console.log(error);
+      Alert.alert(
+          "Login Unsuccessful",
+          error.toString(),
+
+            {
+              text: "Ok",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "default"
+            }
+      );
     }
   };
 
-  const processLogout = async () => {
-    try {
-      setAuthState({ status: "loading" });
-      await firebase.auth().signOut();
-      setAuthState({ status: "out" });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <View style={styles.bg}>
       <ImageBackground source={images.login} style={styles.backgroundImage}>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Landing')}}>
+          <Image source={images.backArrow} style={styles.backArrow}/>
+        </TouchableOpacity>
         <View style={styles.logo}>
           <Image
             style={{ height: 160, width: 160, borderRadius: 80 }}
@@ -94,13 +97,7 @@ export default function Login({navigation}) {
           labelStyle={styles.loginText}
           onPress={processLogin}
         />
-        <ButtonColour
-            colour={colours.white}
-            label={"Log out"}
-            containerStyle={styles.login}
-            labelStyle={styles.loginText}
-            onPress={processLogout}
-        />
+
         <TouchableOpacity style={styles.touchable}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
@@ -167,5 +164,14 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.Label,
     color: colours.white,
+  },
+  backArrow: {
+    width: 40,
+    height: 40,
+    left: width*0.07,
+    top: height*0.02,
+    zIndex: 2,
+    position: 'absolute',
+
   },
 });

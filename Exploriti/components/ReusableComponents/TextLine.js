@@ -41,6 +41,8 @@ export default function TextLine({
 
   const secureTextEntry = type == "password" ? true : false;
 
+  const capitalize = type == "name" ? "words" : "none";
+
   const styles = StyleSheet.create({
     container: {
       flexDirection: "column",
@@ -87,6 +89,7 @@ export default function TextLine({
           returnKeyType={"done"}
           value={value}
           onChangeText={onChangeText}
+          autoCapitalize={capitalize}
         />
       </View>
     </View>
