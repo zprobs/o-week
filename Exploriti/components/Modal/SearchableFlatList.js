@@ -16,7 +16,7 @@ const {FontWeights, FontSizes} = Fonts;
  * @returns {*}
  * @constructor
  */
-const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
+const SearchableFlatList = React.forwardRef(({data, title, setData}, ref) => {
 
     const [query, setQuery] = useState('');
     const [filteredList, setFilteredList] = useState(data);
@@ -41,7 +41,6 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
         const newData = data.filter((item) => item.toLowerCase().includes(lowerCaseQuery));
 
         setFilteredList(newData);
-        //if (searchRef.current !== undefined) {searchRef.current.focus();}
     }, [debounceQuery]);
 
 
@@ -91,6 +90,8 @@ const SearchableFlatList = React.forwardRef(({data, title}, ref) => {
                 tapGestureEnabled={false}
                 HeaderComponent={search}
                 onOpened={setInputFocus}
+                onClose={()=>setData(mapToString(selected))}
+
             />
     );
 }
@@ -153,6 +154,24 @@ const styles = StyleSheet.create({
         zIndex: 4,
     },
 });
+
+function mapToString(map) {
+    let string = '';
+    const size = map.size;
+    var count = 1;
+   map.forEach(
+       (value, key) => {
+           count++;
+           if (value) {
+               string += key ;
+               if (count <= size) {string += ', ';} else {string += ' '}
+           }
+       }
+   );
+   console.log('Map: ')
+   console.log(string);
+   return string;
+}
 
 
 export default SearchableFlatList;
