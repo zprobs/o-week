@@ -34,15 +34,6 @@ function SettingsList(props) {
     { settingName: "Help", icon: "question" },
   ];
 
-  const processLogout = async () => {
-      try {
-          setAuthState({ status: "loading" });
-          await firebase.auth().signOut();
-          setAuthState({ status: "out" });
-      } catch (error) {
-          console.log(error);
-      }
-  };
 
   return (
     <View>
@@ -55,10 +46,6 @@ function SettingsList(props) {
             <SettingsItem settingName={item.settingName} icon={item.icon} />
           );
         }}
-      />
-      <ButtonColour
-          label={"Log out"}
-          onPress={processLogout}
       />
     </View>
   );
