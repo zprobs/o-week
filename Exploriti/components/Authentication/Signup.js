@@ -23,9 +23,9 @@ export default function Signup({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const [programs, setPrograms] = useState('');
-    const [year, setYear] = useState('');
-    const [faculty, setFaculty] = useState('');
+    const [programs, setPrograms] = useState([]);
+    const [year, setYear] = useState();
+    const [faculty, setFaculty] = useState();
     const [interests, setInterests] = useState('');
 
 
@@ -51,6 +51,19 @@ export default function Signup({navigation}) {
 
     console.log('programs: ');
     console.log(programs);
+
+    const ProgramTitle = () => {
+        const size = programs.length;
+        if (size === 0) { return "Select your program" }
+        let string = "";
+        for (let i = 0; i<size; i++) {
+            string = string + programs[i];
+            if (i < size-1) { string += ', '}
+        }
+        return string
+    };
+
+    const programTitle = ProgramTitle(); // done to suppress warning about passing functions as props
 
 
     return (
@@ -109,9 +122,9 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Tell us about yourself</Text>
                             <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
                         </View>
-                        <Selection title={programs==="" ? "Select your program" : programs} onPress={onProgramRef}/>
-                        <Selection title={"Select your year"} onPress={onYearRef}/>
-                        <Selection title={"Select your faculty"} onPress={onFacultyRef}/>
+                        <Selection title={programTitle} onPress={onProgramRef}/>
+                        <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
+                        <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button} onPress={()=>console.log(programs)}/>
                     </View>
                 </View>
@@ -148,8 +161,8 @@ export default function Signup({navigation}) {
             </ImageBackground>
             </ScrollView>
             <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={handlePrograms}/>
-            <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData}/>
-            <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData}/>
+            <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
+            <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
             <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={handleInterests} />
         </View>
 

@@ -6,15 +6,14 @@ import {ThemeStatic} from '../../theme/Colours';
 
 const {FontWeights, FontSizes} = Fonts;
 
-const RadioButtonFlatList = React.forwardRef(({data, title}, ref) => {
+const RadioButtonFlatList = React.forwardRef(({data, title, selectedData, setData}, ref) => {
 
-    const [yearSelected, setYearSelected] = useState();
 
 
     const renderItem = ({item}) => {
-        const isSelected = (yearSelected == item);
+        const isSelected = (selectedData == item);
         return (
-            <TouchableOpacity onPress={() => {setYearSelected(item); setTimeout(()=>ref.current.close(), 300) }} style={{flexDirection: 'row'}}>
+            <TouchableOpacity onPress={() => {setData(item); setTimeout(()=>ref.current.close(), 300) }} style={{flexDirection: 'row'}}>
                 <RadioButton selected={isSelected}/>
                 <Text style={styles.text}>{item}</Text>
             </TouchableOpacity>
@@ -48,6 +47,7 @@ const RadioButtonFlatList = React.forwardRef(({data, title}, ref) => {
         adjustToContentHeight={true}
         HeaderComponent={Header}
         FooterComponent={Footer}
+        closeAnimationConfig={{ spring: { speed: 1, bounciness: 1, }, timing: {duration: 300, easing: 'ease'} }}
 
 />);
 

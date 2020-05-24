@@ -13,6 +13,7 @@ const {FontWeights, FontSizes} = Fonts;
  * A Vertical FlatList component with a search-bar at the top. Used for long lists
  * @param data an Array of data to be displayed in the List
  * @param title The word to be placed inside the search-bar placeholder in the form: Search for {title}...
+ * @param setData the function or set method to change the selection of the data in root component
  * @returns {*}
  * @constructor
  */
@@ -23,10 +24,18 @@ const SearchableFlatList = React.forwardRef(({data, title, setData}, ref) => {
     const debounceQuery = useDebounce(query, 300);
         const [inputRef, setInputFocus] = useFocus();
         const [selected, setSelected] = useState(new Map());
+        const [count, setCount] = useState(0);
 
         const onSelect = React.useCallback(
             item => {
                 const newSelected = new Map(selected);
+                console.log(selected.get(item));
+                if (selected.get(item) === false || selected.get(item) == undefined) {
+                    if (count >= 4) {return}
+                    setCount(count + 1);
+                } else {
+                    setCount(count - 1);
+                }
                 newSelected.set(item, !selected.get(item));
                 setSelected(newSelected);
             },
@@ -156,21 +165,17 @@ const styles = StyleSheet.create({
 });
 
 function mapToString(map) {
-    let string = '';
-    const size = map.size;
-    var count = 1;
+    let array = [];
    map.forEach(
        (value, key) => {
-           count++;
            if (value) {
-               string += key ;
-               if (count <= size) {string += ', ';} else {string += ' '}
+               array.push(key);
            }
        }
    );
    console.log('Map: ')
-   console.log(string);
-   return string;
+   console.log(array);
+   return array;
 }
 
 
