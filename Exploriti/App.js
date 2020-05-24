@@ -31,6 +31,7 @@ import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
 import { UserContext } from './components/UserContext';
+import Icon from "react-native-vector-icons/EvilIcons";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,10 +57,38 @@ function HomeScreen({ navigation }) {
 
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Orientation" component={OrientationComponent} />
-      <Tab.Screen name="Explore" component={ExploreComponent} />
-      <Tab.Screen name="MyProfile" component={MyProfileComponent} />
-      <Tab.Screen name="Settings" component={SettingsComponent} />
+      <Tab.Screen name="Orientation" component={OrientationComponent}
+      options={{
+          tabBarLabel: 'Orientation',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="star" color={color} size={30} />
+          ),
+        }}
+        />
+      <Tab.Screen name="Explore" component={ExploreComponent}
+      options={{
+          tabBarLabel: 'Explore',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="sc-telegram" color={color} size={30} />
+          ),
+        }}
+        />
+      <Tab.Screen name="MyProfile" component={MyProfileComponent}
+      options={{
+          tabBarLabel: 'MyProfile',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="user" color={color} size={30} />
+          ),
+        }}
+        />
+      <Tab.Screen name="Settings" component={SettingsComponent}
+      options={{
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="gear" color={color} size={30} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
