@@ -13,11 +13,12 @@ const {FontWeights, FontSizes} = Fonts;
  * A Vertical FlatList component with a search-bar at the top. Used for long lists
  * @param data an Array of data to be displayed in the List
  * @param title The word to be placed inside the search-bar placeholder in the form: Search for {title}...
- * @param setData the function or set method to change the selection of the data in root component
+ * @param setData The function or set method to change the selection of the data in root component
+ * @param max The maximum number of selections allowed to be made
  * @returns {*}
  * @constructor
  */
-const SearchableFlatList = React.forwardRef(({data, title, setData}, ref) => {
+const SearchableFlatList = React.forwardRef(({data, title, setData, max}, ref) => {
 
     const [query, setQuery] = useState('');
     const [filteredList, setFilteredList] = useState(data);
@@ -31,7 +32,7 @@ const SearchableFlatList = React.forwardRef(({data, title, setData}, ref) => {
                 const newSelected = new Map(selected);
                 console.log(selected.get(item));
                 if (selected.get(item) === false || selected.get(item) == undefined) {
-                    if (count >= 4) {return}
+                    if (count >= max) {return}
                     setCount(count + 1);
                 } else {
                     setCount(count - 1);

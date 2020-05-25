@@ -26,7 +26,7 @@ export default function Signup({navigation}) {
     const [programs, setPrograms] = useState([]);
     const [year, setYear] = useState();
     const [faculty, setFaculty] = useState();
-    const [interests, setInterests] = useState('');
+    const [interests, setInterests] = useState([]);
 
 
     const programRef = useRef();
@@ -64,6 +64,20 @@ export default function Signup({navigation}) {
     };
 
     const programTitle = ProgramTitle(); // done to suppress warning about passing functions as props
+
+    function interestsTitle(index) {
+        if (interests.length <= index) {
+            switch (index) {
+                case 0: return "Select interest one";
+                case 1: return "Select interest two";
+                case 2: return "Select interest three";
+                case 3: return "Select interest four";
+                case 4: return "Select interest five";
+                default: return "Select interest"
+            }
+        }
+        return interests[index];
+    }
 
 
     return (
@@ -134,11 +148,11 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Select your interests</Text>
                             <Text style={styles.caption}>This will help us get to know you outside of just your major.</Text>
                         </View>
-                        <Selection title={"Select interest one"} onPress={onInterestRef}/>
-                        <Selection title={"Select interest two"} onPress={onInterestRef}/>
-                        <Selection title={"Select interest three"} onPress={onInterestRef}/>
-                        <Selection title={"Select interest four"} onPress={onInterestRef}/>
-                        <Selection title={"Select interest five"} onPress={onInterestRef}/>
+                        <Selection title={interestsTitle(0)} onPress={onInterestRef}/>
+                        <Selection title={interestsTitle(1)} onPress={onInterestRef}/>
+                        <Selection title={interestsTitle(2)} onPress={onInterestRef}/>
+                        <Selection title={interestsTitle(3)} onPress={onInterestRef}/>
+                        <Selection title={interestsTitle(4)} onPress={onInterestRef}/>
                         <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button}/>
                     </View>
                 </View>
@@ -160,10 +174,10 @@ export default function Signup({navigation}) {
                 </View>
             </ImageBackground>
             </ScrollView>
-            <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={handlePrograms}/>
+            <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={handlePrograms} max={4}/>
             <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
             <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
-            <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={handleInterests} />
+            <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={handleInterests} max={5} />
         </View>
 
     );
