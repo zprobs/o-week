@@ -11,6 +11,7 @@ import SearchableFlatList from '../Modal/SearchableFlatList';
 import {Modalize} from 'react-native-modalize';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 import User from '../../model/User';
+import ImagePicker from 'react-native-image-crop-picker'
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -27,6 +28,7 @@ export default function Signup({navigation}) {
     const [year, setYear] = useState();
     const [faculty, setFaculty] = useState();
     const [interests, setInterests] = useState([]);
+    const [image, setImage] = useState(images.logo);
 
 
     const programRef = useRef();
@@ -52,7 +54,7 @@ export default function Signup({navigation}) {
     console.log('programs: ');
     console.log(programs);
 
-    const ProgramTitle = () => {
+    function programTitle() {
         const size = programs.length;
         if (size === 0) { return "Select your program" }
         let string = "";
@@ -63,7 +65,6 @@ export default function Signup({navigation}) {
         return string
     };
 
-    const programTitle = ProgramTitle(); // done to suppress warning about passing functions as props
 
     function interestsTitle(index) {
         if (interests.length <= index) {
@@ -77,6 +78,16 @@ export default function Signup({navigation}) {
             }
         }
         return interests[index];
+    }
+
+    function pickImage() {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+        }).then(image => {
+            setImage({uri: image.path});
+        });
     }
 
 
@@ -136,7 +147,7 @@ export default function Signup({navigation}) {
                             <Text style={styles.title}>Tell us about yourself</Text>
                             <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
                         </View>
-                        <Selection title={programTitle} onPress={onProgramRef}/>
+                        <Selection title={programTitle()} onPress={onProgramRef}/>
                         <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
                         <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
                         <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button} onPress={()=>console.log(programs)}/>
@@ -163,8 +174,8 @@ export default function Signup({navigation}) {
                             <Text style={styles.caption}>Your Exploriti account is ready to be created. Just add a profile picture and get started.</Text>
                         </View>
                         <View>
-                            <Image style={styles.profilePic} source={images.logo}/>
-                            <TouchableOpacity>
+                            <Image style={styles.profilePic} source={image}/>
+                            <TouchableOpacity onPress={pickImage}>
                                 <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
                             </TouchableOpacity>
                         </View>
