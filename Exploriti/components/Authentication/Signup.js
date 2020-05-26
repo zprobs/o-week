@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, TouchableOpacity, Platform} from 'react-native';
+import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, TouchableOpacity, Platform, Alert, Animated} from 'react-native';
 import SegmentedControl from '@react-native-community/segmented-control';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -11,7 +11,8 @@ import SearchableFlatList from '../Modal/SearchableFlatList';
 import {Modalize} from 'react-native-modalize';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 import User from '../../model/User';
-import ImagePicker from 'react-native-image-crop-picker'
+import ImagePicker from 'react-native-image-crop-picker';
+//import Animated from 'react-native-reanimated';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -29,12 +30,16 @@ export default function Signup({navigation}) {
     const [faculty, setFaculty] = useState();
     const [interests, setInterests] = useState([]);
     const [image, setImage] = useState(images.logo);
+    const [page, setPage] = useState(1);
+    const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
+    const [animatedNumber, setAnimatedNumber] = useState(0);
 
 
     const programRef = useRef();
     const yearRef = useRef();
     const facultyRef = useRef();
     const interestRef = useRef();
+    const scrollViewRef = useRef();
 
     const onProgramRef = () => programRef.current.open();
     const onYearRef = () => yearRef.current.open();
@@ -90,16 +95,104 @@ export default function Signup({navigation}) {
         });
     }
 
+    function backButton() {
+
+        if (page === 1) {
+            Alert.alert(
+                "Wait a Second",
+                "If you go back, any information you may have entered will be erased. Are you sure you would like to go back?",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Go Back", onPress: () => navigation.navigate('Landing') }
+                ],
+                { cancelable: false }
+            );
+
+        }
+        else {
+            scrollViewRef.current.scrollTo({x: (width*(page-1)) - width, y: 0, animated: true});
+            setPage(page-1);
+            flip_Animation(false)
+        }
+
+    }
+
+    const continueOne = () => {
+        setPage(2);
+        flip_Animation(true);
+        scrollViewRef.current.scrollTo({x: width, y: 0, animated: true});
+    };
+    const continueTwo = () => {
+        setPage(3);
+        flip_Animation(true);
+        scrollViewRef.current.scrollTo({x: width*2, y: 0, animated: true});
+    };
+    const continueThree = () => {
+        setPage(4);
+        flip_Animation(true);
+        scrollViewRef.current.scrollTo({x: width*3, y: 0, animated: true});
+    };
+
+    function submit() {
+        console.log(name);
+        console.log(email);
+        console.log(password);
+
+    }
+
+    const flip_Animation = (forward) => {
+        if (forward) {
+            setAnimatedNumber(animatedNumber + 90);
+        } else {
+            setAnimatedNumber(animatedNumber - 180);
+        }
+        // Animated.spring(animatedValue, {
+        //     toValue: animatedNumber,
+        //     tension: 10,
+        //     friction: 8,
+        //     useNativeDriver: true
+        // }).start(()=>{
+        //     setAnimatedValue(new Animated.Value(270))
+        // });
+
+        Animated.sequence([
+            Animated.timing(animatedValue, {
+                toValue: 90,
+                duration: 190,
+                useNativeDriver: true
+            }),
+            Animated.timing(animatedValue, {
+                toValue: 270,
+                duration: 1,
+                useNativeDriver: true,
+                isInteraction: false
+            }),
+            Animated.timing(animatedValue, {
+                toValue: 360,
+                duration: 190,
+                useNativeDriver: true
+            }),
+        ]).start()
+    };
+
+    const setInterpolate = animatedValue.interpolate({
+        inputRange: [0, 360],
+        outputRange: ['0deg', '360deg'],
+    });
+
+
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={()=>{navigation.navigate('Landing')}}>
+                <TouchableOpacity onPress={backButton}>
                     <Image source={images.backArrow} style={styles.backArrow}/>
                 </TouchableOpacity>
-                <Counter/>
+                <View style={styles.countCircle}>
+                    <Animated.Text style={[styles.count, {transform: [{rotateY: setInterpolate}, {perspective: 1000}]}]}>{page}</Animated.Text>
+                </View>
             </View>
-                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false} >
+                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false} bounces={false} scrollEnabled={false} pagingEnabled={true} bouncesZoom={false} ref={scrollViewRef}  >
                     <ImageBackground source={images.bg} style={styles.background}>
                 <View style={styles.page}>
                     <View style={styles.form}>
@@ -137,7 +230,7 @@ export default function Signup({navigation}) {
                             value={password}
                             onChangeText={setPassword}
                         />
-                        <ButtonColour label={ index===0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button}/>
+                        <ButtonColour label={ index===0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button} onPress={continueOne}/>
 
                     </View>
                 </View>
@@ -150,7 +243,7 @@ export default function Signup({navigation}) {
                         <Selection title={programTitle()} onPress={onProgramRef}/>
                         <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
                         <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
-                        <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button} onPress={()=>console.log(programs)}/>
+                        <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button} onPress={continueTwo}/>
                     </View>
                 </View>
                 <View style={styles.page}>
@@ -164,7 +257,7 @@ export default function Signup({navigation}) {
                         <Selection title={interestsTitle(2)} onPress={onInterestRef}/>
                         <Selection title={interestsTitle(3)} onPress={onInterestRef}/>
                         <Selection title={interestsTitle(4)} onPress={onInterestRef}/>
-                        <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button}/>
+                        <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button} onPress={continueThree}/>
                     </View>
                 </View>
                 <View style={styles.page}>
@@ -179,7 +272,7 @@ export default function Signup({navigation}) {
                                 <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
                             </TouchableOpacity>
                         </View>
-                        <ButtonColour label={"Create Account"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel4} containerStyle={styles.button}/>
+                        <ButtonColour label={"Create Account"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel4} containerStyle={styles.button} onPress={submit}/>
                     </View>
 
                 </View>
@@ -194,13 +287,8 @@ export default function Signup({navigation}) {
     );
 }
 
-const Counter = () => {
-    return (
-        <View style={styles.countCircle}>
-            <Text style={styles.count}>1</Text>
-        </View>
-    )
-};
+
+
 
 const styles = StyleSheet.create({
     container: {
