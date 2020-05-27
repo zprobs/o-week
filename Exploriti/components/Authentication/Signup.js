@@ -12,11 +12,22 @@ import {Modalize} from 'react-native-modalize';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 import User from '../../model/User';
 import ImagePicker from 'react-native-image-crop-picker';
-//import Animated from 'react-native-reanimated';
+import '@react-native-firebase/auth'
+import firebase from '@react-native-firebase/app';
+import gql from 'graphql-tag';
+import {useMutation} from '@apollo/react-hooks';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
+
+const SIGN_UP = gql`
+    mutation SIGN_UP($data: user_insert_input!) {
+        createUser(object: $data) {
+            name
+        }
+    }
+`;
 
 export default function Signup({navigation}) {
 
@@ -34,12 +45,13 @@ export default function Signup({navigation}) {
     const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
     const [animatedNumber, setAnimatedNumber] = useState(0);
 
-
     const programRef = useRef();
     const yearRef = useRef();
     const facultyRef = useRef();
     const interestRef = useRef();
     const scrollViewRef = useRef();
+
+    const [submitUser] = useMutation(SIGN_UP);
 
     const onProgramRef = () => programRef.current.open();
     const onYearRef = () => yearRef.current.open();
@@ -55,9 +67,6 @@ export default function Signup({navigation}) {
     function handleInterests(value) {
         setInterests(value)
     }
-
-    console.log('programs: ');
-    console.log(programs);
 
     function programTitle() {
         const size = programs.length;
@@ -134,9 +143,42 @@ export default function Signup({navigation}) {
     };
 
     function submit() {
-        console.log(name);
-        console.log(email);
-        console.log(password);
+
+        let userData = {};
+
+      //  firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
+        //    console.log(userCredential.user.uid);
+            userData["name"] = name;
+            userData["email"] = email;
+            switch(year) {
+                case "First Year":
+                    userData["year"] = 1;
+                case "Second Year":
+                    userData["year"] = 2;
+                case "Third Year":
+                    userData["year"] = 3;
+                case "Fourth Year":
+                    userData["year"] = 4;
+                default:
+                    userData["year"] = 5;
+            }
+            console.log(userData);
+
+            submitUser({ variables: {data: userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
+
+
+
+      //  }).catch((error)=> {
+      //       console.log(error);
+      //       Alert.alert(
+      //           "Error",
+      //           "There was an error creating your account: " + error.toString(),
+      //           [
+      //               { text: "Ok" }
+      //           ],
+      //           { cancelable: true }
+      //       );
+      //   })
 
     }
 
@@ -414,4 +456,5 @@ const programsData = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing
 const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
 const facultiesData = ['ABC', 'EFG', 'HIJ'];
 const interestsData = ["Aerospace", "Anthropology", "Architecture", "Artificial Intelligence", "Biochem", "Biology", "Chemistry", "Commerce", "Computer Science", "Electrical Engineering", "Engineering", "History", "Finance", "Kinesiology", "Math", "Medical", "Neuroscience", "Nursing", "Psychology", "Robotics", "STEM", "Tutoring", "Animation", "Band", "Calligraphy", "Culinary Arts", "Dance", "Drama", "Drawing", "Film", "Guitar", "Hip Hop", "Jazz", "Literature", "Multimedia Art", "Music", "Painting", "Performing Arts", "Philosophy", "Photography", "Piano", "Poetry", "Pottery", "Radio", "Rap", "Rock", "Sculpting", "Visual Arts", "Aerobics", "Aikido", "Airsoft", "Badminton", "Baseball", "Basketball", "Biking", "Body Building", "Bowling", "Boxing", "Cricket", "CrossFit", "Curling", "Diabetes", "Diving", "Dodgeball", "Dragon Boat", "Equestrian", "Fencing", "Fitness", "Football", "Frisbee", "Go Karting", "Golf", "Gym", "Health", "Hiking", "Hockey", "Japanese Martial Arts", "Judo", "Karate", "Kendo", "Krav Maga", "Kung Fu", "Lacrosse", "MMA", "Marathon", "Martial Arts", "Motor Sports", "Muay Thai", "Nutrition", "Olympics", "Paintball", "Parkour", "Pilates", "Power Lifting", "Rallycross", "Rock Climbing", "Rowing", "Rugby", "Running", "Skating", "Skiing", "Snowboarding", "Soccer", "Sports", "Squash", "Swimming", "Sword Fighting", "Table Tennis", "Tennis", "Track and Field", "Volleyball", "Water Polo", "Weightlifting", "Wrestling", "Yoga", "Chestnut Residence", "Innis College", "New College", "St Michael's College", "Trinity College", "University College", "Victoria College", "Woodsworth College", "Charity", "Foreign Students", "Homelessness", "Mental Illness", "Social Services", "Student Support", "Volunteering", "Afghan", "African", "Albanian", "Arab", "Argentinian", "Armenian", "Asian", "Autism", "Bangladeshi", "Bollywood", "Brazilian", "Canadian", "Caribbean", "Celtic", "Chinese", "Croatian", "Indian", "Indigenous ", "Japanese", "LGBTQ", "Latin", "Macedonian", "Mental Health", "Multi Ethnic", "Palestinian", "Persian", "Slavic", "Turkish", "Women", "Clean Energy", "Climate Change", "Food", "Marine Life", "Water and Resources", "Wildlife", "Airplanes", "Anime & Manga", "Board Games", "Books", "Card Games", "Chess", "Comics", "Cooking", "Dungeons & Dragons", "Hobbies", "MOBA", "Monopoly", "Movies", "Poker", "Pokémon", "Pop Culture", "Role Playing", "Scrabble", "Sport Games", "Story Telling", "Strategy Games", "Table Top Games", "Trivia", "Video Games", "eSports", "Community", "First Responders", "Forums", "Learning", "Networking", "Outreach", "Canadian Politics", "Communism", "Conservatives", "Current Events", "Debate", "Democrats", "Economics", "Global Affairs", "Green Party", "Labour", "Law", "Liberals", "New Democratic Party", "People's Party Of Canada", "Political Science", "Socialists", "United Nations", "Alliance", "Child Advocacy", "Ethics", "Human Rights", "Immigrants", "Refugee Aid", "Sexual Advocacy", "Baha'i", "Bible Study", "Buddhism", "Catholic", "Choir", "Christianity", "Falun Dafa", "Gospel", "Hanif", "Hinduism", "Islam", "Judaism", "Meditation", "Orthodox Christianity", "Religion", "Sahaja", "Secularity", "Shia", "Sikh", "Spiritual", "Stoicism", "Sufi", "Associations", "Student Governments", "Student Unions", "Students", "Career", "Research", "Work Experience"]
+
 
