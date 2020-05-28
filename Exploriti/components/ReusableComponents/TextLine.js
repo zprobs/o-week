@@ -18,14 +18,14 @@ const { colours } = Theme.light;
  * @returns {*}
  * @constructor
  */
-export default function TextLine({
+const TextLine = React.forwardRef(({
   style,
   label,
   icon,
   placeholder,
   color,
-  type, value, onChangeText
-}) {
+  type, value, onChangeText, next, onSubmit
+}, ref) => {
   const keyboardType = () => {
     switch (type) {
       case 'emailAddress':
@@ -86,12 +86,16 @@ export default function TextLine({
           keyboardType={keyboardType()}
           secureTextEntry={secureTextEntry}
           adjustFontSizeToFit
-          returnKeyType={"done"}
+          returnKeyType={next ? "next" : "done"}
           value={value}
           onChangeText={onChangeText}
           autoCapitalize={capitalize}
+          onSubmitEditing={onSubmit}
+          ref={ref}
         />
       </View>
     </View>
   );
-}
+});
+
+export default TextLine;

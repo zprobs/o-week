@@ -21,22 +21,13 @@ const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
-// const SIGN_UP = gql`
-//     mutation SIGN_UP($data: user_insert_input!) {
-//         createUser(object: $data) {
-//             name
-//         }
-//     }
-// `;
-
 const SIGN_UP = gql`
-    mutation SIGN_UP {
-        createUser(object: {name:"HARDCODEREACT", email:"react@hotmail.com", year:3}){
+    mutation SIGN_UP($data: user_insert_input!) {
+        createUser(object: $data) {
             name
-            id
         }
     }
-`
+`;
 
 
 export default function Signup({navigation}) {
@@ -62,6 +53,8 @@ export default function Signup({navigation}) {
     const facultyRef = useRef();
     const interestRef = useRef();
     const scrollViewRef = useRef();
+    const emailRef= useRef();
+    const passwordRef = useRef();
 
     const [submitUser] = useMutation(SIGN_UP);
 
@@ -81,34 +74,35 @@ export default function Signup({navigation}) {
         };
     }, []);
 
+
     const _keyboardWillShow = () => {
-        Animated.parallel([
-            Animated.timing(opacity, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true
-            }),
-            Animated.timing(headerYOffset, {
-                toValue: -150,
-                duration: 300,
-                useNativeDriver: true
-            })
-        ]).start();
+            Animated.parallel([
+                Animated.timing(opacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true
+                }),
+                Animated.timing(headerYOffset, {
+                    toValue: -150,
+                    duration: 300,
+                    useNativeDriver: true
+                })
+            ]).start();
     };
 
     const _keyboardWillHide = () => {
-        Animated.parallel([
-            Animated.timing(opacity, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true
-            }),
-            Animated.timing(headerYOffset, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true
-            })
-        ]).start();
+            Animated.parallel([
+                Animated.timing(opacity, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true
+                }),
+                Animated.timing(headerYOffset, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true
+                })
+            ]).start();
     };
 
     // These functions are created to pass the set state methods down to children correctly
@@ -181,9 +175,12 @@ export default function Signup({navigation}) {
 
     function nextPage() {
         const pg = page;
-        setPage((pg + 1));
-        flip_Animation(true);
-        scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
+        if (pg===4) {submit()} else {
+            setPage((pg + 1));
+            flip_Animation(true);
+            scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
+        }
+
     }
 
 
@@ -210,7 +207,7 @@ export default function Signup({navigation}) {
             }
             console.log(userData);
 
-            submitUser().then((result)=> console.log(result)).catch(reason => console.log(reason));
+            submitUser({variables: {data : userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
 
 
 
@@ -303,7 +300,7 @@ export default function Signup({navigation}) {
 
     return (
         <View style={styles.container} >
-            <Animated.View style={{...styles.header, opacity, transform: [{translateY: headerYOffset}]}}>
+            <Animated.View style={{...styles.header, opacity, transform: [{translateY: page===1 ? headerYOffset : 0 }]}}>
                 <TouchableOpacity onPress={backButton}>
                         <Image source={images.backArrow} style={styles.backArrow}/>
                 </TouchableOpacity>
@@ -332,6 +329,8 @@ export default function Signup({navigation}) {
                                 type={"name"}
                                 value={name}
                                 onChangeText={setName}
+                                next={true}
+                                onSubmit={()=>emailRef.current.focus()}
                             />
                         <TextLine
                             style={styles.textLine}
@@ -342,6 +341,9 @@ export default function Signup({navigation}) {
                             type={"emailAddress"}
                             value={email}
                             onChangeText={setEmail}
+                            ref={emailRef}
+                            next={true}
+                            onSubmit={()=>passwordRef.current.focus()}
                         />
                         <TextLine
                             style={styles.textLine}
@@ -352,6 +354,7 @@ export default function Signup({navigation}) {
                             type={"password"}
                             value={password}
                             onChangeText={setPassword}
+                            ref={passwordRef}
                         />
 
                     </View>
