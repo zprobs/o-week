@@ -8,7 +8,8 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-    Alert
+    Alert,
+    KeyboardAvoidingView
 } from "react-native";
 import images from "../../assets/images";
 import Fonts from "../../theme/Fonts";
@@ -59,8 +60,8 @@ export default function Login({navigation}) {
 
 
   return (
-    <View style={styles.bg}>
       <ImageBackground source={images.login} style={styles.backgroundImage}>
+        <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
         <TouchableOpacity onPress={()=>{navigation.navigate('Landing')}}>
           <Image source={images.backArrow} style={styles.backArrow}/>
         </TouchableOpacity>
@@ -101,20 +102,19 @@ export default function Login({navigation}) {
         <TouchableOpacity style={styles.touchable}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
+        </KeyboardAvoidingView>
       </ImageBackground>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   bg: {
-    flex: 1,
-    backgroundColor: "#ffffff",
+    width: '100%',
+      marginTop: yMargin
   },
   backgroundImage: {
     height: "100%",
     width: "100%",
-    marginTop: yMargin,
   },
   logo: {
     alignSelf: "center",

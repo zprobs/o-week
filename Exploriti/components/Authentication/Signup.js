@@ -1,9 +1,9 @@
-import React, {useRef, useState} from 'react';
-import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, TouchableOpacity, Platform, Alert, Animated} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, TouchableOpacity, Platform, Alert, Animated, KeyboardAvoidingView, Keyboard} from 'react-native';
 import SegmentedControl from '@react-native-community/segmented-control';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
-import {ThemeStatic} from '../../theme/Colours';
+import {Theme, ThemeStatic} from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
@@ -21,13 +21,23 @@ const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
+// const SIGN_UP = gql`
+//     mutation SIGN_UP($data: user_insert_input!) {
+//         createUser(object: $data) {
+//             name
+//         }
+//     }
+// `;
+
 const SIGN_UP = gql`
-    mutation SIGN_UP($data: user_insert_input!) {
-        createUser(object: $data) {
+    mutation SIGN_UP {
+        createUser(object: {name:"HARDCODEREACT", email:"react@hotmail.com", year:3}){
             name
+            id
         }
     }
-`;
+`
+
 
 export default function Signup({navigation}) {
 
@@ -44,6 +54,8 @@ export default function Signup({navigation}) {
     const [page, setPage] = useState(1);
     const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
     const [animatedNumber, setAnimatedNumber] = useState(0);
+    const opacity = useState(new Animated.Value(1))[0];
+    const headerYOffset = useState(new Animated.Value(0))[0];
 
     const programRef = useRef();
     const yearRef = useRef();
@@ -57,6 +69,47 @@ export default function Signup({navigation}) {
     const onYearRef = () => yearRef.current.open();
     const onFacultyRef = () => facultyRef.current.open();
     const onInterestRef = () => interestRef.current.open();
+
+    useEffect(() => {
+        Keyboard.addListener("keyboardWillShow", _keyboardWillShow);
+        Keyboard.addListener("keyboardWillHide", _keyboardWillHide);
+
+        // cleanup function
+        return () => {
+            Keyboard.removeListener("keyboardWillShow", _keyboardWillShow);
+            Keyboard.removeListener("keyboardWillHide", _keyboardWillHide);
+        };
+    }, []);
+
+    const _keyboardWillShow = () => {
+        Animated.parallel([
+            Animated.timing(opacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true
+            }),
+            Animated.timing(headerYOffset, {
+                toValue: -150,
+                duration: 300,
+                useNativeDriver: true
+            })
+        ]).start();
+    };
+
+    const _keyboardWillHide = () => {
+        Animated.parallel([
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true
+            }),
+            Animated.timing(headerYOffset, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true
+            })
+        ]).start();
+    };
 
     // These functions are created to pass the set state methods down to children correctly
 
@@ -126,21 +179,14 @@ export default function Signup({navigation}) {
 
     }
 
-    const continueOne = () => {
-        setPage(2);
+    function nextPage() {
+        const pg = page;
+        setPage((pg + 1));
         flip_Animation(true);
-        scrollViewRef.current.scrollTo({x: width, y: 0, animated: true});
-    };
-    const continueTwo = () => {
-        setPage(3);
-        flip_Animation(true);
-        scrollViewRef.current.scrollTo({x: width*2, y: 0, animated: true});
-    };
-    const continueThree = () => {
-        setPage(4);
-        flip_Animation(true);
-        scrollViewRef.current.scrollTo({x: width*3, y: 0, animated: true});
-    };
+        scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
+    }
+
+
 
     function submit() {
 
@@ -164,7 +210,7 @@ export default function Signup({navigation}) {
             }
             console.log(userData);
 
-            submitUser({ variables: {data: userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
+            submitUser().then((result)=> console.log(result)).catch(reason => console.log(reason));
 
 
 
@@ -222,36 +268,71 @@ export default function Signup({navigation}) {
         outputRange: ['0deg', '360deg'],
     });
 
+    const BottomButton = () => {
+      let title, colour;
+
+      if (page === 1) {
+        title =
+          index == 0
+            ? "Continue as Student (1/4)"
+            : "Continue as Organization (1/4)";
+        colour = ThemeStatic.lightBlue;
+      } else if (page === 2) {
+        title = "Continue (2/4)";
+        colour = ThemeStatic.darkPurple;
+      } else if (page === 3) {
+        title = "Continue (3/4)";
+        colour = ThemeStatic.lightPurple;
+      } else {
+        title = "Create Account";
+        colour = ThemeStatic.pink;
+      }
+
+      return (
+        <ButtonColour
+          label={title}
+          colour={ThemeStatic.white}
+          labelStyle={{ ...FontWeights.Regular, color: colour }}
+          containerStyle={styles.button}
+          onPress={nextPage}
+        />
+      );
+    };
+
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={styles.container} >
+            <Animated.View style={{...styles.header, opacity, transform: [{translateY: headerYOffset}]}}>
                 <TouchableOpacity onPress={backButton}>
-                    <Image source={images.backArrow} style={styles.backArrow}/>
+                        <Image source={images.backArrow} style={styles.backArrow}/>
                 </TouchableOpacity>
                 <View style={styles.countCircle}>
                     <Animated.Text style={[styles.count, {transform: [{rotateY: setInterpolate}, {perspective: 1000}]}]}>{page}</Animated.Text>
                 </View>
+            </Animated.View>
+            <View style={styles.footer}>
+                <BottomButton/>
             </View>
-                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false} bounces={false} scrollEnabled={false} pagingEnabled={true} bouncesZoom={false} ref={scrollViewRef}  >
+                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScro llIndicator={false} bounces={false} scrollEnabled={false} pagingEnabled={true} bouncesZoom={false} ref={scrollViewRef}  >
                     <ImageBackground source={images.bg} style={styles.background}>
-                <View style={styles.page}>
-                    <View style={styles.form}>
-                        <Text style={styles.title}>Create an Account</Text>
+                <KeyboardAvoidingView style={styles.page} behavior={"position"}>
+                    <View style={styles.form} >
+                        <Animated.Text style={{...styles.title, opacity}}>Create an Account</Animated.Text>
                         <View>
                             <Text style={styles.label}>I am a...</Text>
                             <SegmentedControl values={['Student', 'Organization']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
                         </View>
-                        <TextLine
-                            style={styles.textLine}
-                            label={"Full Name"}
-                            color={ThemeStatic.white}
-                            icon={"user"}
-                            type={"name"}
-                            value={name}
-                            onChangeText={setName}
-                        />
+
+                            <TextLine
+                                style={styles.textLine}
+                                label={"Full Name"}
+                                color={ThemeStatic.white}
+                                icon={"user"}
+                                type={"name"}
+                                value={name}
+                                onChangeText={setName}
+                            />
                         <TextLine
                             style={styles.textLine}
                             label={"Email"}
@@ -272,10 +353,9 @@ export default function Signup({navigation}) {
                             value={password}
                             onChangeText={setPassword}
                         />
-                        <ButtonColour label={ index===0 ? "Continue as a Student (1/4)" : "Continue as an Organization (1/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel1} containerStyle={styles.button} onPress={continueOne}/>
 
                     </View>
-                </View>
+                </KeyboardAvoidingView>
                 <View style={styles.page}>
                     <View style={styles.form}>
                         <View>
@@ -285,7 +365,6 @@ export default function Signup({navigation}) {
                         <Selection title={programTitle()} onPress={onProgramRef}/>
                         <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
                         <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
-                        <ButtonColour label={"Continue (2/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel2} containerStyle={styles.button} onPress={continueTwo}/>
                     </View>
                 </View>
                 <View style={styles.page}>
@@ -299,7 +378,6 @@ export default function Signup({navigation}) {
                         <Selection title={interestsTitle(2)} onPress={onInterestRef}/>
                         <Selection title={interestsTitle(3)} onPress={onInterestRef}/>
                         <Selection title={interestsTitle(4)} onPress={onInterestRef}/>
-                        <ButtonColour label={"Continue (3/4)"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel3} containerStyle={styles.button} onPress={continueThree}/>
                     </View>
                 </View>
                 <View style={styles.page}>
@@ -314,7 +392,6 @@ export default function Signup({navigation}) {
                                 <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
                             </TouchableOpacity>
                         </View>
-                        <ButtonColour label={"Create Account"} colour={ThemeStatic.white} labelStyle={styles.buttonLabel4} containerStyle={styles.button} onPress={submit}/>
                     </View>
 
                 </View>
@@ -345,8 +422,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     page: {
-      height: height,
-      width: width
+      height: height-(100),
+      width: width,
+    //    backgroundColor: '#ffffff'
     },
     backArrow: {
         width: 40,
@@ -358,6 +436,13 @@ const styles = StyleSheet.create({
         zIndex: 2,
         position: 'absolute',
         width: width,
+    },
+    footer: {
+        zIndex: 2,
+        position: 'absolute',
+        width: width,
+        paddingHorizontal: 20,
+        bottom: 0
     },
     countCircle: {
         backgroundColor: ThemeStatic.white,
@@ -389,9 +474,9 @@ const styles = StyleSheet.create({
     form: {
         paddingHorizontal: 20,
         top: height*0.14 + 160,
-        justifyContent: 'space-between',
-    //    backgroundColor: '#fa342f',
-        height: height-(height*0.14 + 190)
+        justifyContent: 'space-around',
+     //   backgroundColor: '#fa342f',
+     height: height-(height*0.14 + 190 + 70)
 
     },
     title: {
@@ -416,22 +501,6 @@ const styles = StyleSheet.create({
         borderBottomColor: ThemeStatic.white,
         borderBottomWidth: 1,
     //    paddingBottom: 5,
-    },
-    buttonLabel1: {
-        ...FontWeights.Regular,
-        color: ThemeStatic.lightBlue,
-    },
-    buttonLabel2: {
-        ...FontWeights.Regular,
-        color: ThemeStatic.darkPurple,
-    },
-    buttonLabel3: {
-        ...FontWeights.Regular,
-        color: ThemeStatic.lightPurple,
-    },
-    buttonLabel4: {
-        ...FontWeights.Regular,
-        color: ThemeStatic.pink,
     },
     button: {
         marginBottom: 40,
