@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext, useRef} from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -37,6 +37,8 @@ export default function Login({navigation}) {
   const {authState, setAuthState} = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const passwordRef = useRef();
 
   const processLogin = async () => {
     try {
@@ -80,6 +82,8 @@ export default function Login({navigation}) {
           type={"emailAddress"}
           value={email}
           onChangeText={setEmail}
+          next={true}
+          onSubmit={()=>passwordRef.current.focus()}
         />
         <TextLine
           style={styles.textLine}
@@ -90,6 +94,7 @@ export default function Login({navigation}) {
           type={"password"}
           value={password}
           onChangeText={setPassword}
+          ref={passwordRef}
         />
         <ButtonColour
           colour={colours.white}
