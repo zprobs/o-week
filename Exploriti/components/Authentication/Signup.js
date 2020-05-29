@@ -189,10 +189,11 @@ export default function Signup({navigation}) {
 
         let userData = {};
 
-      //  firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
-        //    console.log(userCredential.user.uid);
+       firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
+           console.log(userCredential.user.uid);
             userData["name"] = name;
             userData["email"] = email;
+            userData["id"] = userCredential.user.uid;
             switch(year) {
                 case "First Year":
                     userData["year"] = 1;
@@ -211,17 +212,17 @@ export default function Signup({navigation}) {
 
 
 
-      //  }).catch((error)=> {
-      //       console.log(error);
-      //       Alert.alert(
-      //           "Error",
-      //           "There was an error creating your account: " + error.toString(),
-      //           [
-      //               { text: "Ok" }
-      //           ],
-      //           { cancelable: true }
-      //       );
-      //   })
+       }).catch((error)=> {
+            console.log(error);
+            Alert.alert(
+                "Error",
+                "There was an error creating your account: " + error.toString(),
+                [
+                    { text: "Ok" }
+                ],
+                { cancelable: true }
+            );
+        })
 
     }
 

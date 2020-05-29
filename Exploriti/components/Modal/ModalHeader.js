@@ -24,7 +24,9 @@ const ModalHeader = ({ heading, subHeading }) => {
 
 const styles = () =>
   StyleSheet.create({
-    container: {},
+    container: {
+        paddingTop: 10
+    },
     heading: {
       ...FontWeights.Bold,
       ...FontSizes.Label,

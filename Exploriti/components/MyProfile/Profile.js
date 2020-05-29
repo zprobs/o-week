@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, {useContext, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,11 +17,12 @@ import { useState } from "react";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
+import {UserContext} from '../UserContext';
 
 const { FontWeights, FontSizes } = Fonts;
 
 const GET_USER = gql`
-  query getUser($id: uuid!) {
+  query getUser($id: String!) {
     user(id: $id) {
       name
       description
@@ -39,7 +40,8 @@ const GET_USER = gql`
 const { colours } = Theme.light;
 
 export default function Profile() {
-  const userId = "43fa570f-0125-416e-8ec4-84b43c20da16";
+    const {authState, setAuthState} = useContext(UserContext);
+  const userId = authState.user.uid;
   const { loading, error, data } = useQuery(GET_USER, {
     variables: { id: userId },
   });
@@ -51,34 +53,36 @@ export default function Profile() {
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Error e={error} />;
 
-  const about = data.user.description;
+
+  let description = data.user.description;
   const name = data.user.name;
-  const handle = data.user.programs.map(i => i.program.name).join(", ");
-  const avatar = "https://reactjs.org/logo-og.png";
-  //const avatar = data.user.image;
+  const program = data.user.programs.map(i => i.program.name).join(", ");
+  const image = "https://reactjs.org/logo-og.png";
+  //const image = data.user.image;
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onFriendsOpen = () => usersBottomModalRef.current.open();
   const onGroupsOpen = () => groupBottomModalRef.current.open();
 
+
   return (
     <>
       <ProfileCard
         editable={true}
-        about={about}
+        description={description}
         name={name}
-        handle={handle}
-        avatar={avatar}
+        program={program}
+        image={image}
         onEdit={onEdit}
         onFriendsOpen={onFriendsOpen}
         onGroupsOpen={onGroupsOpen}
       />
       <EditProfileBottomModal
         ref={editProfileBottomModalRef}
-        avatar={avatar}
+        image={image}
         name={name}
-        handle={handle}
-        about={about}
+        program={program}
+        description={description}
       />
       <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />
       <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
@@ -110,23 +114,23 @@ const Connections = ({ total, type, onPress }) => {
 };
 
 const ProfileCard = ({
-  avatar,
+  image,
   editable,
   onEdit,
   onFriendsOpen,
   onGroupsOpen,
   name,
-  handle,
+  program,
   renderInteractions,
-  about,
+  description,
 }) => {
   return (
     <View style={styles().container}>
       <View style={styles().info}>
         <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
         <ImageBackground
-          source={{ uri: avatar ? avatar : "" }}
-          style={styles().avatar}
+          source={{ uri: image ? image : "" }}
+          style={styles().image}
           imageStyle={styles().avatarImage}>
           {editable && <EditProfile onEdit={onEdit} />}
         </ImageBackground>
@@ -134,12 +138,12 @@ const ProfileCard = ({
       </View>
       <View style={styles().name}>
         <Text style={styles().usernameText}>{name}</Text>
-        <Text style={styles().handleText}>{handle}</Text>
+        <Text style={styles().programText}>{program}</Text>
       </View>
       {renderInteractions && renderInteractions()}
-      <View style={styles().about}>
-        <Text style={styles().aboutTitle}>About</Text>
-        <Text style={styles().aboutText}>{about}</Text>
+      <View style={styles().description}>
+        <Text style={styles().descriptionTitle}>About</Text>
+        <Text style={styles().descriptionText}>{description}</Text>
       </View>
     </View>
   );
@@ -157,7 +161,7 @@ const styles = () =>
       alignItems: "center",
       justifyContent: "space-around",
     },
-    avatar: {
+    image: {
       height: 120,
       width: 120,
     },
@@ -203,25 +207,25 @@ const styles = () =>
       ...FontSizes.SubHeading,
       color: colours.text01,
     },
-    handleText: {
+    programText: {
       ...FontWeights.Bold,
       ...FontSizes.Body,
       color: colours.text02,
       marginTop: 5,
     },
-    about: {
+    description: {
       padding: 16,
       marginTop: 16,
       backgroundColor: colours.accent,
       borderRadius: 10,
       marginBottom: 10,
     },
-    aboutTitle: {
+    descriptionTitle: {
       ...FontWeights.Regular,
       ...FontSizes.Body,
       color: colours.white,
     },
-    aboutText: {
+    descriptionText: {
       ...FontWeights.Light,
       ...FontSizes.Body,
       color: colours.white,

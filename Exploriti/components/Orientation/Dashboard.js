@@ -9,6 +9,7 @@ import {UserContext} from '../UserContext';
  */
 export default function Dashboard() {
     const {authState, setAuthState} = useContext(UserContext);
+    console.log(authState.user);
 
     return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>

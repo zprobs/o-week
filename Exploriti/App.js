@@ -146,6 +146,11 @@ const processLogout = async () => {
 
 export default function App () {
     const [authState, setAuthState] = React.useState({ status: "loading" });
+    const [user, setUser] = useState({
+        name: '',
+        image: '',
+        description: '',
+    });
 
     useEffect(() => {
         return firebase.auth().onAuthStateChanged((user) => {
@@ -202,9 +207,11 @@ export default function App () {
         cache: new InMemoryCache()
     });
 
+
+
     return (
         <ApolloProvider client={client}>
-            <UserContext.Provider value={{ authState, setAuthState }}>
+            <UserContext.Provider value={{ authState, setAuthState, user, setUser }}>
                 <NavigationContainer>
                     { authState.status === "loading" ? (
                         <Loading/>

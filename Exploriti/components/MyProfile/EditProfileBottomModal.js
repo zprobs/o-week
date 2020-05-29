@@ -12,35 +12,31 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import { ThemeStatic } from "../../theme/Colours";
 import FormInput from "../ReusableComponents/FormInput";
 import ButtonColour from "../ReusableComponents/ButtonColour";
+import Selection from '../ReusableComponents/Selection';
 
 /**
  * Modal for editing the logged in users data
- * @param avatar
+ * @paramimage
  * @param name
- * @param handle
- * @param about
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly about?: *, readonly avatar?: *, readonly name?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
+ * @param program
+ * @param description
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly description?: *, readonly imageonly name?: *, readonly program?: *}> & React.RefAttributes<unknown>>}
  */
 const EditProfileBottomModal = React.forwardRef(
-  ({ avatar, name, handle, about }, ref) => {
-    const [editableAvatar, setEditableAvatar] = useState("");
+  ({ image, name, program, description }, ref) => {
+    const [editableImage, setEditableImage] = useState("");
     const [editableName, setEditableName] = useState("");
-    const [editableHandle, setEditableHandle] = useState("");
-    const [handleError, setHandleError] = useState("");
-    const [editableAbout, setEditableAbout] = useState("");
+    const [editableProgram, setEditableProgram] = useState("");
+    const [editableDescription, setEditableDescription] = useState("");
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
-      setEditableAvatar(avatar);
+      setEditableImage(image);
       setEditableName(name);
-      setEditableHandle(handle);
-      setEditableAbout(about);
+      setEditableProgram(program);
+      setEditableDescription(description);
     }, []);
 
-    const setHandle = (handle: string) => {
-      if (!handle) setHandleError("username cannot be empty");
-      setEditableHandle(handle);
-    };
 
     const done = () => (
       <Icon name="check" color={ThemeStatic.white} size={20} />
@@ -65,18 +61,18 @@ const EditProfileBottomModal = React.forwardRef(
         <View style={styles().content}>
           <ImageBackground
             source={{
-              uri: editableAvatar
-                ? editableAvatar
+              uri: editableImage
+                ? editableImage
                 : "https://reactjs.org/logo-og.png",
             }}
-            style={styles().avatar}
+            style={styles().image}
             imageStyle={styles().avatarImage}>
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => {
-                console.log("change avatar");
+                console.log("change image");
               }}
-              style={styles().avatarOverlay}>
+              style={styles().imageOverlay}>
               <Icon name="pencil" size={26} color={ThemeStatic.white} />
             </TouchableOpacity>
           </ImageBackground>
@@ -87,25 +83,24 @@ const EditProfileBottomModal = React.forwardRef(
             value={editableName}
             onChangeText={setEditableName}
           />
-          <FormInput
-            ref={null}
-            label="Program"
-            placeholder="example: Math"
-            error={handleError}
-            value={editableHandle}
-            onChangeText={setHandle}>
-            {content}
-          </FormInput>
-          <FormInput
-            ref={null}
-            label="Description"
-            placeholder="example: hey, I am a doggo"
-            value={editableAbout}
-            onChangeText={setEditableAbout}
-            multiline
-            characterRestriction={200}
-          />
-          <ButtonColour
+            <FormInput
+                ref={null}
+                label="Description"
+                placeholder="example: hey, I am a doggo"
+                value={editableDescription}
+                onChangeText={setEditableDescription}
+                multiline
+                characterRestriction={200}
+            />
+            <View style={{height: 4}}/>
+            <Selection title={"Change Program"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+                <View style={{height: 8}}/>
+                <Selection title={"Change Year"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+            <View style={{height: 8}}/>
+            <Selection title={"Change Interests"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+
+
+            <ButtonColour
             Icon={done}
             label="Done"
             title="done"
@@ -126,13 +121,13 @@ const { colours } = Theme.light;
 const styles = () =>
   StyleSheet.create({
     container: {
-      padding: 20,
+      paddingHorizontal: 20,
       backgroundColor: colours.base,
     },
     content: {
       flex: 1,
     },
-    avatar: {
+    image: {
       alignSelf: "center",
       height: 100,
       width: 100,
@@ -142,7 +137,7 @@ const styles = () =>
       backgroundColor: colours.placeholder,
       borderRadius: 100,
     },
-    avatarOverlay: {
+    imageOverlay: {
       position: "absolute",
       height: 100,
       width: 100,
@@ -156,6 +151,7 @@ const styles = () =>
     doneButton: {
       marginVertical: 20,
     },
+
   });
 
 export default EditProfileBottomModal;

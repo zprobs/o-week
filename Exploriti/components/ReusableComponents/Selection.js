@@ -6,7 +6,32 @@ import {ThemeStatic} from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
 const { FontWeights, FontSizes } = Fonts;
-export default function Selection({title, onPress}) {
+export default function Selection({title, onPress, accent}) {
+
+    const styles = StyleSheet.create({
+        container: {
+            borderRadius: 8,
+            borderWidth: 3,
+            color: accent ? ThemeStatic.accent : ThemeStatic.white,
+            borderColor: accent ? ThemeStatic.accent : ThemeStatic.white,
+        },
+        title: {
+            ...FontWeights.Bold,
+            ...FontSizes.Caption,
+            color: accent ? ThemeStatic.accent : ThemeStatic.white,
+            padding: 15,
+        },
+        content: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        icon: {
+            color: accent ? ThemeStatic.accent : ThemeStatic.white,
+            paddingRight: 15,
+            alignContent: 'center'
+        }
+    });
 
     return (
         <TouchableOpacity onPress={onPress}>
@@ -20,27 +45,4 @@ export default function Selection({title, onPress}) {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        borderRadius: 8,
-        borderWidth: 3,
-        color: ThemeStatic.white,
-        borderColor: ThemeStatic.white,
-    },
-    title: {
-        ...FontWeights.Bold,
-        ...FontSizes.Caption,
-        color: ThemeStatic.white,
-        padding: 15,
-    },
-    content: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    icon: {
-        color: ThemeStatic.white,
-        paddingRight: 15,
-        alignContent: 'center'
-    }
-});
+
