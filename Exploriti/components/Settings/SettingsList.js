@@ -16,6 +16,12 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import {UserContext} from '../UserContext';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from "@react-navigation/native";
+import About from "./About"
+import Settings from "./SettingsFile"
+
+const Stack = createStackNavigator();
 
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
@@ -23,7 +29,19 @@ import {UserContext} from '../UserContext';
  * @constructor
  */
 
-function SettingsList(props) {
+
+
+ function SettingsList() {
+
+   return (
+     <Stack.Navigator screenOptions={{headerShown: false}}>
+         <Stack.Screen name={"About"} component={About}/>
+         <Stack.Screen name={"Settings"} component={Settings}/>
+     </Stack.Navigator>
+   );
+ };
+
+function SettingsLis(props) {
   const {authState, setAuthState} = useContext(UserContext);
 
   const settingsItemList = [
