@@ -18,7 +18,7 @@ import TextLine from "../ReusableComponents/TextLine";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
-import { UserContext } from '../UserContext';
+import {AuthContext} from '../../context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -34,7 +34,6 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login({navigation}) {
-  const {authState, setAuthState} = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -44,6 +43,7 @@ export default function Login({navigation}) {
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password).then(res => {
         console.log(res.user.uid);
+
       })
     } catch (error) {
       console.log(error);

@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import { Text, View } from "react-native";
-import {UserContext} from '../UserContext';
+import {AuthContext} from '../../context';
 
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
@@ -8,12 +8,12 @@ import {UserContext} from '../UserContext';
  * @constructor
  */
 export default function Dashboard() {
-    const {authState, setAuthState} = useContext(UserContext);
-    console.log(authState.user);
-
-    return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Welcome, {authState.user.uid}!</Text>
-    </View>
-  );
+    console.log('dashboard Start');
+    // const {authState} = useContext(AuthContext);
+    // return (
+    // <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    //   <Text>Welcome, {authState.user.uid}!</Text>
+    // </View>
+    return (<Text>Dashboard</Text>)
+  //);
 }

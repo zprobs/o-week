@@ -7,7 +7,7 @@
  * @flow strict-local
  */
 import "react-native-gesture-handler";
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useMemo} from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -18,7 +18,7 @@ import { split } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
-import { ApolloProvider } from "@apollo/react-hooks";
+import {ApolloProvider, useQuery} from '@apollo/react-hooks';
 import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
@@ -30,8 +30,10 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { UserContext } from './components/UserContext';
+import { UserContext, AuthContext } from './context';
 import Icon from "react-native-vector-icons/EvilIcons";
+import Error from './components/ReusableComponents/Error';
+import { GET_USER } from './graphql';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,6 +41,8 @@ const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
   // Create const on a separate line to pass in Drawer Navigation and avoid warning
+
+    console.log('homeScreen Start');
   const SettingsComponent = () => (
     <Settings toggleDrawer={navigation.toggleDrawer} />
   );
@@ -105,17 +109,48 @@ function AuthStack() {
 }
 
 function MainStack() {
+
+
+    console.log('main stack start');
+
+    const {authState} = useContext(AuthContext);
+
+    const userId = authState.user.uid;
+    console.log('UID: ');
+    console.log(userId);
+
+    const { loading, error, data } = useQuery(GET_USER, {
+        variables: { id: userId },
+    });
+
+    if (loading) return <Loading/>;
+    if (error) return <Error e={error} />;
+
+    if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>
+
+    console.log(data);
+    console.log('main stack return');
     return (
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name={"mainApp"} component={MainApp}/>
-        </Stack.Navigator>
+            <MainApp data={data}/>
     );
 
 }
 
-function MainApp() {
+function MainApp({data}) {
+    const [user, setUser] = useState(
+        {
+            name: data.user.name,
+            description: data.user.description,
+            image: "https://reactjs.org/logo-og.png",
+            program: data.user.programs.map(i => i.program.name).join(", ")
+        }
+    );
+   // const userProviderValue = useMemo(() => ({user, setUser}), [user, setUser]);
 
+
+    console.log('data received');
     return (
+        <UserContext.Provider value={{user, setUser}}>
         <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Admin" component={HomeScreen} />
@@ -123,6 +158,7 @@ function MainApp() {
             <Drawer.Screen name="About" component={HomeScreen} />
             <Drawer.Screen name="Logout" component={logout} />
         </Drawer.Navigator>
+        </UserContext.Provider>
     );
 }
 
@@ -134,7 +170,7 @@ function logout() {
 // salman.shahid@jectoronto.org zachattack
 
 const processLogout = async () => {
-    const {authState, setAuthState} = useContext(UserContext);
+    const {authState, setAuthState} = useContext(AuthContext);
     try {
         setAuthState({ status: "loading" });
         await firebase.auth().signOut();
@@ -146,19 +182,15 @@ const processLogout = async () => {
 
 export default function App () {
     const [authState, setAuthState] = React.useState({ status: "loading" });
-    const [user, setUser] = useState({
-        name: '',
-        image: '',
-        description: '',
-    });
 
     useEffect(() => {
         return firebase.auth().onAuthStateChanged((user) => {
+            console.log('checking user');
             if (user) {
                 return user.getIdToken().then((token) => firebase.auth().currentUser.getIdTokenResult()
                     .then((result) => {
                         if (result.claims['https://hasura.io/jwt/claims']) {
-                            setAuthState({ status: "in", user, token });
+                           // setAuthState({ status: "in", user, token });
                         }
                         const endpoint = 'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken'
                         return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
@@ -211,7 +243,7 @@ export default function App () {
 
     return (
         <ApolloProvider client={client}>
-            <UserContext.Provider value={{ authState, setAuthState, user, setUser }}>
+            <AuthContext.Provider value={{ authState, setAuthState }}>
                 <NavigationContainer>
                     { authState.status === "loading" ? (
                         <Loading/>
@@ -221,7 +253,7 @@ export default function App () {
                         <AuthStack/>
                     )}
                 </NavigationContainer>
-            </UserContext.Provider>
+            </AuthContext.Provider>
         </ApolloProvider>
     );
 };

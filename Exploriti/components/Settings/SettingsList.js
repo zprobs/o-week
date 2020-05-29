@@ -15,7 +15,7 @@ import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import {UserContext} from '../UserContext';
+import {UserContext} from '../../context';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
