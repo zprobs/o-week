@@ -20,6 +20,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
 import Settings from "./SettingsFile"
+import Help from "./Help"
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,7 @@ const Stack = createStackNavigator();
 
    return (
      <Stack.Navigator screenOptions={{headerShown: false}}>
+         <Stack.Screen name={"Help"} component={Help}/>
          <Stack.Screen name={"About"} component={About}/>
          <Stack.Screen name={"Settings"} component={Settings}/>
      </Stack.Navigator>
