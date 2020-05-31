@@ -6,8 +6,8 @@ import {
   View,
   ImageBackground,
 } from "react-native";
-import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+//import gql from "graphql-tag";
+//import { useQuery } from "@apollo/react-hooks";
 import Error from "../ReusableComponents/Error";
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
@@ -17,48 +17,39 @@ import { useState } from "react";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {UserContext} from '../UserContext';
+import {AuthContext, UserContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 
-const GET_USER = gql`
-  query getUser($id: String!) {
-    user(id: $id) {
-      name
-      description
-      programs {
-        program {
-          id
-          name
-        }
-      }
-      image
-    }
-  }
-`;
+
 
 const { colours } = Theme.light;
 
 export default function Profile() {
-    const {authState, setAuthState} = useContext(UserContext);
-  const userId = authState.user.uid;
-  const { loading, error, data } = useQuery(GET_USER, {
-    variables: { id: userId },
-  });
+    console.log('begin profile');
+
 
   const editProfileBottomModalRef = useRef();
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Error e={error} />;
+  // if (loading) return <Text>Loading...</Text>;
+  // if (error) return <Error e={error} />;
 
 
-  let description = data.user.description;
-  const name = data.user.name;
-  const program = data.user.programs.map(i => i.program.name).join(", ");
-  const image = "https://reactjs.org/logo-og.png";
-  //const image = data.user.image;
+    const {user} = useContext(UserContext);
+
+    const description = user.description;
+    const name = user.name;
+    const image = user.image;
+    const program = user.program;
+
+
+  // let description = data.user.description;
+  // const name = data.user.name;
+  // const program = data.user.programs.map(i => i.program.name).join(", ");
+  // const image = "https://reactjs.org/logo-og.png";
+  // //const image = data.user.image;
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onFriendsOpen = () => usersBottomModalRef.current.open();
@@ -79,7 +70,7 @@ export default function Profile() {
       />
       <EditProfileBottomModal
         ref={editProfileBottomModalRef}
-        image={image}
+       image={image}
         name={name}
         program={program}
         description={description}
@@ -124,6 +115,8 @@ const ProfileCard = ({
   renderInteractions,
   description,
 }) => {
+
+
   return (
     <View style={styles().container}>
       <View style={styles().info}>
