@@ -9,11 +9,11 @@ import {AuthContext} from '../../context';
  */
 export default function Dashboard() {
     console.log('dashboard Start');
-    // const {authState} = useContext(AuthContext);
-    // return (
-    // <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-    //   <Text>Welcome, {authState.user.uid}!</Text>
-    // </View>
-    return (<Text>Dashboard</Text>)
-  //);
+    const {authState} = useContext(AuthContext);
+    return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>Welcome, {authState.user.uid}!</Text>
+    </View>
+   // return (<Text>Dashboard</Text>)
+  );
 }

@@ -33,16 +33,14 @@ export default function Profile() {
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
 
-  // if (loading) return <Text>Loading...</Text>;
-  // if (error) return <Error e={error} />;
 
+    const {userState} = useContext(UserContext);
 
-    const {user} = useContext(UserContext);
-
-    const description = user.description;
-    const name = user.name;
-    const image = user.image;
-    const program = user.program;
+    const description = userState.description;
+    const name = userState.name;
+    const image = userState.image;
+    const program = userState.program;
+    const year = userState.year;
 
 
   // let description = data.user.description;
@@ -64,6 +62,7 @@ export default function Profile() {
         name={name}
         program={program}
         image={image}
+        year={year}
         onEdit={onEdit}
         onFriendsOpen={onFriendsOpen}
         onGroupsOpen={onGroupsOpen}
@@ -73,6 +72,7 @@ export default function Profile() {
        image={image}
         name={name}
         program={program}
+        year={year}
         description={description}
       />
       <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />

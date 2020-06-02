@@ -7,7 +7,7 @@
  * @flow strict-local
  */
 import "react-native-gesture-handler";
-import React, {useState, useEffect, useContext, useMemo} from 'react';
+import React, {useState, useEffect, useContext, useMemo, useReducer, useCallback, useRef} from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -18,7 +18,7 @@ import { split } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
-import {ApolloProvider, useQuery} from '@apollo/react-hooks';
+import {ApolloProvider, useMutation, useQuery} from '@apollo/react-hooks';
 import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
@@ -34,6 +34,7 @@ import { UserContext, AuthContext } from './context';
 import Icon from "react-native-vector-icons/EvilIcons";
 import Error from './components/ReusableComponents/Error';
 import { GET_USER } from './graphql';
+import {UPDATE_USER} from './graphql';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -113,9 +114,11 @@ function MainStack() {
 
     console.log('main stack start');
 
-    const {authState} = useContext(AuthContext);
 
+    const {authState} = useContext(AuthContext);
     const userId = authState.user.uid;
+
+
     console.log('UID: ');
     console.log(userId);
 
@@ -123,7 +126,10 @@ function MainStack() {
         variables: { id: userId },
     });
 
-    if (loading) return <Loading/>;
+    if (loading) {
+        console.log('loading...');
+        return <Loading/>;
+    }
     if (error) return <Error e={error} />;
 
     if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>
@@ -134,23 +140,50 @@ function MainStack() {
             <MainApp data={data}/>
     );
 
+   // return MainApp({data:{ user: {name: "Zach", description: "descr", programs: ["one", "Two"]}}})
+
 }
 
 function MainApp({data}) {
-    const [user, setUser] = useState(
-        {
-            name: data.user.name,
-            description: data.user.description,
-            image: "https://reactjs.org/logo-og.png",
-            program: data.user.programs.map(i => i.program.name).join(", ")
+
+    const didMountRef = useRef(false); // used to skip running UPDATE_USER on first render
+
+    const [userState, userDispatch] = useReducer(userReducer, {
+        name: data.user.name,
+        description: data.user.description,
+        image: "https://reactjs.org/logo-og.png",
+        // program: data.user.programs.map(i => i.program.name).join(", ")
+        //year: data.user.year
+        year: 1
+    } );
+
+    const [updateUser] = useMutation(UPDATE_USER);
+    const {authState} = useContext(AuthContext);
+
+    const options = {
+        variables: {
+            data: {...userState},
+            user: authState.user.uid
         }
+    }
+    console.log(options);
+
+    useEffect(()=> {
+        if (didMountRef.current) {
+            console.log('sending data...');
+            updateUser({ variables: {data: {...userState}, user: {id: authState.user.uid}}}).catch((e)=>console.log(e))
+        } else {
+            didMountRef.current = true;
+        }
+     }, [userState]
     );
+
    // const userProviderValue = useMemo(() => ({user, setUser}), [user, setUser]);
 
 
     console.log('data received');
     return (
-        <UserContext.Provider value={{user, setUser}}>
+        <UserContext.Provider value={{userState, userDispatch}}>
         <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Admin" component={HomeScreen} />
@@ -160,6 +193,22 @@ function MainApp({data}) {
         </Drawer.Navigator>
         </UserContext.Provider>
     );
+}
+
+function userReducer(state, action) {
+    console.log('userReducer');
+    switch(action.type) {
+        case 'updateProfile':
+            const {fields} = action;
+            const newState = {};
+            Object.values(fields).forEach((value) => {
+                newState[value.name] = value.value;
+            });
+            return {...state, ...newState };
+        default:
+            console.log('reducer error invalid');
+            throw new Error();
+    }
 }
 
 function logout() {
@@ -182,15 +231,19 @@ const processLogout = async () => {
 
 export default function App () {
     const [authState, setAuthState] = React.useState({ status: "loading" });
+    console.log('App Start');
 
     useEffect(() => {
-        return firebase.auth().onAuthStateChanged((user) => {
+        console.log('Use Effect Triggered');
+        firebase.auth().onAuthStateChanged((user) => {
             console.log('checking user');
             if (user) {
                 return user.getIdToken().then((token) => firebase.auth().currentUser.getIdTokenResult()
                     .then((result) => {
                         if (result.claims['https://hasura.io/jwt/claims']) {
-                           // setAuthState({ status: "in", user, token });
+                           console.log('Hasura claim setting AuthState');
+                           setAuthState({ status: "in", user, token });
+                           return token;
                         }
                         const endpoint = 'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken'
                         return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
@@ -200,9 +253,11 @@ export default function App () {
                             return res.json().then((e) => { throw e })
                         })
                     })).then((token) => {
+                        console.log('setting auth state : in')
                     setAuthState({ status: "in", user, token });
                 }).catch(console.error)
             } else {
+                console.log('Setting to Out');
                 setAuthState({ status: "out" });
             }
         })
