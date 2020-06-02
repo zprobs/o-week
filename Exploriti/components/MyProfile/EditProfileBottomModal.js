@@ -59,7 +59,23 @@ const EditProfileBottomModal = React.forwardRef(
         const fields = {};
         if (editableName !== name) fields.name = { name: 'name', value: editableName };
         if (editableDescription !== description) fields.description = { name: 'description', value: editableDescription };
-        if (editableYear !== year) fields.year = { name: 'year', value: editableYear };
+        if (editableYear !== year) {
+            let newYear = () => {
+                switch (editableYear) {
+                    case "First Year":
+                        return 1;
+                    case "Second Year":
+                        return 2;
+                    case "Third Year":
+                        return 3;
+                    case "Fourth Year":
+                        return 4;
+                    default:
+                        return 5;
+                }
+            };
+            fields.year = { name: 'year', value: newYear() }
+        }
         if (Object.keys(fields).length !== 0) {
             userDispatch({
                 type: 'updateProfile',
@@ -73,7 +89,7 @@ const EditProfileBottomModal = React.forwardRef(
       <Modalize
         ref={ref}
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        modalStyle={styles().container}
+        modalStyle={styles.container}
         adjustToContentHeight
         tapGestureEnabled={false}>
           <View style={{paddingHorizontal: 20}}>
@@ -81,21 +97,21 @@ const EditProfileBottomModal = React.forwardRef(
           heading="Edit profile"
           subHeading="Edit your personal information"
         />
-        <View style={styles().content}>
+        <View style={styles.content}>
           <ImageBackground
             source={{
               uri: editableImage
                 ? editableImage
                 : "https://reactjs.org/logo-og.png",
             }}
-            style={styles().image}
-            imageStyle={styles().avatarImage}>
+            style={styles.image}
+            imageStyle={styles.avatarImage}>
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => {
                 console.log("change image");
               }}
-              style={styles().imageOverlay}>
+              style={styles.imageOverlay}>
               <Icon name="pencil" size={26} color={ThemeStatic.white} />
             </TouchableOpacity>
           </ImageBackground>
@@ -129,7 +145,7 @@ const EditProfileBottomModal = React.forwardRef(
             title="done"
             onPress={onDone}
             loading={isUploading}
-            containerStyle={styles().doneButton}
+            containerStyle={styles.doneButton}
             colour={ThemeStatic.accent}
             light={true}
           />
@@ -143,8 +159,7 @@ const EditProfileBottomModal = React.forwardRef(
 
 const { colours } = Theme.light;
 
-const styles = () =>
-  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
       backgroundColor: colours.base,
     },

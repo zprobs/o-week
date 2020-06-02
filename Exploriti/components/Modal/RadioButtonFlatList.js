@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Text, SafeAreaView} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';

@@ -30,7 +30,7 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { UserContext, AuthContext } from './context';
+import { UserContext, AuthContext, userReducer } from './context';
 import Icon from "react-native-vector-icons/EvilIcons";
 import Error from './components/ReusableComponents/Error';
 import { GET_USER } from './graphql';
@@ -42,8 +42,6 @@ const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
   // Create const on a separate line to pass in Drawer Navigation and avoid warning
-
-    console.log('homeScreen Start');
   const SettingsComponent = () => (
     <Settings toggleDrawer={navigation.toggleDrawer} />
   );
@@ -111,36 +109,23 @@ function AuthStack() {
 
 function MainStack() {
 
-
-    console.log('main stack start');
-
-
     const {authState} = useContext(AuthContext);
     const userId = authState.user.uid;
-
-
-    console.log('UID: ');
-    console.log(userId);
 
     const { loading, error, data } = useQuery(GET_USER, {
         variables: { id: userId },
     });
 
     if (loading) {
-        console.log('loading...');
         return <Loading/>;
     }
     if (error) return <Error e={error} />;
 
     if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>
 
-    console.log(data);
-    console.log('main stack return');
     return (
             <MainApp data={data}/>
     );
-
-   // return MainApp({data:{ user: {name: "Zach", description: "descr", programs: ["one", "Two"]}}})
 
 }
 
@@ -152,21 +137,12 @@ function MainApp({data}) {
         name: data.user.name,
         description: data.user.description,
         image: "https://reactjs.org/logo-og.png",
-        // program: data.user.programs.map(i => i.program.name).join(", ")
-        //year: data.user.year
-        year: 1
+        programs: data.user.programs.map(i => i.programs.name).join(", "),
+        year: data.user.year
     } );
 
     const [updateUser] = useMutation(UPDATE_USER);
     const {authState} = useContext(AuthContext);
-
-    const options = {
-        variables: {
-            data: {...userState},
-            user: authState.user.uid
-        }
-    }
-    console.log(options);
 
     useEffect(()=> {
         if (didMountRef.current) {
@@ -178,10 +154,6 @@ function MainApp({data}) {
      }, [userState]
     );
 
-   // const userProviderValue = useMemo(() => ({user, setUser}), [user, setUser]);
-
-
-    console.log('data received');
     return (
         <UserContext.Provider value={{userState, userDispatch}}>
         <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
@@ -195,28 +167,10 @@ function MainApp({data}) {
     );
 }
 
-function userReducer(state, action) {
-    console.log('userReducer');
-    switch(action.type) {
-        case 'updateProfile':
-            const {fields} = action;
-            const newState = {};
-            Object.values(fields).forEach((value) => {
-                newState[value.name] = value.value;
-            });
-            return {...state, ...newState };
-        default:
-            console.log('reducer error invalid');
-            throw new Error();
-    }
-}
-
 function logout() {
     processLogout();
     return (<Loading/>);
 }
-
-// salman.shahid@jectoronto.org zachattack
 
 const processLogout = async () => {
     const {authState, setAuthState} = useContext(AuthContext);
@@ -230,18 +184,14 @@ const processLogout = async () => {
 };
 
 export default function App () {
-    const [authState, setAuthState] = React.useState({ status: "loading" });
-    console.log('App Start');
+    const [authState, setAuthState] = useState({ status: "loading" });
 
     useEffect(() => {
-        console.log('Use Effect Triggered');
         firebase.auth().onAuthStateChanged((user) => {
-            console.log('checking user');
             if (user) {
                 return user.getIdToken().then((token) => firebase.auth().currentUser.getIdTokenResult()
                     .then((result) => {
                         if (result.claims['https://hasura.io/jwt/claims']) {
-                           console.log('Hasura claim setting AuthState');
                            setAuthState({ status: "in", user, token });
                            return token;
                         }
@@ -253,11 +203,9 @@ export default function App () {
                             return res.json().then((e) => { throw e })
                         })
                     })).then((token) => {
-                        console.log('setting auth state : in')
                     setAuthState({ status: "in", user, token });
                 }).catch(console.error)
             } else {
-                console.log('Setting to Out');
                 setAuthState({ status: "out" });
             }
         })
@@ -293,8 +241,6 @@ export default function App () {
         link,
         cache: new InMemoryCache()
     });
-
-
 
     return (
         <ApolloProvider client={client}>

@@ -1,4 +1,4 @@
-import React, {useState, useContext, useRef} from 'react';
+import React, { useState, useContext, useRef } from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -8,17 +8,16 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-    Alert,
-    KeyboardAvoidingView
+  Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import images from "../../assets/images";
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import TextLine from "../ReusableComponents/TextLine";
 import ButtonColour from "../ReusableComponents/ButtonColour";
-import '@react-native-firebase/auth'
-import firebase from '@react-native-firebase/app';
-import {AuthContext} from '../../context';
+import "@react-native-firebase/auth";
+import firebase from "@react-native-firebase/app";
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -33,39 +32,43 @@ const xMargin = width * 0.15;
  * @returns {*}
  * @constructor
  */
-export default function Login({navigation}) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const passwordRef = useRef();
 
   const processLogin = async () => {
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password).then(res => {
-        console.log(res.user.uid);
-
-      })
+      await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(res => {
+          console.log(res.user.uid);
+        });
     } catch (error) {
       console.log(error);
       Alert.alert(
-          "Login Unsuccessful",
-          error.toString(),
+        "Login Unsuccessful",
+        error.toString(),
 
-            {
-              text: "Ok",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "default"
-            }
+        {
+          text: "Ok",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "default",
+        },
       );
     }
   };
 
-
   return (
-      <ImageBackground source={images.login} style={styles.backgroundImage}>
-        <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
-        <TouchableOpacity onPress={()=>{navigation.navigate('Landing')}}>
-          <Image source={images.backArrow} style={styles.backArrow}/>
+    <ImageBackground source={images.login} style={styles.backgroundImage}>
+      <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Landing");
+          }}>
+          <Image source={images.backArrow} style={styles.backArrow} />
         </TouchableOpacity>
         <View style={styles.logo}>
           <Image
@@ -83,7 +86,7 @@ export default function Login({navigation}) {
           value={email}
           onChangeText={setEmail}
           next={true}
-          onSubmit={()=>passwordRef.current.focus()}
+          onSubmit={() => passwordRef.current.focus()}
         />
         <TextLine
           style={styles.textLine}
@@ -107,15 +110,15 @@ export default function Login({navigation}) {
         <TouchableOpacity style={styles.touchable}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </ImageBackground>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   bg: {
-    width: '100%',
-      marginTop: yMargin
+    width: "100%",
+    marginTop: yMargin,
   },
   backgroundImage: {
     height: "100%",
@@ -173,10 +176,9 @@ const styles = StyleSheet.create({
   backArrow: {
     width: 40,
     height: 40,
-    left: width*0.07,
-    top: height*0.02,
+    left: width * 0.07,
+    top: height * 0.02,
     zIndex: 2,
-    position: 'absolute',
-
+    position: "absolute",
   },
 });

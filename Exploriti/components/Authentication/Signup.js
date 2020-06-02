@@ -3,37 +3,31 @@ import {View, StyleSheet, ScrollView, Text, ImageBackground, Dimensions, Image, 
 import SegmentedControl from '@react-native-community/segmented-control';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
-import {Theme, ThemeStatic} from '../../theme/Colours';
+import {ThemeStatic} from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import SearchableFlatList from '../Modal/SearchableFlatList';
-import {Modalize} from 'react-native-modalize';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import User from '../../model/User';
 import ImagePicker from 'react-native-image-crop-picker';
 import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
-import gql from 'graphql-tag';
 import {useMutation} from '@apollo/react-hooks';
+import {SIGN_UP} from '../../graphql';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
-const SIGN_UP = gql`
-    mutation SIGN_UP($data: user_insert_input!) {
-        createUser(object: $data) {
-            name
-        }
-    }
-`;
-
-
+/**
+ * The Signup component for new users. Found in the AuthStack.
+ * @param navigation A navigation reference to the AuthStack navigator
+ * @returns {*}
+ * @constructor
+ */
 export default function Signup({navigation}) {
 
     const [index, setIndex] = useState(0);
-    const [user, setUser] = useState(new User());
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -74,7 +68,6 @@ export default function Signup({navigation}) {
         };
     }, []);
 
-
     const _keyboardWillShow = () => {
             Animated.parallel([
                 Animated.timing(opacity, {
@@ -105,17 +98,7 @@ export default function Signup({navigation}) {
             ]).start();
     };
 
-    // These functions are created to pass the set state methods down to children correctly
-
-    function handlePrograms(value) {
-        setPrograms(value);
-    }
-
-    function handleInterests(value) {
-        setInterests(value)
-    }
-
-    function programTitle() {
+    const programTitle = () => {
         const size = programs.length;
         if (size === 0) { return "Select your program" }
         let string = "";
@@ -126,10 +109,9 @@ export default function Signup({navigation}) {
         return string
     };
 
-
-    function interestsTitle(index) {
-        if (interests.length <= index) {
-            switch (index) {
+    const interestsTitle = (interestIndex) => {
+        if (interests.length <= interestIndex) {
+            switch (interestIndex) {
                 case 0: return "Select interest one";
                 case 1: return "Select interest two";
                 case 2: return "Select interest three";
@@ -138,93 +120,8 @@ export default function Signup({navigation}) {
                 default: return "Select interest"
             }
         }
-        return interests[index];
-    }
-
-    function pickImage() {
-        ImagePicker.openPicker({
-            width: 300,
-            height: 400,
-            cropping: true
-        }).then(image => {
-            setImage({uri: image.path});
-        });
-    }
-
-    function backButton() {
-
-        if (page === 1) {
-            Alert.alert(
-                "Wait a Second",
-                "If you go back, any information you may have entered will be erased. Are you sure you would like to go back?",
-                [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "Go Back", onPress: () => navigation.navigate('Landing') }
-                ],
-                { cancelable: false }
-            );
-
-        }
-        else {
-            scrollViewRef.current.scrollTo({x: (width*(page-1)) - width, y: 0, animated: true});
-            setPage(page-1);
-            flip_Animation(false)
-        }
-
-    }
-
-    function nextPage() {
-        const pg = page;
-        if (pg===4) {submit()} else {
-            setPage((pg + 1));
-            flip_Animation(true);
-            scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
-        }
-
-    }
-
-
-
-    function submit() {
-
-        let userData = {};
-
-       firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
-           console.log(userCredential.user.uid);
-            userData["name"] = name;
-            userData["email"] = email;
-            userData["id"] = userCredential.user.uid;
-            switch(year) {
-                case "First Year":
-                    userData["year"] = 1;
-                case "Second Year":
-                    userData["year"] = 2;
-                case "Third Year":
-                    userData["year"] = 3;
-                case "Fourth Year":
-                    userData["year"] = 4;
-                default:
-                    userData["year"] = 5;
-            }
-            console.log(userData);
-
-            submitUser({variables: {data : userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
-
-
-
-       }).catch((error)=> {
-            console.log(error);
-            Alert.alert(
-                "Error",
-                "There was an error creating your account: " + error.toString(),
-                [
-                    { text: "Ok" }
-                ],
-                { cancelable: true }
-            );
-        })
-
-    }
+        return interests[interestIndex];
+    };
 
     const flip_Animation = (forward) => {
         if (forward) {
@@ -232,14 +129,6 @@ export default function Signup({navigation}) {
         } else {
             setAnimatedNumber(animatedNumber - 180);
         }
-        // Animated.spring(animatedValue, {
-        //     toValue: animatedNumber,
-        //     tension: 10,
-        //     friction: 8,
-        //     useNativeDriver: true
-        // }).start(()=>{
-        //     setAnimatedValue(new Animated.Value(270))
-        // });
 
         Animated.sequence([
             Animated.timing(animatedValue, {
@@ -297,7 +186,86 @@ export default function Signup({navigation}) {
       );
     };
 
+    function pickImage() {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+        }).then(image => {
+            setImage({uri: image.path});
+        });
+    }
 
+    function backButton() {
+
+        if (page === 1) {
+            Alert.alert(
+                "Wait a Second",
+                "If you go back, any information you may have entered will be erased. Are you sure you would like to go back?",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Go Back", onPress: () => navigation.navigate('Landing') }
+                ],
+                { cancelable: false }
+            );
+        }
+        else {
+            scrollViewRef.current.scrollTo({x: (width*(page-1)) - width, y: 0, animated: true});
+            setPage(page-1);
+            flip_Animation(false)
+        }
+    }
+
+    function nextPage() {
+        const pg = page;
+        if (pg===4) {submit()} else {
+            setPage((pg + 1));
+            flip_Animation(true);
+            scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
+        }
+    }
+
+    function submit() {
+
+        let userData = {};
+
+        firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
+            console.log(userCredential.user.uid);
+            userData["name"] = name;
+            userData["email"] = email;
+            userData["id"] = userCredential.user.uid;
+            let newYear = () => {
+                switch (year) {
+                    case "First Year":
+                        return 1;
+                    case "Second Year":
+                        return 2;
+                    case "Third Year":
+                        return 3;
+                    case "Fourth Year":
+                        return 4;
+                    default:
+                        return 5;
+                }
+            };
+            userData["year"] = newYear();
+            console.log(userData);
+
+            submitUser({variables: {data : userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
+
+        }).catch((error)=> {
+            console.log(error);
+            Alert.alert(
+                "Error",
+                "There was an error creating your account: " + error.toString(),
+                [
+                    { text: "Ok" }
+                ],
+                { cancelable: true }
+            );
+        })
+
+    }
 
     return (
         <View style={styles.container} >
@@ -401,17 +369,14 @@ export default function Signup({navigation}) {
                 </View>
             </ImageBackground>
             </ScrollView>
-            <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={handlePrograms} max={4}/>
+            <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={setPrograms} max={4}/>
             <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
             <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
-            <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={handleInterests} max={5} />
+            <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={setInterests} max={5} />
         </View>
 
     );
 }
-
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -428,7 +393,6 @@ const styles = StyleSheet.create({
     page: {
       height: height-(100),
       width: width,
-    //    backgroundColor: '#ffffff'
     },
     backArrow: {
         width: 40,
@@ -479,7 +443,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         top: height*0.14 + 160,
         justifyContent: 'space-around',
-     //   backgroundColor: '#fa342f',
      height: height-(height*0.14 + 190 + 70)
 
     },
@@ -493,18 +456,15 @@ const styles = StyleSheet.create({
         ...FontWeights.Bold,
         ...FontSizes.Caption,
         color: ThemeStatic.white,
-     //   marginTop: 20
     },
     selector: {
         marginTop: 10
     },
     textLine: {
         alignSelf: "center",
-     //   marginTop: 20,
         width: width-40,
         borderBottomColor: ThemeStatic.white,
         borderBottomWidth: 1,
-    //    paddingBottom: 5,
     },
     button: {
         marginBottom: 40,

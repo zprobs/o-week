@@ -23,3 +23,11 @@ export const UPDATE_USER = gql`
         }
     }
 `
+
+export const SIGN_UP = gql`
+    mutation SIGN_UP($data: user_insert_input!) {
+        createUser(object: $data) {
+            name
+        }
+    }
+`;

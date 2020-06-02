@@ -6,33 +6,30 @@ import {
   View,
   ImageBackground,
 } from "react-native";
-//import gql from "graphql-tag";
-//import { useQuery } from "@apollo/react-hooks";
-import Error from "../ReusableComponents/Error";
+
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
 import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
-import { useState } from "react";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {AuthContext, UserContext} from '../../context';
+import { UserContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 
-
-
 const { colours } = Theme.light;
 
+/**
+ * Profile is the screen which will display a users profile.
+ * @returns {*}
+ * @constructor
+ */
 export default function Profile() {
-    console.log('begin profile');
-
 
   const editProfileBottomModalRef = useRef();
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
-
 
     const {userState} = useContext(UserContext);
 
@@ -42,12 +39,6 @@ export default function Profile() {
     const program = userState.program;
     const year = userState.year;
 
-
-  // let description = data.user.description;
-  // const name = data.user.name;
-  // const program = data.user.programs.map(i => i.program.name).join(", ");
-  // const image = "https://reactjs.org/logo-og.png";
-  // //const image = data.user.image;
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onFriendsOpen = () => usersBottomModalRef.current.open();
@@ -86,7 +77,7 @@ const EditProfile = ({ onEdit }) => {
     <TouchableOpacity
       activeOpacity={1}
       onPress={onEdit}
-      style={styles().editProfile}>
+      style={styles.editProfile}>
       <Icon name="pencil" size={25} color={ThemeStatic.white} />
     </TouchableOpacity>
   );
@@ -97,13 +88,26 @@ const Connections = ({ total, type, onPress }) => {
     <TouchableOpacity
       activeOpacity={0.95}
       onPress={onPress}
-      style={styles().connections}>
-      <Text style={styles().connectionsText}>{total}</Text>
-      <Text style={styles().connectionsType}>{type}</Text>
+      style={styles.connections}>
+      <Text style={styles.connectionsText}>{total}</Text>
+      <Text style={styles.connectionsType}>{type}</Text>
     </TouchableOpacity>
   );
 };
 
+/**
+ * Profile Card is the UI Component for a user's profile page.
+ * @param image Profile picture
+ * @param editable Weather or not a user can edit the page. Only true when it is the current user.
+ * @param onEdit Opens the EditProfileBottomModal
+ * @param onFriendsOpen Opens the UserBottomModal
+ * @param onGroupsOpen Opens the GroupBottomModal
+ * @param name
+ * @param program
+ * @param description
+ * @returns {*}
+ * @constructor
+ */
 const ProfileCard = ({
   image,
   editable,
@@ -112,38 +116,33 @@ const ProfileCard = ({
   onGroupsOpen,
   name,
   program,
-  renderInteractions,
   description,
 }) => {
-
-
   return (
-    <View style={styles().container}>
-      <View style={styles().info}>
+    <View style={styles.container}>
+      <View style={styles.info}>
         <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
         <ImageBackground
           source={{ uri: image ? image : "" }}
-          style={styles().image}
-          imageStyle={styles().avatarImage}>
+          style={styles.image}
+          imageStyle={styles.avatarImage}>
           {editable && <EditProfile onEdit={onEdit} />}
         </ImageBackground>
         <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
       </View>
-      <View style={styles().name}>
-        <Text style={styles().usernameText}>{name}</Text>
-        <Text style={styles().programText}>{program}</Text>
+      <View style={styles.name}>
+        <Text style={styles.usernameText}>{name}</Text>
+        <Text style={styles.programText}>{program}</Text>
       </View>
-      {renderInteractions && renderInteractions()}
-      <View style={styles().description}>
-        <Text style={styles().descriptionTitle}>About</Text>
-        <Text style={styles().descriptionText}>{description}</Text>
+      <View style={styles.description}>
+        <Text style={styles.descriptionTitle}>About</Text>
+        <Text style={styles.descriptionText}>{description}</Text>
       </View>
     </View>
   );
 };
 
-const styles = () =>
-  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
       paddingTop: 30,
       paddingBottom: 4,

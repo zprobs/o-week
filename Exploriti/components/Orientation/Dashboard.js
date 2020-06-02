@@ -8,12 +8,10 @@ import {AuthContext} from '../../context';
  * @constructor
  */
 export default function Dashboard() {
-    console.log('dashboard Start');
     const {authState} = useContext(AuthContext);
     return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Welcome, {authState.user.uid}!</Text>
     </View>
-   // return (<Text>Dashboard</Text>)
   );
 }
