@@ -35,27 +35,24 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import Error from './components/ReusableComponents/Error';
 import { GET_USER } from './graphql';
 import {UPDATE_USER} from './graphql';
+import Messages from './components/Messages';
+import Notifications from './components/Notifications';
 
-const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
   // Create const on a separate line to pass in Drawer Navigation and avoid warning
-  const SettingsComponent = () => (
-    <Settings toggleDrawer={navigation.toggleDrawer} />
-  );
-
   const ExploreComponent = () => (
-    <Explore toggleDrawer={navigation.toggleDrawer} />
+    <Explore mainNavigation={navigation} />
   );
 
   const OrientationComponent = () => (
-    <Orientation toggleDrawer={navigation.toggleDrawer} />
+    <Orientation mainNavigation={navigation} />
   );
 
   const MyProfileComponent = () => (
-    <MyProfile toggleDrawer={navigation.toggleDrawer} />
+    <MyProfile mainNavigation={navigation} />
   );
 
   return (
@@ -76,22 +73,22 @@ function HomeScreen({ navigation }) {
           ),
         }}
         />
-      <Tab.Screen name="MyProfile" component={MyProfileComponent}
-      options={{
-          tabBarLabel: 'MyProfile',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="user" color={color} size={30} />
-          ),
-        }}
+        <Tab.Screen name="Notifications" component={Notifications}
+                    options={{
+                        tabBarLabel: 'Notifications',
+                        tabBarIcon: ({ color, size }) => (
+                            <Icon name="bell" color={color} size={30} />
+                        ),
+                    }}
         />
-      <Tab.Screen name="Settings" component={SettingsComponent}
-      options={{
-          tabBarLabel: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="gear" color={color} size={30} />
-          ),
-        }}
-      />
+        <Tab.Screen name="MyProfile" component={MyProfileComponent}
+                    options={{
+                        tabBarLabel: 'MyProfile',
+                        tabBarIcon: ({ color, size }) => (
+                            <Icon name="user" color={color} size={30} />
+                        ),
+                    }}
+        />
     </Tab.Navigator>
   );
 }
@@ -156,13 +153,11 @@ function MainApp({data}) {
 
     return (
         <UserContext.Provider value={{userState, userDispatch}}>
-        <Drawer.Navigator initialRouteName="Home" edgeWidth={0}>
-            <Drawer.Screen name="Home" component={HomeScreen} />
-            <Drawer.Screen name="Admin" component={HomeScreen} />
-            <Drawer.Screen name="Settings" component={HomeScreen} />
-            <Drawer.Screen name="About" component={HomeScreen} />
-            <Drawer.Screen name="Logout" component={logout} />
-        </Drawer.Navigator>
+        <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{headerShown: false}}>
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen name="Settings" component={Settings} options={{gestureDirection: 'horizontal-inverted'}}/>
+            <Stack.Screen name="Messages" component={Messages} />
+        </Stack.Navigator>
         </UserContext.Provider>
     );
 }

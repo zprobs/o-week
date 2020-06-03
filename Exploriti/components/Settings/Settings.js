@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import SettingsList from "./SettingsList.js";
-import { DrawerIcon } from "../Menu/DrawerIcon";
+import {CloseIcon} from '../Menu/CloseIcon';
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -9,9 +9,8 @@ import { DrawerIcon } from "../Menu/DrawerIcon";
  * @returns Stack Navigator of Orientation
  * @constructor
  */
-export default function Settings(props) {
+export default function Settings({navigation}) {
   const Stack = createStackNavigator();
-  const { toggleDrawer } = props;
 
   return (
     <Stack.Navigator>
@@ -19,7 +18,7 @@ export default function Settings(props) {
         name="Settings"
         component={SettingsList}
         options={{
-          headerLeft: () => <DrawerIcon toggleDrawer={toggleDrawer} />,
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
       />
     </Stack.Navigator>

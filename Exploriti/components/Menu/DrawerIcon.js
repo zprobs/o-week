@@ -6,14 +6,13 @@ import Icon from "react-native-vector-icons/EvilIcons";
  * @param navigate The reference to Drawer Navigation which it opens onPress
  * @returns react-native-vector-icons menu icon
  */
-export const DrawerIcon = props => {
-  const { toggleDrawer } = props;
+export const DrawerIcon = ({mainNavigation}) => {
   return (
     <Icon
       name="navicon"
       size={38}
       color="#000"
-      onPress={() => toggleDrawer()}
+      onPress={() => mainNavigation.navigate('Settings')}
     />
   );
 };

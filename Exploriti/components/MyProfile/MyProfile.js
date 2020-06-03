@@ -2,6 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import Profile from "./Profile";
+import {NotificationIcon} from '../Menu/NotificationIcon';
 
 /**
  * One of the three primary tab components. Contains the current user's profile
@@ -9,9 +10,8 @@ import Profile from "./Profile";
  * @returns Stack Navigator of My Profile
  * @constructor
  */
-export default function MyProfile(props) {
+export default function MyProfile({mainNavigation}) {
   const Stack = createStackNavigator();
-  const { toggleDrawer } = props;
 
   return (
     <Stack.Navigator>
@@ -19,7 +19,8 @@ export default function MyProfile(props) {
         name="My Profile"
         component={Profile}
         options={{
-          headerLeft: () => <DrawerIcon toggleDrawer={toggleDrawer} />,
+            headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
+            headerRight: () => <NotificationIcon mainNavigation={mainNavigation} />
         }}
       />
     </Stack.Navigator>
