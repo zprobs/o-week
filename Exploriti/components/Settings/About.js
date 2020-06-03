@@ -4,6 +4,7 @@ import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
 const About = ({navigation}) => {
   return(
     <View>
+    <Button title="Back" onPress={() => {navigation.navigate('Settings')}} />
     <Text style={styles().headerStyle} >User Agreement</Text>
     <View style={styles().viewStyle} />
     <Text style={styles().paragraphStyle} >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

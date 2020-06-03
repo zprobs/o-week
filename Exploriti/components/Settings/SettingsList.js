@@ -21,6 +21,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
 import Settings from "./SettingsFile"
 import Help from "./Help"
+import ReportBug from "./ReportBug"
 
 const Stack = createStackNavigator();
 
@@ -32,25 +33,36 @@ const Stack = createStackNavigator();
 
 
 
- function SettingsList() {
+ function SettingsStack() {
 
    return (
-     <Stack.Navigator screenOptions={{headerShown: false}}>
+     <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Settings">
+         <Stack.Screen name={"Settings"} component={SettingsList}/>
          <Stack.Screen name={"Help"} component={Help}/>
          <Stack.Screen name={"About"} component={About}/>
-         <Stack.Screen name={"Settings"} component={Settings}/>
+         <Stack.Screen name={"ReportBug"} component={ReportBug}/>
      </Stack.Navigator>
    );
  };
 
-function SettingsLis(props) {
+
+function SettingsList({navigation}) {
+  return(
+    <View>
+    <Button title="Help" onPress={()=>{navigation.navigate('Help')}} />
+    <Button title="About" onPress={()=>{navigation.navigate('About')}} />
+    </View>
+  );
+}
+
+function SettingsLis() {
   const {authState, setAuthState} = useContext(UserContext);
 
   const settingsItemList = [
     { settingName: "General", icon: "gear" },
     { settingName: "Notifications", icon: "bell" },
     { settingName: "Privacy", icon: "unlock" },
-    { settingName: "About", icon: "exclamation" },
+    { settingName: "About", icon: "exclamation", nav: 'About' },
     { settingName: "Help", icon: "question" },
   ];
 
@@ -59,11 +71,10 @@ function SettingsLis(props) {
     <View>
       <FlatList
         keyExtractor={setting => setting.settingName}
-        ItemSeperatorComponent = { ListItemSeperator }
         data={settingsItemList}
         renderItem={({ item }) => {
           return (
-            <SettingsItem settingName={item.settingName} icon={item.icon} />
+            <SettingsItem settingName={item.settingName} icon={item.icon} nav={item.nav}/>
           );
         }}
       />
@@ -71,26 +82,14 @@ function SettingsLis(props) {
   );
 }
 
-const ListItemSeperator = () => {
-  return(
-    <View
-      style={{
-        height:1,
-        width: '100%',
-        backgroundColor: "black",
-      }}
-    />
-  );
-};
-
-const SettingsItem = ({ settingName, icon }) => {
+function SettingsItem({navigation}) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={()=>{console.log()}}>
       <View>
         <View style={styles().settingItemViewStyle}>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={icon} size={30} />
-              <Text style={styles().settingItemTextStyle}> {settingName} </Text>
+              <Icon name={"gear"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"4"} </Text>
             </View>
 
           <View style={{ justifyContent: "flex-start" }}>
@@ -138,4 +137,10 @@ const styles = () =>
     },
   });
 
-export default SettingsList;
+export default function SettingsPage() {
+  return(
+    <NavigationContainer independent={true}>
+      <SettingsStack />
+    </NavigationContainer>
+  );
+}
