@@ -3,13 +3,11 @@ import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from '@react-navigation/native';
 
-const Stack = createStackNavigator();
-
-export default function HelpLanding({navigation}) {
+export default function ReportBug({navigation}) {
   return(
     <View>
-    <Button onPress={()=>{navigation.navigate('Settings')}} title='Back'/>
-    <Button onPress={()=>{navigation.navigate('ReportBug')}} title='Report a Bug'/>
+    <Button onPress={()=>{navigation.navigate('Help')}} title='Back'/>
+    <Text>Report a Bug</Text>
     </View>
   );
 }
