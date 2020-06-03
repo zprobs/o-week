@@ -50,12 +50,12 @@ const UsersBottomModal = React.forwardRef(
     const header = () => (
       <ModalHeader heading={heading} subHeading={subHeading} />
     );
-    const listContainer = styles().listContainer;
+    const listContainer = styles.listContainer;
 
     return (
       <Modalize
         ref={ref}
-        modalStyle={styles().container}
+        modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
           data: data,
@@ -69,8 +69,7 @@ const UsersBottomModal = React.forwardRef(
   },
 );
 
-const styles = () =>
-  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
       marginTop: 40,
       padding: 20,

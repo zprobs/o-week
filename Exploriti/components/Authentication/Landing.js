@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from "react";
 import { ScrollView, Text, View, StyleSheet, Image } from "react-native";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import { Theme } from "../../theme/Colours";
 import Fonts from "../../theme/Fonts";
 import images from "../../assets/images";
-import firebase from '@react-native-firebase/app';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -15,7 +14,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-export default function Landing({navigation}) {
+export default function Landing({ navigation }) {
   const [interval, setInterval] = useState(1);
   const [width, setWidth] = useState(0);
 
@@ -105,12 +104,22 @@ export default function Landing({navigation}) {
 
       <View style={styles.buttons}>
         <View style={styles.bullets}>{bullets}</View>
-        <ButtonColour label={"Sign Up"} containerStyle={styles.signUp} onPress={()=>{navigation.navigate('Signup')}} colour={colours.accent} light={true} />
+        <ButtonColour
+          label={"Sign Up"}
+          containerStyle={styles.signUp}
+          onPress={() => {
+            navigation.navigate("Signup");
+          }}
+          colour={colours.accent}
+          light={true}
+        />
         <ButtonColour
           label={"Log In"}
           containerStyle={styles.logIn}
           labelStyle={{ color: colours.accent }}
-          onPress={()=>{navigation.navigate('Login')}}
+          onPress={() => {
+            navigation.navigate("Login");
+          }}
         />
       </View>
     </>
@@ -167,14 +176,14 @@ const styles = StyleSheet.create({
   buttons: {
     flex: 1,
     paddingHorizontal: 20,
-    justifyContent: 'center'
+    justifyContent: "center",
   },
   signUp: {
     alignItems: "center",
   },
   logIn: {
     backgroundColor: "rgba(0, 0, 0, 0)",
-    marginTop: 10
+    marginTop: 10,
   },
   image: {
     height: 400,

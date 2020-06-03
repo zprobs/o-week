@@ -1,5 +1,5 @@
-import React, {useState, useEffect, createRef, useRef} from 'react';
-import {View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -174,8 +174,6 @@ function mapToString(map) {
            }
        }
    );
-   console.log('Map: ')
-   console.log(array);
    return array;
 }
 

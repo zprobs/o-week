@@ -15,3 +15,19 @@ export const GET_USER = gql`
         }
     }
 `;
+
+export const UPDATE_USER = gql`
+    mutation updateUser($data: user_set_input!, $user: user_pk_columns_input!) {
+        updateUser(_set: $data, pk_columns: $user) {
+            description
+        }
+    }
+`
+
+export const SIGN_UP = gql`
+    mutation SIGN_UP($data: user_insert_input!) {
+        createUser(object: $data) {
+            name
+        }
+    }
+`;

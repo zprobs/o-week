@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   View,
   ImageBackground,
@@ -13,28 +13,39 @@ import { ThemeStatic } from "../../theme/Colours";
 import FormInput from "../ReusableComponents/FormInput";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import Selection from '../ReusableComponents/Selection';
+import { UserContext } from '../../context';
+import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
+import {yearsData} from '../Authentication/Signup';
 
 /**
  * Modal for editing the logged in users data
- * @paramimage
+ * @param image
  * @param name
  * @param program
  * @param description
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly description?: *, readonly imageonly name?: *, readonly program?: *}> & React.RefAttributes<unknown>>}
  */
 const EditProfileBottomModal = React.forwardRef(
-  ({ image, name, program, description }, ref) => {
+  ({ image, name, program, description, year }, ref) => {
     const [editableImage, setEditableImage] = useState("");
     const [editableName, setEditableName] = useState("");
+    const [editableYear, setEditableYear] = useState("");
     const [editableProgram, setEditableProgram] = useState("");
     const [editableDescription, setEditableDescription] = useState("");
     const [isUploading, setIsUploading] = useState(false);
+
+    const yearRef = useRef();
+
+    const onYearRef = () =>  yearRef.current.open();
+
+    const {userState, userDispatch} = useContext(UserContext);
 
     useEffect(() => {
       setEditableImage(image);
       setEditableName(name);
       setEditableProgram(program);
       setEditableDescription(description);
+      setEditableYear(year);
     }, []);
 
 
@@ -45,34 +56,62 @@ const EditProfileBottomModal = React.forwardRef(
     const content = () => <Icon name="check" size={24} />;
 
     const onDone = async () => {
-      ref.current.close();
+        const fields = {};
+        if (editableName !== name) fields.name = { name: 'name', value: editableName };
+        if (editableDescription !== description) fields.description = { name: 'description', value: editableDescription };
+        if (editableYear !== year) {
+            let newYear = () => {
+                switch (editableYear) {
+                    case "First Year":
+                        return 1;
+                    case "Second Year":
+                        return 2;
+                    case "Third Year":
+                        return 3;
+                    case "Fourth Year":
+                        return 4;
+                    default:
+                        return 5;
+                }
+            };
+            fields.year = { name: 'year', value: newYear() }
+        }
+        if (Object.keys(fields).length !== 0) {
+            userDispatch({
+                type: 'updateProfile',
+                fields: fields
+            });
+        }
+        ref.current.close();
     };
 
     return (
       <Modalize
         ref={ref}
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        modalStyle={styles().container}
-        adjustToContentHeight>
+        modalStyle={styles.container}
+        adjustToContentHeight
+        tapGestureEnabled={false}>
+          <View style={{paddingHorizontal: 20}}>
         <ModalHeader
           heading="Edit profile"
           subHeading="Edit your personal information"
         />
-        <View style={styles().content}>
+        <View style={styles.content}>
           <ImageBackground
             source={{
               uri: editableImage
                 ? editableImage
                 : "https://reactjs.org/logo-og.png",
             }}
-            style={styles().image}
-            imageStyle={styles().avatarImage}>
+            style={styles.image}
+            imageStyle={styles.avatarImage}>
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => {
                 console.log("change image");
               }}
-              style={styles().imageOverlay}>
+              style={styles.imageOverlay}>
               <Icon name="pencil" size={26} color={ThemeStatic.white} />
             </TouchableOpacity>
           </ImageBackground>
@@ -95,7 +134,7 @@ const EditProfileBottomModal = React.forwardRef(
             <View style={{height: 4}}/>
             <Selection title={"Change Program"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
                 <View style={{height: 8}}/>
-                <Selection title={"Change Year"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+                <Selection title={"Change Year"} onPress={onYearRef} accent={true} style={styles.selections}/>
             <View style={{height: 8}}/>
             <Selection title={"Change Interests"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
 
@@ -106,22 +145,22 @@ const EditProfileBottomModal = React.forwardRef(
             title="done"
             onPress={onDone}
             loading={isUploading}
-            containerStyle={styles().doneButton}
+            containerStyle={styles.doneButton}
             colour={ThemeStatic.accent}
             light={true}
           />
         </View>
+          </View>
+          <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={editableYear} setData={setEditableYear}/>
       </Modalize>
-    );
+  );
   },
 );
 
 const { colours } = Theme.light;
 
-const styles = () =>
-  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
-      paddingHorizontal: 20,
       backgroundColor: colours.base,
     },
     content: {
