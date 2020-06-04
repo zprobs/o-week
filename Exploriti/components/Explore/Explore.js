@@ -1,8 +1,8 @@
-import GroupExplore from "./GroupExplore";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import { MessagesIcon } from '../Menu/MessagesIcon';
+import Search from './Search';
 
 /**
  * One of the three primary tab components. Contains the Explore screen used to browse data
@@ -17,7 +17,7 @@ export default function Explore({mainNavigation}) {
     <Stack.Navigator>
       <Stack.Screen
         name="Explore"
-        component={GroupExplore}
+        component={Search}
         options={{
           headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
             headerRight: () => <MessagesIcon mainNavigation={mainNavigation}/>

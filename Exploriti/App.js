@@ -74,7 +74,7 @@ function HomeScreen({ navigation }) {
       options={{
           tabBarLabel: 'Explore',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="sc-telegram" color={color} size={30} />
+            <Icon name="search" color={color} size={30} />
           ),
         }}
         />

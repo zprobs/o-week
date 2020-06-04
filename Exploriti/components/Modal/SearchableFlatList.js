@@ -113,7 +113,7 @@ const SearchableFlatList = React.forwardRef(({data, title, setData, max}, ref) =
  * @param delay The delay in milliseconds
  * @returns value
  */
-const useDebounce = (value: any, delay: number) => {
+export const useDebounce = (value: any, delay: number) => {
     const [debounceValue, setDebounceValue] = useState(value);
 
     useEffect(() => {
