@@ -1,13 +1,34 @@
-import React from "react";
-import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from '@react-navigation/native';
+import React, { Component } from 'react';
+import { View, TextInput, Button } from 'react-native';
 
-export default function ReportBug({navigation}) {
-  return(
-    <View>
-    <Button onPress={()=>{navigation.navigate('Help')}} title='Back'/>
-    <Text>Report a Bug</Text>
+function UselessTextInput(props) {
+  return (
+    <TextInput
+      {...props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
+      editable
+      maxLength={40}
+    />
+  );
+}
+
+export default function UselessTextInputMultiline() {
+  const [value, onChangeText] = React.useState('Report a bug');
+
+  // If you type something in the text box that is a color, the background will change to that
+  // color.
+  return (
+    <View
+      style={{
+        backgroundColor: value,
+        borderBottomColor: '#000000',
+        borderBottomWidth: 1,
+      }}>
+      <UselessTextInput
+        multiline
+        numberOfLines={4}
+        onChangeText={text => onChangeText(text)}
+        value={value}
+      />
     </View>
   );
 }
