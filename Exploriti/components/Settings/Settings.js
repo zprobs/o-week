@@ -2,6 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import SettingsList from "./SettingsList.js";
 import {CloseIcon} from '../Menu/CloseIcon';
+import { BackIcon } from "../Menu/BackIcon";
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -18,6 +19,7 @@ export default function Settings({navigation}) {
         name="Settings"
         component={SettingsList}
         options={{
+          headerLeft: () => <BackIcon mainNavigation={navigation} />,
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
       />
