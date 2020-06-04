@@ -1,23 +1,26 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState, useRef} from 'react';
 import { Text, View, StyleSheet, SectionList} from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import Fonts from '../../theme/Fonts';
 import {useQuery} from '@apollo/react-hooks';
 import {GET_ALL_USERS, GET_USER} from '../../graphql';
 import Error from '../ReusableComponents/Error';
+import {useDebounce} from '../Modal/SearchableFlatList';
+import UserCard from '../ReusableComponents/UserCard';
 
 const {FontWeights, FontSizes} = Fonts;
 
 export default function Search() {
-    const [query, setQuery] = useState();
-   // const [filteredData, setFilteredData] = useState({users: {}});
-
+    const [query, setQuery] = useState('');
+    const debounceQuery = useDebounce(query, 300);
     const { loading, error, data } = useQuery(GET_ALL_USERS);
+    const [filteredData, setFilteredData] = useState(data);
+    const firstRenderRef = useRef(true);
 
-    const DATA = useMemo(() => [
+    const listData = useMemo(() => [
         {
             title: "Users",
-            data: data ? data.users : null
+            data: filteredData ? filteredData.users : []
         },
         {
             title: "Orientation Groups",
@@ -31,16 +34,27 @@ export default function Search() {
             title: "Events",
             data: ["Cheese Cake", "Ice Cream"]
         }
-    ],[data]);
+    ],[filteredData]);
+
+    useEffect(() => {
+        if (firstRenderRef.current) {
+            firstRenderRef.current = false;
+        }  else {
+            const lowerCaseQuery = debounceQuery.toLowerCase();
+                const newData = data.users.filter(user => user.name.toLowerCase().includes(lowerCaseQuery));
+                setFilteredData({users: newData});
+
+        }
+
+
+    }, [debounceQuery]);
+
+    useEffect(()=>{
+        setFilteredData(data);
+    }, [data])
 
     if (loading) return <Text>Loading...</Text>
     if (error) return  <Error e={error}/>
-
-
-
-
-
-
 
 
 
@@ -55,12 +69,10 @@ export default function Search() {
 
         />
             <SectionList
-                sections={DATA}
+                sections={listData}
                 keyExtractor={(item, index) => item + index}
                 renderItem={renderItem}
-                renderSectionHeader={({ section: { title } }) => (
-                    <Text style={styles.header}>{title}</Text>
-                )}
+                renderSectionHeader={renderSectionHeader}
             />
     </>
     );
@@ -73,9 +85,13 @@ const Item = ({ title }) => (
 );
 
 const renderItem = ({item, section}) => {
-    if (section.title === 'Users') return <Item title={item.name} />;
+    if (section.title === 'Users') return <UserCard name={item.name} image={"https://reactjs.org/logo-og.png"} userId={item.id} style={styles.userCard} />;
     return <Item title={item}/>
 };
+
+const renderSectionHeader = ({section: {title}}) => (
+    <Text style={styles.header}>{title}</Text>
+);
 
 const styles = StyleSheet.create({
     container: {
@@ -89,12 +105,17 @@ const styles = StyleSheet.create({
     },
     header: {
         ...FontSizes.SubHeading,
-        ...FontWeights.Regular,
-        backgroundColor: "#fff"
+        ...FontWeights.Bold,
+        backgroundColor: "#fff",
+        padding: 5
     },
     title: {
         ...FontSizes.Caption,
         ...FontWeights.Regular
+    },
+    userCard: {
+        marginVertical: 7,
+        marginLeft: 5
     }
 });
 

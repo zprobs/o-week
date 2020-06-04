@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, Dimensions, FlatList } from "react-native";
 import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
-import UserCard from "./UserCard";
+import UserCard from "../ReusableComponents/UserCard";
 import { Theme } from "../../theme/Colours";
 import Images from "../../assets/images";
 import ImgBanner from "../ReusableComponents/ImgBanner";

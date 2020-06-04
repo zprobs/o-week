@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Button } from "react-native";
-import {processLogout} from '../../App';
 import firebase from '@react-native-firebase/app';
 import {AuthContext} from '../../context';
 
