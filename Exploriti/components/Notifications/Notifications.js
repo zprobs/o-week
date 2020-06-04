@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import { NotificationIcon } from '../Menu/NotificationIcon';
+import { MessagesIcon } from '../Menu/MessagesIcon';
 import NotificationsList from './NotificationsList';
 
 
@@ -15,7 +15,7 @@ export default function Notifications({mainNavigation}) {
                 component={NotificationsList}
                 options={{
                     headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-                    headerRight: () => <NotificationIcon mainNavigation={mainNavigation}/>
+                    headerRight: () => <MessagesIcon mainNavigation={mainNavigation}/>
                 }}
             />
         </Stack.Navigator>

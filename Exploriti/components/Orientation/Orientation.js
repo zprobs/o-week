@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Dashboard from "./Dashboard";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import {NotificationIcon} from '../Menu/NotificationIcon';
+import {MessagesIcon} from '../Menu/MessagesIcon';
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -20,7 +20,7 @@ export default function Orientation({mainNavigation}) {
         component={Dashboard}
         options={{
             headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-            headerRight: () => <NotificationIcon mainNavigation={mainNavigation} />
+            headerRight: () => <MessagesIcon mainNavigation={mainNavigation} />
         }}
       />
     </Stack.Navigator>

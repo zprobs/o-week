@@ -2,7 +2,7 @@ import GroupExplore from "./GroupExplore";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import { NotificationIcon } from '../Menu/NotificationIcon';
+import { MessagesIcon } from '../Menu/MessagesIcon';
 
 /**
  * One of the three primary tab components. Contains the Explore screen used to browse data
@@ -20,7 +20,7 @@ export default function Explore({mainNavigation}) {
         component={GroupExplore}
         options={{
           headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-            headerRight: () => <NotificationIcon mainNavigation={mainNavigation}/>
+            headerRight: () => <MessagesIcon mainNavigation={mainNavigation}/>
         }}
       />
     </Stack.Navigator>

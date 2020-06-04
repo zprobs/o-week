@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import Profile from "./Profile";
-import {NotificationIcon} from '../Menu/NotificationIcon';
+import {MessagesIcon} from '../Menu/MessagesIcon';
 
 /**
  * One of the three primary tab components. Contains the current user's profile
@@ -20,7 +20,7 @@ export default function MyProfile({mainNavigation}) {
         component={Profile}
         options={{
             headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-            headerRight: () => <NotificationIcon mainNavigation={mainNavigation} />
+            headerRight: () => <MessagesIcon mainNavigation={mainNavigation} />
         }}
       />
     </Stack.Navigator>

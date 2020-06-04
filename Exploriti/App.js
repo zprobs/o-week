@@ -55,6 +55,11 @@ function HomeScreen({ navigation }) {
     <MyProfile mainNavigation={navigation} />
   );
 
+    const NotificationsComponent = () => (
+        <Notifications mainNavigation={navigation} />
+    );
+
+
   return (
     <Tab.Navigator>
       <Tab.Screen name="Orientation" component={OrientationComponent}
@@ -73,7 +78,7 @@ function HomeScreen({ navigation }) {
           ),
         }}
         />
-        <Tab.Screen name="Notifications" component={Notifications}
+        <Tab.Screen name="Notifications" component={NotificationsComponent}
                     options={{
                         tabBarLabel: 'Notifications',
                         tabBarIcon: ({ color, size }) => (
