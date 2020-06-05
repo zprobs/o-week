@@ -156,16 +156,7 @@ function MainApp({data}) {
     );
 }
 
-const processLogout = async () => {
-    const {authState, setAuthState} = useContext(AuthContext);
-    try {
-        setAuthState({ status: "loading" });
-        await firebase.auth().signOut();
-        setAuthState({ status: "out" });
-    } catch (error) {
-        console.log(error);
-    }
-};
+
 
 export default function App () {
     const [authState, setAuthState] = useState({ status: "loading" });

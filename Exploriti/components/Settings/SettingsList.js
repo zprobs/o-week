@@ -15,7 +15,7 @@ import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import {UserContext} from '../../context';
+import {AuthContext, UserContext} from '../../context';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
@@ -47,10 +47,24 @@ const Stack = createStackNavigator();
 
 
 function SettingsList({navigation}) {
+
+    const {setAuthState} = useContext(AuthContext);
+
+    const processLogout = async () => {
+        try {
+            setAuthState({ status: "loading" });
+            await firebase.auth().signOut();
+            setAuthState({ status: "out" });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
   return(
     <View>
     <Button title="Help" onPress={()=>{navigation.navigate('Help')}} />
     <Button title="About" onPress={()=>{navigation.navigate('About')}} />
+    <Button title="Logout" onPress={()=>{processLogout()}} />
     </View>
   );
 }
@@ -104,6 +118,8 @@ function SettingsItem({navigation}) {
     </TouchableOpacity>
   );
 };
+
+
 
 const styles = () =>
   StyleSheet.create({
