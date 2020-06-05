@@ -31,20 +31,21 @@ const { colours } = Theme.light;
  */
 export default function Profile({route}) {
 
-    const {userId} = route.params;
 
   const editProfileBottomModalRef = useRef();
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
+    const {userState} = useContext(UserContext);
 
-  const isCurrentUser = userId==null;
+     const userId = route.params ? route.params.userId : null;
+
+    const isCurrentUser = userId==null;
 
     const { loading, error, data } = useQuery(GET_USER, {
         variables: { id: userId },
         skip: isCurrentUser
     });
 
-    const {userState} = useContext(UserContext);
     let description, name, image, program, year;
 
     if (!isCurrentUser) {
@@ -69,7 +70,7 @@ export default function Profile({route}) {
 
   const renderInteractions = () => {
       if (isCurrentUser) return null;
-      return <UserInteractions targetId={userId}  />
+      return <UserInteractions   />
   };
 
 
