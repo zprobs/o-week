@@ -19,7 +19,6 @@ export default function Settings({navigation}) {
         name="Settings"
         component={SettingsList}
         options={{
-          headerLeft: () => <BackIcon mainNavigation={navigation} />,
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
       />
