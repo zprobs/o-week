@@ -15,6 +15,10 @@ import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
 import { UserContext} from '../../context';
+import {useQuery} from '@apollo/react-hooks';
+import {GET_USER} from '../../graphql';
+import Loading from '../Authentication/Loading';
+import Error from '../ReusableComponents/Error';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -25,30 +29,54 @@ const { colours } = Theme.light;
  * @returns {*}
  * @constructor
  */
-export default function Profile() {
+export default function Profile({route}) {
+
+    const {userId} = route.params;
 
   const editProfileBottomModalRef = useRef();
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
 
+  const isCurrentUser = userId==null;
+
+    const { loading, error, data } = useQuery(GET_USER, {
+        variables: { id: userId },
+        skip: isCurrentUser
+    });
+
     const {userState} = useContext(UserContext);
+    let description, name, image, program, year;
 
-    const description = userState.description;
-    const name = userState.name;
-    const image = userState.image;
-    const program = userState.program;
-    const year = userState.year;
-
+    if (!isCurrentUser) {
+        if (loading) return <Text>Loading...</Text>
+        if (error) return <Error e={error}/>
+        description = data.user.description;
+        name = data.user.name;
+        image = "https://reactjs.org/logo-og.png";
+        program = data.user.program;
+        year = data.user.year;
+    } else {
+        description = userState.description;
+        name = userState.name;
+        image = userState.image;
+        program = userState.program;
+        year = userState.year;
+    }
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onFriendsOpen = () => usersBottomModalRef.current.open();
   const onGroupsOpen = () => groupBottomModalRef.current.open();
 
+  const renderInteractions = () => {
+      if (isCurrentUser) return null;
+      return <UserInteractions targetId={userId}  />
+  };
+
 
   return (
     <>
       <ProfileCard
-        editable={true}
+        editable={isCurrentUser}
         description={description}
         name={name}
         program={program}
@@ -57,7 +85,9 @@ export default function Profile() {
         onEdit={onEdit}
         onFriendsOpen={onFriendsOpen}
         onGroupsOpen={onGroupsOpen}
+        renderInteractions={renderInteractions}
       />
+        { isCurrentUser ?
       <EditProfileBottomModal
         ref={editProfileBottomModalRef}
        image={image}
@@ -66,6 +96,7 @@ export default function Profile() {
         year={year}
         description={description}
       />
+      : null }
       <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />
       <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
     </>
@@ -117,6 +148,7 @@ const ProfileCard = ({
   name,
   program,
   description,
+    renderInteractions
 }) => {
   return (
     <View style={styles.container}>
@@ -134,12 +166,43 @@ const ProfileCard = ({
         <Text style={styles.usernameText}>{name}</Text>
         <Text style={styles.programText}>{program}</Text>
       </View>
+        {renderInteractions && renderInteractions()}
       <View style={styles.description}>
         <Text style={styles.descriptionTitle}>About</Text>
         <Text style={styles.descriptionText}>{description}</Text>
       </View>
     </View>
   );
+};
+
+const UserInteractions = () => {
+
+
+   // let content = <LoadingIndicator size={IconSizes.x0} color={theme.white} />;
+
+
+        let content = (
+            <Text style={styles.followInteractionText}>ADD FRIEND</Text>
+        );
+
+    const friendInteraction = () => {
+
+    };
+
+    const messageInteraction = async () => {
+
+    };
+
+    return (
+        <View style={styles.userInteractionsContainer}>
+            <TouchableOpacity activeOpacity={0.90} onPress={friendInteraction} style={styles.followInteraction}>
+                {content}
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.90} onPress={messageInteraction} style={styles.messageInteraction}>
+                <Text style={styles.messageInteractionText}>MESSAGE</Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -223,4 +286,39 @@ const styles = StyleSheet.create({
       color: colours.white,
       marginTop: 5,
     },
+    userInteractionsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 20
+    },
+    followInteraction: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 5,
+        paddingVertical: 7,
+        borderRadius: 40,
+        backgroundColor: colours.accent
+    },
+    messageInteraction: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 5,
+        paddingVertical: 7,
+        borderRadius: 40,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colours.accent
+    },
+    followInteractionText: {
+        ...FontWeights.Light,
+        ...FontSizes.Caption,
+        color: colours.white
+    },
+    messageInteractionText: {
+        ...FontWeights.Light,
+        ...FontSizes.Caption,
+        color: colours.accent
+    }
   });

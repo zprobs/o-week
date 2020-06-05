@@ -10,7 +10,7 @@ import UserCard from '../ReusableComponents/UserCard';
 
 const {FontWeights, FontSizes} = Fonts;
 
-export default function Search({navigation}) {
+export default function Search() {
     console.log('search start');
    const [query, setQuery] = useState('');
    const debounceQuery = useDebounce(query, 300);

@@ -21,9 +21,10 @@ const UserCard = ({ userId, image, name, onPress, style }) => {
 
     const navigation = useNavigation();
 
+
   const navigateToProfile = () => {
     console.log("navigate to profile");
-    navigation.navigate('Profile');
+    navigation.push('Profile', {userId: userId});
   };
 
   return (
