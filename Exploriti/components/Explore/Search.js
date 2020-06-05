@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState, useRef} from 'react';
-import { Text, View, StyleSheet, SectionList} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Button} from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import Fonts from '../../theme/Fonts';
 import {useQuery} from '@apollo/react-hooks';
@@ -10,12 +10,13 @@ import UserCard from '../ReusableComponents/UserCard';
 
 const {FontWeights, FontSizes} = Fonts;
 
-export default function Search() {
-    const [query, setQuery] = useState('');
-    const debounceQuery = useDebounce(query, 300);
-    const { loading, error, data } = useQuery(GET_ALL_USERS);
-    const [filteredData, setFilteredData] = useState(data);
-    const firstRenderRef = useRef(true);
+export default function Search({navigation}) {
+    console.log('search start');
+   const [query, setQuery] = useState('');
+   const debounceQuery = useDebounce(query, 300);
+   const { loading, error, data } = useQuery(GET_ALL_USERS);
+   const [filteredData, setFilteredData] = useState(data);
+   const firstRenderRef = useRef(true);
 
     const listData = useMemo(() => [
         {
@@ -51,16 +52,15 @@ export default function Search() {
 
     useEffect(()=>{
         setFilteredData(data);
-    }, [data])
+    }, [data]);
 
     if (loading) return <Text>Loading...</Text>
     if (error) return  <Error e={error}/>
 
 
 
-
     return (
-        <>
+         <>
         <SearchBar
             value={query}
             onChangeText={setQuery}
@@ -85,9 +85,10 @@ const Item = ({ title }) => (
 );
 
 const renderItem = ({item, section}) => {
-    if (section.title === 'Users') return <UserCard name={item.name} image={"https://reactjs.org/logo-og.png"} userId={item.id} style={styles.userCard} />;
+    if (section.title === 'Users') return <UserCard name={item.name} image={"https://reactjs.org/logo-og.png"} userId={item.id} style={styles.userCard}  />;
     return <Item title={item}/>
 };
+
 
 const renderSectionHeader = ({section: {title}}) => (
     <Text style={styles.header}>{title}</Text>

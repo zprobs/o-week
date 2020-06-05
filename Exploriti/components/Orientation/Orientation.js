@@ -4,14 +4,14 @@ import Dashboard from "./Dashboard";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import {MessagesIcon} from '../Menu/MessagesIcon';
 
+const Stack = createStackNavigator();
+
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
- * @param props The toggleDrawer is a reference to the navigation.toggleDrawer() method of the Drawer Navigator
  * @returns Stack Navigator of Orientation
  * @constructor
  */
-export default function Orientation({mainNavigation}) {
-  const Stack = createStackNavigator();
+export default function Orientation() {
 
   return (
     <Stack.Navigator>
@@ -19,8 +19,8 @@ export default function Orientation({mainNavigation}) {
         name="Orientation"
         component={Dashboard}
         options={{
-            headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-            headerRight: () => <MessagesIcon mainNavigation={mainNavigation} />
+            headerLeft: () => <DrawerIcon/>,
+            headerRight: () => <MessagesIcon/>
         }}
       />
     </Stack.Navigator>

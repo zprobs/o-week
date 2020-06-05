@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
+import { useNavigation } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -18,15 +19,17 @@ const { colours } = Theme.light;
  */
 const UserCard = ({ userId, image, name, onPress, style }) => {
 
+    const navigation = useNavigation();
 
   const navigateToProfile = () => {
     console.log("navigate to profile");
+    navigation.navigate('Profile');
   };
 
   return (
     <TouchableOpacity
       activeOpacity={0.95}
-      onPress={onPress || navigateToProfile}
+      onPress={navigateToProfile}
       style={[styles.container, style]}>
       <Image source={{uri: image}} style={styles.avatarImage} />
       <View style={styles.info}>
