@@ -31,3 +31,22 @@ export const SIGN_UP = gql`
         }
     }
 `;
+
+export const GET_INTERESTS = gql`
+    query GET_INTERESTS {
+        interests(order_by: {name: asc}) {
+            id
+            name
+            aliases
+        }
+    }
+`;
+
+export const GET_PROGRAMS = gql`
+    query GET_PROGRAMS {
+        programs(order_by: {name: asc}) {
+            id
+            name
+        }
+    }
+`;

@@ -120,6 +120,8 @@ function MainStack() {
 
     if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>
 
+    console.log(data)
+
     return (
             <MainApp data={data}/>
     );
