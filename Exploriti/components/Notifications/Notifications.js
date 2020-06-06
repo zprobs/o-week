@@ -7,8 +7,12 @@ import NotificationsList from './NotificationsList';
 
 const Stack = createStackNavigator();
 
+/**
+ * Notifications is where all app updates except for messages will be shown
+ * @returns {*}
+ * @constructor
+ */
 export default function Notifications() {
-    console.log('beginning render');
 
     return (
         <Stack.Navigator>

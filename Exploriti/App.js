@@ -40,54 +40,7 @@ import Notifications from './components/Notifications';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function HomeScreen() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="Orientation"
-        component={Orientation}
-        options={{
-          tabBarLabel: "Orientation",
-          tabBarIcon: ({ color}) => (
-            <Icon name="star" color={color} size={30} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Explore"
-        component={Explore}
-        options={{
-          tabBarLabel: "Explore",
-          tabBarIcon: ({ color}) => (
-            <Icon name="search" color={color} size={30} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={Notifications}
-        options={{
-          tabBarLabel: "Notifications",
-          tabBarIcon: ({ color}) => (
-            <Icon name="bell" color={color} size={30} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="MyProfile"
-        component={MyProfile}
-        options={{
-          tabBarLabel: "MyProfile",
-          tabBarIcon: ({ color}) => (
-            <Icon name="user" color={color} size={30} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
-
-function AuthStack() {
+const AuthStack = () => {
 
     return (
       <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -96,9 +49,9 @@ function AuthStack() {
           <Stack.Screen name={"Login"} component={Login}/>
       </Stack.Navigator>
     );
-}
+};
 
-function MainStack() {
+const MainApp = () => {
 
     const {authState} = useContext(AuthContext);
     const userId = authState.user.uid;
@@ -112,19 +65,21 @@ function MainStack() {
     }
     if (error) return <Error e={error} />;
 
-    if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>
+    if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>;
+
+    data.user.id = userId;
 
     return (
-            <MainApp data={data}/>
+            <MainStack data={data}/>
     );
+};
 
-}
-
-function MainApp({data}) {
+const MainStack = ({data}) => {
 
     const didMountRef = useRef(false); // used to skip running UPDATE_USER on first render
 
     const [userState, userDispatch] = useReducer(userReducer, {
+        id: data.user.id,
         name: data.user.name,
         description: data.user.description,
         image: "https://reactjs.org/logo-og.png",
@@ -144,7 +99,6 @@ function MainApp({data}) {
         }
      }, [userState]
     );
-
     return (
         <UserContext.Provider value={{userState, userDispatch}}>
         <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{headerShown: false}}>
@@ -154,9 +108,54 @@ function MainApp({data}) {
         </Stack.Navigator>
         </UserContext.Provider>
     );
-}
+};
 
-
+const HomeScreen = () => {
+    return (
+        <Tab.Navigator>
+            <Tab.Screen
+                name="Orientation"
+                component={Orientation}
+                options={{
+                    tabBarLabel: "Orientation",
+                    tabBarIcon: ({ color}) => (
+                        <Icon name="star" color={color} size={30} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Explore"
+                component={Explore}
+                options={{
+                    tabBarLabel: "Explore",
+                    tabBarIcon: ({ color}) => (
+                        <Icon name="search" color={color} size={30} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Notifications"
+                component={Notifications}
+                options={{
+                    tabBarLabel: "Notifications",
+                    tabBarIcon: ({ color}) => (
+                        <Icon name="bell" color={color} size={30} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="MyProfile"
+                component={MyProfile}
+                options={{
+                    tabBarLabel: "MyProfile",
+                    tabBarIcon: ({ color}) => (
+                        <Icon name="user" color={color} size={30} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
+    );
+};
 
 export default function App () {
     const [authState, setAuthState] = useState({ status: "loading" });
@@ -170,7 +169,7 @@ export default function App () {
                            setAuthState({ status: "in", user, token });
                            return token;
                         }
-                        const endpoint = 'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken'
+                        const endpoint = 'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken';
                         return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
                             if (res.status === 200) {
                                 return user.getIdToken(true)
@@ -224,7 +223,7 @@ export default function App () {
                     { authState.status === "loading" ? (
                         <Loading/>
                     ) : authState.status === "in" ? (
-                        <MainStack/>
+                        <MainApp/>
                     ) : (
                         <AuthStack/>
                     )}

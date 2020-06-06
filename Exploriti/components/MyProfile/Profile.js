@@ -17,89 +17,100 @@ import GroupBottomModal from "../Modal/GroupBottomModal";
 import { UserContext} from '../../context';
 import {useQuery} from '@apollo/react-hooks';
 import {GET_USER} from '../../graphql';
-import Loading from '../Authentication/Loading';
 import Error from '../ReusableComponents/Error';
+import GoBackHeader from '../Menu/GoBackHeader';
+import OptionsIcon from '../Menu/OptionsIcon';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import OptionsBottomModal from '../Modal/OptionsBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 
 const { colours } = Theme.light;
 
 /**
- * Profile is the screen which will display a users profile.
+ * Profile is the screen which will display a users profile. Has two states: isCurrentUser = true or false
+ * @param route The navigation route parameters set when navigating to this page using react-navigation. If it has a parameter userId then the page
+ * will render as not the current user.
  * @returns {*}
  * @constructor
  */
-export default function Profile({route}) {
-
-
+export default function Profile({ route }) {
   const editProfileBottomModalRef = useRef();
+  const optionsBottomModalRef = useRef();
   const usersBottomModalRef = useRef();
   const groupBottomModalRef = useRef();
-    const {userState} = useContext(UserContext);
+  const { userState } = useContext(UserContext);
 
-     const userId = route.params ? route.params.userId : null;
+  const userId = route.params ? route.params.userId : null;
 
-    const isCurrentUser = userId==null;
+  const isCurrentUser = userId == null || userState.id === userId;
 
-    const { loading, error, data } = useQuery(GET_USER, {
-        variables: { id: userId },
-        skip: isCurrentUser
-    });
+  const { loading, error, data } = useQuery(GET_USER, {
+    variables: { id: userId },
+    skip: isCurrentUser,
+  });
 
-    let description, name, image, program, year;
+  let description, name, image, program, year;
 
-    if (!isCurrentUser) {
-        if (loading) return <Text>Loading...</Text>
-        if (error) return <Error e={error}/>
-        description = data.user.description;
-        name = data.user.name;
-        image = "https://reactjs.org/logo-og.png";
-        program = data.user.program;
-        year = data.user.year;
-    } else {
-        description = userState.description;
-        name = userState.name;
-        image = userState.image;
-        program = userState.program;
-        year = userState.year;
-    }
+  if (!isCurrentUser) {
+    if (loading) return <Text>Loading...</Text>;
+    if (error) return <Error e={error} />;
+    description = data.user.description;
+    name = data.user.name;
+    image = "https://reactjs.org/logo-og.png";
+    program = data.user.program;
+    year = data.user.year;
+  } else {
+    description = userState.description;
+    name = userState.name;
+    image = userState.image;
+    program = userState.program;
+    year = userState.year;
+  }
 
   const onEdit = () => editProfileBottomModalRef.current.open();
+  const onOptions = () => optionsBottomModalRef.current.open();
   const onFriendsOpen = () => usersBottomModalRef.current.open();
   const onGroupsOpen = () => groupBottomModalRef.current.open();
 
   const renderInteractions = () => {
-      if (isCurrentUser) return null;
-      return <UserInteractions   />
+    if (isCurrentUser) return null;
+    return <UserInteractions />;
   };
-
 
   return (
     <>
-      <ProfileCard
-        editable={isCurrentUser}
-        description={description}
-        name={name}
-        program={program}
-        image={image}
-        year={year}
-        onEdit={onEdit}
-        onFriendsOpen={onFriendsOpen}
-        onGroupsOpen={onGroupsOpen}
-        renderInteractions={renderInteractions}
-      />
-        { isCurrentUser ?
-      <EditProfileBottomModal
-        ref={editProfileBottomModalRef}
-       image={image}
-        name={name}
-        program={program}
-        year={year}
-        description={description}
-      />
-      : null }
+      <SafeAreaView>
+        {isCurrentUser ? null : (
+          <GoBackHeader IconRight={OptionsIcon} IconRightOnPress={onOptions} />
+        )}
+        <ProfileCard
+          editable={isCurrentUser}
+          description={description}
+          name={name}
+          program={program}
+          image={image}
+          year={year}
+          onEdit={onEdit}
+          onFriendsOpen={onFriendsOpen}
+          onGroupsOpen={onGroupsOpen}
+          renderInteractions={renderInteractions}
+        />
+      </SafeAreaView>
       <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />
       <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
+      {isCurrentUser ? (
+        <EditProfileBottomModal
+          ref={editProfileBottomModalRef}
+          image={image}
+          name={name}
+          program={program}
+          year={year}
+          description={description}
+        />
+      ) : (
+        <OptionsBottomModal ref={optionsBottomModalRef} />
+      )}
     </>
   );
 }
@@ -137,6 +148,7 @@ const Connections = ({ total, type, onPress }) => {
  * @param name
  * @param program
  * @param description
+ * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @returns {*}
  * @constructor
  */
@@ -149,7 +161,7 @@ const ProfileCard = ({
   name,
   program,
   description,
-    renderInteractions
+  renderInteractions,
 }) => {
   return (
     <View style={styles.container}>
@@ -167,7 +179,7 @@ const ProfileCard = ({
         <Text style={styles.usernameText}>{name}</Text>
         <Text style={styles.programText}>{program}</Text>
       </View>
-        {renderInteractions && renderInteractions()}
+      {renderInteractions && renderInteractions()}
       <View style={styles.description}>
         <Text style={styles.descriptionTitle}>About</Text>
         <Text style={styles.descriptionText}>{description}</Text>
@@ -208,7 +220,6 @@ const UserInteractions = () => {
 
 const styles = StyleSheet.create({
     container: {
-      paddingTop: 30,
       paddingBottom: 4,
       paddingHorizontal: 15,
     },

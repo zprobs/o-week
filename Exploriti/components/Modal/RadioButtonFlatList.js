@@ -1,13 +1,17 @@
-import React from 'react';
-import {View, StyleSheet, TouchableOpacity, Text, SafeAreaView} from 'react-native';
-import {Modalize} from 'react-native-modalize';
-import Fonts from '../../theme/Fonts';
-import {ThemeStatic} from '../../theme/Colours';
+import React from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import { Modalize } from "react-native-modalize";
+import Fonts from "../../theme/Fonts";
+import { ThemeStatic } from "../../theme/Colours";
 
-const {FontWeights, FontSizes} = Fonts;
+const { FontWeights, FontSizes } = Fonts;
 
 const RadioButtonFlatList = React.forwardRef(({data, title, selectedData, setData}, ref) => {
-
 
 
     const renderItem = ({item}) => {
@@ -52,7 +56,6 @@ const RadioButtonFlatList = React.forwardRef(({data, title, selectedData, setDat
 />);
 
 });
-
 
 
 function RadioButton({selected}) {

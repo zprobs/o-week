@@ -1,18 +1,23 @@
-import React, {useEffect, useMemo, useState, useRef} from 'react';
-import { Text, View, StyleSheet, SectionList, Button} from 'react-native';
-import SearchBar from 'react-native-search-bar';
-import Fonts from '../../theme/Fonts';
-import {useQuery} from '@apollo/react-hooks';
-import {GET_ALL_USERS, GET_USER} from '../../graphql';
-import Error from '../ReusableComponents/Error';
-import {useDebounce} from '../Modal/SearchableFlatList';
-import UserCard from '../ReusableComponents/UserCard';
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { Text, View, StyleSheet, SectionList, Button } from "react-native";
+import SearchBar from "react-native-search-bar";
+import Fonts from "../../theme/Fonts";
+import { useQuery } from "@apollo/react-hooks";
+import { GET_ALL_USERS } from "../../graphql";
+import Error from "../ReusableComponents/Error";
+import { useDebounce } from "../Modal/SearchableFlatList";
+import UserCard from "../ReusableComponents/UserCard";
 
 const {FontWeights, FontSizes} = Fonts;
 
+/**
+ * Search displays a SectionList containing recommended data of interest to the current user obtained from an API call. It displays users, groups, events
+ * and other groups. Has a search functionality which should be able to reach anything on the app.
+ * @returns {*}
+ * @constructor
+ */
 export default function Search() {
-    console.log('search start');
-   const [query, setQuery] = useState('');
+   const [query, setQuery] = useState("");
    const debounceQuery = useDebounce(query, 300);
    const { loading, error, data } = useQuery(GET_ALL_USERS);
    const [filteredData, setFilteredData] = useState(data);
@@ -44,37 +49,31 @@ export default function Search() {
             const lowerCaseQuery = debounceQuery.toLowerCase();
                 const newData = data.users.filter(user => user.name.toLowerCase().includes(lowerCaseQuery));
                 setFilteredData({users: newData});
-
         }
-
-
     }, [debounceQuery]);
 
     useEffect(()=>{
         setFilteredData(data);
     }, [data]);
 
-    if (loading) return <Text>Loading...</Text>
-    if (error) return  <Error e={error}/>
-
-
+    if (loading) return <Text>Loading...</Text>;
+    if (error) return  <Error e={error}/>;
 
     return (
-         <>
+      <>
         <SearchBar
-            value={query}
-            onChangeText={setQuery}
-            placeholder='Search for users or groups...'
-            hideBackground={true}
-
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search for users or groups..."
+          hideBackground={true}
         />
-            <SectionList
-                sections={listData}
-                keyExtractor={(item, index) => item + index}
-                renderItem={renderItem}
-                renderSectionHeader={renderSectionHeader}
-            />
-    </>
+        <SectionList
+          sections={listData}
+          keyExtractor={(item, index) => item + index}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+        />
+      </>
     );
 }
 
