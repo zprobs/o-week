@@ -12,8 +12,8 @@ import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 import ImagePicker from 'react-native-image-crop-picker';
 import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
-import {useMutation} from '@apollo/react-hooks';
-import {SIGN_UP} from '../../graphql';
+import { useMutation } from '@apollo/react-hooks';
+import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -217,11 +217,10 @@ export default function Signup({navigation}) {
     }
 
     function nextPage() {
-        const pg = page;
-        if (pg===4) {submit()} else {
-            setPage((pg + 1));
+        if (page===4) {submit()} else {
+            setPage((page + 1));
             flip_Animation(true);
-            scrollViewRef.current.scrollTo({x: width*pg, y: 0, animated: true});
+            scrollViewRef.current.scrollTo({x: width*page, y: 0, animated: true});
         }
     }
 
@@ -271,7 +270,7 @@ export default function Signup({navigation}) {
         <View style={styles.container} >
             <Animated.View style={{...styles.header, opacity, transform: [{translateY: page===1 ? headerYOffset : 0 }]}}>
                 <TouchableOpacity onPress={backButton}>
-                        <Image source={images.backArrow} style={styles.backArrow}/>
+                    <Image source={images.backArrow} style={styles.backArrow}/>
                 </TouchableOpacity>
                 <View style={styles.countCircle}>
                     <Animated.Text style={[styles.count, {transform: [{rotateY: setInterpolate}, {perspective: 1000}]}]}>{page}</Animated.Text>
@@ -280,15 +279,15 @@ export default function Signup({navigation}) {
             <View style={styles.footer}>
                 <BottomButton/>
             </View>
-                <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScro llIndicator={false} bounces={false} scrollEnabled={false} pagingEnabled={true} bouncesZoom={false} ref={scrollViewRef}  >
-                    <ImageBackground source={images.bg} style={styles.background}>
-                <KeyboardAvoidingView style={styles.page} behavior={"position"}>
-                    <View style={styles.form} >
-                        <Animated.Text style={{...styles.title, opacity}}>Create an Account</Animated.Text>
-                        <View>
-                            <Text style={styles.label}>I am a...</Text>
-                            <SegmentedControl values={['Student', 'Organization']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
-                        </View>
+            <ScrollView style={styles.scroll} horizontal={true} showsHorizontalScro llIndicator={false} bounces={false} scrollEnabled={false} pagingEnabled={true} bouncesZoom={false} ref={scrollViewRef}  >
+                <ImageBackground source={images.bg} style={styles.background}>
+                    <KeyboardAvoidingView style={styles.page} behavior={"position"}>
+                        <View style={styles.form} >
+                            <Animated.Text style={{...styles.title, opacity}}>Create an Account</Animated.Text>
+                            <View>
+                                <Text style={styles.label}>I am a...</Text>
+                                <SegmentedControl values={['Student', 'Organization']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
+                            </View>
 
                             <TextLine
                                 style={styles.textLine}
@@ -301,80 +300,79 @@ export default function Signup({navigation}) {
                                 next={true}
                                 onSubmit={()=>emailRef.current.focus()}
                             />
-                        <TextLine
-                            style={styles.textLine}
-                            label={"Email"}
-                            color={ThemeStatic.white}
-                            icon={"envelope"}
-                            placeholder={"*****@utoronto.ca"}
-                            type={"emailAddress"}
-                            value={email}
-                            onChangeText={setEmail}
-                            ref={emailRef}
-                            next={true}
-                            onSubmit={()=>passwordRef.current.focus()}
-                        />
-                        <TextLine
-                            style={styles.textLine}
-                            label={"Password"}
-                            color={ThemeStatic.white}
-                            icon={"lock"}
-                            placeholder={"(8+ Characters)"}
-                            type={"password"}
-                            value={password}
-                            onChangeText={setPassword}
-                            ref={passwordRef}
-                        />
+                            <TextLine
+                                style={styles.textLine}
+                                label={"Email"}
+                                color={ThemeStatic.white}
+                                icon={"envelope"}
+                                placeholder={"*****@utoronto.ca"}
+                                type={"emailAddress"}
+                                value={email}
+                                onChangeText={setEmail}
+                                ref={emailRef}
+                                next={true}
+                                onSubmit={()=>passwordRef.current.focus()}
+                            />
+                            <TextLine
+                                style={styles.textLine}
+                                label={"Password"}
+                                color={ThemeStatic.white}
+                                icon={"lock"}
+                                placeholder={"(8+ Characters)"}
+                                type={"password"}
+                                value={password}
+                                onChangeText={setPassword}
+                                ref={passwordRef}
+                            />
+
+                        </View>
+                    </KeyboardAvoidingView>
+                    <View style={styles.page}>
+                        <View style={styles.form}>
+                            <View>
+                                <Text style={styles.title}>Tell us about yourself</Text>
+                                <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
+                            </View>
+                            <Selection title={programTitle()} onPress={onProgramRef}/>
+                            <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
+                            <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
+                        </View>
+                    </View>
+                    <View style={styles.page}>
+                        <View style={styles.form}>
+                            <View>
+                                <Text style={styles.title}>Select your interests</Text>
+                                <Text style={styles.caption}>This will help us get to know you outside of just your major.</Text>
+                            </View>
+                            <Selection title={interestsTitle(0)} onPress={onInterestRef}/>
+                            <Selection title={interestsTitle(1)} onPress={onInterestRef}/>
+                            <Selection title={interestsTitle(2)} onPress={onInterestRef}/>
+                            <Selection title={interestsTitle(3)} onPress={onInterestRef}/>
+                            <Selection title={interestsTitle(4)} onPress={onInterestRef}/>
+                        </View>
+                    </View>
+                    <View style={styles.page}>
+                        <View style={styles.form}>
+                            <View>
+                                <Text style={styles.title}>Finish Signing Up</Text>
+                                <Text style={styles.caption}>Your Exploriti account is ready to be created. Just add a profile picture and get started.</Text>
+                            </View>
+                            <View>
+                                <Image style={styles.profilePic} source={image}/>
+                                <TouchableOpacity onPress={pickImage}>
+                                    <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
                     </View>
-                </KeyboardAvoidingView>
-                <View style={styles.page}>
-                    <View style={styles.form}>
-                        <View>
-                            <Text style={styles.title}>Tell us about yourself</Text>
-                            <Text style={styles.caption}>This information helps us better filter relevant content for you.</Text>
-                        </View>
-                        <Selection title={programTitle()} onPress={onProgramRef}/>
-                        <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
-                        <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
-                    </View>
-                </View>
-                <View style={styles.page}>
-                    <View style={styles.form}>
-                        <View>
-                            <Text style={styles.title}>Select your interests</Text>
-                            <Text style={styles.caption}>This will help us get to know you outside of just your major.</Text>
-                        </View>
-                        <Selection title={interestsTitle(0)} onPress={onInterestRef}/>
-                        <Selection title={interestsTitle(1)} onPress={onInterestRef}/>
-                        <Selection title={interestsTitle(2)} onPress={onInterestRef}/>
-                        <Selection title={interestsTitle(3)} onPress={onInterestRef}/>
-                        <Selection title={interestsTitle(4)} onPress={onInterestRef}/>
-                    </View>
-                </View>
-                <View style={styles.page}>
-                    <View style={styles.form}>
-                        <View>
-                            <Text style={styles.title}>Finish Signing Up</Text>
-                            <Text style={styles.caption}>Your Exploriti account is ready to be created. Just add a profile picture and get started.</Text>
-                        </View>
-                        <View>
-                            <Image style={styles.profilePic} source={image}/>
-                            <TouchableOpacity onPress={pickImage}>
-                                <Text style={[styles.caption,{paddingTop: 10, ...FontWeights.Bold, color: ThemeStatic.white}]}>Change Picture</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                </View>
-            </ImageBackground>
+                </ImageBackground>
             </ScrollView>
-            <SearchableFlatList ref={programRef} title={'program'} data={programsData} setData={setPrograms} max={4}/>
+            <SearchableFlatList ref={programRef} title={'program'} query={GET_PROGRAMS} setData={setPrograms} aliased={false} max={4}/>
             <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
             <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
-            <SearchableFlatList ref={interestRef} title={'interest'} data={interestsData} setData={setInterests} max={5} />
+            <SearchableFlatList ref={interestRef} title={'interest'} query={GET_INTERESTS} setData={setInterests} aliased={true} max={5} />
         </View>
-
     );
 }
 
@@ -488,6 +486,3 @@ const styles = StyleSheet.create({
 export const programsData = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing', 'Biology', 'Law', 'Medicine', 'Sociology'];
 export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
 const facultiesData = ['ABC', 'EFG', 'HIJ'];
-const interestsData = ["Aerospace", "Anthropology", "Architecture", "Artificial Intelligence", "Biochem", "Biology", "Chemistry", "Commerce", "Computer Science", "Electrical Engineering", "Engineering", "History", "Finance", "Kinesiology", "Math", "Medical", "Neuroscience", "Nursing", "Psychology", "Robotics", "STEM", "Tutoring", "Animation", "Band", "Calligraphy", "Culinary Arts", "Dance", "Drama", "Drawing", "Film", "Guitar", "Hip Hop", "Jazz", "Literature", "Multimedia Art", "Music", "Painting", "Performing Arts", "Philosophy", "Photography", "Piano", "Poetry", "Pottery", "Radio", "Rap", "Rock", "Sculpting", "Visual Arts", "Aerobics", "Aikido", "Airsoft", "Badminton", "Baseball", "Basketball", "Biking", "Body Building", "Bowling", "Boxing", "Cricket", "CrossFit", "Curling", "Diabetes", "Diving", "Dodgeball", "Dragon Boat", "Equestrian", "Fencing", "Fitness", "Football", "Frisbee", "Go Karting", "Golf", "Gym", "Health", "Hiking", "Hockey", "Japanese Martial Arts", "Judo", "Karate", "Kendo", "Krav Maga", "Kung Fu", "Lacrosse", "MMA", "Marathon", "Martial Arts", "Motor Sports", "Muay Thai", "Nutrition", "Olympics", "Paintball", "Parkour", "Pilates", "Power Lifting", "Rallycross", "Rock Climbing", "Rowing", "Rugby", "Running", "Skating", "Skiing", "Snowboarding", "Soccer", "Sports", "Squash", "Swimming", "Sword Fighting", "Table Tennis", "Tennis", "Track and Field", "Volleyball", "Water Polo", "Weightlifting", "Wrestling", "Yoga", "Chestnut Residence", "Innis College", "New College", "St Michael's College", "Trinity College", "University College", "Victoria College", "Woodsworth College", "Charity", "Foreign Students", "Homelessness", "Mental Illness", "Social Services", "Student Support", "Volunteering", "Afghan", "African", "Albanian", "Arab", "Argentinian", "Armenian", "Asian", "Autism", "Bangladeshi", "Bollywood", "Brazilian", "Canadian", "Caribbean", "Celtic", "Chinese", "Croatian", "Indian", "Indigenous ", "Japanese", "LGBTQ", "Latin", "Macedonian", "Mental Health", "Multi Ethnic", "Palestinian", "Persian", "Slavic", "Turkish", "Women", "Clean Energy", "Climate Change", "Food", "Marine Life", "Water and Resources", "Wildlife", "Airplanes", "Anime & Manga", "Board Games", "Books", "Card Games", "Chess", "Comics", "Cooking", "Dungeons & Dragons", "Hobbies", "MOBA", "Monopoly", "Movies", "Poker", "Pokémon", "Pop Culture", "Role Playing", "Scrabble", "Sport Games", "Story Telling", "Strategy Games", "Table Top Games", "Trivia", "Video Games", "eSports", "Community", "First Responders", "Forums", "Learning", "Networking", "Outreach", "Canadian Politics", "Communism", "Conservatives", "Current Events", "Debate", "Democrats", "Economics", "Global Affairs", "Green Party", "Labour", "Law", "Liberals", "New Democratic Party", "People's Party Of Canada", "Political Science", "Socialists", "United Nations", "Alliance", "Child Advocacy", "Ethics", "Human Rights", "Immigrants", "Refugee Aid", "Sexual Advocacy", "Baha'i", "Bible Study", "Buddhism", "Catholic", "Choir", "Christianity", "Falun Dafa", "Gospel", "Hanif", "Hinduism", "Islam", "Judaism", "Meditation", "Orthodox Christianity", "Religion", "Sahaja", "Secularity", "Shia", "Sikh", "Spiritual", "Stoicism", "Sufi", "Associations", "Student Governments", "Student Unions", "Students", "Career", "Research", "Work Experience"]
-
-

@@ -69,6 +69,8 @@ const MainApp = () => {
 
     data.user.id = userId;
 
+    console.log(data)
+
     return (
             <MainStack data={data}/>
     );
