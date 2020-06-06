@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
+import firebase from '@react-native-firebase/app';
+import {AuthContext} from '../../context';
 
 /**
  * A page for showing server errors.
@@ -7,6 +9,7 @@ import { View, Text } from "react-native";
  * @constructor
  */
 export default function Error(props) {
+    const {setAuthState} = React.useContext(AuthContext);
   const { e } = props;
   return (
     <View
@@ -24,6 +27,14 @@ export default function Error(props) {
         inconvenience
       </Text>
       <Text style={{ color: "#808080" }}>{e.message}</Text>
+        <Button onPress={()=>{
+            try {
+                setAuthState({ status: "loading" });
+                firebase.auth().signOut().then(setAuthState({ status: "out" }));
+            } catch (error) {
+                console.log(error);
+            }
+        }} title={"Logout"}/>
     </View>
   );
 }

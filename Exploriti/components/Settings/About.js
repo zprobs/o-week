@@ -1,10 +1,15 @@
 import React from "react";
 import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/EvilIcons";
 
 const About = ({navigation}) => {
   return(
     <View>
-    <Button title="Back" onPress={() => {navigation.navigate('Settings')}} />
+    <TouchableOpacity onPress={() => {navigation.navigate('Settings')}} >
+    <View>
+    <Icon name="chevron-left" size={35}/>
+    </View>
+    </TouchableOpacity>
     <Text style={styles().headerStyle} >User Agreement</Text>
     <View style={styles().viewStyle} />
     <Text style={styles().paragraphStyle} >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

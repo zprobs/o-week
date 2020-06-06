@@ -1,18 +1,20 @@
 import React from "react";
 import Icon from "react-native-vector-icons/EvilIcons";
+import {useNavigation} from '@react-navigation/native';
 
 /**
  * Hamburger menu icon for the top left of Home Screen
  * @param navigate The reference to Drawer Navigation which it opens onPress
  * @returns react-native-vector-icons menu icon
  */
-export const DrawerIcon = ({mainNavigation}) => {
+export const DrawerIcon = () => {
+  const navigation = useNavigation();
   return (
     <Icon
       name="navicon"
       size={38}
       color="#000"
-      onPress={() => mainNavigation.navigate('Settings')}
+      onPress={() => navigation.navigate('Settings')}
     />
   );
 };

@@ -1,12 +1,14 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import { NotificationIcon } from '../Menu/NotificationIcon';
+import { MessagesIcon } from '../Menu/MessagesIcon';
 import NotificationsList from './NotificationsList';
 
 
-export default function Notifications({mainNavigation}) {
-    const Stack = createStackNavigator();
+const Stack = createStackNavigator();
+
+export default function Notifications() {
+    console.log('beginning render');
 
     return (
         <Stack.Navigator>
@@ -14,10 +16,12 @@ export default function Notifications({mainNavigation}) {
                 name="Notifications"
                 component={NotificationsList}
                 options={{
-                    headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-                    headerRight: () => <NotificationIcon mainNavigation={mainNavigation}/>
+                    headerLeft: () => <DrawerIcon/>,
+                    headerRight: () => <MessagesIcon/>
                 }}
             />
         </Stack.Navigator>
     );
 }
+
+

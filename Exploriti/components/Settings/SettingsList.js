@@ -15,13 +15,13 @@ import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import {UserContext} from '../../context';
+import {AuthContext, UserContext} from '../../context';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
-import Settings from "./SettingsFile"
 import Help from "./Help"
 import ReportBug from "./ReportBug"
+
 
 const Stack = createStackNavigator();
 
@@ -47,49 +47,72 @@ const Stack = createStackNavigator();
 
 
 function SettingsList({navigation}) {
+
+    const {setAuthState} = useContext(AuthContext);
+
+    const processLogout = async () => {
+        try {
+            setAuthState({ status: "loading" });
+            await firebase.auth().signOut();
+            setAuthState({ status: "out" });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
   return(
     <View>
-    <Button title="Help" onPress={()=>{navigation.navigate('Help')}} />
-    <Button title="About" onPress={()=>{navigation.navigate('About')}} />
-    </View>
-  );
-}
-
-function SettingsLis() {
-  const {authState, setAuthState} = useContext(UserContext);
-
-  const settingsItemList = [
-    { settingName: "General", icon: "gear" },
-    { settingName: "Notifications", icon: "bell" },
-    { settingName: "Privacy", icon: "unlock" },
-    { settingName: "About", icon: "exclamation", nav: 'About' },
-    { settingName: "Help", icon: "question" },
-  ];
-
-
-  return (
-    <View>
-      <FlatList
-        keyExtractor={setting => setting.settingName}
-        data={settingsItemList}
-        renderItem={({ item }) => {
-          return (
-            <SettingsItem settingName={item.settingName} icon={item.icon} nav={item.nav}/>
-          );
-        }}
-      />
-    </View>
-  );
-}
-
-function SettingsItem({navigation}) {
-  return (
-    <TouchableOpacity onPress={()=>{console.log()}}>
+    <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
       <View>
         <View style={styles().settingItemViewStyle}>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"gear"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"4"} </Text>
+              <Icon name={"question"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"About"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={()=>{navigation.navigate('Help')}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={"exclamation"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"Help"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+    <Button title="Logout" onPress={()=>{processLogout()}} />
+    </View>
+  );
+}
+
+
+/*function SettingsItem({name, nav, icon},{navigation}) {
+  return (
+    <TouchableOpacity onPress={()=>{{nav}}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={icon} size={30} />
+              <Text style={styles().settingItemTextStyle}> {name} </Text>
             </View>
 
           <View style={{ justifyContent: "flex-start" }}>
@@ -104,6 +127,8 @@ function SettingsItem({navigation}) {
     </TouchableOpacity>
   );
 };
+*/
+
 
 const styles = () =>
   StyleSheet.create({

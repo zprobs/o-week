@@ -1,28 +1,34 @@
-import GroupExplore from "./GroupExplore";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { DrawerIcon } from "../Menu/DrawerIcon";
-import { NotificationIcon } from '../Menu/NotificationIcon';
+import { MessagesIcon } from '../Menu/MessagesIcon';
+import Search from './Search';
+import Profile from '../MyProfile/Profile';
+
+const Stack = createStackNavigator();
 
 /**
  * One of the three primary tab components. Contains the Explore screen used to browse data
- * @param props The toggleDrawer is a reference to the navigation.toggleDrawer() method of the Drawer Navigator
  * @returns Stack Navigator of Explore
  * @constructor
  */
-export default function Explore({mainNavigation}) {
-  const Stack = createStackNavigator();
+export default function Explore() {
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Search">
       <Stack.Screen
-        name="Explore"
-        component={GroupExplore}
+        name="Search"
+        component={Search}
         options={{
-          headerLeft: () => <DrawerIcon mainNavigation={mainNavigation} />,
-            headerRight: () => <NotificationIcon mainNavigation={mainNavigation}/>
+          headerLeft: () => <DrawerIcon/>,
+            headerRight: () => <MessagesIcon/>
         }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
       />
     </Stack.Navigator>
   );
 }
+

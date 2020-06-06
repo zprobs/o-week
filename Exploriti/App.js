@@ -9,7 +9,6 @@
 import "react-native-gesture-handler";
 import React, {useState, useEffect, useContext, useMemo, useReducer, useCallback, useRef} from 'react';
 import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from '@react-navigation/stack';
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -41,54 +40,49 @@ import Notifications from './components/Notifications';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function HomeScreen({ navigation }) {
-  // Create const on a separate line to pass in Drawer Navigation and avoid warning
-  const ExploreComponent = () => (
-    <Explore mainNavigation={navigation} />
-  );
-
-  const OrientationComponent = () => (
-    <Orientation mainNavigation={navigation} />
-  );
-
-  const MyProfileComponent = () => (
-    <MyProfile mainNavigation={navigation} />
-  );
-
+function HomeScreen() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Orientation" component={OrientationComponent}
-      options={{
-          tabBarLabel: 'Orientation',
-          tabBarIcon: ({ color, size }) => (
+      <Tab.Screen
+        name="Orientation"
+        component={Orientation}
+        options={{
+          tabBarLabel: "Orientation",
+          tabBarIcon: ({ color}) => (
             <Icon name="star" color={color} size={30} />
           ),
         }}
-        />
-      <Tab.Screen name="Explore" component={ExploreComponent}
-      options={{
-          tabBarLabel: 'Explore',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="sc-telegram" color={color} size={30} />
+      />
+      <Tab.Screen
+        name="Explore"
+        component={Explore}
+        options={{
+          tabBarLabel: "Explore",
+          tabBarIcon: ({ color}) => (
+            <Icon name="search" color={color} size={30} />
           ),
         }}
-        />
-        <Tab.Screen name="Notifications" component={Notifications}
-                    options={{
-                        tabBarLabel: 'Notifications',
-                        tabBarIcon: ({ color, size }) => (
-                            <Icon name="bell" color={color} size={30} />
-                        ),
-                    }}
-        />
-        <Tab.Screen name="MyProfile" component={MyProfileComponent}
-                    options={{
-                        tabBarLabel: 'MyProfile',
-                        tabBarIcon: ({ color, size }) => (
-                            <Icon name="user" color={color} size={30} />
-                        ),
-                    }}
-        />
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          tabBarLabel: "Notifications",
+          tabBarIcon: ({ color}) => (
+            <Icon name="bell" color={color} size={30} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MyProfile"
+        component={MyProfile}
+        options={{
+          tabBarLabel: "MyProfile",
+          tabBarIcon: ({ color}) => (
+            <Icon name="user" color={color} size={30} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -164,21 +158,7 @@ function MainApp({data}) {
     );
 }
 
-function logout() {
-    processLogout();
-    return (<Loading/>);
-}
 
-const processLogout = async () => {
-    const {authState, setAuthState} = useContext(AuthContext);
-    try {
-        setAuthState({ status: "loading" });
-        await firebase.auth().signOut();
-        setAuthState({ status: "out" });
-    } catch (error) {
-        console.log(error);
-    }
-};
 
 export default function App () {
     const [authState, setAuthState] = useState({ status: "loading" });

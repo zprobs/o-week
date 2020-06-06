@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import Fonts from "../../theme/Fonts";
 import { Theme } from "../../theme/Colours";
+import { useNavigation } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -16,29 +17,30 @@ const { colours } = Theme.light;
  * @param style Additional style for the entire card
  * @constructor
  */
-const UserCard = ({ userId, avatar, handle, name, onPress, style }) => {
+const UserCard = ({ userId, image, name, onPress, style }) => {
+
+    const navigation = useNavigation();
+
+
   const navigateToProfile = () => {
     console.log("navigate to profile");
+    navigation.push('Profile', {userId: userId});
   };
 
   return (
     <TouchableOpacity
       activeOpacity={0.95}
-      onPress={onPress || navigateToProfile}
-      style={[styles().container, style]}>
-      <Image uri={avatar} style={styles().avatarImage} />
-      <View style={styles().info}>
-        <Text style={styles().handleText}>{handle}</Text>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles().nameText}>
-          {name}
-        </Text>
+      onPress={navigateToProfile}
+      style={[styles.container, style]}>
+      <Image source={{uri: image}} style={styles.avatarImage} />
+      <View style={styles.info}>
+        <Text style={styles.nameText}>{name}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
-const styles = () =>
-  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
       flexDirection: "row",
       borderRadius: 5,
@@ -55,17 +57,12 @@ const styles = () =>
       justifyContent: "center",
       paddingLeft: 10,
     },
-    handleText: {
+    nameText: {
       ...FontWeights.Regular,
       ...FontSizes.Body,
       color: colours.text01,
     },
-    nameText: {
-      ...FontWeights.Light,
-      ...FontSizes.Caption,
-      color: colours.text02,
-      marginTop: 5,
-    },
+
   });
 
 export default UserCard;
