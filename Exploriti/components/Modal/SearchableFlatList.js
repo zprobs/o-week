@@ -13,31 +13,35 @@ const {FontWeights, FontSizes} = Fonts;
 /**
  * A Vertical FlatList component with a search-bar at the top. Used for long lists
  * @param data an Array of data to be displayed in the List
+ * @param query GraphQL query to execute to receive the data
  * @param title The word to be placed inside the search-bar placeholder in the form: Search for {title}...
  * @param setData The function or set method to change the selection of the data in root component
  * @param max The maximum number of selections allowed to be made
+ * @param aliased Whether to filter with aliases
  * @returns {*}
  * @constructor
  */
-const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, aliased}, ref) => {
+const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSelection, max, aliased}, ref) => {
         const [searchQuery, setSearchQuery] = useState('');
         const [filteredList, setFilteredList] = useState(data);
         const debounceQuery = useDebounce(searchQuery, 300);
         const [inputRef, setInputFocus] = useFocus();
         const [selected, setSelected] = useState(new Map());
         const [count, setCount] = useState(0);
+        const didSetList = useRef(false);
+        let aliases = {};
 
         if (query) {
             const result = useQuery(query);
-            if (aliased) {
-                data = {};
-                if (!result.loading) {
-                    result.data.interests.map(interest => data[interest.name] = interest.aliases);
+            data = {};
+            if (!result.loading) {
+                result.data[title].map(value => data[value.id] = value.name);
+                if (aliased) {
+                    result.data[title].map(value => aliases[value.id] = value.aliases);
                 }
-            } else {
-                data = [];
-                if (!result.loading) {
-                    result.data.programs.map(program => data.push(program.name));
+                if (!didSetList.current) {
+                    didSetList.current = true;
+                    setFilteredList(data);
                 }
             }
         }
@@ -63,8 +67,12 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, 
         useEffect(() => {
             const lowerCaseQuery = debounceQuery.toLowerCase();
             let newData;
-            if (aliased) {
-                newData = Object.keys(data).filter((item) => item.toLowerCase().includes(lowerCaseQuery) || data[item].filter((alias) => alias.toLowerCase().includes(lowerCaseQuery)).length !== 0);
+            if (query) {
+                if (aliased) {
+                    newData = Object.fromEntries(Object.entries(data).filter(([id, value]) => value.toLowerCase().includes(lowerCaseQuery) || aliases[id].filter((alias) => alias.toLowerCase().includes(lowerCaseQuery)).length !== 0));
+                } else {
+                    newData = Object.fromEntries(Object.entries(data).filter(([id,value]) => value.toLowerCase().includes(lowerCaseQuery)));
+                }
             } else {
                 newData = data.filter((item) => item.toLowerCase().includes(lowerCaseQuery));
             }
@@ -77,7 +85,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, 
             return (
                 <TouchableOpacity onPress={() => onSelect(item)}
                                   style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={styles.item}>{item}</Text>
+                    <Text style={styles.item}>{query ? data[item] : item}</Text>
                     {isSelected ? <Icon name={'check'} style={styles.icon} size={28}/> : null}
                 </TouchableOpacity>
 
@@ -91,7 +99,6 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, 
                 placeholder={'Search for ' + title + '...'}
                 onChangeText={(q) => setSearchQuery(q)}
                 text={searchQuery}
-                // onSearchButtonPress={()=>{console.log('search')}}
                 hideBackground={true}
                 onCancelButtonPress={() => ref.current.close()}
                 cancelButtonText={'Done'}
@@ -108,7 +115,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, 
             <Modalize
                 ref={ref}
                 flatListProps={{
-                    data: filteredList,
+                    data: query ? (filteredList ? Object.keys(filteredList) : []) : data,
                     keyExtractor: item => item,
                     renderItem: renderItem,
                     marginTop: 10,
@@ -118,8 +125,10 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, max, 
                 tapGestureEnabled={false}
                 HeaderComponent={search}
                 onOpened={setInputFocus}
-                onClose={() => setData(mapToString(selected))}
-
+                onClose={() => {
+                    setData(mapToString(selected, data, query));
+                    if (setSelection) { setSelection(mapToIds(selected)) };
+                }}
             />
         );
     },
@@ -184,7 +193,19 @@ const styles = StyleSheet.create({
     },
 });
 
-function mapToString(map) {
+function mapToString(map, data, query) {
+    let array = [];
+    map.forEach(
+        (value, key) => {
+            if (value) {
+                array.push(query ? data[key] : key);
+            }
+        },
+    );
+    return array;
+}
+
+function mapToIds(map) {
     let array = [];
     map.forEach(
         (value, key) => {
@@ -195,7 +216,6 @@ function mapToString(map) {
     );
     return array;
 }
-
 
 export default SearchableFlatList;
 

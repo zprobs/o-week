@@ -85,7 +85,7 @@ const MainStack = ({data}) => {
         name: data.user.name,
         description: data.user.description,
         image: "https://reactjs.org/logo-og.png",
-        programs: data.user.programs.map(i => i.programs.name).join(", "),
+        program: data.user.programs.map(i => i.program.name).join(", "),
         year: data.user.year
     } );
 

@@ -14,6 +14,7 @@ import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
 import { useMutation } from '@apollo/react-hooks';
 import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
+import {graphqlify} from '../Functions';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -32,9 +33,11 @@ export default function Signup({navigation}) {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [programs, setPrograms] = useState([]);
+    const [programsSelection, setProgramsSelection] = useState([]);
     const [year, setYear] = useState();
     const [faculty, setFaculty] = useState();
     const [interests, setInterests] = useState([]);
+    const [interestsSelection, setInterestsSelection] = useState([]);
     const [image, setImage] = useState(images.logo);
     const [page, setPage] = useState(1);
     const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
@@ -217,6 +220,7 @@ export default function Signup({navigation}) {
     }
 
     function nextPage() {
+        graphqlify(interestsSelection, 'interest');
         if (page===4) {submit()} else {
             setPage((page + 1));
             flip_Animation(true);
@@ -248,6 +252,9 @@ export default function Signup({navigation}) {
                 }
             };
             userData["year"] = newYear();
+            userData["programs"] = graphqlify(programsSelection, 'program');
+            userData["interests"] = graphqlify(interestsSelection, 'interest');
+            console.log(userData["interests"]);
             console.log(userData);
 
             submitUser({variables: {data : userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
@@ -368,10 +375,10 @@ export default function Signup({navigation}) {
                     </View>
                 </ImageBackground>
             </ScrollView>
-            <SearchableFlatList ref={programRef} title={'program'} query={GET_PROGRAMS} setData={setPrograms} aliased={false} max={4}/>
+            <SearchableFlatList ref={programRef} title={'programs'} query={GET_PROGRAMS} setData={setPrograms} setSelection={setProgramsSelection} aliased={false} max={4}/>
             <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
             <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
-            <SearchableFlatList ref={interestRef} title={'interest'} query={GET_INTERESTS} setData={setInterests} aliased={true} max={5} />
+            <SearchableFlatList ref={interestRef} title={'interests'} query={GET_INTERESTS} setData={setInterests} setSelection={setInterestsSelection} aliased={true} max={5} />
         </View>
     );
 }

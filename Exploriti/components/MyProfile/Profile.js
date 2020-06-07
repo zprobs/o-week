@@ -68,6 +68,21 @@ export default function Profile({ route }) {
     program = userState.program;
     year = userState.year;
   }
+    if (!isCurrentUser) {
+        if (loading) return <Text>Loading...</Text>
+        if (error) return <Error e={error}/>
+        description = data.user.description;
+        name = data.user.name;
+        image = "https://reactjs.org/logo-og.png";
+        program = data.user.program;
+        year = data.user.year;
+    } else {
+        description = userState.description;
+        name = userState.name;
+        image = userState.image;
+        program = userState.program;
+        year = userState.year;
+    }
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onOptions = () => optionsBottomModalRef.current.open();
@@ -75,51 +90,37 @@ export default function Profile({ route }) {
   const onGroupsOpen = () => groupBottomModalRef.current.open();
 
   const renderInteractions = () => {
-    if (isCurrentUser) return null;
-    return <UserInteractions userId={userId}/>;
+      if (isCurrentUser) return null;
+      return <UserInteractions   />
   };
+
 
   return (
     <>
-      <SafeAreaView>
-        {isCurrentUser ? null : (
-          <GoBackHeader
-            IconRight={OptionsIcon}
-            IconRightOnPress={onOptions}
-          />
-        )}
-        <ProfileCard
-          userId={userId}
-          editable={isCurrentUser}
-          description={description}
-          name={name}
-          program={program}
-          image={image}
-          year={year}
-          onEdit={onEdit}
-          onFriendsOpen={onFriendsOpen}
-          onGroupsOpen={onGroupsOpen}
-          renderInteractions={renderInteractions}
-        />
-      </SafeAreaView>
-      <UsersBottomModal
-        ref={usersBottomModalRef}
-        data={null}
-        type="Friends"
+      <ProfileCard
+        editable={isCurrentUser}
+        description={description}
+        name={name}
+        program={program}
+        image={image}
+        year={year}
+        onEdit={onEdit}
+        onFriendsOpen={onFriendsOpen}
+        onGroupsOpen={onGroupsOpen}
+        renderInteractions={renderInteractions}
       />
+        { isCurrentUser ?
+      <EditProfileBottomModal
+        ref={editProfileBottomModalRef}
+       image={image}
+        name={name}
+        program={program}
+        year={year}
+        description={description}
+      />
+      : null }
+      <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />
       <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
-      {isCurrentUser ? (
-        <EditProfileBottomModal
-          ref={editProfileBottomModalRef}
-          image={image}
-          name={name}
-          program={program}
-          year={year}
-          description={description}
-        />
-      ) : (
-        <OptionsBottomModal ref={optionsBottomModalRef} />
-      )}
     </>
   );
 }
@@ -157,12 +158,10 @@ const Connections = ({ total, type, onPress }) => {
  * @param name
  * @param program
  * @param description
- * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @returns {*}
  * @constructor
  */
 const ProfileCard = ({
-  userId,
   image,
   editable,
   onEdit,
@@ -189,7 +188,7 @@ const ProfileCard = ({
         <Text style={styles.usernameText}>{name}</Text>
         <Text style={styles.programText}>{program}</Text>
       </View>
-      {renderInteractions && renderInteractions()}
+        {renderInteractions && renderInteractions()}
       <View style={styles.description}>
         <Text style={styles.descriptionTitle}>About</Text>
         <Text style={styles.descriptionText}>{description}</Text>
@@ -198,63 +197,21 @@ const ProfileCard = ({
   );
 };
 
-/**
- * Render the buttons for Friend Requests and Messaging
- * @param userId The userId of the profile in question. Not the current user.
- * @returns {*}
- * @constructor
- */
-const UserInteractions = ({userId}) => {
-
-    const {userState} = useContext(UserContext);
-
-    const [sendRequest] = useMutation(SEND_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId }
-    });
-
-    const [deleteRequest] = useMutation(DELETE_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId }
-    });
-
-    const {data, loading, error, refetch} = useQuery(CHECK_FRIEND_REQUESTS, {
-        variables: {currentUser: userState.id, otherUser: userId  }
-    });
-
-    let content;
-    let friendInteraction = () => {};
+const UserInteractions = () => {
 
 
-   if (loading) {
-     content = (
-       <View style={styles.loadingIndicatorView}>
-         <Loader
-           size={6}
-           activeBackground={colours.white}
-           background={colours.white}
-         />
-       </View>
-     );
-   } else if (error) {
-     content = (
-       <Text style={styles.followInteractionText}>{error.message}</Text>
-     );
-   } else if (data.user.friendRequestsReceived.length !== 0) {
-       content = (
-           <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
-       );
-   } else if (data.user.friendRequestsSent.length !== 0) {
-     content = (
-       <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
-     );
-     friendInteraction = () => deleteRequest().then(refetch());
-   } else {
-     content = <Text style={styles.followInteractionText}>ADD FRIEND</Text>;
-       friendInteraction = () => sendRequest().then(refetch());
-   }
+   // let content = <LoadingIndicator size={IconSizes.x0} color={theme.white} />;
 
+
+        let content = (
+            <Text style={styles.followInteractionText}>ADD FRIEND</Text>
+        );
+
+    const friendInteraction = () => {
+
+    };
 
     const messageInteraction = async () => {
-
 
     };
 
@@ -270,9 +227,9 @@ const UserInteractions = ({userId}) => {
     );
 };
 
-
 const styles = StyleSheet.create({
     container: {
+      paddingTop: 30,
       paddingBottom: 4,
       paddingHorizontal: 15,
     },
@@ -385,9 +342,5 @@ const styles = StyleSheet.create({
         ...FontWeights.Light,
         ...FontSizes.Caption,
         color: colours.accent
-    },
-    loadingIndicatorView: {
-        height: 14,
-        justifyContent: 'center'
     }
   });
