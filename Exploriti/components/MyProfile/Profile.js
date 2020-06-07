@@ -15,13 +15,14 @@ import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
 import { UserContext} from '../../context';
-import {useQuery} from '@apollo/react-hooks';
-import {GET_USER} from '../../graphql';
+import {useMutation, useQuery} from '@apollo/react-hooks';
+import {CHECK_FRIEND_REQUESTS, DELETE_FRIEND_REQUEST, GET_USER, SEND_FRIEND_REQUEST} from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
+import Loader from 'react-native-three-dots-loader'
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -75,16 +76,20 @@ export default function Profile({ route }) {
 
   const renderInteractions = () => {
     if (isCurrentUser) return null;
-    return <UserInteractions />;
+    return <UserInteractions userId={userId}/>;
   };
 
   return (
     <>
       <SafeAreaView>
         {isCurrentUser ? null : (
-          <GoBackHeader IconRight={OptionsIcon} IconRightOnPress={onOptions} />
+          <GoBackHeader
+            IconRight={OptionsIcon}
+            IconRightOnPress={onOptions}
+          />
         )}
         <ProfileCard
+          userId={userId}
           editable={isCurrentUser}
           description={description}
           name={name}
@@ -97,7 +102,11 @@ export default function Profile({ route }) {
           renderInteractions={renderInteractions}
         />
       </SafeAreaView>
-      <UsersBottomModal ref={usersBottomModalRef} data={null} type="Friends" />
+      <UsersBottomModal
+        ref={usersBottomModalRef}
+        data={null}
+        type="Friends"
+      />
       <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
       {isCurrentUser ? (
         <EditProfileBottomModal
@@ -153,6 +162,7 @@ const Connections = ({ total, type, onPress }) => {
  * @constructor
  */
 const ProfileCard = ({
+  userId,
   image,
   editable,
   onEdit,
@@ -188,21 +198,63 @@ const ProfileCard = ({
   );
 };
 
-const UserInteractions = () => {
+/**
+ * Render the buttons for Friend Requests and Messaging
+ * @param userId The userId of the profile in question. Not the current user.
+ * @returns {*}
+ * @constructor
+ */
+const UserInteractions = ({userId}) => {
+
+    const {userState} = useContext(UserContext);
+
+    const [sendRequest] = useMutation(SEND_FRIEND_REQUEST, {
+        variables: { sender: userState.id, recipient: userId }
+    });
+
+    const [deleteRequest] = useMutation(DELETE_FRIEND_REQUEST, {
+        variables: { sender: userState.id, recipient: userId }
+    });
+
+    const {data, loading, error, refetch} = useQuery(CHECK_FRIEND_REQUESTS, {
+        variables: {currentUser: userState.id, otherUser: userId  }
+    });
+
+    let content;
+    let friendInteraction = () => {};
 
 
-   // let content = <LoadingIndicator size={IconSizes.x0} color={theme.white} />;
+   if (loading) {
+     content = (
+       <View style={styles.loadingIndicatorView}>
+         <Loader
+           size={6}
+           activeBackground={colours.white}
+           background={colours.white}
+         />
+       </View>
+     );
+   } else if (error) {
+     content = (
+       <Text style={styles.followInteractionText}>{error.message}</Text>
+     );
+   } else if (data.user.friendRequestsReceived.length !== 0) {
+       content = (
+           <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
+       );
+   } else if (data.user.friendRequestsSent.length !== 0) {
+     content = (
+       <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
+     );
+     friendInteraction = () => deleteRequest().then(refetch());
+   } else {
+     content = <Text style={styles.followInteractionText}>ADD FRIEND</Text>;
+       friendInteraction = () => sendRequest().then(refetch());
+   }
 
-
-        let content = (
-            <Text style={styles.followInteractionText}>ADD FRIEND</Text>
-        );
-
-    const friendInteraction = () => {
-
-    };
 
     const messageInteraction = async () => {
+
 
     };
 
@@ -217,6 +269,7 @@ const UserInteractions = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -332,5 +385,9 @@ const styles = StyleSheet.create({
         ...FontWeights.Light,
         ...FontSizes.Caption,
         color: colours.accent
+    },
+    loadingIndicatorView: {
+        height: 14,
+        justifyContent: 'center'
     }
   });

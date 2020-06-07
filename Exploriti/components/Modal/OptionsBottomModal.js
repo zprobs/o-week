@@ -31,19 +31,19 @@ const OptionsBottomModal = React.forwardRef(({data, title, selectedData, setData
                     label='Block'
                     iconName='close-o'
                     color={ThemeStatic.delete}
-                    onPress={console.log('Blocked')}
+                    onPress={()=>console.log('Blocked')}
                 />
                 <Option
                     label='Report'
                     iconName='tag'
                     color={ThemeStatic.delete}
-                    onPress={console.log('Reported')}
+                    onPress={()=>console.log('Reported')}
                 />
                 <Option
                     label='Share Profile'
                     iconName={Platform.select({ios: 'share-apple', android: 'share-google'})}
                     color={ThemeStatic.black}
-                    onPress={console.log('Share')}
+                    onPress={()=>console.log('Share')}
                 />
             </View>
         </Modalize >

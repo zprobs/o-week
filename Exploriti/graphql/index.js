@@ -59,3 +59,36 @@ export const GET_PROGRAMS = gql`
         }
     }
 `;
+
+export const CHECK_FRIEND_REQUESTS = gql`
+    query CHECK_FRIEND_REQUESTS($currentUser: String!, $otherUser: String!) {
+        user(id: $currentUser) {
+            friendRequestsSent(where: {recipient: {_eq: $otherUser}}) {
+                user {
+                    id
+                }
+            }
+            friendRequestsReceived(where: {sender: {_eq: $otherUser}}) {
+                user {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const SEND_FRIEND_REQUEST = gql`
+    mutation SEND_FRIEND_REQUEST($sender: String!, $recipient: String!) {
+        sendFriendRequest(object: {sender: $sender, recipient: $recipient}) {
+            date
+        }
+    }
+`;
+
+export const DELETE_FRIEND_REQUEST = gql`
+    mutation DELETE_FRIEND_REQUEST($sender: String!, $recipient: String!) {
+        deleteFriendRequest(recipient: $recipient, sender: $sender) {
+            date
+        }
+    }
+`;
