@@ -16,6 +16,22 @@ export const GET_USER = gql`
     }
 `;
 
+export const GET_CURRENT_USER = gql`
+    query getUser($id: String!) {
+        user(id: $id) {
+            name
+            description
+            programs {
+                program {
+                    id
+                    name
+                }
+            }
+            image
+        }
+    }
+`;
+
 export const UPDATE_USER = gql`
     mutation updateUser($data: user_set_input!, $user: user_pk_columns_input!) {
         updateUser(_set: $data, pk_columns: $user) {
@@ -62,16 +78,12 @@ export const GET_PROGRAMS = gql`
 
 export const CHECK_FRIEND_REQUESTS = gql`
     query CHECK_FRIEND_REQUESTS($currentUser: String!, $otherUser: String!) {
-        user(id: $currentUser) {
+        user(id: $currentUser, ) {
             friendRequestsSent(where: {recipient: {_eq: $otherUser}}) {
-                user {
-                    id
-                }
+                date 
             }
             friendRequestsReceived(where: {sender: {_eq: $otherUser}}) {
-                user {
-                    id
-                }
+                date 
             }
         }
     }

@@ -32,8 +32,7 @@ import Loading from './components/Authentication/Loading';
 import { UserContext, AuthContext, userReducer } from './context';
 import Icon from "react-native-vector-icons/EvilIcons";
 import Error from './components/ReusableComponents/Error';
-import { GET_USER } from './graphql';
-import {UPDATE_USER} from './graphql';
+import {GET_CURRENT_USER, UPDATE_USER} from './graphql';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
 
@@ -56,7 +55,7 @@ const MainApp = () => {
     const {authState} = useContext(AuthContext);
     const userId = authState.user.uid;
 
-    const { loading, error, data } = useQuery(GET_USER, {
+    const { loading, error, data } = useQuery(GET_CURRENT_USER, {
         variables: { id: userId },
     });
 
@@ -69,6 +68,7 @@ const MainApp = () => {
 
     data.user.id = userId;
 
+    console.log('MainData');
     console.log(data)
 
     return (

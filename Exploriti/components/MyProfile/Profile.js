@@ -51,7 +51,7 @@ export default function Profile({ route }) {
     skip: isCurrentUser,
   });
 
-  let description, name, image, program, year;
+    let description, name, image, program, year;
 
   if (!isCurrentUser) {
     if (loading) return <Text>Loading...</Text>;
@@ -122,6 +122,7 @@ export default function Profile({ route }) {
       )}
     </>
   );
+   // return <Text>Hello</Text>
 }
 
 const EditProfile = ({ onEdit }) => {
@@ -208,48 +209,50 @@ const UserInteractions = ({userId}) => {
 
     const {userState} = useContext(UserContext);
 
-    const [sendRequest] = useMutation(SEND_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId }
+    const [sendRequest, { error: sendError, loading: sendLoading}] = useMutation(SEND_FRIEND_REQUEST, {
+        variables: { sender: userState.id, recipient: userId },
+       // refetchQueries: [{query: "CHECK_FRIEND_REQUESTS"}, {variables: {currentUser: userState.id, otherUser: userId  } }],
+        refetchQueries: ["CHECK_FRIEND_REQUESTS"],
+        awaitRefetchQueries: true
     });
 
-    const [deleteRequest] = useMutation(DELETE_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId }
+    const [deleteRequest, { error: deleteError, loading: deleteLoading}] = useMutation(DELETE_FRIEND_REQUEST, {
+        variables: { sender: userState.id, recipient: userId },
+       // refetchQueries: [{query: "CHECK_FRIEND_REQUESTS"}, {variables: {currentUser: userState.id, otherUser: userId  } }],
+        refetchQueries: ["CHECK_FRIEND_REQUESTS"],
+        awaitRefetchQueries: true
     });
 
-    const {data, loading, error, refetch} = useQuery(CHECK_FRIEND_REQUESTS, {
-        variables: {currentUser: userState.id, otherUser: userId  }
+    const {data, loading, error: queryError} = useQuery(CHECK_FRIEND_REQUESTS, {
+        variables: {currentUser: userState.id, otherUser: userId  },
+        fetchPolicy: "no-cache"
     });
+
 
     let content;
-    let friendInteraction = () => {};
+    let friendInteraction = () => {return undefined};
 
 
-   if (loading) {
+   if (loading || sendLoading || deleteLoading) {
+     content = <LoadingIndicator/>;
+   } else if (queryError || sendError || deleteError) {
      content = (
-       <View style={styles.loadingIndicatorView}>
-         <Loader
-           size={6}
-           activeBackground={colours.white}
-           background={colours.white}
-         />
-       </View>
-     );
-   } else if (error) {
-     content = (
-       <Text style={styles.followInteractionText}>{error.message}</Text>
+       <Text style={styles.followInteractionText}>{queryError ? queryError.message : sendError ?  sendError.message: deleteError.message}</Text>
      );
    } else if (data.user.friendRequestsReceived.length !== 0) {
-       content = (
-           <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
-       );
+     content = (
+       <Text style={styles.followInteractionText}>
+         ACCEPT FRIEND REQUEST
+       </Text>
+     );
    } else if (data.user.friendRequestsSent.length !== 0) {
      content = (
        <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
      );
-     friendInteraction = () => deleteRequest().then(refetch());
+     friendInteraction = () => deleteRequest();
    } else {
      content = <Text style={styles.followInteractionText}>ADD FRIEND</Text>;
-       friendInteraction = () => sendRequest().then(refetch());
+     friendInteraction =  () => sendRequest();
    }
 
 
@@ -270,6 +273,15 @@ const UserInteractions = ({userId}) => {
     );
 };
 
+const LoadingIndicator = () => (
+    <View style={styles.loadingIndicatorView}>
+        <Loader
+            size={6}
+            activeBackground={colours.white}
+            background={colours.white}
+        />
+    </View>
+);
 
 const styles = StyleSheet.create({
     container: {
