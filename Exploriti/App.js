@@ -17,7 +17,7 @@ import { split } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
-import {ApolloProvider, useMutation, useQuery} from '@apollo/react-hooks';
+import {ApolloProvider, useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
 import Explore from "./components/Explore";
 import MyProfile from "./components/MyProfile";
 import Orientation from "./components/Orientation";
@@ -50,7 +50,7 @@ const AuthStack = () => {
     );
 };
 
-const MainApp = () => {
+const MainStack = () => {
 
     const {authState} = useContext(AuthContext);
     const userId = authState.user.uid;
@@ -66,49 +66,17 @@ const MainApp = () => {
 
     if (data.user == null) return <Error e={{ message: "Account does not exist. Please create a new one"}}/>;
 
-    data.user.id = userId;
 
     console.log('MainData');
     console.log(data)
 
+
     return (
-            <MainStack data={data}/>
-    );
-};
-
-const MainStack = ({data}) => {
-
-    const didMountRef = useRef(false); // used to skip running UPDATE_USER on first render
-
-    const [userState, userDispatch] = useReducer(userReducer, {
-        id: data.user.id,
-        name: data.user.name,
-        description: data.user.description,
-        image: "https://reactjs.org/logo-og.png",
-        program: data.user.programs.map(i => i.program.name).join(", "),
-        year: data.user.year
-    } );
-
-    const [updateUser] = useMutation(UPDATE_USER);
-    const {authState} = useContext(AuthContext);
-
-    useEffect(()=> {
-        if (didMountRef.current) {
-            console.log('sending data...');
-            updateUser({ variables: {data: {...userState}, user: {id: authState.user.uid}}}).catch((e)=>console.log(e))
-        } else {
-            didMountRef.current = true;
-        }
-     }, [userState]
-    );
-    return (
-        <UserContext.Provider value={{userState, userDispatch}}>
         <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{headerShown: false}}>
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="Settings" component={Settings} options={{gestureDirection: 'horizontal-inverted'}}/>
             <Stack.Screen name="Messages" component={Messages} />
         </Stack.Navigator>
-        </UserContext.Provider>
     );
 };
 
@@ -225,7 +193,7 @@ export default function App () {
                     { authState.status === "loading" ? (
                         <Loading/>
                     ) : authState.status === "in" ? (
-                        <MainApp/>
+                        <MainStack/>
                     ) : (
                         <AuthStack/>
                     )}

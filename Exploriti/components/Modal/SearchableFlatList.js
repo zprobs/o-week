@@ -21,7 +21,7 @@ const {FontWeights, FontSizes} = Fonts;
  * @returns {*}
  * @constructor
  */
-const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSelection, max, aliased}, ref) => {
+const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSelection, max, aliased, offset}, ref) => {
         const [searchQuery, setSearchQuery] = useState('');
         const [filteredList, setFilteredList] = useState(data);
         const debounceQuery = useDebounce(searchQuery, 300);
@@ -129,6 +129,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
                     setData(mapToString(selected, data, query));
                     if (setSelection) { setSelection(mapToIds(selected)) };
                 }}
+                modalTopOffset={offset ? offset : 0}
             />
         );
     },

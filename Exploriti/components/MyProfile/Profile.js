@@ -14,15 +14,15 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import { UserContext} from '../../context';
-import {useMutation, useQuery} from '@apollo/react-hooks';
-import {CHECK_FRIEND_REQUESTS, DELETE_FRIEND_REQUEST, GET_USER, SEND_FRIEND_REQUEST} from '../../graphql';
+import {AuthContext, UserContext} from '../../context';
+import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
+import {CHECK_FRIEND_REQUESTS, DELETE_FRIEND_REQUEST, GET_DETAILED_USER, SEND_FRIEND_REQUEST} from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
-import Loader from 'react-native-three-dots-loader'
+import LoadingDots from '../ReusableComponents/LoadingDots';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -31,43 +31,37 @@ const { colours } = Theme.light;
 /**
  * Profile is the screen which will display a users profile. Has two states: isCurrentUser = true or false
  * @param route The navigation route parameters set when navigating to this page using react-navigation. If it has a parameter userId then the page
- * will render as not the current user.
+ * will render with that users details. If the userId is the same as the authenticated user, then it will render the MyProfile tab with a Nav Header.
  * @returns {*}
  * @constructor
  */
 export default function Profile({ route }) {
+
+    const {authState} = useContext(AuthContext);
+
     const editProfileBottomModalRef = useRef();
     const optionsBottomModalRef = useRef();
     const usersBottomModalRef = useRef();
     const groupBottomModalRef = useRef();
-    const { userState } = useContext(UserContext);
 
-    const userId = route.params ? route.params.userId : null;
+    const isMyProfilePage = route.params == undefined;
+    const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
+    const isCurrentUser = (!isMyProfilePage && userId !== authState.user.uid) ? false: true;
 
-    const isCurrentUser = userId == null || userState.id === userId;
-
-    const { loading, error, data } = useQuery(GET_USER, {
+    const { loading, error, data } = useQuery(GET_DETAILED_USER, {
         variables: { id: userId },
-        skip: isCurrentUser,
     });
 
-    let description, name, image, program, year;
-
-    if (!isCurrentUser) {
-        if (loading) return <Text>Loading...</Text>;
-        if (error) return <Error e={error} />;
-        description = data.user.description;
-        name = data.user.name;
-        image = "https://reactjs.org/logo-og.png";
-        program = data.user.program;
-        year = data.user.year;
-    } else {
-        description = userState.description;
-        name = userState.name;
-        image = userState.image;
-        program = userState.program;
-        year = userState.year;
+    if (loading){
+        return <Text>Loading...</Text>;
     }
+    if (error) return <Error e={error} />;
+    const description = data.user.description;
+    const name = data.user.name;
+    const image = "https://reactjs.org/logo-og.png";
+    const programs = data.user.programs.map(program => program.name).join(', ');
+    const year = data.user.year;
+
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -75,31 +69,30 @@ export default function Profile({ route }) {
     const onGroupsOpen = () => groupBottomModalRef.current.open();
 
     const renderInteractions = () => {
-        if (isCurrentUser) return null;
         return <UserInteractions userId={userId}/>;
     };
+
 
     return (
         <>
             <SafeAreaView>
-                {isCurrentUser ? null : (
+                {isMyProfilePage ? null : (
                     <GoBackHeader
                         IconRight={OptionsIcon}
                         IconRightOnPress={onOptions}
                     />
                 )}
                 <ProfileCard
-                    userId={userId}
                     editable={isCurrentUser}
                     description={description}
                     name={name}
-                    program={program}
+                    programs={programs}
                     image={image}
                     year={year}
                     onEdit={onEdit}
                     onFriendsOpen={onFriendsOpen}
                     onGroupsOpen={onGroupsOpen}
-                    renderInteractions={renderInteractions}
+                    renderInteractions={isCurrentUser ? null : renderInteractions}
                 />
             </SafeAreaView>
             <UsersBottomModal
@@ -113,7 +106,7 @@ export default function Profile({ route }) {
                     ref={editProfileBottomModalRef}
                     image={image}
                     name={name}
-                    program={program}
+                    programs={programs}
                     year={year}
                     description={description}
                 />
@@ -155,21 +148,20 @@ const Connections = ({ total, type, onPress }) => {
  * @param onFriendsOpen Opens the UserBottomModal
  * @param onGroupsOpen Opens the GroupBottomModal
  * @param name
- * @param program
+ * @param programs
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @returns {*}
  * @constructor
  */
 const ProfileCard = ({
-                         userId,
                          image,
                          editable,
                          onEdit,
                          onFriendsOpen,
                          onGroupsOpen,
                          name,
-                         program,
+                         programs,
                          description,
                          renderInteractions,
                      }) => {
@@ -187,7 +179,7 @@ const ProfileCard = ({
             </View>
             <View style={styles.name}>
                 <Text style={styles.usernameText}>{name}</Text>
-                <Text style={styles.programText}>{program}</Text>
+                <Text style={styles.programText}>{programs}</Text>
             </View>
             {renderInteractions && renderInteractions()}
             <View style={styles.description}>
@@ -206,22 +198,24 @@ const ProfileCard = ({
  */
 const UserInteractions = ({userId}) => {
 
-    const {userState} = useContext(UserContext);
+    const {authState} = useContext(AuthContext);
 
     const [sendRequest, { error: sendError, loading: sendLoading}] = useMutation(SEND_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId },
+        variables: { sender: authState.user.uid, recipient: userId },
         refetchQueries: ["CHECK_FRIEND_REQUESTS"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
+        fetchPolicy: "no-cache"
     });
 
     const [deleteRequest, { error: deleteError, loading: deleteLoading}] = useMutation(DELETE_FRIEND_REQUEST, {
-        variables: { sender: userState.id, recipient: userId },
+        variables: { sender: authState.user.uid, recipient: userId },
         refetchQueries: ["CHECK_FRIEND_REQUESTS"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
+        fetchPolicy: "no-cache"
     });
 
     const {data, loading, error: queryError} = useQuery(CHECK_FRIEND_REQUESTS, {
-        variables: {currentUser: userState.id, otherUser: userId  },
+        variables: {currentUser: authState.user.uid, otherUser: userId  },
         fetchPolicy: "no-cache"
     });
 
@@ -231,7 +225,7 @@ const UserInteractions = ({userId}) => {
 
 
     if (loading || sendLoading || deleteLoading) {
-        content = <LoadingIndicator/>;
+        content = LoadingIndicator();
     } else if (queryError || sendError || deleteError) {
         content = (
             <Text style={styles.followInteractionText}>{queryError ? queryError.message : sendError ?  sendError.message: deleteError.message}</Text>
@@ -272,7 +266,7 @@ const UserInteractions = ({userId}) => {
 
 const LoadingIndicator = () => (
     <View style={styles.loadingIndicatorView}>
-        <Loader
+        <LoadingDots
             size={6}
             activeBackground={colours.white}
             background={colours.white}

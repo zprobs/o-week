@@ -7,4 +7,7 @@ export const graphqlify = (list, term) => {
         return empty;
     });
     return dict;
-}
+};
+
+export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
+export const facultiesData = ['ABC', 'EFG', 'HIJ'];

@@ -1,61 +1,80 @@
 import gql from "graphql-tag";
 
-export const GET_USER = gql`
+export const DETAILED_USER_FRAGMENT = gql`
+    fragment DetailedUser on user {
+        id
+        name
+        description
+        programs {
+            program {
+                id
+                name
+            }
+        }
+        image
+    }
+`
+
+export const GET_DETAILED_USER = gql`
     query getUser($id: String!) {
         user(id: $id) {
-            name
-            description
-            programs {
-                program {
-                    id
-                    name
-                }
-            }
-            image
+           ...DetailedUser 
         }
     }
+    ${DETAILED_USER_FRAGMENT}
 `;
 
 export const GET_CURRENT_USER = gql`
     query getUser($id: String!) {
         user(id: $id) {
-            name
-            description
-            programs {
-                program {
-                    id
-                    name
-                }
+            ...DetailedUser
+            notifications {
+                id
+                title
             }
-            image
         }
     }
+    ${DETAILED_USER_FRAGMENT}
 `;
 
 export const UPDATE_USER = gql`
     mutation updateUser($data: user_set_input!, $user: user_pk_columns_input!) {
         updateUser(_set: $data, pk_columns: $user) {
-            description
+            ...DetailedUser
         }
     }
+    ${DETAILED_USER_FRAGMENT}
 `
 
 export const SIGN_UP = gql`
     mutation SIGN_UP($data: user_insert_input!) {
         createUser(object: $data) {
-            name
+            ...DetailedUser
         }
     }
+    ${DETAILED_USER_FRAGMENT}
 `;
 
 export const GET_ALL_USERS = gql`
     query GET_ALL_USERS {
-        users{
+        users {
             id
             name
             image
         }
-    }`;
+    }
+`;
+
+export const GET_PAGINATED_USERS = gql`
+    query GET_PAGINATED_USERS($limit: Int!) {
+        users(limit: $limit) {
+            id
+            name
+            image
+        }
+    }`
+;
+
 
 export const GET_INTERESTS = gql`
     query GET_INTERESTS {

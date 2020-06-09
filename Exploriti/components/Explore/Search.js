@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, SectionList, Button } from "react-native";
 import SearchBar from "react-native-search-bar";
 import Fonts from "../../theme/Fonts";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_ALL_USERS } from "../../graphql";
+import { GET_PAGINATED_USERS } from "../../graphql";
 import Error from "../ReusableComponents/Error";
 import { useDebounce } from "../Modal/SearchableFlatList";
 import UserCard from "../ReusableComponents/UserCard";
@@ -19,7 +19,7 @@ const {FontWeights, FontSizes} = Fonts;
 export default function Search() {
    const [query, setQuery] = useState("");
    const debounceQuery = useDebounce(query, 300);
-   const { loading, error, data } = useQuery(GET_ALL_USERS);
+   const { loading, error, data } = useQuery(GET_PAGINATED_USERS, {variables: {limit: 10}});
    const [filteredData, setFilteredData] = useState(data);
    const firstRenderRef = useRef(true);
 

@@ -14,7 +14,7 @@ import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
 import { useMutation } from '@apollo/react-hooks';
 import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
-import {graphqlify} from '../Functions';
+import {graphqlify, facultiesData, yearsData} from '../Functions';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -490,6 +490,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export const programsData = ['Math', 'Chemistry', 'English', 'Architecture', 'Marketing', 'Economics', 'Physics', 'Accounting', 'Nursing', 'Biology', 'Law', 'Medicine', 'Sociology'];
-export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
-const facultiesData = ['ABC', 'EFG', 'HIJ'];
+

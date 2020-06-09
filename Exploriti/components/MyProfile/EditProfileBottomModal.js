@@ -4,6 +4,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
+    Dimensions
 } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { Theme } from "../../theme/Colours";
@@ -13,37 +14,48 @@ import { ThemeStatic } from "../../theme/Colours";
 import FormInput from "../ReusableComponents/FormInput";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import Selection from '../ReusableComponents/Selection';
-import { UserContext } from '../../context';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import {yearsData} from '../Authentication/Signup';
+import {yearsData, facultiesData, graphqlify} from '../Functions';
+import SearchableFlatList from '../Modal/SearchableFlatList';
+import {GET_PROGRAMS, UPDATE_USER} from '../../graphql';
+import {useMutation} from '@apollo/react-hooks';
+import {AuthContext} from '../../context';
 
 /**
  * Modal for editing the logged in users data
  * @param image
  * @param name
- * @param program
+ * @param programs
  * @param description
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly description?: *, readonly imageonly name?: *, readonly program?: *}> & React.RefAttributes<unknown>>}
  */
 const EditProfileBottomModal = React.forwardRef(
-  ({ image, name, program, description, year }, ref) => {
-    const [editableImage, setEditableImage] = useState("");
+  ({ image, name, programs, description, year }, ref) => {
+      console.log('edit start');
+      const {authState} = useContext(AuthContext)
+      const [updateUser] = useMutation(UPDATE_USER);
+      const [editableImage, setEditableImage] = useState("");
     const [editableName, setEditableName] = useState("");
     const [editableYear, setEditableYear] = useState("");
-    const [editableProgram, setEditableProgram] = useState("");
+    const [editablePrograms, setEditablePrograms] = useState("");
+      const [programsSelection, setProgramsSelection] = useState("");
+      const [editableFaculty, setEditableFaculty] = useState("");
     const [editableDescription, setEditableDescription] = useState("");
     const [isUploading, setIsUploading] = useState(false);
 
     const yearRef = useRef();
+      const programRef = useRef();
+      const facultyRef = useRef();
 
     const onYearRef = () =>  yearRef.current.open();
+      const onProgramRef = () =>  programRef.current.open();
+      const onFacultyRef = () =>  facultyRef.current.open();
 
-    const {userState, userDispatch} = useContext(UserContext);
 
     useEffect(() => {
       setEditableImage(image);
       setEditableName(name);
-      setEditableProgram(program);
+      setEditablePrograms(programs);
       setEditableDescription(description);
       setEditableYear(year);
     }, []);
@@ -57,8 +69,8 @@ const EditProfileBottomModal = React.forwardRef(
 
     const onDone = async () => {
         const fields = {};
-        if (editableName !== name) fields.name = { name: 'name', value: editableName };
-        if (editableDescription !== description) fields.description = { name: 'description', value: editableDescription };
+        if (editableName !== name) fields.name = editableName;
+        if (editableDescription !== description) fields.description = editableDescription;
         if (editableYear !== year) {
             let newYear = () => {
                 switch (editableYear) {
@@ -74,18 +86,21 @@ const EditProfileBottomModal = React.forwardRef(
                         return 5;
                 }
             };
-            fields.year = { name: 'year', value: newYear() }
+            fields.year = newYear();
         }
+        // if (editablePrograms !== programs) {
+        //     fields.programs = graphqlify(programsSelection, 'program');
+        // }
+        console.log(fields);
         if (Object.keys(fields).length !== 0) {
-            userDispatch({
-                type: 'updateProfile',
-                fields: fields
-            });
+           updateUser({variables: {data: fields, user: {id: authState.user.uid }}}).then(ref.current.close()) .catch(e => console.log(e))
+        } else {
+            ref.current.close();
         }
-        ref.current.close();
     };
 
     return (
+        <>
       <Modalize
         ref={ref}
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
@@ -132,11 +147,11 @@ const EditProfileBottomModal = React.forwardRef(
                 characterRestriction={200}
             />
             <View style={{height: 4}}/>
-            <Selection title={"Change Program"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+            <Selection title={"Change Program"} onPress={onProgramRef} accent={true} style={styles.selections}/>
                 <View style={{height: 8}}/>
                 <Selection title={"Change Year"} onPress={onYearRef} accent={true} style={styles.selections}/>
             <View style={{height: 8}}/>
-            <Selection title={"Change Interests"} onPress={()=>console.log('pressed')} accent={true} style={styles.selections}/>
+            <Selection title={"Change Faculty"} onPress={onFacultyRef} accent={true} style={styles.selections}/>
 
 
             <ButtonColour
@@ -152,7 +167,10 @@ const EditProfileBottomModal = React.forwardRef(
         </View>
           </View>
           <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={editableYear} setData={setEditableYear}/>
+          <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={editableFaculty} setData={setEditableFaculty}/>
       </Modalize>
+                <SearchableFlatList ref={programRef} title={'programs'} query={GET_PROGRAMS} setData={setEditablePrograms} setSelection={setProgramsSelection} aliased={false} max={4} offset={Dimensions.get('window').height*0.3}/>
+            </>
   );
   },
 );
