@@ -8,3 +8,24 @@ import React, { createContext } from "react";
  * @type {React.Context<null>}
  */
 export const AuthContext = createContext(null);
+
+/**
+ * A Method to prepare a list of interests or programs for the GraphQL server
+ * @param list
+ * @param term
+ * @returns {{data: {id: value}}}
+ * @author Salman Shahid
+ */
+export const graphqlify = (list, term) => {
+    const id = term + 'Id';
+    let dict = {};
+    dict['data'] = list.map(value => {
+        let empty = {};
+        empty[id] = value;
+        return empty;
+    });
+    return dict;
+};
+
+export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
+export const facultiesData = ['ABC', 'EFG', 'HIJ'];

@@ -14,7 +14,7 @@ import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
 import { useMutation } from '@apollo/react-hooks';
 import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
-import {graphqlify, facultiesData, yearsData} from '../Functions';
+import {graphqlify, facultiesData, yearsData} from '../../context';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
