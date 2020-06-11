@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {AuthContext, UserContext} from '../../context';
+import {AuthContext } from '../../context';
 import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
 import {CHECK_FRIEND_REQUESTS, DELETE_FRIEND_REQUEST, GET_DETAILED_USER, SEND_FRIEND_REQUEST} from '../../graphql';
 import Error from '../ReusableComponents/Error';
@@ -59,9 +59,8 @@ export default function Profile({ route }) {
     const description = data.user.description;
     const name = data.user.name;
     const image = "https://reactjs.org/logo-og.png";
-    const programs = data.user.programs.map(program => program.name).join(', ');
+    const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
-
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -88,7 +87,6 @@ export default function Profile({ route }) {
                     name={name}
                     programs={programs}
                     image={image}
-                    year={year}
                     onEdit={onEdit}
                     onFriendsOpen={onFriendsOpen}
                     onGroupsOpen={onGroupsOpen}
@@ -106,7 +104,7 @@ export default function Profile({ route }) {
                     ref={editProfileBottomModalRef}
                     image={image}
                     name={name}
-                    programs={programs}
+                    programs={data.user.programs}
                     year={year}
                     description={description}
                 />

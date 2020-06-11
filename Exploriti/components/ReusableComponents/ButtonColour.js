@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import Fonts from "../../theme/Fonts";
 import { ThemeStatic } from "../../theme/Colours";
+import LoadingDots from './LoadingDots';
 
 const { FontWeights, FontSizes } = Fonts;
 /**
@@ -45,7 +46,7 @@ const ButtonColour = ({
     },
   });
 
-  let content = <Text>Loading...</Text>;
+  let content = <LoadingDots background={'#fafafa'} activeBackground={ThemeStatic.white} />
   if (!loading)
     content = (
       <>

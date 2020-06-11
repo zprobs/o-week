@@ -14,7 +14,7 @@ import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
 import { useMutation } from '@apollo/react-hooks';
 import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
-import {graphqlify, facultiesData, yearsData} from '../../context';
+import {graphqlify, facultiesData, yearsData, yearToInt} from '../../context';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -237,21 +237,7 @@ export default function Signup({navigation}) {
             userData["name"] = name;
             userData["email"] = email;
             userData["id"] = userCredential.user.uid;
-            let newYear = () => {
-                switch (year) {
-                    case "First Year":
-                        return 1;
-                    case "Second Year":
-                        return 2;
-                    case "Third Year":
-                        return 3;
-                    case "Fourth Year":
-                        return 4;
-                    default:
-                        return 5;
-                }
-            };
-            userData["year"] = newYear();
+            userData["year"] = yearToInt(year);
             userData["programs"] = graphqlify(programsSelection, 'program');
             userData["interests"] = graphqlify(interestsSelection, 'interest');
             console.log(userData["interests"]);

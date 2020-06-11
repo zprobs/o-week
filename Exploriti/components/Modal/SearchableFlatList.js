@@ -6,6 +6,7 @@ import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import {useQuery} from '@apollo/react-hooks';
+import {NULL} from '../../graphql';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
@@ -13,28 +14,33 @@ const {FontWeights, FontSizes} = Fonts;
 /**
  * A Vertical FlatList component with a search-bar at the top. Used for long lists
  * @param data an Array of data to be displayed in the List
- * @param query GraphQL query to execute to receive the data
+ * @param query GraphQL query to execute to receive the data. Used instead of the data prop
  * @param title The word to be placed inside the search-bar placeholder in the form: Search for {title}...
- * @param setData The function or set method to change the selection of the data in root component
+ * @param setData The function which will set the strings of selected items
+ * @param setSelection The function which will set the id's of selected items
  * @param max The maximum number of selections allowed to be made
  * @param aliased Whether to filter with aliases
+ * @param offset A top offset for the modal
+ * @param initialSelection The initially selected data of the list in the form of a Map(String, Bool). Try to avoid adding it on subsequent renders
  * @returns {*}
  * @constructor
  */
-const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSelection, max, aliased, offset}, ref) => {
+const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSelection, max, aliased, offset, initialSelection}, ref) => {
         const [searchQuery, setSearchQuery] = useState('');
         const [filteredList, setFilteredList] = useState(data);
         const debounceQuery = useDebounce(searchQuery, 300);
         const [inputRef, setInputFocus] = useFocus();
-        const [selected, setSelected] = useState(new Map());
+        const [selected, setSelected] = useState(!!initialSelection ? initialSelection : new Map());
         const [count, setCount] = useState(0);
         const didSetList = useRef(false);
         let aliases = {};
+        // used to prevent the interests from being queried right away when visiting MyProfile
+        const verifiedQuery = query ? query : NULL
+        const result = useQuery(verifiedQuery, {skip: query==undefined});
 
-        if (query) {
-            const result = useQuery(query);
+    if (query) {
             data = {};
-            if (!result.loading) {
+            if (!result.loading && !result.error) {
                 result.data[title].map(value => data[value.id] = value.name);
                 if (aliased) {
                     result.data[title].map(value => aliases[value.id] = value.aliases);

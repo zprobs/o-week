@@ -6,17 +6,19 @@ export const DETAILED_USER_FRAGMENT = gql`
         name
         description
         programs {
+            programId
             program {
                 id
                 name
             }
         }
         image
+        year
     }
-`
+`;
 
 export const GET_DETAILED_USER = gql`
-    query getUser($id: String!) {
+    query getDetailedUser($id: String!) {
         user(id: $id) {
            ...DetailedUser 
         }
@@ -25,7 +27,7 @@ export const GET_DETAILED_USER = gql`
 `;
 
 export const GET_CURRENT_USER = gql`
-    query getUser($id: String!) {
+    query getCurrentUser($id: String!) {
         user(id: $id) {
             ...DetailedUser
             notifications {
@@ -37,6 +39,21 @@ export const GET_CURRENT_USER = gql`
     ${DETAILED_USER_FRAGMENT}
 `;
 
+export const GET_USER_INTERESTS = gql`
+    query getUserInterests($id: String!) {
+        user(id: $id) {
+            id
+            interests {
+                interestId
+                interest {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
 export const UPDATE_USER = gql`
     mutation updateUser($data: user_set_input!, $user: user_pk_columns_input!) {
         updateUser(_set: $data, pk_columns: $user) {
@@ -45,6 +62,52 @@ export const UPDATE_USER = gql`
     }
     ${DETAILED_USER_FRAGMENT}
 `
+
+export const UPDATE_USER_INTERESTS = gql`
+    mutation updateUserInterests($userId: String!, $objects: [userInterest_insert_input!]!) {
+        delete_userInterest(where: {userId: {_eq: $userId}}) {
+            affected_rows
+        }
+        insert_userInterest(objects: $objects) {
+            affected_rows
+            returning {
+                user {
+                    id
+                    interests {
+                        interestId
+                        interest {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_USER_PROGRAMS = gql`
+    mutation updateUserProgras($userId: String!, $objects: [userProgram_insert_input!]!) {
+        delete_userProgram(where: {userId: {_eq: $userId}}) {
+            affected_rows
+        }
+        insert_userProgram(objects: $objects) {
+            affected_rows
+            returning {
+                user {
+                    id
+                    programs {
+                        programId
+                        program {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
 
 export const SIGN_UP = gql`
     mutation SIGN_UP($data: user_insert_input!) {
@@ -123,3 +186,16 @@ export const DELETE_FRIEND_REQUEST = gql`
         }
     }
 `;
+
+/**
+ * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
+ * @type {DocumentNode}
+ */
+export const NULL = gql`
+    {
+        user(id: "0"){
+            id
+        }
+    }
+`
+

@@ -27,5 +27,21 @@ export const graphqlify = (list, term) => {
     return dict;
 };
 
+export function yearToInt(year: String) {
+    switch (year) {
+        case "First Year":
+            return 1;
+        case "Second Year":
+            return 2;
+        case "Third Year":
+            return 3;
+        case "Fourth Year":
+            return 4;
+        default:
+            return 5;
+    }
+}
+
+
 export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
 export const facultiesData = ['ABC', 'EFG', 'HIJ'];
