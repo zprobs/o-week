@@ -98,20 +98,20 @@ export default function Messages() {
 
 
     return (
-        <SafeAreaView style={styles.container}>
-           <GoBackHeader title={"Messages"} titleStyle={styles.title} IconRight={IconRight}/>
-            <SearchBar
-                value={chatSearch}
-                onChangeText={setChatSearch}
-                placeholder='Search for chats...'
-                hideBackground={true}
+        <>
+            <SafeAreaView style={styles.container}>
+                <GoBackHeader title={"Messages"} titleStyle={styles.title} IconRight={IconRight}/>
+                <SearchBar
+                    value={chatSearch}
+                    onChangeText={setChatSearch}
+                    placeholder='Search for chats...'
+                    hideBackground={true}
 
-            />
-            {content}
-            <NewMessageBottomModal
-                ref={newMessageBottomModalRef}
-            />
-        </SafeAreaView>
+                />
+                {content}
+            </SafeAreaView>
+            <NewMessageBottomModal ref={newMessageBottomModalRef} />
+        </>
     );
 }
 
