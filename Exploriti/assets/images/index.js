@@ -8,6 +8,7 @@ const images = {
     logo: require("./LOGOFINALWHITE.png"),
     backArrow: require("./backArrow.png"),
     bg: require("./background.png"),
+    emptyMessages: require("./empty-messages.png"),
 
 };
 

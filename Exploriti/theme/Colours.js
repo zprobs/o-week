@@ -32,6 +32,10 @@ export const ThemeStatic = {
     darkPurple: '#7d38c4',
     lightPurple: '#b040c2',
     pink: '#e84f8a',
+    onlineDotColor: {
+        true: '#4caf50',
+        false: '#BBBBBB'
+    }
 };
 
 
