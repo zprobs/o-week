@@ -27,6 +27,8 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 
 
+const Stack = createStackNavigator();
+
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
  * @returns The UI view for Dashboard
@@ -35,67 +37,19 @@ import { useNavigation } from '@react-navigation/native';
 
 
 
+ function SettingsStack() {
 
-export default function SettingsList() {
+   return (
+     <Stack.Navigator  initialRouteName="About" screenOptions={{headerShown: false}}>
+         <Stack.Screen name={"Help"} component={Help}/>
+         <Stack.Screen name={"About"} component={About}/>
+         <Stack.Screen name={"ReportBug"} component={ReportBug}/>
+     </Stack.Navigator>
+   );
+ };
 
-    const navigation = useNavigation();
 
-    const {setAuthState} = useContext(AuthContext);
 
-    const processLogout = async () => {
-        try {
-            setAuthState({ status: "loading" });
-            await firebase.auth().signOut();
-            setAuthState({ status: "out" });
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-  return(
-    <View>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"question"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"About"} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('Help')}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"exclamation"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"Help"} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-    <Button title="Logout" onPress={()=>{processLogout()}} />
-    </View>
-  );
-}
 
 
 /*function SettingsItem({name, nav, icon},{navigation}) {
@@ -154,3 +108,11 @@ const styles = () =>
       backgroundColor: "purple",
     },
   });
+
+export default function SettingsPage() {
+  return(
+    <NavigationContainer independent={true}>
+      <SettingsStack />
+    </NavigationContainer>
+  );
+}

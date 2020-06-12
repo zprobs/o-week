@@ -1,15 +1,14 @@
 import React from "react";
 import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/EvilIcons";
+import GoBackHeader from '../Menu/GoBackHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
-const About = ({navigation}) => {
+const About = () => {
+  const navigation = useNavigation();
   return(
     <View>
-    <TouchableOpacity onPress={() => {navigation.navigate('Settings')}} >
-    <View>
-    <Icon name="chevron-left" size={35}/>
-    </View>
-    </TouchableOpacity>
     <Text style={styles().headerStyle} >User Agreement</Text>
     <View style={styles().viewStyle} />
     <Text style={styles().paragraphStyle} >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
