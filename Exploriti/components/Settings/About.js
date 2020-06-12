@@ -3,9 +3,10 @@ import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from '../Menu/GoBackHeader';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
-
-const About = ({navigation}) => {
+const About = () => {
+  const navigation = useNavigation();
   return(
     <View>
     <Text style={styles().headerStyle} >User Agreement</Text>
