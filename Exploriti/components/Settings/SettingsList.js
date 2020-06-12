@@ -21,6 +21,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
 import Help from "./Help"
 import ReportBug from "./ReportBug"
+import {CloseIcon} from '../Menu/CloseIcon';
+import { BackIcon } from "../Menu/BackIcon";
+import GoBackHeader from '../Menu/GoBackHeader';
 
 
 const Stack = createStackNavigator();
@@ -33,10 +36,10 @@ const Stack = createStackNavigator();
 
 
 
- function SettingsStack() {
+ function SettingsStack({navigation}) {
 
    return (
-     <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Settings">
+     <Stack.Navigator  initialRouteName="Settings">
          <Stack.Screen name={"Settings"} component={SettingsList}/>
          <Stack.Screen name={"Help"} component={Help}/>
          <Stack.Screen name={"About"} component={About}/>
@@ -62,7 +65,8 @@ function SettingsList({navigation}) {
 
   return(
     <View>
-    <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
+
+    <TouchableOpacity onPress={()=>{navigation.push('About')}}>
       <View>
         <View style={styles().settingItemViewStyle}>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
