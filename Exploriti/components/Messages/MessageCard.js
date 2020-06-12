@@ -17,8 +17,8 @@ const { FontWeights, FontSizes } = Fonts;
 const MessageCard = ({ chatId, participantId, image, name, authorId, messageId, messageBody, seen, time, isOnline }) => {
 
     const { authState } = useContext(AuthContext);
-    const { parsedTime } = parseTimeElapsed(time);
-    const { navigate } = useNavigation();
+    const { readableTime } = parseTimeElapsed(time);
+    const  navigation  = useNavigation();
     // const [messageSeen] = useMutation(MUTATION_SEEN_MESSAGE);
     //  const [deleteChat, { loading: deleteChatLoading, called: deleteChatCalled }] = useMutation(MUTATION_DELETE_CHAT);
 
@@ -26,7 +26,7 @@ const MessageCard = ({ chatId, participantId, image, name, authorId, messageId, 
         // if (authorId !== user.id) {
         //     messageSeen({ variables: { messageId } });
         // }
-        // navigate(Routes.ConversationScreen, { chatId, avatar, name, targetId: participantId })
+        navigation.navigate('Conversation', { chatId, image, name, targetId: participantId })
     };
 
     const isHighlighted = authorId !== authState.user.uid && !seen;
@@ -73,7 +73,7 @@ const MessageCard = ({ chatId, participantId, image, name, authorId, messageId, 
                             {messageBody}
                         </Text>
                         <Text style={[styles.timeText, highlightStyle]}>
-                            {` · ${parsedTime}`}
+                            {` · ${readableTime}`}
                         </Text>
                     </View>
                 </View>

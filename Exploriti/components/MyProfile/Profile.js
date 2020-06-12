@@ -37,6 +37,7 @@ const { colours } = Theme.light;
  */
 export default function Profile({ route }) {
 
+
     const {authState} = useContext(AuthContext);
 
     const editProfileBottomModalRef = useRef();
@@ -46,6 +47,7 @@ export default function Profile({ route }) {
 
     const isMyProfilePage = route.params == undefined;
     const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
+    console.log(userId);
     const isCurrentUser = (!isMyProfilePage && userId !== authState.user.uid) ? false: true;
 
     const { loading, error, data } = useQuery(GET_DETAILED_USER, {
