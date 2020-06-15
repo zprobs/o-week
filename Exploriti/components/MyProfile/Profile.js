@@ -23,6 +23,7 @@ import OptionsIcon from '../Menu/OptionsIcon';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
 import LoadingDots from '../ReusableComponents/LoadingDots';
+import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -94,6 +95,7 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                 />
+                <SocialMediaAnimation/>
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}

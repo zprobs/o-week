@@ -47,6 +47,7 @@ export const Theme = {
             base: '#FFFFFF',
             text01: '#000000',
             text02: '#BBBBBB',
+            text03: '#666666',
             placeholder: '#F4F4F4',
             white: '#FFFFFF',
         }
@@ -58,6 +59,7 @@ export const Theme = {
             base: '#121212',
             text01: '#FFFFFF',
             text02: '#BBBBBB',
+            text03: '#EFEFEF',
             placeholder: '#222',
             white: '#FFFFFF'
         }
