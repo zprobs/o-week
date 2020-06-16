@@ -15,6 +15,9 @@ import Fonts from '../../theme/Fonts';
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light;
 
+/**
+ * SocialMediaAnimation is an animated picker for 6 different social media icons. 
+ */
 export default class SocialMediaAnimation extends Component {
     constructor(props) {
         super(props);
@@ -23,14 +26,14 @@ export default class SocialMediaAnimation extends Component {
         this.timeDilation = 1;
 
         // If duration touch longer than it, mean long touch
-        this.durationLongPress = 250;
+        this.durationLongPress = 200;
 
         // Variables to check
-        // 0 = nothing, 1 = like, 2 = love, 3 = haha, 4 = wow, 5 = sad, 6 = angry
+        // 0 = nothing, 1 = facebook, 2 = instagram, 3 = snapchat, 4 = linkedIn, 5 = Twitter, 6 = Youtube
         this.isTouchBtn = false;
 
         this.isLongTouch = false;
-        this.isLiked = false;
+        this.isChosen = false;
         this.whichIconUserChoose = 0;
         this.currentIconFocus = 0;
         this.previousIconFocus = 0;
@@ -40,22 +43,13 @@ export default class SocialMediaAnimation extends Component {
 
         // Duration animation
         this.durationAnimationBox = 500;
-        this.durationAnimationQuickTouch = 500;
         this.durationAnimationLongTouch = 150;
         this.durationAnimationIconWhenDrag = 150;
         this.durationAnimationIconWhenRelease = 1000;
 
         // ------------------------------------------------------------------------------
-        // Animation button when quick touch button
-        this.tiltIconAnim = new Animated.Value(0);
-        this.zoomIconAnim = new Animated.Value(0);
-        this.zoomTextAnim = new Animated.Value(0);
-
-        // ------------------------------------------------------------------------------
         // Animation when button long touch button
-        this.tiltIconAnim2 = new Animated.Value(0);
-        this.zoomIconAnim2 = new Animated.Value(0);
-        this.zoomTextAnim2 = new Animated.Value(0);
+        this.buttonOpacity = new Animated.Value(1);
         // Animation of the box
         this.fadeBoxAnim = new Animated.Value(0);
 
@@ -98,13 +92,16 @@ export default class SocialMediaAnimation extends Component {
         // ------------------------------------------------------------------------------
         // Animation for jump emoticon when release finger
         this.zoomIconWhenRelease = new Animated.Value(1);
-        this.moveUpDownIconWhenRelease = new Animated.Value(0);
+        this.moveUpIconWhenRelease = new Animated.Value(0);
         this.moveLeftIconFacebookWhenRelease = new Animated.Value(20);
         this.moveLeftIconInstagramWhenRelease = new Animated.Value(72);
         this.moveLeftIconLinkedInWhenRelease = new Animated.Value(124);
         this.moveLeftIconSnapchatWhenRelease = new Animated.Value(173);
         this.moveLeftIconTwitterWhenRelease = new Animated.Value(226);
         this.moveLeftIconYoutubeWhenRelease = new Animated.Value(278);
+
+        // used to check if animation is complete before enabling panning
+        this.pushIconYoutubeUp.addListener(({value}) => this._value = value)
 
         this.setupPanResponder();
     }
@@ -114,7 +111,8 @@ export default class SocialMediaAnimation extends Component {
         this.rootPanResponder = PanResponder.create({
             // prevent if user's dragging without long touch the button
             onMoveShouldSetPanResponder: (evt, gestureState) =>
-                !this.isTouchBtn && this.isLongTouch,
+
+                this.isLongTouch && (this.pushIconYoutubeUp._value === 25),
 
             onPanResponderGrant: (evt, gestureState) => {
                 this.handleEmoticonWhenDragging(evt, gestureState);
@@ -138,10 +136,9 @@ export default class SocialMediaAnimation extends Component {
     }
 
     handleEmoticonWhenDragging = (evt, gestureState) => {
-        console.log(gestureState.x0 + gestureState.dx)
 
         if (
-             gestureState.dy < 30 && gestureState.dy > -150
+             gestureState.dy < 100 && gestureState.dy > -60
         ) {
             this.isDragging = true;
             this.isDraggingOutside = false;
@@ -229,8 +226,8 @@ export default class SocialMediaAnimation extends Component {
             if (this.whichIconUserChoose !== 0) {
                 this.whichIconUserChoose = 0;
 
-                // assuming that another emoticon is the same like, so we can animate the reverse then
-                this.isLiked = true;
+                // assuming that another emoticon is the same icon, so we can animate the reverse then
+                this.isChosen = true;
             }
             clearTimeout(this.timerMeasureLongTouch);
             this.doAnimationQuickTouch();
@@ -238,66 +235,21 @@ export default class SocialMediaAnimation extends Component {
     };
 
     onDragRelease = () => {
-        // To lower the emoticons
+        // To lower the icons
         this.doAnimationLongTouchReverse();
 
-        // To jump particular emoticon be chosen
+        // To jump particular icon be chosen
         this.controlIconWhenRelease();
     };
 
     // ------------------------------------------------------------------------------
     // Animation button when quick touch button
     doAnimationQuickTouch = () => {
-        if (!this.isLiked) {
+        // if (!this.isChosen) {
+        //     // Probably do the same as a long touch
+        // }
+        this.doAnimationLongTouch();
 
-            this.isLiked = true;
-            this.setState({});
-
-            this.tiltIconAnim.setValue(0);
-            this.zoomIconAnim.setValue(0);
-            this.zoomTextAnim.setValue(0);
-            Animated.parallel([
-                Animated.timing(this.tiltIconAnim, {
-                    toValue: 1,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-                Animated.timing(this.zoomIconAnim, {
-                    toValue: 1,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-                Animated.timing(this.zoomTextAnim, {
-                    toValue: 1,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-            ]).start();
-        } else {
-            this.isLiked = false;
-            this.setState({});
-
-            this.tiltIconAnim.setValue(1);
-            this.zoomIconAnim.setValue(1);
-            this.zoomTextAnim.setValue(1);
-            Animated.parallel([
-                Animated.timing(this.tiltIconAnim, {
-                    toValue: 0,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-                Animated.timing(this.zoomIconAnim, {
-                    toValue: 0,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-                Animated.timing(this.zoomTextAnim, {
-                    toValue: 0,
-                    duration: this.durationAnimationQuickTouch * this.timeDilation,
-                    useNativeDriver: false
-                }),
-            ]).start();
-        }
     };
 
     // ------------------------------------------------------------------------------
@@ -306,10 +258,6 @@ export default class SocialMediaAnimation extends Component {
 
         this.isLongTouch = true;
         this.setState({});
-
-        this.tiltIconAnim2.setValue(0);
-        this.zoomIconAnim2.setValue(1);
-        this.zoomTextAnim2.setValue(1);
 
         this.fadeBoxAnim.setValue(0);
 
@@ -335,18 +283,8 @@ export default class SocialMediaAnimation extends Component {
 
         Animated.parallel([
             // Button
-            Animated.timing(this.tiltIconAnim2, {
-                toValue: 1,
-                duration: this.durationAnimationLongTouch * this.timeDilation,
-                useNativeDriver: false
-            }),
-            Animated.timing(this.zoomIconAnim2, {
-                toValue: 0.8,
-                duration: this.durationAnimationLongTouch * this.timeDilation,
-                useNativeDriver: false
-            }),
-            Animated.timing(this.zoomTextAnim2, {
-                toValue: 0.8,
+            Animated.timing(this.buttonOpacity, {
+                toValue: 0,
                 duration: this.durationAnimationLongTouch * this.timeDilation,
                 useNativeDriver: false
             }),
@@ -445,9 +383,6 @@ export default class SocialMediaAnimation extends Component {
     };
 
     doAnimationLongTouchReverse = () => {
-        this.tiltIconAnim2.setValue(1);
-        this.zoomIconAnim2.setValue(0.8);
-        this.zoomTextAnim2.setValue(0.8);
 
         this.fadeBoxAnim.setValue(1);
 
@@ -473,17 +408,7 @@ export default class SocialMediaAnimation extends Component {
 
         Animated.parallel([
             // Button
-            Animated.timing(this.tiltIconAnim2, {
-                toValue: 0,
-                duration: this.durationAnimationLongTouch * this.timeDilation,
-                useNativeDriver: false
-            }),
-            Animated.timing(this.zoomIconAnim2, {
-                toValue: 1,
-                duration: this.durationAnimationLongTouch * this.timeDilation,
-                useNativeDriver: false
-            }),
-            Animated.timing(this.zoomTextAnim2, {
+            Animated.timing(this.buttonOpacity, {
                 toValue: 1,
                 duration: this.durationAnimationLongTouch * this.timeDilation,
                 useNativeDriver: false
@@ -587,7 +512,7 @@ export default class SocialMediaAnimation extends Component {
     };
 
     // ------------------------------------------------------------------------------
-    // Animation for zoom emoticons when drag
+    // Animation for zoom icons when drag
     handleWhenDragBetweenIcon = currentIcon => {
         this.whichIconUserChoose = currentIcon;
         this.previousIconFocus = this.currentIconFocus;
@@ -681,7 +606,7 @@ export default class SocialMediaAnimation extends Component {
     // Animation for jump emoticon when release finger0.01
     controlIconWhenRelease = () => {
         this.zoomIconWhenRelease.setValue(1);
-        this.moveUpDownIconWhenRelease.setValue(0);
+        this.moveUpIconWhenRelease.setValue(0);
         this.moveLeftIconFacebookWhenRelease.setValue(20);
         this.moveLeftIconInstagramWhenRelease.setValue(72);
         this.moveLeftIconLinkedInWhenRelease.setValue(124);
@@ -695,7 +620,7 @@ export default class SocialMediaAnimation extends Component {
                 duration: this.durationAnimationIconWhenRelease * this.timeDilation,
                 useNativeDriver: false
             }),
-            Animated.timing(this.moveUpDownIconWhenRelease, {
+            Animated.timing(this.moveUpIconWhenRelease, {
                 toValue: 1,
                 duration: this.durationAnimationIconWhenRelease * this.timeDilation,
                 useNativeDriver: false
@@ -774,14 +699,14 @@ export default class SocialMediaAnimation extends Component {
     }
     AddSocialMediaIcon() {
         return (
-            <View style={{flexDirection: 'row'}}>
+            <Animated.View style={{flexDirection: 'row', opacity: this.buttonOpacity}}>
                 <TouchableOpacity style={styles.plusContainer} onPressIn={this.onTouchStart} onPressOut={this.onTouchEnd} disabled={this.isLongTouch} >
                     <Icon size={40} color={colours.text03} name={'plus'}/>
                 </TouchableOpacity>
                 <Text style={styles.label}>
                     Press and hold to add a social media link.
                 </Text>
-            </View>
+            </Animated.View>
         );
     }
 
@@ -1061,9 +986,9 @@ export default class SocialMediaAnimation extends Component {
     }
 
     renderGroupJumpIcon() {
-        let moveUpDownIcon = this.moveUpDownIconWhenRelease.interpolate({
-            inputRange: [0, 0.4, 1],
-            outputRange: [40, 100, 0],
+        let moveUpIcon = this.moveUpIconWhenRelease.interpolate({
+            inputRange: [0, 0.4],
+            outputRange: [40, 70],
         });
 
         return (
@@ -1074,8 +999,8 @@ export default class SocialMediaAnimation extends Component {
                         style={{
                             width: 40,
                             height: 40,
-                            left: this.moveLeftIconFacebookWhenRelease,
-                            bottom: moveUpDownIcon,
+                             left: this.moveLeftIconFacebookWhenRelease,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1096,7 +1021,7 @@ export default class SocialMediaAnimation extends Component {
                             width: 40,
                             height: 40,
                             left: this.moveLeftIconInstagramWhenRelease,
-                            bottom: moveUpDownIcon,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1117,7 +1042,7 @@ export default class SocialMediaAnimation extends Component {
                             width: 40,
                             height: 40,
                             left: this.moveLeftIconLinkedInWhenRelease,
-                            bottom: moveUpDownIcon,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1138,7 +1063,7 @@ export default class SocialMediaAnimation extends Component {
                             width: 40,
                             height: 40,
                             left: this.moveLeftIconSnapchatWhenRelease,
-                            bottom: moveUpDownIcon,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1159,7 +1084,7 @@ export default class SocialMediaAnimation extends Component {
                             width: 40,
                             height: 40,
                             left: this.moveLeftIconTwitterWhenRelease,
-                            bottom: moveUpDownIcon,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1180,7 +1105,7 @@ export default class SocialMediaAnimation extends Component {
                             width: 40,
                             height: 40,
                             left: this.moveLeftIconYoutubeWhenRelease,
-                            bottom: moveUpDownIcon,
+                            bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
                         }}>
@@ -1200,15 +1125,16 @@ export default class SocialMediaAnimation extends Component {
 
 const styles = StyleSheet.create({
     plusContainer: {
-        //marginHorizontal: 5,
-        marginTop: 150,
+        marginHorizontal: 5,
+        marginTop: 3,
         width: 40,
     },
     label: {
         ...FontSizes.Caption,
         ...FontWeights.Regular,
         color: colours.text02,
-        marginTop: 150,
+        marginTop: 3,
+        alignSelf: 'center',
     },
     container: {
         flexDirection: 'row',
@@ -1223,8 +1149,6 @@ const styles = StyleSheet.create({
 
     // Main content
     viewContent: {
-        borderWidth: 1,
-        borderColor: 'red',
         flexDirection: 'column',
         height: 220,
         marginLeft: 10,
@@ -1236,12 +1160,12 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         width: 320,
         height: 50,
-        marginTop: 50,
+        marginTop: 40,
         marginLeft: 20,
         position: 'absolute',
         // Has to set color for elevation
         backgroundColor: 'white',
-        // elevation: 6,
+         elevation: 6,
     },
 
 
@@ -1250,10 +1174,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: 320,
         height: 120,
-       // marginTop: 50,
+        marginTop: -10,
         position: 'absolute',
-        borderWidth: 1,
-        borderColor: 'blue',
         alignItems: 'flex-end',
         justifyContent: 'space-around',
         paddingLeft: 5,
@@ -1288,8 +1210,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: 330,
         height: 140,
-        borderWidth: 1,
-        borderColor: 'green',
         //marginTop: 30,
         marginLeft: 10,
         position: 'absolute',

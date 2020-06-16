@@ -95,7 +95,6 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                 />
-                <SocialMediaAnimation/>
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}
@@ -188,6 +187,7 @@ const ProfileCard = ({
                 <Text style={styles.descriptionTitle}>About</Text>
                 <Text style={styles.descriptionText}>{description}</Text>
             </View>
+            { editable ? <SocialMediaAnimation/> : null }
         </View>
     );
 };
