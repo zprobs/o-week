@@ -16,11 +16,14 @@ const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light;
 
 /**
- * SocialMediaAnimation is an animated picker for 6 different social media icons. 
+ * SocialMediaAnimation is an animated picker for 6 different social media icons.
  */
 export default class SocialMediaAnimation extends Component {
     constructor(props) {
         super(props);
+
+        // method to open modal and enter information
+        const {openModal} = props;
 
         // Slow down speed animation here (1 = default)
         this.timeDilation = 1;
@@ -40,6 +43,13 @@ export default class SocialMediaAnimation extends Component {
         this.isDragging = false;
         this.isDraggingOutside = false;
         this.isJustDragInside = true;
+
+        this.goToModal = (icon) => {
+            setTimeout(()=>
+            {
+                console.log('GO!')
+                openModal(icon)}, 900);
+        };
 
         // Duration animation
         this.durationAnimationBox = 500;
@@ -127,6 +137,7 @@ export default class SocialMediaAnimation extends Component {
                 this.isDraggingOutside = false;
                 this.isJustDragInside = true;
                 this.previousIconFocus = 0;
+                this.goToModal(this.currentIconFocus);
                 this.currentIconFocus = 0;
                 this.setState({});
 

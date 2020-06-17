@@ -1,4 +1,4 @@
-import React, {useContext, useRef} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {
     StyleSheet,
     Text,
@@ -24,6 +24,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
 import LoadingDots from '../ReusableComponents/LoadingDots';
 import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
+import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
+import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -38,6 +40,8 @@ const { colours } = Theme.light;
  */
 export default function Profile({ route }) {
 
+    // used to determine which social media is to be added
+    const [socialIndex, setSocialIndex] = useState(0);
 
     const {authState} = useContext(AuthContext);
 
@@ -45,6 +49,7 @@ export default function Profile({ route }) {
     const optionsBottomModalRef = useRef();
     const usersBottomModalRef = useRef();
     const groupBottomModalRef = useRef();
+    const newSocialMediaLinkBottomModalRef = useRef();
 
     const isMyProfilePage = route.params == undefined;
     const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
@@ -69,10 +74,16 @@ export default function Profile({ route }) {
     const onOptions = () => optionsBottomModalRef.current.open();
     const onFriendsOpen = () => usersBottomModalRef.current.open();
     const onGroupsOpen = () => groupBottomModalRef.current.open();
+    const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
     const renderInteractions = () => {
         return <UserInteractions userId={userId}/>;
     };
+
+    const openModal = (index) => {
+        setSocialIndex(index);
+        onAddSocial();
+    }
 
 
     return (
@@ -95,6 +106,7 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                 />
+                { isCurrentUser ? <SocialMediaAnimation openModal={openModal}/> : null }
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}
@@ -103,6 +115,7 @@ export default function Profile({ route }) {
             />
             <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
             {isCurrentUser ? (
+                <>
                 <EditProfileBottomModal
                     ref={editProfileBottomModalRef}
                     image={image}
@@ -111,6 +124,8 @@ export default function Profile({ route }) {
                     year={year}
                     description={description}
                 />
+                <NewSocialMediaLinkBottomModal ref={newSocialMediaLinkBottomModalRef} type={socialIndex}/>
+                </>
             ) : (
                 <OptionsBottomModal ref={optionsBottomModalRef} />
             )}
@@ -187,10 +202,13 @@ const ProfileCard = ({
                 <Text style={styles.descriptionTitle}>About</Text>
                 <Text style={styles.descriptionText}>{description}</Text>
             </View>
-            { editable ? <SocialMediaAnimation/> : null }
+            <SocialMediaIcons icons={tempSMData}/>
+
         </View>
     );
 };
+
+const tempSMData = [{type: 1, link: 'zachary.probst.7'}, {type: 2, link: 'zachprobst_/' }, {type: 3, link: '/in/zachary-probst/'}, {type: 5, link: 'ZacharyProbst'}, {type: 6, link: 'channel/UCnxGkOGNMqQEUMvroOWps6Q'}]
 
 /**
  * Render the buttons for Friend Requests and Messaging
