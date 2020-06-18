@@ -1,8 +1,8 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { StyleSheet, View, Text, Dimensions, TextInput } from "react-native";
 import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
-import { Theme } from "../../theme/Colours";
+import { Theme, ThemeStatic } from "../../theme/Colours";
 import Fonts from '../../theme/Fonts';
 import Images from "../../assets/images";
 import ButtonColour from '../ReusableComponents/ButtonColour';
@@ -23,10 +23,15 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
         const [value, setValue] = useState('');
         const {authState} = useContext(AuthContext);
         const {data} = useQuery(GET_USER_LINKS, {variables: {user: authState.user.uid}});
-        let prevLinks = data ? data.user.links : null;
+        let prevLinks = data ? data.user.links : {};
         const [updateLinks] = useMutation(UPDATE_USER);
         const [isUploading, setIsUploading] = useState(false);
 
+        const onOpen = () => {
+            if (prevLinks[type.toString()]) {
+                setValue(prevLinks[type.toString()])
+            }
+        }
 
         const title = () => {
             switch (type) {
@@ -60,9 +65,19 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
                 case 5:
                     return 'www.twitter.com/';
                 case 6:
-                    return 'www.youtube.com/';
+                    return 'www.youtube.com/user/';
                 default:
                     return '';
+            }
+        }
+
+        const DeleteButton = () => {
+            if (prevLinks[type] != null && !isUploading) {
+                return (
+                    <ButtonColour labelStyle={{color: ThemeStatic.delete}} colour={colours.placeholder} containerStyle={styles.button} label={'Remove Link'} onPress={onRemove} />
+                )
+            } else {
+                return null
             }
         }
 
@@ -73,8 +88,6 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
 
         const onSubmit = () => {
             setIsUploading(true);
-
-            if (prevLinks == null) prevLinks = {};
 
             prevLinks[type.toString()] = value;
             const data = {};
@@ -96,18 +109,40 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
 
         }
 
+        const onRemove = () => {
+            delete prevLinks[type.toString()];
+            const data = {};
+            data.links = prevLinks;
+            updateLinks({
+                variables: {
+                    user: { id: authState.user.uid },
+                    data: data,
+                },
+                refetchQueries: ["getUserLinks"],
+                awaitRefetchQueries: true
+            })
+                .then(() => {
+                    setValue("");
+                    ref.current.close();
+                })
+                .catch(e => console.log(e));
+        }
+
         return (
             <Modalize
                 ref={ref}
                 modalStyle={styles.container}
                 HeaderComponent={header}
                 adjustToContentHeight={false}
+                onClose={()=>setValue('')}
+                onOpen={onOpen}
             >
                 <View style={styles.inputBox}>
                     <Text style={styles.url}>{(type!==4 ? "https://" : '') + address()}</Text>
-                    <TextInput style={styles.input} placeholder={"john.doe.18"} value={value} onChangeText={text => setValue(text)} autoFocus={true} returnKeyType={'done'}/>
+                    <TextInput style={styles.input} placeholder={"john.doe.18"} value={value} onChangeText={text => setValue(text)} autoFocus={true} returnKeyType={'done'} autoCapitalize={'none'} autoCompleteType={'off'} autoCorrect={false}/>
                 </View>
                 <ButtonColour label={'Submit'} colour={colours.accent} containerStyle={styles.button} light={true} onPress={onSubmit} loading={isUploading}/>
+                <DeleteButton/>
             </Modalize>
         );
     },
