@@ -59,6 +59,7 @@ const ButtonColour = ({
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
+      disabled={loading}
       style={[styles.container, containerStyle]}>
       {content}
     </TouchableOpacity>

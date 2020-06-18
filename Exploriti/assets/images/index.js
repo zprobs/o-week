@@ -9,6 +9,7 @@ const images = {
     backArrow: require("./backArrow.png"),
     bg: require("./background.png"),
     emptyMessages: require("./empty-messages.png"),
+    emptyNotifications: require("./empty-notifications.png"),
 
 };
 

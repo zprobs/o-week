@@ -104,4 +104,4 @@ export const parseTimeElapsed = (utcTime: string) => {
 
 
 export const yearsData = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate School'];
-export const facultiesData = ['ABC', 'EFG', 'HIJ'];
+export const facultiesData = ['Arts', 'Science', 'Engineering'];

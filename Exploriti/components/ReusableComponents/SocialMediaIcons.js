@@ -4,6 +4,11 @@ import {useQuery} from '@apollo/react-hooks';
 import {GET_USER_LINKS} from '../../graphql';
 import {AuthContext} from '../../context';
 
+/**
+ * Icons that display a users social media links. Used in Profile. Max 6
+ * @returns {null|*}
+ * @constructor
+ */
 const SocialMediaIcons = () => {
     const {authState} = useContext(AuthContext)
 
@@ -14,7 +19,6 @@ const SocialMediaIcons = () => {
     }
     if (!error) icons = data.user.links;
 
-    console.log(icons);
     if (icons) {
         const keys = Object.keys(icons);
         const values = Object.values(icons);

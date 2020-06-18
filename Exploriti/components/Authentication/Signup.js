@@ -28,6 +28,7 @@ const width = Dimensions.get('window').width;
  */
 export default function Signup({navigation}) {
 
+    const [isLoading, setIsLoading] = useState(false);
     const [index, setIndex] = useState(0);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -165,7 +166,7 @@ export default function Signup({navigation}) {
         title =
           index == 0
             ? "Continue as Student (1/4)"
-            : "Continue as Organization (1/4)";
+            : "Continue as Organizer (1/4)";
         colour = ThemeStatic.lightBlue;
       } else if (page === 2) {
         title = "Continue (2/4)";
@@ -185,6 +186,7 @@ export default function Signup({navigation}) {
           labelStyle={{ ...FontWeights.Regular, color: colour }}
           containerStyle={styles.button}
           onPress={nextPage}
+          loading={isLoading}
         />
       );
     };
@@ -229,7 +231,7 @@ export default function Signup({navigation}) {
     }
 
     function submit() {
-
+        setIsLoading(true)
         let userData = {};
 
         firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential)=> {
@@ -243,10 +245,14 @@ export default function Signup({navigation}) {
             console.log(userData["interests"]);
             console.log(userData);
 
-            submitUser({variables: {data : userData}}).then((result)=> console.log(result)).catch(reason => console.log(reason));
+            submitUser({variables: {data : userData}}).then((result)=> {
+                console.log(result);
+                setIsLoading(false)
+            }).catch(reason => console.log(reason));
 
         }).catch((error)=> {
             console.log(error);
+            setIsLoading(false);
             Alert.alert(
                 "Error",
                 "There was an error creating your account: " + error.toString(),
@@ -279,7 +285,7 @@ export default function Signup({navigation}) {
                             <Animated.Text style={{...styles.title, opacity}}>Create an Account</Animated.Text>
                             <View>
                                 <Text style={styles.label}>I am a...</Text>
-                                <SegmentedControl values={['Student', 'Organization']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
+                                <SegmentedControl values={['Student', 'Organizer']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
                             </View>
 
                             <TextLine

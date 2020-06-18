@@ -1,12 +1,31 @@
 import React, {useContext} from 'react';
-import { Text, View, Button } from "react-native";
+import { Text, View, StyleSheet, FlatList } from "react-native";
+import images from '../../assets/images';
+import ImgBanner from '../ReusableComponents/ImgBanner';
 
 
 
-export default function NotificationsList({navigation}) {
+export default function NotificationsList() {
     return (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-            <Text>This is Notifications</Text>
+        <View style={styles.container}>
+            <FlatList
+                ListEmptyComponent={listEmptyComponent}
+                data={null}
+                />
         </View>
     );
 }
+
+const listEmptyComponent = () => (
+    <ImgBanner
+        img={images.emptyNotifications}
+        placeholder="No notifications yet"
+         spacing={0.32}
+    />
+);
+
+const styles = StyleSheet.create({
+   container: {
+       flex: 1
+   }
+});

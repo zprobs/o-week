@@ -4,19 +4,21 @@ import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
 import { Theme, ThemeStatic } from "../../theme/Colours";
 import Fonts from '../../theme/Fonts';
-import Images from "../../assets/images";
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import {GET_USER_LINKS, UPDATE_USER} from '../../graphql';
 import {AuthContext} from '../../context';
-import gql from 'graphql-tag/src';
 
 const {FontWeights, FontSizes} = Fonts
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
 const window05 = window * 0.05;
 
-
+/**
+ * NewSocialMediaLinkBottomModal used to create a social media link. If link already exists, may delete it.
+ * @param type The type of website. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snap, 5: Twitter, 6: Youtube
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly type?: *}> & React.RefAttributes<unknown>>}
+ */
 const NewSocialMediaLinkBottomModal = React.forwardRef(
     ({ type }, ref) => {
 

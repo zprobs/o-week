@@ -54,7 +54,7 @@ export default function Profile({ route }) {
     const isMyProfilePage = route.params == undefined;
     const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
     console.log(userId);
-    const isCurrentUser = (!isMyProfilePage && userId !== authState.user.uid) ? false: true;
+    const isCurrentUser = (!(!isMyProfilePage && userId !== authState.user.uid));
 
     const { loading, error, data } = useQuery(GET_DETAILED_USER, {
         variables: { id: userId },
@@ -167,49 +167,46 @@ const Connections = ({ total, type, onPress }) => {
  * @param programs
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
- * @param links The social media links on this profile
  * @returns {*}
  * @constructor
  */
 const ProfileCard = ({
-                         image,
-                         editable,
-                         onEdit,
-                         onFriendsOpen,
-                         onGroupsOpen,
-                         name,
-                         programs,
-                         description,
-                         renderInteractions,
-                     }) => {
-    return (
-        <View style={styles.container}>
-            <View style={styles.info}>
-                <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
-                <ImageBackground
-                    source={{ uri: image ? image : "" }}
-                    style={styles.image}
-                    imageStyle={styles.avatarImage}>
-                    {editable && <EditProfile onEdit={onEdit} />}
-                </ImageBackground>
-                <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
-            </View>
-            <View style={styles.name}>
-                <Text style={styles.usernameText}>{name}</Text>
-                <Text style={styles.programText}>{programs}</Text>
-            </View>
-            {renderInteractions && renderInteractions()}
-            <View style={styles.description}>
-                <Text style={styles.descriptionTitle}>About</Text>
-                <Text style={styles.descriptionText}>{description}</Text>
-            </View>
-            <SocialMediaIcons/>
-
-        </View>
-    );
+  image,
+  editable,
+  onEdit,
+  onFriendsOpen,
+  onGroupsOpen,
+  name,
+  programs,
+  description,
+  renderInteractions,
+}) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.info}>
+        <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
+        <ImageBackground
+          source={{ uri: image ? image : "" }}
+          style={styles.image}
+          imageStyle={styles.avatarImage}>
+          {editable && <EditProfile onEdit={onEdit} />}
+        </ImageBackground>
+        <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
+      </View>
+      <View style={styles.name}>
+        <Text style={styles.usernameText}>{name}</Text>
+        <Text style={styles.programText}>{programs}</Text>
+      </View>
+      {renderInteractions && renderInteractions()}
+      <View style={styles.description}>
+        <Text style={styles.descriptionTitle}>About</Text>
+        <Text style={styles.descriptionText}>{description}</Text>
+      </View>
+      <SocialMediaIcons />
+    </View>
+  );
 };
 
-const tempSMData = [{type: 1, link: 'zachary.probst.7'}, {type: 2, link: 'zachprobst_/' }, {type: 3, link: '/in/zachary-probst/'}, {type: 5, link: 'ZacharyProbst'}, {type: 6, link: 'channel/UCnxGkOGNMqQEUMvroOWps6Q'}]
 
 /**
  * Render the buttons for Friend Requests and Messaging
