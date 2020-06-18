@@ -6,6 +6,10 @@ import { Theme } from "../../theme/Colours";
 import Fonts from '../../theme/Fonts';
 import Images from "../../assets/images";
 import ButtonColour from '../ReusableComponents/ButtonColour';
+import {useMutation, useQuery} from '@apollo/react-hooks';
+import {GET_USER_LINKS, UPDATE_USER} from '../../graphql';
+import {AuthContext} from '../../context';
+import gql from 'graphql-tag/src';
 
 const {FontWeights, FontSizes} = Fonts
 const { colours } = Theme.light;
@@ -14,9 +18,15 @@ const window05 = window * 0.05;
 
 
 const NewSocialMediaLinkBottomModal = React.forwardRef(
-    ({ type, setLink}, ref) => {
+    ({ type }, ref) => {
 
         const [value, setValue] = useState('');
+        const {authState} = useContext(AuthContext);
+        const {data} = useQuery(GET_USER_LINKS, {variables: {user: authState.user.uid}});
+        let prevLinks = data ? data.user.links : null;
+        const [updateLinks] = useMutation(UPDATE_USER);
+        const [isUploading, setIsUploading] = useState(false);
+
 
         const title = () => {
             switch (type) {
@@ -62,8 +72,28 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
         );
 
         const onSubmit = () => {
-            setValue('');
-            ref.current.close();
+            setIsUploading(true);
+
+            if (prevLinks == null) prevLinks = {};
+
+            prevLinks[type.toString()] = value;
+            const data = {};
+            data.links = prevLinks;
+            updateLinks({
+              variables: {
+                user: { id: authState.user.uid },
+                data: data,
+              },
+              refetchQueries: ["getUserLinks"],
+                awaitRefetchQueries: true
+            })
+              .then(() => {
+                setValue("");
+                setIsUploading(false);
+                ref.current.close();
+              })
+              .catch(e => console.log(e));
+
         }
 
         return (
@@ -71,16 +101,19 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
                 ref={ref}
                 modalStyle={styles.container}
                 HeaderComponent={header}
+                adjustToContentHeight={false}
             >
                 <View style={styles.inputBox}>
                     <Text style={styles.url}>{(type!==4 ? "https://" : '') + address()}</Text>
                     <TextInput style={styles.input} placeholder={"john.doe.18"} value={value} onChangeText={text => setValue(text)} autoFocus={true} returnKeyType={'done'}/>
                 </View>
-                <ButtonColour label={'Submit'} colour={colours.accent} containerStyle={styles.button} light={true} onPress={onSubmit}/>
+                <ButtonColour label={'Submit'} colour={colours.accent} containerStyle={styles.button} light={true} onPress={onSubmit} loading={isUploading}/>
             </Modalize>
         );
     },
 );
+
+
 
 export default NewSocialMediaLinkBottomModal;
 
@@ -114,7 +147,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     button: {
-        marginTop: 20
+        marginVertical: 20
     },
 
 });

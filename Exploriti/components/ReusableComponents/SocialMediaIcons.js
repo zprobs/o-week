@@ -1,26 +1,45 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Image, StyleSheet, Linking, TouchableOpacity, Alert} from 'react-native';
+import {useQuery} from '@apollo/react-hooks';
+import {GET_USER_LINKS} from '../../graphql';
+import {AuthContext} from '../../context';
 
-const SocialMediaIcons = ({icons}) => {
-    return (
-        <View style={styles.container}>
-            {icons.map((icon, index)=> {
-                return <Icon icon={icon} key={index}/>
-            })}
-        </View>
-    )
+const SocialMediaIcons = () => {
+    const {authState} = useContext(AuthContext)
+
+    let icons;
+    const {loading, error, data} = useQuery(GET_USER_LINKS, {variables: {user: authState.user.uid}, fetchPolicy: 'cache-and-network'});
+    if (loading){
+        return null
+    }
+    if (!error) icons = data.user.links;
+
+    console.log(icons);
+    if (icons) {
+        const keys = Object.keys(icons);
+        const values = Object.values(icons);
+        return (
+            <View style={styles.container}>
+                {keys.map((type, index)=> {
+                    return <Icon type={type} value={values[index]} key={index}/>
+                })}
+            </View>
+        );
+    } else {
+        return null
+    }
 };
 
-const Icon = ({icon}) => {
+const Icon = ({type, value}) => {
     return (
-        <TouchableOpacity onPress={()=>toLink(icon)}>
-            <Image source={{uri: imgSource(icon.type)}} style={styles.image} />
+        <TouchableOpacity onPress={()=>toLink(type, value)}>
+            <Image source={{uri: imgSource(type)}} style={styles.image} />
         </TouchableOpacity>
     );
 }
 
 function imgSource(type) {
-  switch (type) {
+  switch (parseInt(type)) {
     case 1:
       return "https://img.icons8.com/fluent/48/000000/facebook-new.png";
     case 2:
@@ -40,18 +59,18 @@ function imgSource(type) {
 
 /**
  * @Todo Use an API to get userID from the profile link that users enter so I can open facebook app directly
- * @param icon The social media profile link to be navigated to
+ * @param type The type of social media. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snapchat, 5: Twitter, 6: Youtube
  */
-function toLink(icon) {
+function toLink(type, value) {
     const url = 'https://www.';
     const page = () => {
-        switch(icon.type) {
+        switch(parseInt(type)) {
             case 1:
                 return 'facebook.com/';
             case 2:
                 return 'instagram.com/';
             case 3:
-                return 'linkedin.com/';
+                return 'linkedin.com/in/';
             case 5:
                 return 'twitter.com/'
             case 6:
@@ -60,7 +79,7 @@ function toLink(icon) {
                 return '';
         }
     }
-    const link = url + page() + icon.link;
+    const link = url + page() + value;
     console.log(link);
      Linking.canOpenURL(link).then((result) => {
          if (result) {

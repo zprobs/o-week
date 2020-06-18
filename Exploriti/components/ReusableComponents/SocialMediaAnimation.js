@@ -47,7 +47,6 @@ export default class SocialMediaAnimation extends Component {
         this.goToModal = (icon) => {
             setTimeout(()=>
             {
-                console.log('GO!')
                 openModal(icon)}, 900);
         };
 

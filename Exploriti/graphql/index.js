@@ -187,6 +187,19 @@ export const DELETE_FRIEND_REQUEST = gql`
     }
 `;
 
+export const GET_USER_LINKS = gql`
+   query getUserLinks($user: String!) {
+       user(id: $user) {
+           id
+           links
+       }
+   } 
+`;
+
+
+
+
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}

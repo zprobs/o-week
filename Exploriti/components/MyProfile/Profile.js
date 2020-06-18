@@ -167,6 +167,7 @@ const Connections = ({ total, type, onPress }) => {
  * @param programs
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
+ * @param links The social media links on this profile
  * @returns {*}
  * @constructor
  */
@@ -202,7 +203,7 @@ const ProfileCard = ({
                 <Text style={styles.descriptionTitle}>About</Text>
                 <Text style={styles.descriptionText}>{description}</Text>
             </View>
-            <SocialMediaIcons icons={tempSMData}/>
+            <SocialMediaIcons/>
 
         </View>
     );
