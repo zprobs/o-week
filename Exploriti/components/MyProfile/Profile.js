@@ -1,4 +1,4 @@
-import React, {useContext, useRef} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {
     StyleSheet,
     Text,
@@ -24,6 +24,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
 import LoadingDots from '../ReusableComponents/LoadingDots';
 import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
+import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
+import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -38,6 +40,8 @@ const { colours } = Theme.light;
  */
 export default function Profile({ route }) {
 
+    // used to determine which social media is to be added
+    const [socialIndex, setSocialIndex] = useState(0);
 
     const {authState} = useContext(AuthContext);
 
@@ -45,11 +49,12 @@ export default function Profile({ route }) {
     const optionsBottomModalRef = useRef();
     const usersBottomModalRef = useRef();
     const groupBottomModalRef = useRef();
+    const newSocialMediaLinkBottomModalRef = useRef();
 
     const isMyProfilePage = route.params == undefined;
     const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
     console.log(userId);
-    const isCurrentUser = (!isMyProfilePage && userId !== authState.user.uid) ? false: true;
+    const isCurrentUser = (!(!isMyProfilePage && userId !== authState.user.uid));
 
     const { loading, error, data } = useQuery(GET_DETAILED_USER, {
         variables: { id: userId },
@@ -69,10 +74,16 @@ export default function Profile({ route }) {
     const onOptions = () => optionsBottomModalRef.current.open();
     const onFriendsOpen = () => usersBottomModalRef.current.open();
     const onGroupsOpen = () => groupBottomModalRef.current.open();
+    const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
     const renderInteractions = () => {
         return <UserInteractions userId={userId}/>;
     };
+
+    const openModal = (index) => {
+        setSocialIndex(index);
+        onAddSocial();
+    }
 
 
     return (
@@ -95,6 +106,7 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                 />
+                { isCurrentUser ? <SocialMediaAnimation openModal={openModal}/> : null }
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}
@@ -103,6 +115,7 @@ export default function Profile({ route }) {
             />
             <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
             {isCurrentUser ? (
+                <>
                 <EditProfileBottomModal
                     ref={editProfileBottomModalRef}
                     image={image}
@@ -111,6 +124,8 @@ export default function Profile({ route }) {
                     year={year}
                     description={description}
                 />
+                <NewSocialMediaLinkBottomModal ref={newSocialMediaLinkBottomModalRef} type={socialIndex}/>
+                </>
             ) : (
                 <OptionsBottomModal ref={optionsBottomModalRef} />
             )}
@@ -156,41 +171,42 @@ const Connections = ({ total, type, onPress }) => {
  * @constructor
  */
 const ProfileCard = ({
-                         image,
-                         editable,
-                         onEdit,
-                         onFriendsOpen,
-                         onGroupsOpen,
-                         name,
-                         programs,
-                         description,
-                         renderInteractions,
-                     }) => {
-    return (
-        <View style={styles.container}>
-            <View style={styles.info}>
-                <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
-                <ImageBackground
-                    source={{ uri: image ? image : "" }}
-                    style={styles.image}
-                    imageStyle={styles.avatarImage}>
-                    {editable && <EditProfile onEdit={onEdit} />}
-                </ImageBackground>
-                <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
-            </View>
-            <View style={styles.name}>
-                <Text style={styles.usernameText}>{name}</Text>
-                <Text style={styles.programText}>{programs}</Text>
-            </View>
-            {renderInteractions && renderInteractions()}
-            <View style={styles.description}>
-                <Text style={styles.descriptionTitle}>About</Text>
-                <Text style={styles.descriptionText}>{description}</Text>
-            </View>
-            { editable ? <SocialMediaAnimation/> : null }
-        </View>
-    );
+  image,
+  editable,
+  onEdit,
+  onFriendsOpen,
+  onGroupsOpen,
+  name,
+  programs,
+  description,
+  renderInteractions,
+}) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.info}>
+        <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
+        <ImageBackground
+          source={{ uri: image ? image : "" }}
+          style={styles.image}
+          imageStyle={styles.avatarImage}>
+          {editable && <EditProfile onEdit={onEdit} />}
+        </ImageBackground>
+        <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
+      </View>
+      <View style={styles.name}>
+        <Text style={styles.usernameText}>{name}</Text>
+        <Text style={styles.programText}>{programs}</Text>
+      </View>
+      {renderInteractions && renderInteractions()}
+      <View style={styles.description}>
+        <Text style={styles.descriptionTitle}>About</Text>
+        <Text style={styles.descriptionText}>{description}</Text>
+      </View>
+      <SocialMediaIcons />
+    </View>
+  );
 };
+
 
 /**
  * Render the buttons for Friend Requests and Messaging

@@ -17,10 +17,17 @@ const {colours} = Theme.light;
 
 /**
  * SocialMediaAnimation is an animated picker for 6 different social media icons.
+<<<<<<< HEAD
+=======
+ * @param openModal The method to open the NewSocialMediaLinkBottomModal
+>>>>>>> a791778ff4b5ef0064ade015b81472e3183e9e27
  */
 export default class SocialMediaAnimation extends Component {
     constructor(props) {
         super(props);
+
+        // method to open modal and enter information
+        const {openModal} = props;
 
         // Slow down speed animation here (1 = default)
         this.timeDilation = 1;
@@ -34,13 +41,18 @@ export default class SocialMediaAnimation extends Component {
         this.isTouchBtn = false;
 
         this.isLongTouch = false;
-        this.isChosen = false;
         this.whichIconUserChoose = 0;
         this.currentIconFocus = 0;
         this.previousIconFocus = 0;
         this.isDragging = false;
         this.isDraggingOutside = false;
         this.isJustDragInside = true;
+
+        this.goToModal = (icon) => {
+            setTimeout(()=>
+            {
+                openModal(icon)}, 900);
+        };
 
         // Duration animation
         this.durationAnimationBox = 500;
@@ -128,6 +140,7 @@ export default class SocialMediaAnimation extends Component {
                 this.isDraggingOutside = false;
                 this.isJustDragInside = true;
                 this.previousIconFocus = 0;
+                this.goToModal(this.currentIconFocus);
                 this.currentIconFocus = 0;
                 this.setState({});
 
@@ -228,7 +241,6 @@ export default class SocialMediaAnimation extends Component {
                 this.whichIconUserChoose = 0;
 
                 // assuming that another emoticon is the same icon, so we can animate the reverse then
-                this.isChosen = true;
             }
             clearTimeout(this.timerMeasureLongTouch);
             this.doAnimationQuickTouch();

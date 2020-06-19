@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import Fonts from "../../theme/Fonts";
 import { ThemeStatic } from "../../theme/Colours";
 import LoadingDots from './LoadingDots';
@@ -33,25 +33,34 @@ const ButtonColour = ({
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      paddingVertical: 10,
+      justifyContent: Icon ? "space-between" : 'center',
+      paddingVertical: 5,
       borderRadius: 40,
       backgroundColor: colour,
     },
     label: {
-      ...FontWeights.Light,
+      ...FontWeights.Regular,
       ...FontSizes.Body,
       marginLeft: 5,
       color: light ? ThemeStatic.white : ThemeStatic.accent,
+      justifyContent: 'center'
     },
+    icon :{
+      marginRight: 20,
+    }
   });
 
   let content = <LoadingDots background={'#fafafa'} activeBackground={ThemeStatic.white} />
   if (!loading)
     content = (
       <>
-        {Icon && <Icon />}
+        {Icon && <View style={{marginLeft: 20}}/> }
         <Text style={[styles.label, labelStyle]}>{label}</Text>
+        {Icon && (
+            <View style={styles.icon}>
+              <Icon />
+            </View>
+            )}
       </>
     );
 
@@ -59,6 +68,7 @@ const ButtonColour = ({
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
+      disabled={loading}
       style={[styles.container, containerStyle]}>
       {content}
     </TouchableOpacity>
