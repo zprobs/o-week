@@ -1,5 +1,6 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { Easing } from "react-native";
+import { createStackNavigator,TransitionPresets,CardStyleInterpolators } from "@react-navigation/stack";
 import SettingsList from "./SettingsList.js";
 import {CloseIcon} from '../Menu/CloseIcon';
 import { BackIcon } from "../Menu/BackIcon";
@@ -7,6 +8,7 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import OtherSettings from "./OtherSettings"
 import Help from "./Help"
 import About from "./About"
+import ReportBug from "./ReportBug"
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -14,11 +16,41 @@ import About from "./About"
  * @returns Stack Navigator of Orientation
  * @constructor
  */
+
+
+ const config = {
+   animation: 'spring',
+   config: {
+     stiffness: 1000,
+     damping: 50,
+     mass: 3,
+     overshootClamping: false,
+     restDisplacementThreshold: 0.01,
+     restSpeedThreshold: 0.01,
+   },
+ };
+
+ const closeConfig = {
+   animation: 'timing',
+   config:{
+     duration: 500,
+     easing: Easing.linear
+   }
+ }
+
+
 export default function Settings({navigation}) {
   const Stack = createStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: true}}>
+    <Stack.Navigator screenOptions={{
+      //headerShown: true,
+      gestureEnabled: true,
+      gestureDirection: "horizontal",
+      ...TransitionPresets.SlideFromRightIOS
+
+    }}
+    >
       <Stack.Screen
         name="Settings"
         component={SettingsList}
@@ -36,6 +68,13 @@ export default function Settings({navigation}) {
       <Stack.Screen
         name="Help"
         component={Help}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }}
+      />
+      <Stack.Screen
+        name="ReportBug"
+        component={ReportBug}
         options={{
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}

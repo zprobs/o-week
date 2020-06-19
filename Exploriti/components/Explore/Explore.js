@@ -15,7 +15,10 @@ const Stack = createStackNavigator();
 export default function Explore() {
 
   return (
-    <Stack.Navigator initialRouteName="Search">
+    <Stack.Navigator initialRouteName="Search" screenOptions={{
+      gestureEnabled: true,
+      gestureDirection: "horizontal",
+    }}>
       <Stack.Screen
         name="Search"
         component={Search}
@@ -34,4 +37,3 @@ export default function Explore() {
     </Stack.Navigator>
   );
 }
-
