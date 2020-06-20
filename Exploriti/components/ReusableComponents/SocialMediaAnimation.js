@@ -17,7 +17,10 @@ const {colours} = Theme.light;
 
 /**
  * SocialMediaAnimation is an animated picker for 6 different social media icons.
+<<<<<<< HEAD
+=======
  * @param openModal The method to open the NewSocialMediaLinkBottomModal
+>>>>>>> a791778ff4b5ef0064ade015b81472e3183e9e27
  */
 export default class SocialMediaAnimation extends Component {
     constructor(props) {
@@ -30,7 +33,8 @@ export default class SocialMediaAnimation extends Component {
         this.timeDilation = 1;
 
         // If duration touch longer than it, mean long touch
-        this.durationLongPress = 200;
+        this.durationLongPress = 200
+           ;
 
         // Variables to check
         // 0 = nothing, 1 = facebook, 2 = instagram, 3 = snapchat, 4 = linkedIn, 5 = Twitter, 6 = Youtube
