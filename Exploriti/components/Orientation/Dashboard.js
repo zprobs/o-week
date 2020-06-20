@@ -8,6 +8,7 @@ import {GET_CURRENT_USER} from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import SectionHeader from '../ReusableComponents/SectionHeader';
+import { useNavigation } from "@react-navigation/native";
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts
@@ -19,7 +20,9 @@ const {FontWeights, FontSizes} = Fonts
  */
 export default function Dashboard() {
     const {authState} = useContext(AuthContext);
+    const navigation = useNavigation();
     const {loading, error, data} = useQuery(GET_CURRENT_USER, {variables: {id: authState.user.uid}});
+
 
     if (loading) {
       return <Text>Loading</Text>;
@@ -35,16 +38,16 @@ export default function Dashboard() {
             data: ["ONE", "TWO"]
         },
         {
-            title: "Events",
-            data: ["French Fries", "Onion Rings", "Fried Shrimps"]
+            title: "Orientation Groups",
+            data: ["GROUP A", "GROUP B", "GROUP C"]
         },
         {
             title: "Other Groups",
-            data: ["Water", "Coke", "Beer"]
+            data: ["GROUP A", "GROUP B", "GROUP C"]
         },
         {
             title: "Events",
-            data: ["Cheese Cake", "Ice Cream"]
+            data: ["EVENT A", "EVENT B"]
         }
     ],[]);
 
@@ -65,6 +68,7 @@ export default function Dashboard() {
           light={true}
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
+          onPress={()=>navigation.navigate('Schedule')}
         />
       </>
     );

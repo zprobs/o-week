@@ -19,46 +19,47 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 const GoBackHeader = ({
-                          title,
-                          onTitlePress,
-                          ContentLeft,
-                          IconRight,
-                          IconRightOnPress,
-                          titleStyle,
-                      }) => {
-    return (
-        <View style={styles.container}>
-            <View style={styles.leftContainer}>
-                <BackIcon />
-                {ContentLeft && <ContentLeft />}
-                {title && (
-                    <Text onPress={onTitlePress} style={[styles.title, titleStyle]}>
-                        {title}
-                    </Text>
-                )}
-            </View>
-            {IconRight && <IconRight onPress={IconRightOnPress} />}
-        </View>
-    );
+  title,
+  onTitlePress,
+  ContentLeft,
+  IconRight,
+  IconRightOnPress,
+  titleStyle,
+  iconColor,
+}) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.leftContainer}>
+        <BackIcon iconColor={iconColor} />
+        {ContentLeft && <ContentLeft />}
+        {title && (
+          <Text onPress={onTitlePress} style={[styles.title, titleStyle]}>
+            {title}
+          </Text>
+        )}
+      </View>
+      {IconRight && <IconRight onPress={IconRightOnPress} />}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: 10,
-    },
-    title: {
-        ...FontWeights.Bold,
-        ...FontSizes.Label,
-        color: colours.text01,
-    },
-    leftContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    }
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  title: {
+    ...FontWeights.Bold,
+    ...FontSizes.Label,
+    color: colours.text01,
+  },
+  leftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 });
 
 export default GoBackHeader;

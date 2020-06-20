@@ -21,6 +21,9 @@ const FontWeights = {
 };
 
 const FontSizes = {
+    SuperHeading: {
+        fontSize: 48
+    },
     Heading: {
         fontSize: 32
     },

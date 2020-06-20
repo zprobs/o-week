@@ -69,7 +69,7 @@ export default function Landing({ navigation }) {
           pagingEnabled>
           <Slide
             key={1}
-            title={"Welcome to Exploriti!"}
+            title={"Welcome to McGill Hub!"}
             content={
               "Find out what's going on around you, and make the most out of your university experience, the simple way."
             }

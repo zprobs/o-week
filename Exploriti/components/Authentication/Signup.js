@@ -198,7 +198,7 @@ export default function Signup({navigation}) {
             cropping: true
         }).then(image => {
             setImage({uri: image.path});
-        });
+        }).catch(result => console.log(result));
     }
 
     function backButton() {

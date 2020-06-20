@@ -9,11 +9,9 @@ import {AuthContext} from '../../context';
  * @returns {null|*}
  * @constructor
  */
-const SocialMediaIcons = () => {
-    const {authState} = useContext(AuthContext)
-
+const SocialMediaIcons = ({id}) => {
     let icons;
-    const {loading, error, data} = useQuery(GET_USER_LINKS, {variables: {user: authState.user.uid}, fetchPolicy: 'cache-and-network'});
+    const {loading, error, data} = useQuery(GET_USER_LINKS, {variables: {user: id }, fetchPolicy: 'cache-and-network'});
     if (loading){
         return null
     }
