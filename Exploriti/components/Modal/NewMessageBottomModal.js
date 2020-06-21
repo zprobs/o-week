@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, Dimensions } from "react-native";
+import {StyleSheet, View, Text, Dimensions, TouchableOpacity} from 'react-native';
 import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
 import UserCard from "../ReusableComponents/UserCard";
@@ -14,6 +14,15 @@ const window05 = window * 0.05;
 
 const NewMessageBottomModal = React.forwardRef(
     ({ }, ref) => {
+
+        const renderItem = ({item}) => {
+            return (
+                <TouchableOpacity onPress={() => {setData(item); setTimeout(()=>ref.current.close(), 300) }} style={{flexDirection: 'row'}}>
+                    <RadioButton selected={isSelected}/>
+                    <Text style={styles.text}>{item}</Text>
+                </TouchableOpacity>
+            );
+        };
 
         const listEmptyComponent = () => (
             <ImgBanner
@@ -33,9 +42,10 @@ const NewMessageBottomModal = React.forwardRef(
                 modalStyle={styles.container}
                 flatListProps={{
                     showsVerticalScrollIndicator: false,
-                    data: null,
+                    data: [],
                     ListEmptyComponent: listEmptyComponent,
                     ListHeaderComponent: header,
+                    renderItem: renderItem
                 }}
             >
             </Modalize>
