@@ -196,9 +196,57 @@ export const GET_USER_LINKS = gql`
    } 
 `;
 
+export const MESSAGE_FRAGMENT = gql`
+    fragment DetailedMessage on message {
+        _id: id
+        text: body
+        createdAt: date
+        user: sender {
+            _id: id
+            name
+            image
+        }
+    }
+`;
 
+export const GET_CHATS = gql`
+    subscription getChats($user: String!) {
+        chats(where: {participants: {id: {_eq: $user}}}) {
+            _id: id
+            participants {
+                _id: id
+                name
+                image
+            }
+            messages_aggregate {
+                aggregate {
+                    count
+                }
+            }
+            messages(limit: 1, order_by: {date: desc}) {
+                ...DetailedMessage
+            }
+        }
+    }
+    ${MESSAGE_FRAGMENT}
+`;
 
+export const GET_MESSAGES = gql`
+    subscription getMessages($chatId: Int!, $offset: Int!) {
+        messages(where: {chatId: {_eq: $chatId}}, offset: $offset) {
+            ...DetailedMessage
+        }
+    }
+    ${MESSAGE_FRAGMENT}
+`;
 
+export const SEND_MESSAGE = gql`
+    mutation sendMessage($chatId: Int!, $senderId: String!, $date: timestamptz!, $body: String!) {
+        sendMessage(object: {chatId: $chatId, senderId: $senderId, date: $date, body: $body}) {
+            id
+        }
+    }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

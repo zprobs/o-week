@@ -1,7 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {AuthContext} from '../../context';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation, useSubscription} from '@apollo/react-hooks';
 import {Text, StyleSheet, View, SafeAreaView} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
 import GoBackHeader from '../Menu/GoBackHeader';
@@ -13,27 +13,30 @@ import CustomSend from './CustomSend';
 import CustomScrollToBottom from './CustomScrollToBottom';
 import CustomInputToolbar from './CustomInputToolbar';
 import {ifIphoneX} from 'react-native-iphone-x-helper';
+import {GET_MESSAGES, SEND_MESSAGE} from '../../graphql';
 
 const {colours} = Theme.light;
 
 
 const Conversation = () => {
     const route = useRoute();
-    const { chatId, name, image, targetId } = route.params;
+    const { chatId, name, image, participants, numMessages } = route.params;
     const { navigate } = useNavigation();
     const { authState } = useContext(AuthContext);
-    const [messages, setMessages] = useState([
-        {
-            _id: 1,
-            text: 'Hello developer',
-            createdAt: new Date(),
-            user: {
-                _id: 10,
-                name: 'React Native',
-                avatar: 'https://placeimg.com/140/140/any',
-            },
+    const [sendMessage] = useMutation(SEND_MESSAGE)
+    const [messages, setMessages] = useState([]);
+    const [limit, setLimit] = useState(15);
+
+    const {data, loading, error} = useSubscription(GET_MESSAGES, {
+        variables: {
+            chatId: chatId,
+            offset: numMessages - limit
         },
-    ],);
+    });
+
+    if (!loading && messages.length !== data.messages.length) {
+        setMessages(data.messages);
+    }
 
     // const [queryChat, {
     //     called: chatQueryCalled,
@@ -62,29 +65,38 @@ const Conversation = () => {
     //     }
     // }, [chatQueryData, chatQueryCalled, chatQueryLoading, chatSubscriptionData, chatSubscriptionLoading]);
 
-    const onSend = async updatedMessages => {
-        const isFirstMessage = messages.length === 0;
-        const [updatedMessage] = updatedMessages;
-        if (isFirstMessage) {
-            // await connectChat({
-            //     variables: {
-            //         chatId,
-            //         userId: user.id,
-            //         targetId
-            //     }
-            // });
-        }
-        // addMessage({
-        //     variables: {
-        //         chatId,
-        //         authorId: user.id,
-        //         body: updatedMessage.text
-        //     }
-        // });
+    const onSend = (newMessage) => {
+        newMessage = newMessage[0];
+        console.log(chatId, newMessage.user._id, newMessage.createdAt, newMessage.text)
+        sendMessage({
+            variables: {
+                chatId: chatId,
+                senderId: newMessage.user._id,
+                date: newMessage.createdAt,
+                body: newMessage.text
+            },
+        });
     };
 
-    const navigateToProfile = () => {
-        navigate('Profile', { userId: targetId });
+    const loadMoreMessages = ({nativeEvent}) => {
+        const { contentOffset } = nativeEvent;
+        if (contentOffset.y === 0) {
+            console.log("scrolling");
+            setLimit(limit + 5 >= numMessages ? numMessages : limit + 5);
+        }
+    }
+
+    const handlePressAvatar = (user) => {
+        navigate('Profile', { userId: user._id });
+    };
+
+    const handleTitlePress = () => {
+        if (participants.length === 2) {
+            const userId = participants.filter((participant) => participant._id !== authState.user.uid)[0]._id;
+            navigate('Profile', { userId: userId });
+        } else {
+            console.log("Maybe we can show a modal of users in this chat?")
+        }
     };
 
     //let content = <ConversationScreenPlaceholder />
@@ -93,26 +105,32 @@ const Conversation = () => {
 
    // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
     //const transform = transformMessages(messages);
-    const transform = messages
     content = (
         <GiftedChat
             scrollToBottom
             alwaysShowSend
+            isLoadingEarlier
+            loadEarlier
             inverted={false}
             maxInputLength={200}
-            messages={transform}
+            messages={messages}
             scrollToBottomComponent={CustomScrollToBottom}
             textInputProps={{disable: true}}
             renderComposer={composerProps => <CustomComposer {...composerProps} />}
             renderMessageText={CustomMessageText}
             renderSend={CustomSend}
             renderInputToolbar={CustomInputToolbar}
+            onPressAvatar={handlePressAvatar}
             onSend={onSend}
-            onPressAvatar={navigateToProfile}
             user={{_id: authState.user.uid}}
             bottomOffset={ifIphoneX(20, -10)}
             keyboardShouldPersistTaps={null}
-            listViewProps={{showsVerticalScrollIndicator: false, style: {marginBottom: 16}}}
+            listViewProps={{
+                showsVerticalScrollIndicator: false,
+                style: {marginBottom: 16},
+                scrollEventThrottle: 400,
+                onScroll: loadMoreMessages
+            }}
         />
     );
 
@@ -120,8 +138,8 @@ const Conversation = () => {
         <SafeAreaView style={styles.container}>
             <GoBackHeader
                 title={name}
-                onTitlePress={navigateToProfile}
-                ContentLeft={() => <ChatHeaderImage image={image} onPress={navigateToProfile} />}
+                onTitlePress={handleTitlePress}
+                ContentLeft={() => <ChatHeaderImage image={image} onPress={handleTitlePress} />}
                 titleStyle={styles.headerTitleStyle}
             />
             {content}
@@ -129,7 +147,7 @@ const Conversation = () => {
     );
 };
 
-const styles =  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colours.base

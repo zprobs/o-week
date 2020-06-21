@@ -1,6 +1,7 @@
-import React, {useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import { Text, View, StyleSheet, SafeAreaView, FlatList } from "react-native";
 import SearchBar from 'react-native-search-bar';
+import { GiftedChat } from 'react-native-gifted-chat';
 import {Theme} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import NewMessageBottomModal from '../Modal/NewMessageBottomModal';
@@ -8,7 +9,10 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import GoBackHeader from '../Menu/GoBackHeader';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
+import { useSubscription } from '@apollo/react-hooks';
+import { GET_CHATS } from '../../graphql';
 import Images from '../../assets/images';
+import {AuthContext} from '../../context';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
@@ -35,34 +39,35 @@ export default function MessagesList() {
     />);
 
     const renderItem = ({ item }) => {
+        let { _id: chatId, participants, messages, chatName, messages_aggregate: numMessages } = item;
 
-        const { id: chatId, participants, messages } = item;
-        //  const [participant] = filterChatParticipants(user.id, participants);
-        const participant = participants;
+        numMessages = numMessages.aggregate.count;
         const [lastMessage] = messages;
 
-        const { id, image, name, lastSeen } = participant[0];
         const {
             id: messageId,
-            author: { id: authorId },
+            user: { id: authorId },
             seen,
-            body: messageBody,
+            text: messageBody,
             createdAt: time
         } = lastMessage;
 
         // const isOnline = isUserOnline(lastSeen);
+        let { image, lastSeen } = participants[0];
+        const name = chatName ? chatName : participants.filter(participant => participant._id !== authState.user.uid).map(participant => participant.name).join(', ');
 
         const isOnline = true;
 
         return (
             <MessageCard
                 chatId={chatId}
-                participantId={id}
+                participants={participants}
                 image={image}
                 name={name}
                 authorId={authorId}
                 messageId={messageId}
                 messageBody={messageBody}
+                numMessages={numMessages}
                 seen={seen}
                 time={time}
                 isOnline={isOnline}
@@ -82,10 +87,18 @@ export default function MessagesList() {
         <View style={{height: 15}}/>
     )
 
+    const { authState } = useContext(AuthContext);
+
+    const { data, loading, error } = useSubscription(GET_CHATS, {
+        variables: {
+            user: authState.user.uid
+        },
+    });
+
     let content = (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={dummyMSGS}
+            data={loading ? [] : data.chats}
             ListEmptyComponent={listEmptyComponent}
             style={styles.messagesList}
             spacing={20}
@@ -163,7 +176,6 @@ const dummyMSGS = [
         id: "444",
         participants: [{
             id: 1,
-            image: "https://reactjs.org/logo-og.png",
             name: 'Pusha T',
             lastSeen: new Date(),
         }],
@@ -178,5 +190,3 @@ const dummyMSGS = [
         }]
     }
 ]
-
-

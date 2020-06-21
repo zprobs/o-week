@@ -244,7 +244,6 @@ export default function Signup({navigation}) {
             userData["interests"] = graphqlify(interestsSelection, 'interest');
             console.log(userData["interests"]);
             console.log(userData);
-
             submitUser({variables: {data : userData}}).then((result)=> {
                 console.log(result);
                 setIsLoading(false)

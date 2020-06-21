@@ -38,13 +38,10 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
         const verifiedQuery = query ? query : NULL
         const result = useQuery(verifiedQuery, {skip: query==undefined});
 
-    if (query) {
-            data = {};
+        if (query) {
+            data = [];
             if (!result.loading && !result.error) {
-                result.data[title].map(value => data[value.id] = value.name);
-                if (aliased) {
-                    result.data[title].map(value => aliases[value.id] = value.aliases);
-                }
+                data = result.data[title];
                 if (!didSetList.current) {
                     didSetList.current = true;
                     setFilteredList(data);
@@ -75,9 +72,9 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
             let newData;
             if (query) {
                 if (aliased) {
-                    newData = Object.fromEntries(Object.entries(data).filter(([id, value]) => value.toLowerCase().includes(lowerCaseQuery) || aliases[id].filter((alias) => alias.toLowerCase().includes(lowerCaseQuery)).length !== 0));
+                    newData = data.filter((item) => item.name.toLowerCase().includes(lowerCaseQuery) || item.aliases.filter((alias) => alias.toLowerCase().includes(lowerCaseQuery)).length !== 0);
                 } else {
-                    newData = Object.fromEntries(Object.entries(data).filter(([id,value]) => value.toLowerCase().includes(lowerCaseQuery)));
+                    newData = data.filter((item) => item.name.toLowerCase().includes(lowerCaseQuery));
                 }
             } else {
                 newData = data.filter((item) => item.toLowerCase().includes(lowerCaseQuery));
@@ -91,7 +88,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
             return (
                 <TouchableOpacity onPress={() => onSelect(item)}
                                   style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={styles.item}>{query ? data[item] : item}</Text>
+                    <Text style={styles.item}>{query ? data[item].name : item}</Text>
                     {isSelected ? <Icon name={'check'} style={styles.icon} size={28}/> : null}
                 </TouchableOpacity>
 
@@ -121,6 +118,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
             <Modalize
                 ref={ref}
                 flatListProps={{
+                    // TODO: CHECK THE LINE BELOW
                     data: query ? (filteredList ? Object.keys(filteredList) : []) : data,
                     keyExtractor: item => item,
                     renderItem: renderItem,
@@ -133,7 +131,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
                 onOpened={setInputFocus}
                 onClose={() => {
                     setData(mapToString(selected, data, query));
-                    if (setSelection) { setSelection(mapToIds(selected)) };
+                    if (setSelection) { setSelection(mapToIds(selected, data, query)) };
                 }}
                 modalTopOffset={offset ? offset : 0}
             />
@@ -205,19 +203,20 @@ function mapToString(map, data, query) {
     map.forEach(
         (value, key) => {
             if (value) {
-                array.push(query ? data[key] : key);
+                array.push(query ? data[key].name : key);
             }
         },
     );
     return array;
 }
 
-function mapToIds(map) {
+function mapToIds(map, data, query) {
+    console.log(map);
     let array = [];
     map.forEach(
         (value, key) => {
             if (value) {
-                array.push(key);
+                array.push(query ? data[key].id : key);
             }
         },
     );

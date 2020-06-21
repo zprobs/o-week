@@ -21,7 +21,6 @@ export default function Messages() {
                 options={{
                     headerShown: false,
                 }}
-
             />
             <Stack.Screen
                 name="Conversation"

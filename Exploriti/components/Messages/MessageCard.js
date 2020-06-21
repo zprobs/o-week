@@ -14,8 +14,7 @@ const {colours} = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
 
-const MessageCard = ({ chatId, participantId, image, name, authorId, messageId, messageBody, seen, time, isOnline }) => {
-
+const MessageCard = ({ chatId, image, name, participants, authorId, messageId, messageBody, numMessages, seen, time, isOnline }) => {
     const { authState } = useContext(AuthContext);
     const { readableTime } = parseTimeElapsed(time);
     const  navigation  = useNavigation();
@@ -26,7 +25,7 @@ const MessageCard = ({ chatId, participantId, image, name, authorId, messageId, 
         // if (authorId !== user.id) {
         //     messageSeen({ variables: { messageId } });
         // }
-        navigation.navigate('Conversation', { chatId, image, name, targetId: participantId })
+        navigation.navigate('Conversation', { chatId, image, name, participants, numMessages })
     };
 
     const isHighlighted = authorId !== authState.user.uid && !seen;
