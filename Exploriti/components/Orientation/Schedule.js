@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {SafeAreaView, StyleSheet, Text, View, Dimensions} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView} from 'react-native';
 import GoBackHeader from '../Menu/GoBackHeader';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -12,6 +12,14 @@ const {colours} = Theme.light;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
+const Event = ({image, title, time}) => (
+    <View style={styles.event}>
+        <Image style={styles.eventImage} source={{uri: image}}/>
+        <Text style={styles.eventTitle}>{ title }</Text>
+        <Text style={styles.eventDate}>{time}</Text>
+    </View>
+);
+
 
 const Schedule = () => {
 
@@ -20,13 +28,21 @@ const Schedule = () => {
     const renderItem = ({item, index}) => {
         return (
             <View style={styles.slide}>
-                <Text style={null}>{ item.title }</Text>
+
+                {
+                    item.events.map((event)=>{
+                        return <Event title={event.title} image={event.image} time={event.time} key={event.time + event.title}/>
+                    })
+                }
+
             </View>
         );
     }
 
     return (
-      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container} bounces={false}>
+            <SafeAreaView>
+
           <View style={styles.header}>
               <CircleBackIcon/>
               <Text style={styles.title}>Schedule</Text>
@@ -43,13 +59,13 @@ const Schedule = () => {
               sliderWidth={WIDTH}
               itemWidth={WIDTH*0.75}
               containerCustomStyle={styles.carousel}
+              removeClippedSubviews={false}
           />
-
-      </SafeAreaView>
+            </SafeAreaView>
+          </ScrollView>
     );
 };
 
-const DATA = [{title: "Event"}, {title: "Another"}, {title: "Last"}];
 
 const styles = StyleSheet.create({
    container: {
@@ -85,12 +101,117 @@ const styles = StyleSheet.create({
         opacity: 0.8
     },
     slide: {
-       backgroundColor: ThemeStatic.white,
-        height: HEIGHT*0.55
     },
     carousel: {
        marginTop: 30
+    },
+    event: {
+       backgroundColor: colours.base,
+        borderRadius: 20    ,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginVertical: 12,
+    },
+    eventImage: {
+       height: 54,
+        width: 54,
+        borderRadius: 27,
+        marginVertical: 15
+    },
+    eventTitle: {
+       ...FontWeights.Bold,
+        ...FontSizes.Label,
+        maxWidth: WIDTH*0.4,
+        marginVertical: 8
+    },
+    eventDate: {
+       ...FontSizes.Body,
+        ...FontWeights.Regular,
+        color: colours.text03
     }
 });
 
 export default Schedule;
+
+const DATA = [
+    {
+        events: [
+            {
+                title: "Registration",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "3:00pm",
+            },
+            {
+                title: "Welcome Fest",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "5:30pm",
+            },
+            {
+                title: "Scavenger Hunt",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "1:00pm",
+            },
+            {
+                title: "Event",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "2:30pm",
+            },
+            {
+                title: "End",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "3:00pm",
+            },
+
+        ],
+    },
+    {
+        events: [
+            {
+                title: "Scavenger Hunt",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "1:00pm",
+            },
+            {
+                title: "Event",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "2:30pm",
+            },
+        ],
+    },
+    {
+        events: [
+            {
+                title: "Scavenger Hunt",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "1:00pm",
+            },
+            {
+                title: "Event",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "2:30pm",
+            },
+            {
+                title: "Game",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "1:00pm",
+            },
+            {
+                title: "Event 2",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "2:30pm",
+            },
+        ],
+    },
+];
