@@ -109,8 +109,8 @@ const Conversation = () => {
         <GiftedChat
             scrollToBottom
             alwaysShowSend
-            isLoadingEarlier
-            loadEarlier
+            isLoadingEarlier={limit !== numMessages}
+            loadEarlier={limit !== numMessages}
             inverted={false}
             maxInputLength={200}
             messages={messages}

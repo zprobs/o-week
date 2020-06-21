@@ -6,6 +6,7 @@ import UserCard from "../ReusableComponents/UserCard";
 import { Theme } from "../../theme/Colours";
 import Images from "../../assets/images";
 import ImgBanner from "../ReusableComponents/ImgBanner";
+import {AuthContext} from '../../context';
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -35,6 +36,8 @@ const NewMessageBottomModal = React.forwardRef(
         const header = () => (
             <ModalHeader heading={"Let's talk"} subHeading={"Connect with your friends"} />
         );
+
+        const { authState } = useContext(AuthContext);
 
         return (
             <Modalize
