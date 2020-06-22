@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Dashboard from "./Dashboard";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import {MessagesIcon} from '../Menu/MessagesIcon';
+import Schedule from './Schedule';
 
 const Stack = createStackNavigator();
 
@@ -19,8 +20,15 @@ export default function Orientation() {
         name="Orientation"
         component={Dashboard}
         options={{
-            headerLeft: () => <DrawerIcon/>,
-            headerRight: () => <MessagesIcon/>
+          headerLeft: () => <DrawerIcon />,
+          headerRight: () => <MessagesIcon />,
+        }}
+      />
+      <Stack.Screen
+        name={"Schedule"}
+        component={Schedule}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

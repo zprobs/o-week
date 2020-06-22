@@ -7,10 +7,10 @@ import { useNavigation } from "@react-navigation/native";
  * @returns Icon
  * @constructor
  */
-const BackIcon = () => {
+const BackIcon = ({iconColor}) => {
   const { goBack } = useNavigation();
   return (
-    <Icon name="chevron-left" size={38} color="#000" onPress={() => goBack()} />
+    <Icon name="chevron-left" size={38} color={iconColor ? iconColor : "#000"} onPress={() => goBack()} />
   );
 };
 

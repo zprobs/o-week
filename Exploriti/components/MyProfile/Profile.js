@@ -105,6 +105,7 @@ export default function Profile({ route }) {
                     onFriendsOpen={onFriendsOpen}
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
+                    userId={userId}
                 />
                 { isCurrentUser ? <SocialMediaAnimation openModal={openModal}/> : null }
             </SafeAreaView>
@@ -167,6 +168,7 @@ const Connections = ({ total, type, onPress }) => {
  * @param programs
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
+ * @param userId
  * @returns {*}
  * @constructor
  */
@@ -180,6 +182,7 @@ const ProfileCard = ({
   programs,
   description,
   renderInteractions,
+    userId
 }) => {
   return (
     <View style={styles.container}>
@@ -202,7 +205,7 @@ const ProfileCard = ({
         <Text style={styles.descriptionTitle}>About</Text>
         <Text style={styles.descriptionText}>{description}</Text>
       </View>
-      <SocialMediaIcons />
+      <SocialMediaIcons id={userId} />
     </View>
   );
 };

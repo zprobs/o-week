@@ -23,6 +23,9 @@ const {colours} = Theme.light;
 
 
 const Conversation = () => {
+
+    console.log('Conversation Render')
+
     const route = useRoute();
     const { chatId, name, image, participants, numMessages, messages: initialMessages } = route.params;
     const { navigate } = useNavigation();

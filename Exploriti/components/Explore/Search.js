@@ -30,15 +30,15 @@ export default function Search() {
         },
         {
             title: "Orientation Groups",
-            data: ["French Fries", "Onion Rings", "Fried Shrimps"]
+            data: ["GROUP A", "GROUP B", "GROUP C"]
         },
         {
             title: "Other Groups",
-            data: ["Water", "Coke", "Beer"]
+            data: ["GROUP A", "GROUP B", "GROUP C"]
         },
         {
             title: "Events",
-            data: ["Cheese Cake", "Ice Cream"]
+            data: ["EVENT A", "EVENT B"]
         }
     ],[filteredData]);
 
