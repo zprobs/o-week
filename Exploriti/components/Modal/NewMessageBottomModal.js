@@ -14,8 +14,8 @@ const window05 = window * 0.05;
 
 
 const NewMessageBottomModal = React.forwardRef(
-    ({ }, ref) => {
-
+    ({ friends }, ref) => {
+        console.log("friends:", friends);
         const renderItem = ({item}) => {
             return (
                 <TouchableOpacity onPress={() => {setData(item); setTimeout(()=>ref.current.close(), 300) }} style={{flexDirection: 'row'}}>
