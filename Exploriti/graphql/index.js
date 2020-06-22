@@ -158,6 +158,15 @@ export const GET_PROGRAMS = gql`
     }
 `;
 
+export const GET_FRIENDS = gql`
+    query getFriends($user: String!) {
+        friends(_or: {order_by: {name: asc}}) {
+            id
+            name
+        }
+    }
+`;
+
 export const CHECK_FRIEND_REQUESTS = gql`
     query CHECK_FRIEND_REQUESTS($currentUser: String!, $otherUser: String!) {
         user(id: $currentUser, ) {
@@ -211,8 +220,9 @@ export const MESSAGE_FRAGMENT = gql`
 
 export const GET_CHATS = gql`
     subscription getChats($user: String!) {
-        chats(where: {participants: {id: {_eq: $user}}}) {
+        chats(where: {participants: {id: {_eq: $user}}}, limit: 15) {
             _id: id
+            name
             participants {
                 _id: id
                 name
@@ -223,7 +233,7 @@ export const GET_CHATS = gql`
                     count
                 }
             }
-            messages(limit: 1, order_by: {date: desc}) {
+            messages(limit: 15, order_by: {date: desc}) {
                 ...DetailedMessage
             }
         }
@@ -231,9 +241,18 @@ export const GET_CHATS = gql`
     ${MESSAGE_FRAGMENT}
 `;
 
-export const GET_MESSAGES = gql`
-    subscription getMessages($chatId: Int!, $offset: Int!) {
-        messages(where: {chatId: {_eq: $chatId}}, offset: $offset) {
+export const GET_LATEST_MESSAGE = gql`
+    subscription getMessages($chatId: Int!) {
+        messages(where: {chatId: {_eq: $chatId}}, order_by: {date: desc}, limit: 10) {
+            ...DetailedMessage
+        }
+    }
+    ${MESSAGE_FRAGMENT}
+`;
+
+export const GET_EARLIER_MESSAGES = gql`
+    query getEarlierMessages($chatId: Int!, $offset: Int!, $limit: Int!) {
+        messages(where: {chatId: {_eq: $chatId}}, offset: $offset, limit: $limit, order_by: {date: desc}) {
             ...DetailedMessage
         }
     }
@@ -241,8 +260,8 @@ export const GET_MESSAGES = gql`
 `;
 
 export const SEND_MESSAGE = gql`
-    mutation sendMessage($chatId: Int!, $senderId: String!, $date: timestamptz!, $body: String!) {
-        sendMessage(object: {chatId: $chatId, senderId: $senderId, date: $date, body: $body}) {
+    mutation sendMessage($chatId: Int!, $senderId: String!, $body: String!) {
+        sendMessage(object: {chatId: $chatId, senderId: $senderId, body: $body}) {
             id
         }
     }

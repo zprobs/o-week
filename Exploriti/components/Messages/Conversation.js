@@ -1,7 +1,7 @@
 import React, {useContext, useRef, useState} from 'react';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {AuthContext} from '../../context';
-import {useMutation, useSubscription} from '@apollo/react-hooks';
+import {useMutation, useSubscription, useLazyQuery} from '@apollo/react-hooks';
 import {Text, StyleSheet, View, SafeAreaView} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
 import GoBackHeader from '../Menu/GoBackHeader';
@@ -13,7 +13,11 @@ import CustomSend from './CustomSend';
 import CustomScrollToBottom from './CustomScrollToBottom';
 import CustomInputToolbar from './CustomInputToolbar';
 import {ifIphoneX} from 'react-native-iphone-x-helper';
-import {GET_MESSAGES, SEND_MESSAGE} from '../../graphql';
+import {
+  GET_EARLIER_MESSAGES,
+  GET_LATEST_MESSAGE,
+  SEND_MESSAGE,
+} from "../../graphql";
 
 const {colours} = Theme.light;
 
@@ -23,23 +27,40 @@ const Conversation = () => {
     console.log('Conversation Render')
 
     const route = useRoute();
-    const { chatId, name, image, participants, numMessages } = route.params;
+    const { chatId, name, image, participants, numMessages, messages: initialMessages } = route.params;
     const { navigate } = useNavigation();
     const { authState } = useContext(AuthContext);
-    const [sendMessage] = useMutation(SEND_MESSAGE)
-    const [messages, setMessages] = useState([]);
-    const [limit, setLimit] = useState(15);
-
-    const {data, loading, error} = useSubscription(GET_MESSAGES, {
-        variables: {
-            chatId: chatId,
-            offset: numMessages - limit
-        },
+    const [sendMessage] = useMutation(SEND_MESSAGE);
+    const [getEarlierMessages] = useLazyQuery(GET_EARLIER_MESSAGES, {
+        onCompleted: ({ messages: oldMessages }) => {
+            console.log(oldMessages.map((msg) => msg._id).join(' '));
+            setMessages(GiftedChat.prepend(messages, oldMessages));
+            setMessageOffset(messageOffset - numToLoad);
+            setLoadEarlier(messageOffset-numToLoad >= 0);
+            setIsLoadingEarlier(false);
+        }
     });
+    const [messages, setMessages] = useState(initialMessages);
+    console.log(messages.map((msg) => msg._id).join(' '));
+    const [messageOffset, setMessageOffset] = useState(numMessages - initialMessages.length);
+    const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+    const [loadEarlier, setLoadEarlier] = useState(messageOffset !== 0);
+    const didSetFirst = useRef(false);
+    const numToLoad = 5;
 
-    if (!loading && messages.length !== data.messages.length) {
-        setMessages(data.messages);
-    }
+    useSubscription(GET_LATEST_MESSAGE, {
+        variables: {
+            chatId: chatId
+        },
+        onSubscriptionData: ({subscriptionData}) => {
+            console.log(subscriptionData.data.messages.length);
+            if (didSetFirst.current) {
+                setMessages(GiftedChat.append(messages, subscriptionData.data.messages));
+            } else {
+                didSetFirst.current = true;
+            }
+        }
+    });
 
     // const [queryChat, {
     //     called: chatQueryCalled,
@@ -68,25 +89,34 @@ const Conversation = () => {
     //     }
     // }, [chatQueryData, chatQueryCalled, chatQueryLoading, chatSubscriptionData, chatSubscriptionLoading]);
 
-    const onSend = (newMessage) => {
-        newMessage = newMessage[0];
-        console.log(chatId, newMessage.user._id, newMessage.createdAt, newMessage.text)
+    const onSend = (updatedMessages) => {
+        const [updatedMessage] = updatedMessages;
         sendMessage({
             variables: {
                 chatId: chatId,
-                senderId: newMessage.user._id,
-                date: newMessage.createdAt,
-                body: newMessage.text
+                senderId: updatedMessage.user._id,
+                body: updatedMessage.text
             },
         });
     };
 
-    const loadMoreMessages = ({nativeEvent}) => {
-        const { contentOffset } = nativeEvent;
-        if (contentOffset.y === 0) {
-            console.log("scrolling");
-            setLimit(limit + 5 >= numMessages ? numMessages : limit + 5);
+    const loadEarlierMessages = () => {
+        let offset, limit;
+        if (numToLoad > messageOffset) {
+            limit = messageOffset;
+            offset = 0;
+        } else {
+            limit = numToLoad;
+            offset = messageOffset - numToLoad;
         }
+        setIsLoadingEarlier(true);
+        getEarlierMessages({
+            variables: {
+                chatId: chatId,
+                offset: offset,
+                limit: limit
+            }
+        });
     }
 
     const handlePressAvatar = (user) => {
@@ -110,11 +140,14 @@ const Conversation = () => {
     //const transform = transformMessages(messages);
     content = (
         <GiftedChat
+            alignTop={false}
             scrollToBottom
             alwaysShowSend
-            isLoadingEarlier={limit !== numMessages}
-            loadEarlier={limit !== numMessages}
-            inverted={false}
+            isLoadingEarlier={isLoadingEarlier}
+            onLoadEarlier={loadEarlierMessages}
+            loadEarlier={loadEarlier}
+            infiniteScroll
+            inverted
             maxInputLength={200}
             messages={messages}
             scrollToBottomComponent={CustomScrollToBottom}
@@ -130,9 +163,7 @@ const Conversation = () => {
             keyboardShouldPersistTaps={null}
             listViewProps={{
                 showsVerticalScrollIndicator: false,
-                style: {marginBottom: 16},
-                scrollEventThrottle: 400,
-                onScroll: loadMoreMessages
+                style: {marginBottom: 16}
             }}
         />
     );

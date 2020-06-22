@@ -10,7 +10,7 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useSubscription } from '@apollo/react-hooks';
-import { GET_CHATS } from '../../graphql';
+import {GET_CHATS, GET_FRIENDS} from '../../graphql';
 import Images from '../../assets/images';
 import {AuthContext} from '../../context';
 
@@ -28,9 +28,6 @@ export default function MessagesList() {
 
     const newMessageBottomModalRef = useRef();
 
-
-
-
     const IconRight = () => (<Icon
         name='sc-telegram'
         size={28}
@@ -39,7 +36,7 @@ export default function MessagesList() {
     />);
 
     const renderItem = ({ item }) => {
-        let { _id: chatId, participants, messages, chatName, messages_aggregate: numMessages } = item;
+        let { _id: chatId, participants, messages, name: chatName, messages_aggregate: numMessages } = item;
 
         numMessages = numMessages.aggregate.count;
         const [lastMessage] = messages;
@@ -55,6 +52,7 @@ export default function MessagesList() {
         // const isOnline = isUserOnline(lastSeen);
         let { image, lastSeen } = participants[0];
         const name = chatName ? chatName : participants.filter(participant => participant._id !== authState.user.uid).map(participant => participant.name).join(', ');
+        participants = participants.filter((participant) => participant.id !== authState.user.uid)
 
         const isOnline = true;
 
@@ -65,8 +63,8 @@ export default function MessagesList() {
                 image={image}
                 name={name}
                 authorId={authorId}
-                messageId={messageId}
                 messageBody={messageBody}
+                messages={messages}
                 numMessages={numMessages}
                 seen={seen}
                 time={time}
@@ -89,7 +87,13 @@ export default function MessagesList() {
 
     const { authState } = useContext(AuthContext);
 
-    const { data, loading, error } = useSubscription(GET_CHATS, {
+    const { data: chats, loading: chatsLoading, error: chatsError } = useSubscription(GET_CHATS, {
+        variables: {
+            user: authState.user.uid
+        },
+    });
+
+    const { data: friends, loading: friendsLoading, error: friendsError } = useSubscription(GET_FRIENDS, {
         variables: {
             user: authState.user.uid
         },
@@ -98,7 +102,7 @@ export default function MessagesList() {
     let content = (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={loading ? [] : data.chats}
+            data={chatsLoading ? [] : chats.chats}
             ListEmptyComponent={listEmptyComponent}
             style={styles.messagesList}
             spacing={20}
