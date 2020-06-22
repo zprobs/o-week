@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView, Animated} from 'react-native';
 import GoBackHeader from '../Menu/GoBackHeader';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -11,6 +11,7 @@ const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
+const ITEM_WIDTH = 0.75 * WIDTH
 
 const Event = ({image, title, time}) => (
     <View style={styles.event}>
@@ -23,21 +24,76 @@ const Event = ({image, title, time}) => (
 
 const Schedule = () => {
 
-    const carouselRef = useRef();
+     const carouselRef = useRef();
+    const [index, setIndex] = useState(0);
+    const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
 
-    const renderItem = ({item, index}) => {
-        return (
-            <View style={styles.slide}>
-
-                {
-                    item.events.map((event)=>{
-                        return <Event title={event.title} image={event.image} time={event.time} key={event.time + event.title}/>
-                    })
-                }
-
-            </View>
-        );
+    const title = () => {
+        switch (index) {
+            case 0:
+                return 'Sunday';
+            case 1:
+                return 'Monday';
+            case 2:
+                return 'Tuesday';
+            case 3:
+                return 'Wednesday';
+            case 4:
+                return 'Thursday'
+        }
     }
+
+    const number = () => {
+        switch (index) {
+            case 0:
+                return '7th';
+            case 1:
+                return '8th';
+            case 2:
+                return '9th';
+            case 3:
+                return '10th';
+            case 4:
+                return '11th'
+        }
+    }
+
+
+    const renderItem = ({ item, index }) => {
+      return (
+        <View style={styles.slide}>
+          {item.events.map(event => {
+            return (
+              <Event
+                title={event.title}
+                image={event.image}
+                time={event.time}
+                key={event.time + event.title}
+              />
+            );
+          })}
+        </View>
+      );
+    };
+
+
+    const onSwipe = (slideIndex) =>{
+
+            Animated.timing(titleOpacity, {
+                toValue: 0,
+                duration: 120,
+                useNativeDriver: true
+            }).start(()=>{
+                setIndex(slideIndex);
+                Animated.timing(titleOpacity, {
+                    toValue: 1,
+                    duration: 120,
+                    useNativeDriver: true,
+                }).start();
+            })
+
+    }
+
 
     return (
         <ScrollView style={styles.container} bounces={false}>
@@ -49,17 +105,19 @@ const Schedule = () => {
               <View style={{width: 44}}/>
           </View>
           <View style={styles.date}>
-              <Text style={styles.dayText}>Sunday</Text>
-              <Text style={styles.dateText}>September 7th</Text>
+              <Animated.Text style={{...styles.dayText, opacity: titleOpacity}}>{title()}</Animated.Text>
+              <Text style={styles.dateText}>{"September " + number()}</Text>
           </View>
           <Carousel
               ref={carouselRef}
               data={DATA}
               renderItem={renderItem}
               sliderWidth={WIDTH}
-              itemWidth={WIDTH*0.75}
+              itemWidth={ITEM_WIDTH}
               containerCustomStyle={styles.carousel}
               removeClippedSubviews={false}
+              onBeforeSnapToItem={onSwipe}
+
           />
             </SafeAreaView>
           </ScrollView>
