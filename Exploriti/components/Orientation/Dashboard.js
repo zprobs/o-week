@@ -1,5 +1,5 @@
 import React, {useContext, useMemo} from 'react';
-import {Text, View, StyleSheet, SectionList, Image, StatusBar} from 'react-native';
+import {Text, View, StyleSheet, SectionList, Image, StatusBar, TouchableOpacity} from 'react-native';
 import {AuthContext} from '../../context';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -77,6 +77,27 @@ export default function Dashboard() {
       </>
     );
 
+    const renderItem = React.useCallback(({ item, section }) => {
+        if (section.title === "Groups") {
+            return (
+                <TouchableOpacity onPress={() => navigation.navigate("GroupScreen")}>
+                    <View style={styles.imageRow}>
+                        <Image source={{ uri: item.img }} style={styles.groupImage} />
+                        <View style={styles.imageLabelContainer}>
+                            <View style={styles.imageLabel}>
+                                <Text style={styles.imageLabelText}>{item.title}</Text>
+                            </View>
+                            <UserCountPreview />
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            );
+        }
+        return <Item title={item} />;
+    }, [navigation]);
+
+
+
     return (
         <View style={styles.container}>
             <SectionList
@@ -97,22 +118,7 @@ const Item = ({ title }) => (
     </View>
 );
 
-const renderItem = ({item, section}) => {
-    if (section.title === "Groups") {
-        return (
-            <View style={styles.imageRow}>
-                <Image source={{uri: item.img }} style={styles.groupImage}/>
-                <View style={styles.imageLabelContainer}>
-                    <View style={styles.imageLabel}>
-                        <Text style={styles.imageLabelText}>{item.title}</Text>
-                    </View>
-                        <UserCountPreview/>
-                </View>
-            </View>
-        )
-    }
-    return <Item title={item}/>
-};
+
 
 
 const styles = StyleSheet.create({
