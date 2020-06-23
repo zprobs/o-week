@@ -10,7 +10,7 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useSubscription } from '@apollo/react-hooks';
-import {GET_CHATS, GET_FRIENDS} from '../../graphql';
+import {GET_CHATS} from '../../graphql';
 import Images from '../../assets/images';
 import {AuthContext} from '../../context';
 
@@ -40,7 +40,6 @@ export default function MessagesList() {
 
         numMessages = numMessages.aggregate.count;
         const [lastMessage] = messages;
-
         const {
             id: messageId,
             user: { id: authorId },
@@ -93,16 +92,16 @@ export default function MessagesList() {
         },
     });
 
-    const { data: friends, loading: friendsLoading, error: friendsError } = useSubscription(GET_FRIENDS, {
-        variables: {
-            user: authState.user.uid
-        },
-    });
+    // const { data: friends, loading: friendsLoading, error: friendsError } = useSubscription(GET_FRIENDS, {
+    //     variables: {
+    //         user: authState.user.uid
+    //     },
+    // });
 
     let content = (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={chatsLoading ? [] : chats.chats}
+            data={chatsLoading ? [] : chatsError ? [] : chats.chats.filter((chat) => chat.messages.length !== 0)}
             ListEmptyComponent={listEmptyComponent}
             style={styles.messagesList}
             spacing={20}
