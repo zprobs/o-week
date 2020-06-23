@@ -1,5 +1,5 @@
 import React, {useContext, useMemo} from 'react';
-import {Text, View, StyleSheet, SectionList} from 'react-native';
+import {Text, View, StyleSheet, SectionList, Image, StatusBar} from 'react-native';
 import {AuthContext} from '../../context';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -9,6 +9,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from "@react-navigation/native";
+import UserCountPreview from '../ReusableComponents/UserCountPreview';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts
@@ -35,7 +36,7 @@ export default function Dashboard() {
     const listData = useMemo(() => [
         {
             title: "Groups",
-            data: ["ONE", "TWO"]
+            data: [{title: "My Frosh Group", img: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg"}, {title: 'Sports Trivia', img: "https://www.tronsmart.com/img/cms/Blog/10%20celebration%20-%20football/9%20.jpg" }]
         },
         {
             title: "Orientation Groups",
@@ -68,7 +69,10 @@ export default function Dashboard() {
           light={true}
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
-          onPress={()=>navigation.navigate('Schedule')}
+          onPress={()=>{
+              StatusBar.setBarStyle('light-content')
+              navigation.navigate('Schedule')
+          }}
         />
       </>
     );
@@ -94,6 +98,19 @@ const Item = ({ title }) => (
 );
 
 const renderItem = ({item, section}) => {
+    if (section.title === "Groups") {
+        return (
+            <View style={styles.imageRow}>
+                <Image source={{uri: item.img }} style={styles.groupImage}/>
+                <View style={styles.imageLabelContainer}>
+                    <View style={styles.imageLabel}>
+                        <Text style={styles.imageLabelText}>{item.title}</Text>
+                    </View>
+                        <UserCountPreview/>
+                </View>
+            </View>
+        )
+    }
     return <Item title={item}/>
 };
 
@@ -135,4 +152,36 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 5
     },
+    imageRow: {
+       flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    groupImage: {
+       height: 150,
+        width: '100%',
+        borderRadius: 30,
+        marginHorizontal: 5
+    },
+    imageLabelContainer: {
+        position: 'absolute',
+        bottom: 28,
+        width: '85%',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+
+    },
+    imageLabel: {
+       backgroundColor: ThemeStatic.white,
+        height: 30,
+        borderRadius: 15,
+        justifyContent: 'center'
+    },
+    imageLabelText: {
+       ...FontWeights.Bold,
+        ...FontSizes.Body,
+        paddingHorizontal: 13,
+    },
+
 });

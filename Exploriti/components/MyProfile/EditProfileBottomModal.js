@@ -160,8 +160,8 @@ const EditProfileBottomModal = React.forwardRef(
           ref={ref}
           scrollViewProps={{ showsVerticalScrollIndicator: false }}
           modalStyle={styles.container}
+          modalTopOffset={129}
           adjustToContentHeight
-          tapGestureEnabled={false}
           onOpen={getInterests}>
           <View style={{ paddingHorizontal: 20 }}>
             <ModalHeader
@@ -283,6 +283,7 @@ const { colours } = Theme.light;
 const styles = StyleSheet.create({
     container: {
       backgroundColor: colours.base,
+       // marginTop: 25
     },
     content: {
       flex: 1,

@@ -140,7 +140,7 @@ export default class SocialMediaAnimation extends Component {
                 this.isDraggingOutside = false;
                 this.isJustDragInside = true;
                 this.previousIconFocus = 0;
-                this.goToModal(this.currentIconFocus);
+                if (this.currentIconFocus !== 0) this.goToModal(this.currentIconFocus);
                 this.currentIconFocus = 0;
                 this.setState({});
 

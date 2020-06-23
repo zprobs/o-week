@@ -1,10 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView, Animated} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView, Animated, StatusBar} from 'react-native';
 import GoBackHeader from '../Menu/GoBackHeader';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Carousel from 'react-native-snap-carousel';
+import {useNavigation} from '@react-navigation/native';
 
 
 const {FontWeights, FontSizes} = Fonts;
@@ -27,6 +28,15 @@ const Schedule = () => {
      const carouselRef = useRef();
     const [index, setIndex] = useState(0);
     const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            StatusBar.setBarStyle('dark-content')
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     const title = () => {
         switch (index) {
@@ -100,7 +110,7 @@ const Schedule = () => {
             <SafeAreaView>
 
           <View style={styles.header}>
-              <CircleBackIcon/>
+              <CircleBackIcon />
               <Text style={styles.title}>Schedule</Text>
               <View style={{width: 44}}/>
           </View>
@@ -128,7 +138,7 @@ const Schedule = () => {
 const styles = StyleSheet.create({
    container: {
        flex: 1,
-       backgroundColor: 'red',
+       backgroundColor: '#ed1b2f',
    },
     title: {
        ...FontSizes.SubHeading,
