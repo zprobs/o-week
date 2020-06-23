@@ -4,10 +4,10 @@ import { StyleSheet, View } from "react-native";
 import { ThemeStatic } from "../../theme/Colours";
 import { useNavigation } from "@react-navigation/native";
 
-const CircleBackIcon = ({ onPress }) => {
+const CircleBackIcon = ({ onPress, style }) => {
   const navigation = useNavigation();
   return (
-    <View style={styles.container}>
+    <View style={{...styles.container, ...style}}>
       <Icon
         name={"chevron-left"}
         color={"#000"}
