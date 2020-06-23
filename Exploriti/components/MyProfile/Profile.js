@@ -15,8 +15,14 @@ import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
 import {AuthContext } from '../../context';
-import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
-import {CHECK_FRIEND_REQUESTS, DELETE_FRIEND_REQUEST, GET_DETAILED_USER, SEND_FRIEND_REQUEST} from '../../graphql';
+import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
+import {
+    CHECK_FRIEND_REQUESTS,
+    DELETE_FRIEND_REQUEST,
+    GET_DETAILED_USER,
+    GET_USER_FRIENDS, REMOVE_FRIEND,
+    SEND_FRIEND_REQUEST,
+} from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
@@ -61,6 +67,7 @@ export default function Profile({ route }) {
     });
 
     if (loading){
+        console.log('loading');
         return <Text>Loading...</Text>;
     }
     if (error) return <Error e={error} />;
@@ -69,6 +76,7 @@ export default function Profile({ route }) {
     const image = "https://reactjs.org/logo-og.png";
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
+    const friends = data.friend;
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -77,7 +85,7 @@ export default function Profile({ route }) {
     const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
     const renderInteractions = () => {
-        return <UserInteractions userId={userId}/>;
+        return <UserInteractions userId={userId} friends={friends}/>;
     };
 
     const openModal = (index) => {
@@ -106,6 +114,7 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                     userId={userId}
+                    friends={friends}
                 />
                 { isCurrentUser ? <SocialMediaAnimation openModal={openModal}/> : null }
             </SafeAreaView>
@@ -182,12 +191,13 @@ const ProfileCard = ({
   programs,
   description,
   renderInteractions,
-    userId
+    userId,
+    friends
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        <Connections onPress={onFriendsOpen} total={0} type="FRIENDS" />
+        <Connections onPress={onFriendsOpen} total={friends ? friends.length : 0} type="FRIENDS" />
         <ImageBackground
           source={{ uri: image ? image : "" }}
           style={styles.image}
@@ -235,36 +245,63 @@ const UserInteractions = ({userId}) => {
         fetchPolicy: "no-cache"
     });
 
-    const {data, loading, error: queryError} = useQuery(CHECK_FRIEND_REQUESTS, {
+    const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(REMOVE_FRIEND, {
+        variables: {userId: authState.user.uid, friendId: userId}
+    });
+
+    const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(, {
+        variables: {userId: authState.user.uid, friendId: userId}
+    });
+
+
+
+    const [{data: friendsData, loading: friendsLoading, error: friendsError}] = useQuery(GET_USER_FRIENDS, {
+        variables: {userId: authState.user.uid}
+    });
+
+    const {data: requestsData, loading: requestsLoading, error: requestsError} = useLazyQuery(CHECK_FRIEND_REQUESTS, {
         variables: {currentUser: authState.user.uid, otherUser: userId  },
         fetchPolicy: "no-cache"
     });
 
+    if (friendsLoading) {
+        console.log('Should not happen');
+    }
 
     let content;
     let friendInteraction = () => {return undefined};
 
+    if (friendsData) {
+        const isFriend = friendsData.some((user)=> {
+            console.log(user);
+            console.log(userId);
+            return user.friendId === userId;
+        });
+        if (isFriend) content = (<Text style={styles.followInteractionText}>REMOVE FRIEND</Text>)
+    }
 
-    if (loading || sendLoading || deleteLoading) {
-        content = LoadingIndicator();
-    } else if (queryError || sendError || deleteError) {
-        content = (
-            <Text style={styles.followInteractionText}>{queryError ? queryError.message : sendError ?  sendError.message: deleteError.message}</Text>
-        );
-    } else if (data.user.friendRequestsReceived.length !== 0) {
-        content = (
-            <Text style={styles.followInteractionText}>
-                ACCEPT FRIEND REQUEST
-            </Text>
-        );
-    } else if (data.user.friendRequestsSent.length !== 0) {
-        content = (
-            <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
-        );
-        friendInteraction = () => deleteRequest();
-    } else {
-        content = <Text style={styles.followInteractionText}>ADD FRIEND</Text>;
-        friendInteraction =  () => sendRequest();
+    if (!content) {
+        if (requestsLoading || sendLoading || deleteLoading) {
+            content = LoadingIndicator();
+        } else if (requestsError || sendError || deleteError) {
+            content = (
+                <Text style={styles.followInteractionText}>{requestsError ? requestsError.message : sendError ?  sendError.message: deleteError.message}</Text>
+            );
+        } else if (requestsData.user.friendRequestsReceived.length !== 0) {
+            content = (
+                <Text style={styles.followInteractionText}>
+                    ACCEPT FRIEND REQUEST
+                </Text>
+            );
+        } else if (requestsData.user.friendRequestsSent.length !== 0) {
+            content = (
+                <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
+            );
+            friendInteraction = () => deleteRequest();
+        } else {
+            content = <Text style={styles.followInteractionText}>ADD FRIEND</Text>;
+            friendInteraction =  () => sendRequest();
+        }
     }
 
 

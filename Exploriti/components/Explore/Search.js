@@ -19,7 +19,7 @@ const {FontWeights, FontSizes} = Fonts;
 export default function Search() {
    const [query, setQuery] = useState("");
    const debounceQuery = useDebounce(query, 300);
-   const { loading, error, data } = useQuery(GET_PAGINATED_USERS, {variables: {limit: 5}});
+   const { loading, error, data } = useQuery(GET_PAGINATED_USERS, {variables: {limit: 50}});
    const [filteredData, setFilteredData] = useState(data);
    const firstRenderRef = useRef(true);
 

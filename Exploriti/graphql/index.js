@@ -21,6 +21,10 @@ export const GET_DETAILED_USER = gql`
     query getDetailedUser($id: String!) {
         user(id: $id) {
            ...DetailedUser 
+        },
+        friend(where: {userId: {_eq: $id}}) {
+            friendId
+            userId
         }
     }
     ${DETAILED_USER_FRAGMENT}
@@ -34,6 +38,10 @@ export const GET_CURRENT_USER = gql`
                 id
                 title
             }
+        },
+        friend(where: {userId: {_eq: $id}}) {
+            friendId
+            userId
         }
     }
     ${DETAILED_USER_FRAGMENT}
@@ -158,17 +166,35 @@ export const GET_PROGRAMS = gql`
     }
 `;
 
-export const GET_FRIENDS = gql`
-    query getFriends($user: String!) {
-        friends(_or: {order_by: {name: asc}}) {
-            id
-            name
+// export const GET_FRIENDS = gql`
+//     query getFriends($user: String!) {
+//         friends(_or: {order_by: {name: asc}}) {
+//             id
+//             name
+//         }
+//     }
+// `;
+
+export const GET_USER_FRIENDS = gql`
+    query getFriends($userId: String!) {
+        friend(where: {userId: {_eq: $userId}}) {
+            friendId
+            userId
+        }
+    }
+`;
+
+export const REMOVE_FRIEND = gql`
+    mutation removeFriend($friendId: String!, $userId: String!) {
+        removeFriend(friendId: $friendId, userId: $userId) {
+            friendId
+            userId
         }
     }
 `;
 
 export const CHECK_FRIEND_REQUESTS = gql`
-    query CHECK_FRIEND_REQUESTS($currentUser: String!, $otherUser: String!) {
+    query checkFriendRequests($currentUser: String!, $otherUser: String!) {
         user(id: $currentUser, ) {
             friendRequestsSent(where: {recipient: {_eq: $otherUser}}) {
                 date 
@@ -181,7 +207,7 @@ export const CHECK_FRIEND_REQUESTS = gql`
 `;
 
 export const SEND_FRIEND_REQUEST = gql`
-    mutation SEND_FRIEND_REQUEST($sender: String!, $recipient: String!) {
+    mutation sendFriendRequest($sender: String!, $recipient: String!) {
         sendFriendRequest(object: {sender: $sender, recipient: $recipient}) {
             date
         }
@@ -189,7 +215,7 @@ export const SEND_FRIEND_REQUEST = gql`
 `;
 
 export const DELETE_FRIEND_REQUEST = gql`
-    mutation DELETE_FRIEND_REQUEST($sender: String!, $recipient: String!) {
+    mutation deleteFriendRequest($sender: String!, $recipient: String!) {
         deleteFriendRequest(recipient: $recipient, sender: $sender) {
             date
         }
