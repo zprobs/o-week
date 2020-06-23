@@ -222,6 +222,20 @@ export const DELETE_FRIEND_REQUEST = gql`
     }
 `;
 
+export const CONFIRM_FRIEND_REQUEST = gql`
+    mutation confirmFriendRequest($sender: String!, $recipient: String!) {
+        deleteFriendRequest(sender: $sender, recipient: $recipient) {
+            recipient
+        }
+        addFriend(object: {userId: $sender, friendId: $recipient, original: true}) {
+            friendId
+        }
+        otherWay: addFriend(object: {userId: $recipient, friendId: $sender, original: false}) {
+            friendId
+        }
+    }
+`;
+
 export const GET_USER_LINKS = gql`
    query getUserLinks($user: String!) {
        user(id: $user) {
@@ -267,9 +281,9 @@ export const GET_CHATS = gql`
     ${MESSAGE_FRAGMENT}
 `;
 
-export const GET_LATEST_MESSAGE = gql`
-    subscription getMessages($chatId: Int!) {
-        messages(where: {chatId: {_eq: $chatId}}, order_by: {date: desc}, limit: 10) {
+export const GET_NEW_MESSAGES = gql`
+    subscription getMessages($chatId: Int!, $latestId: Int!) {
+        messages(where: {_and: [{chatId: {_eq: $chatId}}, {id: {_gt: $latestId}}]}) {
             ...DetailedMessage
         }
     }
