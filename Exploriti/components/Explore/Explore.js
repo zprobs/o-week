@@ -1,4 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator,TransitionPresets,CardStyleInterpolators } from "@react-navigation/stack";
 import React from 'react';
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import { MessagesIcon } from '../Menu/MessagesIcon';
@@ -18,6 +18,7 @@ export default function Explore() {
     <Stack.Navigator initialRouteName="Search" screenOptions={{
       gestureEnabled: true,
       gestureDirection: "horizontal",
+      ...TransitionPresets.SlideFromRightIOS
     }}>
       <Stack.Screen
         name="Search"

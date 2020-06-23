@@ -12,7 +12,7 @@ function UselessTextInput(props) {
 }
 
 export default function UselessTextInputMultiline() {
-  const [value, onChangeText] = React.useState('Report a bug');
+  const [value, onChangeText] = React.useState('');
 
   // If you type something in the text box that is a color, the background will change to that
   // color.

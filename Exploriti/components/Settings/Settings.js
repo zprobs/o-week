@@ -9,6 +9,7 @@ import OtherSettings from "./OtherSettings"
 import Help from "./Help"
 import About from "./About"
 import ReportBug from "./ReportBug"
+import TermsOfService from "./TermsOfService"
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -61,6 +62,13 @@ export default function Settings({navigation}) {
       <Stack.Screen
         name="About"
         component={About}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfService}
         options={{
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
