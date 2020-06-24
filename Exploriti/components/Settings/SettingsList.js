@@ -7,6 +7,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { SettingToggle } from "../ReusableComponents/SettingToggle.js";
 import Fonts from "../../theme/Fonts";
@@ -26,6 +27,8 @@ import {CloseIcon} from '../Menu/CloseIcon';
 import { BackIcon } from "../Menu/BackIcon";
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
+
+const {FontWeights, FontSizes} = Fonts
 
 
 /**
@@ -54,86 +57,90 @@ export default function SettingsList() {
     };
 
   return(
-    <View>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
+    <View style={{flex:9}}>
       <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"question"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"About"} </Text>
-            </View>
+        <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
+          <View>
+            <View style={styles().settingItemViewStyle}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                  <Icon name={"question"} size={30} />
+                  <Text style={styles().settingItemTextStyle}> {"About"} </Text>
+                </View>
 
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
+              <View style={{ justifyContent: "flex-start" }}>
+                <Icon
+                style={styles().settingItemChevronStyle}
+                name="chevron-right"
+                size={30}
+                />
+                </View>
             </View>
-        </View>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={()=>{navigation.navigate('Help')}}>
+          <View>
+            <View style={styles().settingItemViewStyle}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                  <Icon name={"exclamation"} size={30} />
+                  <Text style={styles().settingItemTextStyle}> {"Help"} </Text>
+                </View>
+
+              <View style={{ justifyContent: "flex-start" }}>
+                <Icon
+                style={styles().settingItemChevronStyle}
+                name="chevron-right"
+                size={30}
+                />
+                </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
+          <View>
+            <View style={styles().settingItemViewStyle}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                  <Icon name={"bell"} size={30} />
+                  <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
+                </View>
+
+              <View style={{ justifyContent: "flex-start" }}>
+                <Icon
+                style={styles().settingItemChevronStyle}
+                name="chevron-right"
+                size={30}
+                />
+                </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
+          <View>
+            <View style={styles().settingItemViewStyle}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                  <Icon name={"lock"} size={30} />
+                  <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
+                </View>
+
+              <View style={{ justifyContent: "flex-start" }}>
+                <Icon
+                style={styles().settingItemChevronStyle}
+                name="chevron-right"
+                size={30}
+                />
+                </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <Button title="Logout" onPress={()=>{processLogout()}} />
       </View>
-    </TouchableOpacity>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('Help')}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"exclamation"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"Help"} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
+      <View style={styles().bottomBannerViewStyle}>
+        <Text style={{...FontWeights.Light, color: 'gray'}}>Powered By</Text>
+        <Image style={{}} source={require('../../assets/images/ArravonLogo.png')}/>
       </View>
-    </TouchableOpacity>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"bell"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-
-    <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={"lock"} size={30} />
-              <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-
-
-    <Button title="Logout" onPress={()=>{processLogout()}} />
     </View>
   );
 }
@@ -183,15 +190,14 @@ const styles = () =>
       width: 50,
       backgroundColor: "red",
     },
-    viewTwoStyle: {
-      height: 50,
-      width: 50,
-      backgroundColor: "green",
-      alignSelf: "flex-end",
-    },
-    viewThreeStyle: {
-      height: 50,
-      width: 50,
-      backgroundColor: "purple",
+    bottomBannerViewStyle: {
+      flex:1,
+      flexDirection: 'column',
+      alignItems: "center",
+      justifyContent: "flex-end",
+      borderColor: "black",
+      //backgroundColor: '#ECECEC',
+      padding:10,
+      paddingBottom:20
     },
   });

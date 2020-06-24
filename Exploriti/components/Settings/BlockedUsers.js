@@ -28,7 +28,7 @@ const styles = () =>
     },
     centerText: {
       ...FontSizes.Caption,
-      ...FontWeights.Light
+      ...FontWeights.Light,
     },
   });
 
