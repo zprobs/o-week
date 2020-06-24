@@ -190,6 +190,10 @@ export const REMOVE_FRIEND = gql`
             friendId
             userId
         }
+        otherWay: removeFriend(friendId: $userId, userId: $friendId) {
+            friendId
+            userId
+        }
     }
 `;
 
@@ -232,6 +236,7 @@ export const CONFIRM_FRIEND_REQUEST = gql`
         }
         otherWay: addFriend(object: {userId: $recipient, friendId: $sender, original: false}) {
             friendId
+            userId
         }
     }
 `;

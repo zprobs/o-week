@@ -17,7 +17,7 @@ import GroupBottomModal from "../Modal/GroupBottomModal";
 import {AuthContext } from '../../context';
 import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
 import {
-    CHECK_FRIEND_REQUESTS,
+    CHECK_FRIEND_REQUESTS, CONFIRM_FRIEND_REQUEST,
     DELETE_FRIEND_REQUEST,
     GET_DETAILED_USER,
     GET_USER_FRIENDS, REMOVE_FRIEND,
@@ -229,40 +229,72 @@ const ProfileCard = ({
  */
 const UserInteractions = ({userId}) => {
 
+    console.log('USerInteractionRender');
     const {authState} = useContext(AuthContext);
+
+    const [checkFriendRequests, {data: requestsData, loading: requestsLoading, error: requestsError, called}] = useLazyQuery(CHECK_FRIEND_REQUESTS, {
+        variables: {currentUser: authState.user.uid, otherUser: userId  },
+        fetchPolicy: "no-cache"
+    });
 
     const [sendRequest, { error: sendError, loading: sendLoading}] = useMutation(SEND_FRIEND_REQUEST, {
         variables: { sender: authState.user.uid, recipient: userId },
-        refetchQueries: ["CHECK_FRIEND_REQUESTS"],
-        awaitRefetchQueries: true,
+        onCompleted: checkFriendRequests,
         fetchPolicy: "no-cache"
     });
 
     const [deleteRequest, { error: deleteError, loading: deleteLoading}] = useMutation(DELETE_FRIEND_REQUEST, {
         variables: { sender: authState.user.uid, recipient: userId },
-        refetchQueries: ["CHECK_FRIEND_REQUESTS"],
-        awaitRefetchQueries: true,
+        onCompleted: checkFriendRequests,
         fetchPolicy: "no-cache"
     });
 
     const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(REMOVE_FRIEND, {
-        variables: {userId: authState.user.uid, friendId: userId}
+        variables: {userId: authState.user.uid, friendId: userId},
+        update: (cache, { data: { addTodo } }) => {
+            const { friend } = cache.readQuery({ query: GET_USER_FRIENDS, variables: {userId: authState.user.uid} });
+            const newFriends = friend.filter( (element) => element.friendId !== userId && element.userId !== authState.user.uid)
+            console.log("DELETING FRIENDS");
+            console.log(friend);
+            console.log(newFriends);
+            cache.writeQuery({
+                query: GET_USER_FRIENDS, variables: {userId: authState.user.uid},
+                data: { friend: newFriends },
+            })
+        },
+        onCompleted: checkFriendRequests
     });
 
-    const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(, {
-        variables: {userId: authState.user.uid, friendId: userId}
+    const [confirmRequest, { error: confirmError, loading: confirmLoading }] = useMutation(CONFIRM_FRIEND_REQUEST, {
+      variables: { recipient: authState.user.uid, sender: userId },
+      update: (cache, { data: { addTodo } }) => {
+        // update friends list
+        const { friend } = cache.readQuery({
+          query: GET_USER_FRIENDS,
+          variables: { userId: authState.user.uid },
+        });
+        const newFriend = {
+          __typename: "friend",
+          friendId: userId,
+          userId: authState.user.uid,
+        };
+        cache.writeQuery({
+          query: GET_USER_FRIENDS,
+          variables: { userId: authState.user.uid },
+          data: { friend: friend.concat([newFriend]) },
+        });
+      },
+      // update friend Requests
+      onCompleted: checkFriendRequests,
     });
 
 
 
-    const [{data: friendsData, loading: friendsLoading, error: friendsError}] = useQuery(GET_USER_FRIENDS, {
+    const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS, {
         variables: {userId: authState.user.uid}
     });
 
-    const {data: requestsData, loading: requestsLoading, error: requestsError} = useLazyQuery(CHECK_FRIEND_REQUESTS, {
-        variables: {currentUser: authState.user.uid, otherUser: userId  },
-        fetchPolicy: "no-cache"
-    });
+
 
     if (friendsLoading) {
         console.log('Should not happen');
@@ -271,29 +303,41 @@ const UserInteractions = ({userId}) => {
     let content;
     let friendInteraction = () => {return undefined};
 
+
     if (friendsData) {
-        const isFriend = friendsData.some((user)=> {
+        console.log('FriendsData: ')
+        console.log(friendsData);
+        const isFriend = friendsData.friend.some((user)=> {
             console.log(user);
             console.log(userId);
             return user.friendId === userId;
         });
-        if (isFriend) content = (<Text style={styles.followInteractionText}>REMOVE FRIEND</Text>)
+        console.log('isFriend', isFriend)
+        if (isFriend) {
+            content = (<Text style={styles.followInteractionText}>REMOVE FRIEND</Text>);
+            friendInteraction = () => removeFriend();
+        }
+    }
+
+    if (!called && !content) {
+        checkFriendRequests();
     }
 
     if (!content) {
-        if (requestsLoading || sendLoading || deleteLoading) {
+        if (requestsLoading || sendLoading || deleteLoading || confirmLoading || removeLoading) {
             content = LoadingIndicator();
-        } else if (requestsError || sendError || deleteError) {
+        } else if (requestsError || sendError || deleteError || confirmError || friendsError || removeError) {
             content = (
-                <Text style={styles.followInteractionText}>{requestsError ? requestsError.message : sendError ?  sendError.message: deleteError.message}</Text>
+                <Text style={styles.followInteractionText}>{requestsError ? requestsError.message : sendError ?  sendError.message: deleteError ? deleteError.message : confirmError ? confirmError.message : friendsError ? friendsError.message : removeError.message }</Text>
             );
-        } else if (requestsData.user.friendRequestsReceived.length !== 0) {
+        } else if ( requestsData && requestsData.user.friendRequestsReceived.length !== 0) {
             content = (
                 <Text style={styles.followInteractionText}>
                     ACCEPT FRIEND REQUEST
                 </Text>
             );
-        } else if (requestsData.user.friendRequestsSent.length !== 0) {
+            friendInteraction = () => confirmRequest()
+        } else if ( requestsData && requestsData.user.friendRequestsSent.length !== 0) {
             content = (
                 <Text style={styles.followInteractionText}>REQUEST PENDING</Text>
             );
@@ -303,6 +347,7 @@ const UserInteractions = ({userId}) => {
             friendInteraction =  () => sendRequest();
         }
     }
+
 
 
     const messageInteraction = async () => {
