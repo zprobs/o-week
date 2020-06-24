@@ -10,6 +10,9 @@ import Help from "./Help"
 import About from "./About"
 import ReportBug from "./ReportBug"
 import TermsOfService from "./TermsOfService"
+import Notifications from "./Notifications"
+import Privacy from "./Privacy"
+import BlockedUsers from "./BlockedUsers"
 
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
@@ -83,6 +86,27 @@ export default function Settings({navigation}) {
       <Stack.Screen
         name="ReportBug"
         component={ReportBug}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }}
+      />
+      <Stack.Screen
+        name="Privacy"
+        component={Privacy}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }}
+      />
+      <Stack.Screen
+        name="BlockedUsers"
+        component={BlockedUsers}
         options={{
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
