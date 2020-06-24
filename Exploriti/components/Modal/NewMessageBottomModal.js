@@ -7,6 +7,8 @@ import { Theme } from "../../theme/Colours";
 import Images from "../../assets/images";
 import ImgBanner from "../ReusableComponents/ImgBanner";
 import {AuthContext} from '../../context';
+import {useLazyQuery, useQuery} from '@apollo/react-hooks';
+import {GET_USER_FRIENDS} from '../../graphql';
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -15,6 +17,10 @@ const window05 = window * 0.05;
 
 const NewMessageBottomModal = React.forwardRef(
     ({ friends, setData }, ref) => {
+
+        const {authState} = useContext(AuthContext);
+
+        const [getFriends, {loading, data, error, called}] = useLazyQuery(GET_USER_FRIENDS, {variables: {userId: authState.user.uid }})
 
         const renderItem = ({item}) => {
             console.log(item);
@@ -39,7 +45,6 @@ const NewMessageBottomModal = React.forwardRef(
             <ModalHeader heading={"Let's talk"} subHeading={"Connect with your friends"} />
         );
 
-        const { authState } = useContext(AuthContext);
 
         return (
             <Modalize
@@ -52,6 +57,7 @@ const NewMessageBottomModal = React.forwardRef(
                     ListHeaderComponent: header,
                     renderItem: renderItem
                 }}
+                onOpen={called ? null : getFriends}
             >
             </Modalize>
         );
