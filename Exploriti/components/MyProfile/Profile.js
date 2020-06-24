@@ -76,7 +76,7 @@ export default function Profile({ route }) {
     const image = "https://reactjs.org/logo-og.png";
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
-    const friends = data.friend;
+    const friends = data.friends;
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -252,14 +252,14 @@ const UserInteractions = ({userId}) => {
     const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(REMOVE_FRIEND, {
         variables: {userId: authState.user.uid, friendId: userId},
         update: (cache, { data: { addTodo } }) => {
-            const { friend } = cache.readQuery({ query: GET_USER_FRIENDS, variables: {userId: authState.user.uid} });
-            const newFriends = friend.filter( (element) => element.friendId !== userId && element.userId !== authState.user.uid)
+            const { friends } = cache.readQuery({ query: GET_USER_FRIENDS, variables: {userId: authState.user.uid} });
+            const newFriends = friends.filter( (element) => element.friendId !== userId && element.userId !== authState.user.uid)
             console.log("DELETING FRIENDS");
-            console.log(friend);
+            console.log(friends);
             console.log(newFriends);
             cache.writeQuery({
                 query: GET_USER_FRIENDS, variables: {userId: authState.user.uid},
-                data: { friend: newFriends },
+                data: { friends: newFriends },
             })
         },
         onCompleted: checkFriendRequests
@@ -269,7 +269,7 @@ const UserInteractions = ({userId}) => {
       variables: { recipient: authState.user.uid, sender: userId },
       update: (cache, { data: { addTodo } }) => {
         // update friends list
-        const { friend } = cache.readQuery({
+        const { friends } = cache.readQuery({
           query: GET_USER_FRIENDS,
           variables: { userId: authState.user.uid },
         });
@@ -281,7 +281,7 @@ const UserInteractions = ({userId}) => {
         cache.writeQuery({
           query: GET_USER_FRIENDS,
           variables: { userId: authState.user.uid },
-          data: { friend: friend.concat([newFriend]) },
+          data: { friends: friends.concat([newFriend]) },
         });
       },
       // update friend Requests
@@ -303,7 +303,7 @@ const UserInteractions = ({userId}) => {
     if (friendsData) {
         console.log('FriendsData: ')
         console.log(friendsData);
-        const isFriend = friendsData.friend.some((user)=> {
+        const isFriend = friendsData.friends.some((user)=> {
             console.log(user);
             console.log(userId);
             return user.friendId === userId;
