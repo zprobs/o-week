@@ -143,9 +143,18 @@ export const GET_PAGINATED_USERS = gql`
             name
             image
         }
-    }`
-;
+    }
+`;
 
+export const GET_USERS_BY_ID = gql`
+    query getUsersById($_in: [String!]!) {
+        users(where: {id: {_in: $_in}}) {
+            id
+            image
+            name
+        }
+    }
+`;
 
 export const GET_INTERESTS = gql`
     query GET_INTERESTS {
@@ -166,20 +175,16 @@ export const GET_PROGRAMS = gql`
     }
 `;
 
-// export const GET_FRIENDS = gql`
-//     query getFriends($user: String!) {
-//         friends(_or: {order_by: {name: asc}}) {
-//             id
-//             name
-//         }
-//     }
-// `;
-
 export const GET_USER_FRIENDS = gql`
     query getFriends($userId: String!) {
         friends(where: {userId: {_eq: $userId}}) {
             friendId
             userId
+            friend {
+                id
+                name
+                image
+            }
         }
     }
 `;

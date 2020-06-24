@@ -6,6 +6,8 @@ import UserCard from "../ReusableComponents/UserCard";
 import { Theme } from "../../theme/Colours";
 import Images from "../../assets/images";
 import ImgBanner from "../ReusableComponents/ImgBanner";
+import {useLazyQuery} from '@apollo/react-hooks';
+import {GET_USERS_BY_ID} from '../../graphql';
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -13,24 +15,28 @@ const window05 = window * 0.05;
 
 /**
  * List modal of users
- * @param viewMode A boolean for determining what to render. True = other user; False = current user
- * @param data What is shown in the Flatlist
+ * @param data What is shown in the Flatlist. An array of Strings representing userIds
  * @param type Type = Friends when the component is rendering the users that a user is friends with
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const UsersBottomModal = React.forwardRef(
-  ({ viewMode, handle, data, type }, ref) => {
+  ({  name, data, type }, ref) => {
+
+      const [getUsers, {data : userData, loading, error, called}] = useLazyQuery(GET_USERS_BY_ID, {variables: {_in: data}})
+
     let heading;
     let subHeading;
 
     if (type === "Friends") {
       heading = "Friends";
-      if (viewMode) {
-        subHeading = `People ${handle} is friends with`;
+      if (name) {
+        subHeading = `People ${name} is friends with`;
       } else {
         subHeading = "People you are friends with";
       }
     }
+
+    console.log(userData);
 
     const listEmptyComponent = () => (
       <ImgBanner
@@ -41,9 +47,9 @@ const UsersBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      const { id, avatar, handle, name } = item;
+      const { id, image, name } = item;
       return (
-        <UserCard userId={id} avatar={avatar} handle={handle} name={name} />
+        <UserCard userId={id} image={image} name={name} key={id} style={styles.userCard} />
       );
     };
 
@@ -58,12 +64,14 @@ const UsersBottomModal = React.forwardRef(
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: data,
+          data: userData ? userData.users : null,
           ListEmptyComponent: listEmptyComponent,
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,
         }}
+        onOpen={called ? null : getUsers}
+
       />
     );
   },
@@ -80,7 +88,7 @@ const styles = StyleSheet.create({
       paddingBottom: window05,
     },
     listContainer: {
-      flex: 1,
+      flex: 1
     },
     listItemContainer: {
       width: "106%",
@@ -89,6 +97,9 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "flex-start",
     },
+    userCard: {
+        marginVertical: 7,
+    }
   });
 
 export default UsersBottomModal;
