@@ -22,7 +22,7 @@ export const GET_DETAILED_USER = gql`
         user(id: $id) {
            ...DetailedUser 
         },
-        friend(where: {userId: {_eq: $id}}) {
+        friends(where: {userId: {_eq: $id}}) {
             friendId
             userId
         }
@@ -39,7 +39,7 @@ export const GET_CURRENT_USER = gql`
                 title
             }
         },
-        friend(where: {userId: {_eq: $id}}) {
+        friends(where: {userId: {_eq: $id}}) {
             friendId
             userId
         }
@@ -166,20 +166,16 @@ export const GET_PROGRAMS = gql`
     }
 `;
 
-// export const GET_FRIENDS = gql`
-//     query getFriends($user: String!) {
-//         friends(_or: {order_by: {name: asc}}) {
-//             id
-//             name
-//         }
-//     }
-// `;
-
 export const GET_USER_FRIENDS = gql`
     query getFriends($userId: String!) {
-        friend(where: {userId: {_eq: $userId}}) {
+        friends(where: {userId: {_eq: $userId}}) {
             friendId
             userId
+            friend {
+                id
+                name
+                image
+            }
         }
     }
 `;

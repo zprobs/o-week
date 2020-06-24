@@ -20,6 +20,7 @@ const window05 = window * 0.05;
  */
 const UsersBottomModal = React.forwardRef(
   ({ viewMode, handle, data, type }, ref) => {
+      console.log('a', data);
     let heading;
     let subHeading;
 

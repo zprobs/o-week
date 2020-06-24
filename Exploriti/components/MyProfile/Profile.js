@@ -288,13 +288,9 @@ const UserInteractions = ({userId}) => {
       onCompleted: checkFriendRequests,
     });
 
-
-
     const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS, {
         variables: {userId: authState.user.uid}
     });
-
-
 
     if (friendsLoading) {
         console.log('Should not happen');
