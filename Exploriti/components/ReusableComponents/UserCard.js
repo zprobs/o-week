@@ -11,7 +11,6 @@ const { colours } = Theme.light;
  * For rendering a list item. Shows a user in a list, probably a modal.
  * @param userId
  * @param avatar
- * @param handle
  * @param name
  * @param onPress
  * @param style Additional style for the entire card

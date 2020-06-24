@@ -78,6 +78,9 @@ export default function Profile({ route }) {
     const year = data.user.year;
     const friends = data.friends;
 
+    const friendsIds = [];
+    friends.map((item)=>friendsIds.push(item.friendId));
+
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
     const onFriendsOpen = () => usersBottomModalRef.current.open();
@@ -120,8 +123,9 @@ export default function Profile({ route }) {
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}
-                data={null}
+                data={friendsIds}
                 type="Friends"
+                name={name}
             />
             <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
             {isCurrentUser ? (
@@ -178,6 +182,7 @@ const Connections = ({ total, type, onPress }) => {
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @param userId
+ * @param friends A list of the users friends 
  * @returns {*}
  * @constructor
  */
@@ -229,7 +234,6 @@ const ProfileCard = ({
  */
 const UserInteractions = ({userId}) => {
 
-    console.log('USerInteractionRender');
     const {authState} = useContext(AuthContext);
 
     const [checkFriendRequests, {data: requestsData, loading: requestsLoading, error: requestsError, called}] = useLazyQuery(CHECK_FRIEND_REQUESTS, {
