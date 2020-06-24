@@ -14,9 +14,10 @@ const window05 = window * 0.05;
 
 
 const NewMessageBottomModal = React.forwardRef(
-    ({ friends }, ref) => {
-        console.log("friends:", friends);
+    ({ friends, setData }, ref) => {
+
         const renderItem = ({item}) => {
+            console.log(item);
             return (
                 <TouchableOpacity onPress={() => {setData(item); setTimeout(()=>ref.current.close(), 300) }} style={{flexDirection: 'row'}}>
                     <RadioButton selected={isSelected}/>
@@ -24,6 +25,7 @@ const NewMessageBottomModal = React.forwardRef(
                 </TouchableOpacity>
             );
         };
+
 
         const listEmptyComponent = () => (
             <ImgBanner
@@ -45,7 +47,7 @@ const NewMessageBottomModal = React.forwardRef(
                 modalStyle={styles.container}
                 flatListProps={{
                     showsVerticalScrollIndicator: false,
-                    data: [],
+                    data: friends,
                     ListEmptyComponent: listEmptyComponent,
                     ListHeaderComponent: header,
                     renderItem: renderItem

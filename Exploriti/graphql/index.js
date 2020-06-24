@@ -175,20 +175,16 @@ export const GET_PROGRAMS = gql`
     }
 `;
 
-// export const GET_FRIENDS = gql`
-//     query getFriends($user: String!) {
-//         friends(_or: {order_by: {name: asc}}) {
-//             id
-//             name
-//         }
-//     }
-// `;
-
 export const GET_USER_FRIENDS = gql`
     query getFriends($userId: String!) {
         friends(where: {userId: {_eq: $userId}}) {
             friendId
             userId
+            friend {
+                id
+                name
+                image
+            }
         }
     }
 `;

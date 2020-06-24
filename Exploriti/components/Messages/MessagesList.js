@@ -9,8 +9,8 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import GoBackHeader from '../Menu/GoBackHeader';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { useSubscription } from '@apollo/react-hooks';
-import {GET_CHATS} from '../../graphql';
+import {useQuery, useSubscription} from '@apollo/react-hooks';
+import {GET_CHATS, GET_USER_FRIENDS} from '../../graphql';
 import Images from '../../assets/images';
 import {AuthContext} from '../../context';
 
@@ -92,11 +92,9 @@ export default function MessagesList() {
         },
     });
 
-    // const { data: friends, loading: friendsLoading, error: friendsError } = useSubscription(GET_FRIENDS, {
-    //     variables: {
-    //         user: authState.user.uid
-    //     },
-    // });
+    const {data: friends, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS, {
+        variables: {userId: authState.user.uid}
+    });
 
     let content = (
         <FlatList
@@ -124,7 +122,7 @@ export default function MessagesList() {
                 />
                 {content}
             </SafeAreaView>
-            <NewMessageBottomModal ref={newMessageBottomModalRef} />
+            <NewMessageBottomModal ref={newMessageBottomModalRef} friends={friendsLoading ? [] : friendsError ? [] : friends.friends} />
         </>
     );
 }

@@ -21,6 +21,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import About from "./About"
 import Help from "./Help"
 import ReportBug from "./ReportBug"
+import Notifications from "./Notifications"
 import {CloseIcon} from '../Menu/CloseIcon';
 import { BackIcon } from "../Menu/BackIcon";
 import GoBackHeader from '../Menu/GoBackHeader';
@@ -92,6 +93,46 @@ export default function SettingsList() {
         </View>
       </View>
     </TouchableOpacity>
+
+    <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={"bell"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={"lock"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+
+
     <Button title="Logout" onPress={()=>{processLogout()}} />
     </View>
   );

@@ -182,7 +182,7 @@ const Connections = ({ total, type, onPress }) => {
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @param userId
- * @param friends A list of the users friends 
+ * @param friends A list of the users friends
  * @returns {*}
  * @constructor
  */
@@ -292,13 +292,9 @@ const UserInteractions = ({userId}) => {
       onCompleted: checkFriendRequests,
     });
 
-
-
     const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS, {
         variables: {userId: authState.user.uid}
     });
-
-
 
     if (friendsLoading) {
         console.log('Should not happen');
