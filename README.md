@@ -1,6 +1,6 @@
 ## Frontend
 
-### Prerequisits
+### Prerequisites
 
 Node, Watchman, React-Native CLI, Xcode
 
@@ -26,13 +26,13 @@ GraphQL is the primary API, managed on the client side with [Apollo](https://www
 
 ### Objectives
 
-The primary objective is to create a pleasant and inuitive user experience. Other priorities include:
+The primary objective is to create a pleasant and intuitive user experience. Other priorities include:
 
-1. Consistant experience across time and between users
+1. Consistent experience across time and between users
 
 2. Minimize bugs and runtime errors
 
-3. Small package size. Do not install a library unless it is necessary and if possible pick the smalles available option
+3. Small package size. Do not install a library unless it is necessary and if possible pick the smallest available option
 
 4. Ensuring the app is compatible with most phones in use today 
 
@@ -51,7 +51,7 @@ function Book(title, author) {
 }
 ```
 
-Do not be afraid to use inline comments to further descrbe the more complex parts of your code.
+Do not be afraid to use inline comments to further describe the more complex parts of your code.
 
 We have taken the approach of using functional components and hooks in this project.
 
