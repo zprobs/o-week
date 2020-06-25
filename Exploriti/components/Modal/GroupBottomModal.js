@@ -12,20 +12,20 @@ const window05 = window * 0.05;
 
 /**
  * List modal of groups
- * @param viewMode A boolean for determining what to render. True = other user; False = current user
  * @param data What is shown in the Flatlist
  * @param type Type = Member when the component is rendering the groups that a user is a member of
+ * @param name The name of the user if it is not currentUser
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const GroupBottomModal = React.forwardRef(
-  ({ viewMode, handle, data, type }, ref) => {
+  ({ name, data, type }, ref) => {
     let heading;
     let subHeading;
 
     if (type === "Member") {
       heading = "Groups";
-      if (viewMode) {
-        subHeading = `Groups ${handle} is a member`;
+      if (name) {
+        subHeading = `Groups ${name} is a member`;
       } else {
         subHeading = "Groups you are a part of";
       }
@@ -40,7 +40,6 @@ const GroupBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      const { id, avatar, handle, name } = item;
       return <Text>Group Card</Text>;
     };
 

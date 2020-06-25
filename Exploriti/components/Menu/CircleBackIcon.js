@@ -31,6 +31,13 @@ const styles = StyleSheet.create({
     elevation: 3,
     alignItems: "center",
     justifyContent: "center",
+      shadowRadius: 3,
+      shadowColor: '#000',
+      shadowOffset: {
+          width: 2,
+          height: 2
+      },
+      shadowOpacity: 0.7,
   },
 });
 

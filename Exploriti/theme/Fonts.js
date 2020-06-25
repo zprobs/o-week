@@ -38,6 +38,9 @@ const FontSizes = {
     },
     Caption: {
         fontSize: 14
+    },
+    SubText: {
+        fontSize: 12
     }
 };
 

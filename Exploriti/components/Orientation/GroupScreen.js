@@ -31,7 +31,7 @@ const GroupScreen = () => {
 const styles = StyleSheet.create({
    container: {
        flex: 1,
-       backgroundColor: 'blue'
+       backgroundColor: colours.base
    },
     backgroundImage: {
        width: '100%',
@@ -40,21 +40,28 @@ const styles = StyleSheet.create({
     header: {
        paddingHorizontal: 20,
         justifyContent: 'space-around',
-        height: 400,
+        height: HEIGHT*0.44,
         alignItems: 'flex-start'
     },
     titleContainer: {
        backgroundColor: colours.white,
-        height: 52,
-        borderRadius: 26,
+        height: 34,
+        borderRadius: 17,
         paddingHorizontal: 18,
         justifyContent: 'center',
+        shadowRadius: 3,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 2,
+            height: 2
+        },
+        shadowOpacity: 0.7,
 
 
     },
     title: {
         ...FontWeights.Bold,
-        ...FontSizes.Heading,
+        ...FontSizes.SubHeading,
     }
 
 

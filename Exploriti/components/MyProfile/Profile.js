@@ -125,9 +125,9 @@ export default function Profile({ route }) {
                 ref={usersBottomModalRef}
                 data={friendsIds}
                 type="Friends"
-                name={name}
+                name={isCurrentUser ? null : name}
             />
-            <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" />
+            <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" name={isCurrentUser ? null : name} />
             {isCurrentUser ? (
                 <>
                 <EditProfileBottomModal

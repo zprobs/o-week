@@ -69,8 +69,11 @@ const UsersBottomModal = React.forwardRef(
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,
+            bounces: false
         }}
         onOpen={called ? null : getUsers}
+        disableScrollIfPossible={true}
+
 
       />
     );
