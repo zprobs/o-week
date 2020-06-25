@@ -26,6 +26,25 @@ const Privacy = () => {
         </View>
       </View>
     </TouchableOpacity>
+
+    <TouchableOpacity onPress={()=>{navigation.navigate('MessagePrivacy')}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={"sc-telegram"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"Messages & Invites"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
     </View>
   );
 };

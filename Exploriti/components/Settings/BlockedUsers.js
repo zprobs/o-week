@@ -5,7 +5,6 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
 
-
 const {FontWeights, FontSizes} = Fonts
 
 const BlockedUsers = () => {
@@ -28,7 +27,7 @@ const styles = () =>
     },
     centerText: {
       ...FontSizes.Caption,
-      ...FontWeights.Light
+      ...FontWeights.Light,
     },
   });
 

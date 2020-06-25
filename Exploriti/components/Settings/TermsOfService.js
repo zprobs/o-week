@@ -5,7 +5,6 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
 
-
 const {FontWeights, FontSizes} = Fonts
 
 const TermsOfService = () => {
@@ -34,17 +33,17 @@ const styles = () =>
     paragraphStyle: {
       ...FontSizes.Caption,
       margin: 10,
-      fontWeight: 'normal',
+      ...FontWeights.Light,
       textShadowColor: 'black'
     },
     headerStyle: {
       ...FontSizes.Body,
-      ...FontWeights.Light,
+      ...FontWeights.Regular,
       flexDirection: 'column',
       justifyContent: 'center',
       marginLeft: 10,
-      marginBottom: 20,
-      fontSize: 20
+      marginBottom: 30,
+      fontSize: 20,
     },
     underline:{
       backgroundColor: 'black',
