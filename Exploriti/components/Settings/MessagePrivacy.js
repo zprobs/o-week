@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
-import { CheckBox } from 'react-native-elements'
 import SettingsCheckbox from '../ReusableComponents/SettingsCheckbox'
 
 const {FontWeights, FontSizes} = Fonts

@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
-import { CheckBox } from 'react-native-elements'
+// import { CheckBox } from 'react-native-elements'
 
 
 const {FontWeights, FontSizes} = Fonts
@@ -16,10 +16,10 @@ function SettingsCheckbox({title, description}) {
       <View style={styles().SettingCardView}>
         <View style={styles().checkboxView}>
           <Text style={styles().titleText}>{title}</Text>
-          <CheckBox
-            checked={isChecked}
-            onPress={toggleCheck}
-          />
+          {/*<CheckBox*/}
+          {/*  checked={isChecked}*/}
+          {/*  onPress={toggleCheck}*/}
+          {/*/>*/}
         </View>
         <Text style={styles().descriptionText}>{description}</Text>
       </View>

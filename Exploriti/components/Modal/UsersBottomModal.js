@@ -74,7 +74,6 @@ const UsersBottomModal = React.forwardRef(
         onOpen={called ? null : getUsers}
         disableScrollIfPossible={true}
 
-
       />
     );
   },

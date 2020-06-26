@@ -22,7 +22,13 @@ export default function MyProfile() {
             headerLeft: () => <DrawerIcon/>,
             headerRight: () => <MessagesIcon/>
         }}
-      />
+      /><Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+           headerShown: false
+        }}
+    />
     </Stack.Navigator>
   );
 }
