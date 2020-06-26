@@ -3,7 +3,7 @@ import {View, StyleSheet, Text, Image} from 'react-native';
 import {ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 
-const {FontWeights} = Fonts
+const {FontWeights, FontSizes} = Fonts
 
 /**
  *
@@ -15,12 +15,12 @@ const UserCountPreview = ({style}) => {
     return (
       <View style={[styles.container, style]}>
           <View style={styles.numberView}>
-              <Text style={styles.numberText}>9+</Text>
+              <Text style={styles.numberText}>+9</Text>
           </View>
           <View style={styles.imageContainer}>
               <Image source={{uri: "https://www.mainewomensnetwork.com/Resources/Pictures/vicki%20aqua%20headshot-smallmwn.jpg"}} style={{...styles.image, left: -5, zIndex: 3}}/>
-              <Image source={{uri: "https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70"}} style={{...styles.image, left: 15, zIndex: 2}}/>
-              <Image source={{uri: "https://miro.medium.com/max/3072/1*o-UCEnQ3VRCrHjI8cx4JBQ.jpeg"}} style={{...styles.image, left: 35, zIndex: 1}}/>
+              <Image source={{uri: "https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70"}} style={{...styles.image, left: 12, zIndex: 2}}/>
+              <Image source={{uri: "https://miro.medium.com/max/3072/1*o-UCEnQ3VRCrHjI8cx4JBQ.jpeg"}} style={{...styles.image, left: 29, zIndex: 1}}/>
           </View>
 
       </View>
@@ -34,24 +34,25 @@ const styles = StyleSheet.create({
   },
   numberView: {
     backgroundColor: ThemeStatic.white,
-    height: 30,
-    borderRadius: 15,
+    height: 24,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     zIndex: 4,
   },
   numberText: {
-    ...FontWeights.Bold,
+    ...FontWeights.Regular,
+      ...FontSizes.SubText,
     paddingHorizontal: 5,
   },
   imageContainer: {
-    width: 65,
-    height: 30,
+    width: 53,
+    height: 24,
   },
   image: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
+    height: 24,
+    width: 24,
+    borderRadius: 12,
     position: "absolute",
   },
 });

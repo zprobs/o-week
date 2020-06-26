@@ -10,6 +10,8 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from "@react-navigation/native";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts
@@ -83,12 +85,10 @@ export default function Dashboard() {
                 <TouchableOpacity onPress={() => navigation.navigate("GroupScreen")}>
                     <View style={styles.imageRow}>
                         <Image source={{ uri: item.img }} style={styles.groupImage} />
-                        <View style={styles.imageLabelContainer}>
-                            <View style={styles.imageLabel}>
+                            <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']} locations={[0, 0.9]} style={styles.imageLabelContainer}>
+                                <UserCountPreview />
                                 <Text style={styles.imageLabelText}>{item.title}</Text>
-                            </View>
-                            <UserCountPreview />
-                        </View>
+                            </LinearGradient>
                     </View>
                 </TouchableOpacity>
             );
@@ -165,29 +165,28 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     groupImage: {
-       height: 150,
+       height: 180,
         width: '100%',
         borderRadius: 30,
         marginHorizontal: 5
     },
     imageLabelContainer: {
         position: 'absolute',
-        bottom: 28,
-        width: '85%',
-        justifyContent: 'space-between',
-        flexDirection: 'row',
+        bottom: 20,
+        width: '100%',
+        justifyContent: 'center',
+        paddingLeft: 25,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        paddingBottom: 8
 
-    },
-    imageLabel: {
-       backgroundColor: ThemeStatic.white,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: 'center'
+
     },
     imageLabelText: {
        ...FontWeights.Bold,
-        ...FontSizes.Body,
-        paddingHorizontal: 13,
+        ...FontSizes.Label,
+        marginTop: 5,
+        color: colours.white,
     },
 
 });

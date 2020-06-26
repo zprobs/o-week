@@ -36,7 +36,6 @@ const UsersBottomModal = React.forwardRef(
       }
     }
 
-    console.log(userData);
 
     const listEmptyComponent = () => (
       <ImgBanner

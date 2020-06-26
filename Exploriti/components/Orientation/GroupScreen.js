@@ -4,6 +4,7 @@ import CircleBackIcon from '../Menu/CircleBackIcon';
 import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
 import GroupInfoModal from '../Modal/GroupInfoModal';
+import LinearGradient from "react-native-linear-gradient";
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -17,10 +18,10 @@ const GroupScreen = () => {
       <View style={styles.container}>
         <ImageBackground source={{uri: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg"}} style={styles.backgroundImage}>
             <View style={styles.header}>
-                <CircleBackIcon />
-                <View style={styles.titleContainer}>
-                    <Text style={styles.title}>My Section</Text>
-                </View>
+                <CircleBackIcon style={styles.circleBackIcon}/>
+                <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
+                    <Text style={styles.title}>My Section </Text>
+                </LinearGradient>
             </View>
         </ImageBackground>
           <GroupInfoModal ref={modalRef}/>
@@ -38,30 +39,26 @@ const styles = StyleSheet.create({
         height: HEIGHT*0.44
     },
     header: {
-       paddingHorizontal: 20,
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         height: HEIGHT*0.44,
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+    },
+    circleBackIcon: {
+      marginTop: 45,
+        marginLeft: 20,
     },
     titleContainer: {
-       backgroundColor: colours.white,
-        height: 34,
-        borderRadius: 17,
-        paddingHorizontal: 18,
-        justifyContent: 'center',
-        shadowRadius: 3,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 2,
-            height: 2
-        },
-        shadowOpacity: 0.7,
+        paddingBottom: 48,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        width: '100%',
 
 
     },
     title: {
         ...FontWeights.Bold,
-        ...FontSizes.SubHeading,
+        ...FontSizes.Heading,
+        color: colours.white
     }
 
 
