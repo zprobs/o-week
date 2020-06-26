@@ -26,6 +26,26 @@ export default function HelpLanding({navigation}) {
         </View>
       </View>
     </TouchableOpacity>
+
+    <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
+      <View>
+        <View style={styles().settingItemViewStyle}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+              <Icon name={"bell"} size={30} />
+              <Text style={styles().settingItemTextStyle}> {"Help Center"} </Text>
+            </View>
+
+          <View style={{ justifyContent: "flex-start" }}>
+            <Icon
+            style={styles().settingItemChevronStyle}
+            name="chevron-right"
+            size={30}
+            />
+            </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+
     </View>
   );
 }

@@ -59,6 +59,45 @@ export default function SettingsList() {
   return(
     <View style={{flex:9}}>
       <View>
+
+      <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
+        <View>
+          <View style={styles().settingItemViewStyle}>
+              <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                <Icon name={"bell"} size={30} />
+                <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
+              </View>
+
+            <View style={{ justifyContent: "flex-start" }}>
+              <Icon
+              style={styles().settingItemChevronStyle}
+              name="chevron-right"
+              size={30}
+              />
+              </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
+        <View>
+          <View style={styles().settingItemViewStyle}>
+              <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                <Icon name={"lock"} size={30} />
+                <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
+              </View>
+
+            <View style={{ justifyContent: "flex-start" }}>
+              <Icon
+              style={styles().settingItemChevronStyle}
+              name="chevron-right"
+              size={30}
+              />
+              </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+
         <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
           <View>
             <View style={styles().settingItemViewStyle}>
@@ -97,44 +136,6 @@ export default function SettingsList() {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
-          <View>
-            <View style={styles().settingItemViewStyle}>
-                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                  <Icon name={"bell"} size={30} />
-                  <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
-                </View>
-
-              <View style={{ justifyContent: "flex-start" }}>
-                <Icon
-                style={styles().settingItemChevronStyle}
-                name="chevron-right"
-                size={30}
-                />
-                </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
-          <View>
-            <View style={styles().settingItemViewStyle}>
-                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                  <Icon name={"lock"} size={30} />
-                  <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
-                </View>
-
-              <View style={{ justifyContent: "flex-start" }}>
-                <Icon
-                style={styles().settingItemChevronStyle}
-                name="chevron-right"
-                size={30}
-                />
-                </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-
         <Button title="Logout" onPress={()=>{processLogout()}} />
       </View>
       <View style={styles().bottomBannerViewStyle}>
@@ -144,31 +145,6 @@ export default function SettingsList() {
     </View>
   );
 }
-
-
-/*function SettingsItem({name, nav, icon},{navigation}) {
-  return (
-    <TouchableOpacity onPress={()=>{{nav}}}>
-      <View>
-        <View style={styles().settingItemViewStyle}>
-            <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-              <Icon name={icon} size={30} />
-              <Text style={styles().settingItemTextStyle}> {name} </Text>
-            </View>
-
-          <View style={{ justifyContent: "flex-start" }}>
-            <Icon
-            style={styles().settingItemChevronStyle}
-            name="chevron-right"
-            size={30}
-            />
-            </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-*/
 
 
 const styles = () =>

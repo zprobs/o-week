@@ -11,7 +11,12 @@ const {FontWeights, FontSizes} = Fonts
 
 function Notifications() {
   return(
-    <SettingsSwitch title='Mute Notifications'/>
+    <View>
+      <SettingsSwitch title='Mute Messages'/>
+      <SettingsSwitch title='Mute Events'/>
+      <SettingsSwitch title='Mute Group Notifications'/>
+      <SettingsSwitch title='Mute All'/>
+    </View>
   );
 };
 
