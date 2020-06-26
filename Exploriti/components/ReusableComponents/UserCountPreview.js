@@ -39,6 +39,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 4,
+      shadowRadius: 2,
+      shadowColor: '#000',
+      shadowOffset: {
+          width: 1.5,
+          height: 1.5
+      },
+      shadowOpacity: 0.6,
   },
   numberText: {
     ...FontWeights.Regular,

@@ -1,11 +1,25 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View, Dimensions, Image, ScrollView, Animated, StatusBar} from 'react-native';
+import {
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    Image,
+    ScrollView,
+    Animated,
+    StatusBar,
+    TouchableOpacity,
+} from 'react-native';
 import GoBackHeader from '../Menu/GoBackHeader';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Carousel from 'react-native-snap-carousel';
 import {useNavigation} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/EvilIcons';
+import UserCountPreview from '../ReusableComponents/UserCountPreview';
 
 
 const {FontWeights, FontSizes} = Fonts;
@@ -14,13 +28,47 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = 0.75 * WIDTH
 
-const Event = ({image, title, time}) => (
-    <View style={styles.event}>
-        <Image style={styles.eventImage} source={{uri: image}}/>
-        <Text style={styles.eventTitle}>{ title }</Text>
-        <Text style={styles.eventDate}>{time}</Text>
-    </View>
-);
+const Event = ({image, title, time}) => {
+
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+      <View style={styles.event}>
+        <View>
+          <View style={{ flexDirection: "row" }}>
+            <Image style={styles.eventImage} source={{ uri: image }} />
+            <View style={{ justifyContent: "center", paddingBottom: 5 }}>
+              <Text style={styles.eventTitle}>{title}</Text>
+              <Text style={styles.eventDate}>{time}</Text>
+            </View>
+          </View>
+            { expanded ?
+          <View>
+            <Text style={styles.eventDescription}>
+              - Meet with crew at base{"\n"}- Activities start at 4:30{"\n"}
+              - Dinner with the crew at 8
+            </Text>
+            <View style={styles.detailsView}>
+              <UserCountPreview style={{marginLeft: 20}} />
+              <TouchableOpacity style={styles.detailsButton}>
+                <Text style={styles.detailsText}>Details</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+                : null }
+        </View>
+        <Icon
+          name={expanded ? "chevron-up" : "chevron-down"}
+          color={colours.text02}
+          size={32}
+          style={{ marginRight: 5 }}
+          onPress={() => setExpanded(!expanded)}
+        />
+      </View>
+    );
+}
+
+
 
 
 const Schedule = () => {
@@ -78,7 +126,7 @@ const Schedule = () => {
                 title={event.title}
                 image={event.image}
                 time={event.time}
-                key={event.time + event.title}
+                key={event.time + event.title + index}
               />
             );
           })}
@@ -106,8 +154,10 @@ const Schedule = () => {
 
 
     return (
-        <ScrollView style={styles.container} bounces={false}>
-            <SafeAreaView>
+            <ScrollView style={styles.container} bounces={false}>
+                <LinearGradient colors={['#ed1b2f', '#fc8c62' ]} style={{height: HEIGHT}}>
+                <SafeAreaView>
+
 
           <View style={styles.header}>
               <CircleBackIcon />
@@ -130,7 +180,8 @@ const Schedule = () => {
 
           />
             </SafeAreaView>
-          </ScrollView>
+                </LinearGradient>
+        </ScrollView>
     );
 };
 
@@ -138,7 +189,6 @@ const Schedule = () => {
 const styles = StyleSheet.create({
    container: {
        flex: 1,
-       backgroundColor: '#ed1b2f',
    },
     title: {
        ...FontSizes.SubHeading,
@@ -178,14 +228,16 @@ const styles = StyleSheet.create({
         borderRadius: 20    ,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         marginVertical: 12,
+        maxWidth: ITEM_WIDTH
     },
     eventImage: {
        height: 54,
         width: 54,
         borderRadius: 27,
-        marginVertical: 15
+        marginVertical: 15,
+        marginHorizontal: 12
     },
     eventTitle: {
        ...FontWeights.Bold,
@@ -194,8 +246,40 @@ const styles = StyleSheet.create({
         marginVertical: 8
     },
     eventDate: {
-       ...FontSizes.Body,
-        ...FontWeights.Regular,
+       ...FontSizes.Caption,
+        ...FontWeights.Bold,
+        color: colours.text03
+    },
+    eventDescription: {
+       maxWidth: ITEM_WIDTH*0.7,
+        padding: 15,
+        ...FontWeights.Bold,
+        ...FontSizes.Caption,
+        color: colours.text03
+    },
+    detailsView: {
+       flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 12,
+        width: ITEM_WIDTH*0.85
+    },
+    detailsButton: {
+       height: 30,
+        borderRadius: 15,
+        shadowRadius: 2,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 1.5,
+            height: 1.5
+        },
+        shadowOpacity: 0.6,
+        paddingHorizontal: 10,
+        backgroundColor: colours.base,
+        justifyContent: 'center',
+    },
+    detailsText: {
+       ...FontSizes.SubText,
+        ...FontWeights.Bold,
         color: colours.text03
     }
 });
@@ -257,7 +341,7 @@ const DATA = [
     {
         events: [
             {
-                title: "Scavenger Hunt",
+                title: "Scavenger Hunt part 2",
                 image:
                     "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
                 time: "1:00pm",

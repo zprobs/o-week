@@ -1,38 +1,97 @@
-import React from 'react';
-import {StyleSheet, Text, Dimensions, View} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, Dimensions, View, TouchableOpacity} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import DetailedUserList from '../ReusableComponents/DetailedUserList';
+import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
+import Animated from 'react-native-reanimated';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
 
 const HEIGHT = Dimensions.get('window').height;
+const WIDTH = Dimensions.get('window').width;
 
-const GroupInfoModal = React.forwardRef(({prop}, ref) => {
+const GroupInfoModal = React.forwardRef(({group}, ref) => {
+
+  const Tabs = () => {
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+      { key: 'first', title: 'Overview' },
+      { key: 'second', title: 'Second' },
+    ]);
+
+    const renderScene = SceneMap({
+      first: Overview,
+      second: SecondRoute,
+    });
+
+    const renderTabBar = (props) => {
+      return <TabBar
+          {...props}
+          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '50%' }}
+          style={styles.tabBar}
+          renderLabel={({ route, focused, color }) => (
+              <Text style={{ ...styles.tabText, color:  color }}>
+                {route.title}
+              </Text>
+              )}
+          activeColor={ThemeStatic.delete}
+          inactiveColor={colours.text03}
+      />
+    }
+
+    return (
+        <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={{width: WIDTH}}
+            renderTabBar={renderTabBar}
+            swipeEnabled={false}
+        />
+    );
+  };
+
+
+    const Overview = () => (
+      <>
+        <Text style={styles.sectionText}>LeaderBoard</Text>
+        <View style={styles.leaderBoardView}>
+          <View style={styles.pointsView}>
+            <Text style={styles.pointsText}>21,975 Points!</Text>
+            <Text style={styles.placeText}>3rd Place</Text>
+          </View>
+          <View style={styles.trophyView}>
+            <View style={styles.seeTrophiesView}>
+              <Text style={styles.seeTrophiesText}>SEE MEDALS</Text>
+            </View>
+          </View>
+        </View>
+        <Text style={styles.sectionText}>Members</Text>
+        <DetailedUserList data={tempData} style={styles.detailedUserList} />
+      </>
+    );
+
+  const SecondRoute = () => (
+      <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
+  );
+
+
+
+
     return (
       <Modalize
-      ref={ref}
-      scrollViewProps={{ showsVerticalScrollIndicator: false, bounces: false }}
-      alwaysOpen={HEIGHT*0.5}
-      modalTopOffset={110}
-      rootStyle={[StyleSheet.absoluteFill,  {minHeight: HEIGHT*0.4} ]}
-      >
-          <Text style={styles.sectionText}>LeaderBoard</Text>
-          <View style={styles.leaderBoardView}>
-              <View style={styles.pointsView}>
-                  <Text style={styles.pointsText}>21,975 Points!</Text>
-                  <Text style={styles.placeText}>3rd Place</Text>
-              </View>
-              <View style={styles.trophyView}>
-                <View style={styles.seeTrophiesView}>
-                    <Text style={styles.seeTrophiesText}>SEE MEDALS</Text>
-                </View>
-              </View>
-          </View>
-              <Text style={styles.sectionText}>Members</Text>
-          <DetailedUserList data={tempData} style={styles.detailedUserList}/>
+        ref={ref}
+        scrollViewProps={{
+          showsVerticalScrollIndicator: false,
+          bounces: false,
+        }}
+        alwaysOpen={HEIGHT * 0.5}
+        modalTopOffset={110}
+        rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
+        <Tabs />
       </Modalize>
     );
 });
@@ -44,7 +103,7 @@ const styles = StyleSheet.create({
     ...FontSizes.Label,
     ...FontWeights.Bold,
     color: colours.text01,
-    marginTop: 25,
+    marginTop: 20,
       marginHorizontal: 20,
   },
   leaderBoardView: {
@@ -89,6 +148,24 @@ const styles = StyleSheet.create({
     detailedUserList: {
       marginTop: 15
     },
+  tabBar: {
+    backgroundColor: colours.base,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    shadowOffset: { height: 0, width: 0 },
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    elevation: 0
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 16,
+  },
+  tabText: {
+    ...FontSizes.Body,
+    ...FontWeights.Bold
+  }
 
 });
 
