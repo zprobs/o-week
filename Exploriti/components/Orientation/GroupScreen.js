@@ -20,7 +20,7 @@ const GroupScreen = () => {
             <View style={styles.header}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>My Section</Text>
+                    <Text style={styles.title}>Orientation Crew</Text>
                 </LinearGradient>
             </View>
         </ImageBackground>

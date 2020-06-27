@@ -38,7 +38,7 @@ export default function Dashboard() {
     const listData = useMemo(() => [
         {
             title: "Groups",
-            data: [{title: "My Frosh Group", img: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg"}, {title: 'Sports Trivia', img: "https://www.tronsmart.com/img/cms/Blog/10%20celebration%20-%20football/9%20.jpg" }]
+            data: [{title: "Orientation Crew", img: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg", count: 13}, {title: 'Sports Trivia', img: "https://www.tronsmart.com/img/cms/Blog/10%20celebration%20-%20football/9%20.jpg", count: 9 }]
         },
         {
             title: "Orientation Groups",
@@ -86,7 +86,7 @@ export default function Dashboard() {
                     <View style={styles.imageRow}>
                         <Image source={{ uri: item.img }} style={styles.groupImage} />
                             <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']} locations={[0, 0.9]} style={styles.imageLabelContainer}>
-                                <UserCountPreview />
+                                <UserCountPreview count={item.count} />
                                 <Text style={styles.imageLabelText}>{item.title}</Text>
                             </LinearGradient>
                     </View>

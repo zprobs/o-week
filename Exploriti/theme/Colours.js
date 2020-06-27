@@ -4,16 +4,6 @@
  */
 
 
-export const DynamicStatusBar = {
-    light: {
-        barStyle: 'dark-content',
-        backgroundColor: '#FFFFFF'
-    },
-    dark: {
-        barStyle: 'light-content',
-        backgroundColor: '#121212'
-    }
-};
 
 export const ThemeStatic = {
     accent: '#846BE2',
@@ -31,6 +21,7 @@ export const ThemeStatic = {
     lightgray: '#F1F1F1',
     darkPurple: '#7d38c4',
     lightPurple: '#b040c2',
+    blackPurple: "#190038",
     pink: '#e84f8a',
     onlineDotColor: {
         true: '#4caf50',

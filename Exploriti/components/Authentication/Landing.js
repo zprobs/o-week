@@ -69,9 +69,9 @@ export default function Landing({ navigation }) {
           pagingEnabled>
           <Slide
             key={1}
-            title={"Welcome to McGill Hub!"}
+            title={"Welcome to UofT Hub!"}
             content={
-              "Find out what's going on around you, and make the most out of your university experience, the simple way."
+              "Find out what's going on around you, and make the most out of your orientation experience, the simple way."
             }
             img={images.landing1}
           />
@@ -79,7 +79,7 @@ export default function Landing({ navigation }) {
             key={2}
             title={"Get Involved, Easily"}
             content={
-              "Exploriti is your extracurricular concierge. University clubs, events, groups... Discover them all!"
+              "UofT Hub is your orientation concierge. Frosh, events, groups... Discover them all!"
             }
             img={images.landing2}
           />
@@ -87,7 +87,7 @@ export default function Landing({ navigation }) {
             key={3}
             title={"Relevant Results"}
             content={
-              "Exploriti uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"
+              "UofT Hub uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"
             }
             img={images.landing3}
           />
@@ -95,7 +95,7 @@ export default function Landing({ navigation }) {
             key={4}
             title={"Get Social"}
             content={
-              "See what events and clubs all of your friends are involved in. Everything is more fun with friends, even Exploriti."
+              "See what events and clubs all of your friends are involved in. Everything is more fun with friends, even UofT Hub."
             }
             img={images.landing4}
           />
@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 3,
+    backgroundColor: colours.base
   },
   scrollView: {
     overflow: "hidden",
@@ -177,6 +178,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     justifyContent: "center",
+    backgroundColor: colours.base
   },
   signUp: {
     alignItems: "center",

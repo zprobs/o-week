@@ -14,7 +14,7 @@ import '@react-native-firebase/auth'
 import firebase from '@react-native-firebase/app';
 import { useMutation } from '@apollo/react-hooks';
 import {SIGN_UP, GET_INTERESTS, GET_PROGRAMS} from '../../graphql';
-import {graphqlify, facultiesData, yearsData, yearToInt} from '../../context';
+import {graphqlify, facultiesData, yearsData, yearToInt, timeZoneData} from '../../context';
 
 const {FontWeights, FontSizes} = Fonts;
 const height = Dimensions.get('window').height;
@@ -37,6 +37,7 @@ export default function Signup({navigation}) {
     const [programsSelection, setProgramsSelection] = useState([]);
     const [year, setYear] = useState();
     const [faculty, setFaculty] = useState();
+    const [timeZone, setTimezone] = useState();
     const [interests, setInterests] = useState([]);
     const [interestsSelection, setInterestsSelection] = useState([]);
     const [image, setImage] = useState(images.logo);
@@ -49,6 +50,7 @@ export default function Signup({navigation}) {
     const programRef = useRef();
     const yearRef = useRef();
     const facultyRef = useRef();
+    const timeZoneRef = useRef();
     const interestRef = useRef();
     const scrollViewRef = useRef();
     const emailRef= useRef();
@@ -59,6 +61,7 @@ export default function Signup({navigation}) {
     const onProgramRef = () => programRef.current.open();
     const onYearRef = () => yearRef.current.open();
     const onFacultyRef = () => facultyRef.current.open();
+    const onTimeZoneRef = () => timeZoneRef.current.open();
     const onInterestRef = () => interestRef.current.open();
 
     useEffect(() => {
@@ -166,7 +169,7 @@ export default function Signup({navigation}) {
         title =
           index == 0
             ? "Continue as Student (1/4)"
-            : "Continue as Organizer (1/4)";
+            : "Continue as Leader (1/4)";
         colour = ThemeStatic.lightBlue;
       } else if (page === 2) {
         title = "Continue (2/4)";
@@ -284,7 +287,7 @@ export default function Signup({navigation}) {
                             <Animated.Text style={{...styles.title, opacity}}>Create an Account</Animated.Text>
                             <View>
                                 <Text style={styles.label}>I am a...</Text>
-                                <SegmentedControl values={['Student', 'Organizer']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
+                                <SegmentedControl values={['Student', 'Leader']} selectedIndex={index} onChange={(event) => {setIndex(event.nativeEvent.selectedSegmentIndex)}} style={styles.selector}/>
                             </View>
 
                             <TextLine
@@ -333,7 +336,8 @@ export default function Signup({navigation}) {
                             </View>
                             <Selection title={programTitle()} onPress={onProgramRef}/>
                             <Selection title={ year ? year : "Select your year"} onPress={onYearRef}/>
-                            <Selection title={ faculty ? faculty : "Select your faculty"} onPress={onFacultyRef}/>
+                            <Selection title={ faculty ? faculty : "Select your college"} onPress={onFacultyRef}/>
+                            <Selection title={ timeZone ? timeZone : "Select your time zone"} onPress={onTimeZoneRef}/>
                         </View>
                     </View>
                     <View style={styles.page}>
@@ -366,10 +370,12 @@ export default function Signup({navigation}) {
                     </View>
                 </ImageBackground>
             </ScrollView>
-            <SearchableFlatList ref={programRef} title={'programs'} query={GET_PROGRAMS} setData={setPrograms} setSelection={setProgramsSelection} aliased={false} max={4}/>
+            <SearchableFlatList ref={programRef} title={'programs'} query={GET_PROGRAMS} setData={setPrograms} setSelection={setProgramsSelection} aliased={false} max={4} />
             <RadioButtonFlatList ref={yearRef} title={'year'} data={yearsData} selectedData={year} setData={setYear}/>
-            <RadioButtonFlatList ref={facultyRef} title={'faculty'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
+            <RadioButtonFlatList ref={facultyRef} title={'college'} data={facultiesData} selectedData={faculty} setData={setFaculty}/>
             <SearchableFlatList ref={interestRef} title={'interests'} query={GET_INTERESTS} setData={setInterests} setSelection={setInterestsSelection} aliased={true} max={5} />
+
+            <SearchableFlatList ref={timeZoneRef} title={'time zone'} data={timeZoneData} setData={setTimezone} setSelection={()=>{}} aliased={false} max={1} query={false} />
         </View>
     );
 }

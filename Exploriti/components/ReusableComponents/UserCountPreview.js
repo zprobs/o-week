@@ -11,11 +11,11 @@ const {FontWeights, FontSizes} = Fonts
  * @returns {*}
  * @constructor
  */
-const UserCountPreview = ({style}) => {
+const UserCountPreview = ({style, count}) => {
     return (
       <View style={[styles.container, style]}>
           <View style={styles.numberView}>
-              <Text style={styles.numberText}>+9</Text>
+              <Text style={styles.numberText}>{"+" + count}</Text>
           </View>
           <View style={styles.imageContainer}>
               <Image source={{uri: "https://www.mainewomensnetwork.com/Resources/Pictures/vicki%20aqua%20headshot-smallmwn.jpg"}} style={{...styles.image, left: -5, zIndex: 3}}/>

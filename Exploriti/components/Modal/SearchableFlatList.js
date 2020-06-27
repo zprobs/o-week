@@ -38,6 +38,7 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
         const verifiedQuery = query ? query : NULL
         const result = useQuery(verifiedQuery, {skip: query==undefined});
 
+        // TODO: Problematic piece of code, resets data on every render i'm not sure why
         if (query) {
             data = [];
             if (!result.loading && !result.error) {
@@ -119,7 +120,11 @@ const SearchableFlatList = React.forwardRef(({data, query, title, setData, setSe
                 ref={ref}
                 flatListProps={{
                     // TODO: CHECK THE LINE BELOW
-                    data: query ? (filteredList ? Object.keys(filteredList) : []) : data,
+                    // displays the wrong search results even though the search filter is working fine
+                    // I changed it to:
+                    // data: query ? (filteredList ? filteredList.map(item=>item.id) : []) : data,
+                    // which fixed it when aliasing is off and when that initial if (query) block of code didn't execute all the time
+                    data: query ? (filteredList ? Object.keys(filteredList) : []) : filteredList,
                     keyExtractor: item => item,
                     renderItem: renderItem,
                     marginTop: 10,
@@ -224,4 +229,3 @@ function mapToIds(map, data, query) {
 }
 
 export default SearchableFlatList;
-

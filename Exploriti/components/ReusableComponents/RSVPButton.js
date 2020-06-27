@@ -1,17 +1,29 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Theme} from '../../theme/Colours';
+import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import Icon from 'react-native-vector-icons/Feather';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
 
-const RSVPButton = ({onPress, style}) => {
+const RSVPButton = ({onPress, style, selectedTitle, unSelectedTitle, plusIcon}) => {
+
+    const [selected, setSelected] = useState(false)
+
+    const buttonPress = () => {
+        setSelected(!selected);
+        if (onPress) onPress();
+    }
+
+    const defaultIcon = plusIcon ? "user-plus" : "user-check"
+
+    const color = selected ? ThemeStatic.blackPurple : colours.placeholder
+
     return(
-      <TouchableOpacity style={{...styles.container, ...style}} onPress={onPress}>
-          <Icon name={"user-check"} size={26} style={{padding: 4}} />
-          <Text style={styles.title}>Tap to RSVP</Text>
+      <TouchableOpacity style={{...styles.container, ...style, backgroundColor: color }} onPress={buttonPress}>
+          <Icon name={ selected ? "user-x" : defaultIcon} size={26} style={{padding: 4}} color={selected ? 'white' : 'black'} />
+          <Text style={styles.title}>{ selected ? selectedTitle : unSelectedTitle}</Text>
           <View style={{width: 32}}/>
       </TouchableOpacity>
     );
@@ -19,7 +31,6 @@ const RSVPButton = ({onPress, style}) => {
 
 const styles = StyleSheet.create({
    container: {
-       backgroundColor: colours.placeholder,
        height: 44,
        borderRadius: 22,
        flexDirection: 'row',

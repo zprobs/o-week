@@ -87,16 +87,16 @@ function toLink(type, value) {
          if (result) {
              Linking.openURL(link).catch((e)=>console.log(e));
          } else {
-             linkError();
+             linkError(null, "Profile");
          }
      }).catch((error)=>{
-        linkError(error);
+        linkError(error, "Profile");
      })
 }
 
-function linkError(error) {
+export function linkError(error, {title}) {
     Alert.alert(
-        "Profile Unavailable.",
+         title+ " Unavailable.",
         error.toString(),
 
         {

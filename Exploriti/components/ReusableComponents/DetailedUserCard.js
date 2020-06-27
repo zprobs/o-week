@@ -15,9 +15,7 @@ const DetailedUserCard = ({id, name, image, isLeader }) => {
           <View style={styles.leaderView}>
             <Text style={styles.leaderText}>LEADER</Text>
           </View>
-        ) : (
-            <Text style={styles.locationText}>Toronto, Canada</Text>
-        )}
+        ) : null }
       </View>
     );
 
@@ -33,12 +31,8 @@ const styles = StyleSheet.create({
            width: 2,
            height: 2
        },
-       shadowOpacity: 0.7,
-        paddingHorizontal: 12,
-       marginHorizontal: 10,
-       marginVertical: 10,
-       elevation: 3,
-       alignItems: 'center'
+       alignItems: 'center',
+       marginHorizontal: 10
    },
     image: {
        backgroundColor: colours.placeholder,
@@ -48,8 +42,9 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     name: {
-       ...FontSizes.Body,
+       ...FontSizes.Caption,
         ...FontWeights.Bold,
+        color: colours.text02
     },
     leaderView: {
        backgroundColor: 'red',

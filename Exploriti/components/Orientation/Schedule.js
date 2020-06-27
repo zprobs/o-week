@@ -51,7 +51,7 @@ const Event = ({image, title, time}) => {
               - Dinner with the crew at 8
             </Text>
             <View style={styles.detailsView}>
-              <UserCountPreview style={{marginLeft: 20}} />
+              <UserCountPreview style={{marginLeft: 20}} count={8} />
               <TouchableOpacity style={styles.detailsButton} onPress={()=>navigation.push('EventScreen')}>
                 <Text style={styles.detailsText}>Details</Text>
               </TouchableOpacity>
