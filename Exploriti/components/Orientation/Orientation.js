@@ -5,6 +5,7 @@ import { DrawerIcon } from "../Menu/DrawerIcon";
 import {MessagesIcon} from '../Menu/MessagesIcon';
 import Schedule from './Schedule';
 import GroupScreen from './GroupScreen';
+import EventScreen from './EventScreen';
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,13 @@ export default function Orientation() {
         <Stack.Screen
             name={"GroupScreen"}
             component={GroupScreen}
+            options={{
+                headerShown: false,
+            }}
+        />
+        <Stack.Screen
+            name={"EventScreen"}
+            component={EventScreen}
             options={{
                 headerShown: false,
             }}

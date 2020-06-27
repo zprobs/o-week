@@ -71,6 +71,7 @@
 		BB227E5B2465B8F10064F4D6 /* SFProDisplay-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFProDisplay-Light.ttf"; path = "../assets/fonts/SFProDisplay-Light.ttf"; sourceTree = "<group>"; };
 		BB227E5C2465B8F10064F4D6 /* SFProDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFProDisplay-Regular.ttf"; path = "../assets/fonts/SFProDisplay-Regular.ttf"; sourceTree = "<group>"; };
 		BB79FA0C2462382100B476A6 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		BBE648C324A6D97900A4086A /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		BCE4E1143910995873BFA627 /* Pods-Exploriti-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exploriti-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Exploriti-tvOS/Pods-Exploriti-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		C87FD336C82990FD6C51DF77 /* libPods-Exploriti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exploriti.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E0FD5CFD6DFE8E918089D5 /* Pods-Exploriti-ExploritiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exploriti-ExploritiTests.release.xcconfig"; path = "Target Support Files/Pods-Exploriti-ExploritiTests/Pods-Exploriti-ExploritiTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -211,6 +212,7 @@
 		BB79FA0B246237E700B476A6 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				BBE648C324A6D97900A4086A /* Feather.ttf */,
 				BB227E5A2465B8F10064F4D6 /* SFProDisplay-Bold.ttf */,
 				BB227E5B2465B8F10064F4D6 /* SFProDisplay-Light.ttf */,
 				BB227E5C2465B8F10064F4D6 /* SFProDisplay-Regular.ttf */,

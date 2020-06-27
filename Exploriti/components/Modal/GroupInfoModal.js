@@ -30,7 +30,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     const renderTabBar = (props) => {
       return <TabBar
           {...props}
-          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '50%' }}
+          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '25%', marginHorizontal: WIDTH*0.125 }}
           style={styles.tabBar}
           renderLabel={({ route, focused, color }) => (
               <Text style={{ ...styles.tabText, color:  color }}>
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     },
   tabBar: {
     backgroundColor: colours.base,
+    marginTop: 10,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     shadowOffset: { height: 0, width: 0 },

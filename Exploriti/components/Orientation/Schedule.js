@@ -30,6 +30,8 @@ const ITEM_WIDTH = 0.75 * WIDTH
 
 const Event = ({image, title, time}) => {
 
+    const navigation = useNavigation();
+
     const [expanded, setExpanded] = useState(false);
 
     return (
@@ -50,7 +52,7 @@ const Event = ({image, title, time}) => {
             </Text>
             <View style={styles.detailsView}>
               <UserCountPreview style={{marginLeft: 20}} />
-              <TouchableOpacity style={styles.detailsButton}>
+              <TouchableOpacity style={styles.detailsButton} onPress={()=>navigation.push('EventScreen')}>
                 <Text style={styles.detailsText}>Details</Text>
               </TouchableOpacity>
             </View>
