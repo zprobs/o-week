@@ -23,7 +23,7 @@ export const GET_DETAILED_USER = gql`
            ...DetailedUser 
         },
         friends(where: {userId: {_eq: $id}}) {
-            friendId
+            id
             userId
         }
     }
@@ -40,7 +40,7 @@ export const GET_CURRENT_USER = gql`
             }
         },
         friends(where: {userId: {_eq: $id}}) {
-            friendId
+            id
             userId
         }
     }
@@ -178,7 +178,7 @@ export const GET_PROGRAMS = gql`
 export const GET_USER_FRIENDS = gql`
     query getFriends($userId: String!) {
         friends(where: {userId: {_eq: $userId}}) {
-            friendId
+            id
             userId
             friend {
                 id
