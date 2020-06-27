@@ -66,16 +66,6 @@ const RadioButtonFlatList = React.forwardRef(
 );
 
 const styles = StyleSheet.create({
-  radioButton: {
-    height: 24,
-    width: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: ThemeStatic.lightBlue,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-  },
   text: {
     ...FontWeights.Regular,
     ...FontSizes.Label,
