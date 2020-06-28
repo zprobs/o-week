@@ -36,6 +36,7 @@ const SearchableFlatList = React.forwardRef(
       setSelection,
       max,
       aliased,
+      cancelButtonText,
       offset,
       initialSelection,
     },
@@ -55,7 +56,7 @@ const SearchableFlatList = React.forwardRef(
     const verifiedQuery = query ? query : NULL;
     const result = useQuery(verifiedQuery, {
       skip: query == undefined,
-      variables: variables ? variables : NULL,
+      variables: variables,
     });
 
     // TODO: Problematic piece of code, resets data on every render i'm not sure why
@@ -135,7 +136,7 @@ const SearchableFlatList = React.forwardRef(
         text={searchQuery}
         hideBackground={true}
         onCancelButtonPress={() => ref.current.close()}
-        cancelButtonText={"Done"}
+        cancelButtonText={cancelButtonText}
         showsCancelButton={true}
       />
     );

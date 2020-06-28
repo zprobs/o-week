@@ -84,6 +84,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       setData={setFriendsData}
       setSelection={setFriendsSelection}
       aliased={false}
+      cancelButtonText={"Next"}
     />
   );
 });
