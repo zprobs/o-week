@@ -1,8 +1,18 @@
 module.exports = {
   root: true,
-  extends: '@react-native-community',
-  rules: {
-    "react/jsx-first-prop-new-line": "off"
-  }
+  extends: [
+    'standard',
+    'prettier',
+    'prettier/flowtype',
+    'prettier/react',
+    'prettier/standard'
+  ],
+  plugins: [
+    'react',
+    'react-native',
+    'flowtype',
+    'prettier',
+    'standard'
+  ]
 };
 
