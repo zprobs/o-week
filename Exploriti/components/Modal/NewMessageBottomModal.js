@@ -53,20 +53,12 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
     // navigate tp "Conversation page"
     // useMutation for newConversation
     // graphqlify(friendsSelection, "user");
-    console.log("graphqlify: ", graphqlify(friendsSelection, "user"));
-    console.log("friendsSelection ", friendsSelection);
-
     const result = newChat({
       variables: {
         participants: graphqlify(friendsSelection, "user"),
       },
     });
-    // newChat({
-    //   variables: {
-    //     participants: graphqlify(friendsSelection, "user"),
-    //   },
-    // });
-    console.log("RESULT: ", result);
+    console.log(result);
   };
 
   const renderItem = ({ item }) => {
@@ -121,7 +113,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       setSelection={setFriendsSelection}
       aliased={false}
       cancelButtonText={"Next"}
-      onClose={newConversation}
+      onPress={newConversation}
     />
   );
 });

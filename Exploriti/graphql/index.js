@@ -184,7 +184,6 @@ export const GET_PROGRAMS = gql`
 export const GET_USER_FRIENDS = gql`
   query getFriends($userId: String!) {
     friends(where: { userId: { _eq: $userId } }) {
-      userId
       id
       name
       image
@@ -264,10 +263,12 @@ export const GET_USER_LINKS = gql`
 
 export const MESSAGE_FRAGMENT = gql`
   fragment DetailedMessage on message {
+    id
     _id: id
     text: body
     createdAt: date
     user: sender {
+      id
       _id: id
       name
       image
@@ -277,9 +278,11 @@ export const MESSAGE_FRAGMENT = gql`
 
 export const DETAILED_CHAT = gql`
   fragment DetailedChat on chat {
+    id
     _id: id
     name
     participants {
+      id
       _id: id
       name
       image

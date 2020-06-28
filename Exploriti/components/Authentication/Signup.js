@@ -256,7 +256,6 @@ export default function Signup({ navigation }) {
   }
 
   function nextPage() {
-    graphqlify(interestsSelection, "interest");
     if (page === 4) {
       submit();
     } else {
@@ -495,7 +494,6 @@ export default function Signup({ navigation }) {
         max={5}
         cancelButtonText={"Done"}
       />
-
       <SearchableFlatList
         ref={timeZoneRef}
         title={"time zone"}
