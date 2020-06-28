@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 10,
         alignItems: 'center',
-        backgroundColor: colours.white
+        backgroundColor: colours.white,
+        marginHorizontal: 25
     },
     title: {
         ...FontSizes.Label,

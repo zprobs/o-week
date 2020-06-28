@@ -1,10 +1,10 @@
 import React, {useContext, useMemo} from 'react';
-import {Text, View, StyleSheet, SectionList, Image, StatusBar, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, SectionList, Image, StatusBar, TouchableOpacity, ScrollView} from 'react-native';
 import {AuthContext} from '../../context';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import {useQuery} from '@apollo/react-hooks';
-import {GET_CURRENT_USER} from '../../graphql';
+import {GET_CURRENT_USER, GET_USERS_WHERE} from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import SectionHeader from '../ReusableComponents/SectionHeader';
@@ -58,12 +58,32 @@ export default function Dashboard() {
         <Icon name={'arrow-right'} color={ThemeStatic.white} size={28}/>
     )
 
-    const Header = () => (
+    const Header = () => {
+        const {data : sayHiData, loading, error} = useQuery(GET_USERS_WHERE, {variables: {_nin: authState.user.uid }})
+        let count = 0;
+
+        return (
       <>
-        <Text style={styles.welcomeTitle}>
-          Nice to see you, {data.user.name}!
-        </Text>
-        <Text style={styles.welcomeSubTitle}>What's on your mind?</Text>
+          <View style={{marginHorizontal: 25}}>
+              <Text style={styles.welcomeTitle}>
+                  Hi, {data.user.name}!
+              </Text>
+              <Text style={styles.welcomeSubTitle}>Say hi to someone new:</Text>
+          </View>
+          <ScrollView horizontal={true} style={styles.userScrollView} showsHorizontalScrollIndicator={false}>
+              {
+                  sayHiData ? sayHiData.users.map((user)=> {
+                      count++;
+                      return (
+                          <TouchableOpacity onPress={()=>navigation.push('Profile', {userId: user.id})} key={user.id}>
+                              <Image source={{uri: user.image}} style={{...styles.userImage, marginTop: (count%2===0 ? 16 : 0)}} key={user.id}/>
+                          </TouchableOpacity>
+                      );
+                      }
+                  ) : null
+              }
+          </ScrollView>
+          <View style={{marginHorizontal: 25}}>
         <ButtonColour
           colour={ThemeStatic.delete}
           label={"Check Schedule"}
@@ -76,8 +96,10 @@ export default function Dashboard() {
               navigation.navigate('Schedule')
           }}
         />
+          </View>
       </>
-    );
+        );
+    };
 
     const renderItem = React.useCallback(({ item, section }) => {
         if (section.title === "Groups") {
@@ -124,8 +146,7 @@ const Item = ({ title }) => (
 const styles = StyleSheet.create({
    container: {
        flex: 1,
-       paddingHorizontal: 25,
-       backgroundColor: colours.base
+       backgroundColor: colours.base,
    },
     welcomeTitle: {
        ...FontWeights.Bold,
@@ -135,8 +156,8 @@ const styles = StyleSheet.create({
     },
     welcomeSubTitle: {
        ...FontSizes.Label,
-        ...FontWeights.Bold,
-        color: ThemeStatic.delete,
+        ...FontWeights.Regular,
+        color: colours.text02,
         paddingTop: 10
     },
     buttonText :{
@@ -156,13 +177,14 @@ const styles = StyleSheet.create({
         ...FontSizes.SubHeading,
         ...FontWeights.Bold,
         backgroundColor: "#fff",
-        padding: 5
+        padding: 5,
     },
     imageRow: {
        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
+        marginHorizontal: 25
     },
     groupImage: {
        height: 180,
@@ -188,5 +210,18 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: colours.white,
     },
+    userScrollView: {
+       marginBottom: 10,
+        marginTop: 24,
+        width: '100%',
+        flexDirection: 'row',
+    },
+    userImage: {
+       width: 66,
+        height: 66,
+        borderRadius: 33,
+        marginHorizontal: 8,
+        backgroundColor: colours.placeholder
+    }
 
 });

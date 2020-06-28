@@ -3,13 +3,13 @@ import {StyleSheet, Text, Dimensions, View, TouchableOpacity, Image, Linking} fr
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
-import DetailedUserList from '../ReusableComponents/DetailedUserList';
+import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import Animated from 'react-native-reanimated';
 import RSVPButton from '../ReusableComponents/RSVPButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EvilIcon from 'react-native-vector-icons/EvilIcons'
-import DetailedUserCard from '../ReusableComponents/DetailedUserCard';
+import HorizontalUserCard from '../ReusableComponents/HorizontalUserCard';
 import {linkError} from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
@@ -99,9 +99,9 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
     <>
     <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true}/>
       <Text style={styles.sectionText}>Going</Text>
-      <DetailedUserList data={going} />
+      <HorizontalUserList data={going} />
       <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-      <DetailedUserList data={going} />
+      <HorizontalUserList data={going} />
 
     </>
   )
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginTop: 15,
     marginHorizontal: 12,
+    letterSpacing: 0.87
   },
   rsvp: {
     alignSelf: "center",

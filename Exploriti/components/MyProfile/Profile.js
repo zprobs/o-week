@@ -98,7 +98,7 @@ export default function Profile({ route }) {
 
 
     return (
-        <>
+        <View style={{backgroundColor: colours.base, flex: 1}}>
             <SafeAreaView>
                 {isMyProfilePage ? null : (
                     <GoBackHeader
@@ -143,7 +143,7 @@ export default function Profile({ route }) {
             ) : (
                 <OptionsBottomModal ref={optionsBottomModalRef} />
             )}
-        </>
+        </View>
     );
 }
 

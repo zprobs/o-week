@@ -6,16 +6,11 @@ import Fonts from '../../theme/Fonts';
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts
 
-const DetailedUserCard = ({id, name, image, isLeader }) => {
+const HorizontalUserCard = ({id, name, image, isLeader }) => {
     return (
       <View style={styles.container}>
         <Image source={{ uri: image }} style={styles.image} />
         <Text style={styles.name}>{name}</Text>
-        {isLeader ? (
-          <View style={styles.leaderView}>
-            <Text style={styles.leaderText}>LEADER</Text>
-          </View>
-        ) : null }
       </View>
     );
 
@@ -65,4 +60,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default DetailedUserCard;
+export default HorizontalUserCard;

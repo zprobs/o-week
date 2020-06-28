@@ -6,6 +6,7 @@ import {MessagesIcon} from '../Menu/MessagesIcon';
 import Schedule from './Schedule';
 import GroupScreen from './GroupScreen';
 import EventScreen from './EventScreen';
+import Profile from '../MyProfile/Profile';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,16 @@ export default function Orientation() {
                 headerShown: false,
             }}
         />
+        <Stack.Screen
+            name={"Profile"}
+            component={Profile}
+            options={{
+                headerShown: false,
+            }}
+        />
+
+
+
 
     </Stack.Navigator>
   );
