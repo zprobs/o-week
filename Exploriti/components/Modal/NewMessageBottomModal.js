@@ -27,15 +27,8 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   const [friendsSelection, setFriendsSelection] = useState([]);
   const navigation = useNavigation();
 
-  //   const [getFriends, { loading, data, error, called }] = useLazyQuery(
-  //     GET_USER_FRIENDS,
-  //     { variables: { userId: authState.user.uid } },
-  //   );
   const [newChat] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
-      // console.log(createChat);
-
-      //
       const {
         chatId,
         participants,
