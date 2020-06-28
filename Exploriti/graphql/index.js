@@ -275,27 +275,43 @@ export const MESSAGE_FRAGMENT = gql`
   }
 `;
 
-export const GET_CHATS = gql`
-  subscription getChats($user: String!) {
-    chats(where: { participants: { id: { _eq: $user } } }, limit: 15) {
+export const DETAILED_CHAT = gql`
+  fragment DetailedChat on chat {
+    _id: id
+    name
+    participants {
       _id: id
       name
-      participants {
-        _id: id
-        name
-        image
+      image
+    }
+    messages_aggregate {
+      aggregate {
+        count
       }
-      messages_aggregate {
-        aggregate {
-          count
-        }
-      }
-      messages(limit: 15, order_by: { date: desc }) {
-        ...DetailedMessage
-      }
+    }
+    messages(limit: 15, order_by: { date: desc }) {
+      ...DetailedMessage
     }
   }
   ${MESSAGE_FRAGMENT}
+`;
+
+export const GET_CHATS = gql`
+  subscription getChats($user: String!) {
+    chats(where: { participants: { id: { _eq: $user } } }, limit: 15) {
+      ...DetailedChat
+    }
+  }
+  ${DETAILED_CHAT}
+`;
+
+export const NEW_CHAT = gql`
+  mutation newChat($participants: userChat_arr_rel_insert_input!) {
+    createChat(object: { users: $participants }) {
+      ...DetailedChat
+    }
+  }
+  ${DETAILED_CHAT}
 `;
 
 export const GET_NEW_MESSAGES = gql`

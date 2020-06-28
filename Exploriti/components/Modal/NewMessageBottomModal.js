@@ -12,10 +12,11 @@ import UserCard from "../ReusableComponents/UserCard";
 import { Theme } from "../../theme/Colours";
 import Images from "../../assets/images";
 import ImgBanner from "../ReusableComponents/ImgBanner";
-import { AuthContext } from "../../context";
-import { useLazyQuery, useQuery } from "@apollo/react-hooks";
-import { GET_USER_FRIENDS } from "../../graphql";
+import { AuthContext, parseChats, graphqlify } from "../../context";
+import { useLazyQuery, useQuery, useMutation } from "@apollo/react-hooks";
+import { GET_USER_FRIENDS, NEW_CHAT } from "../../graphql";
 import SearchableFlatList from "./SearchableFlatList";
+import { useNavigation } from "@react-navigation/native";
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -23,15 +24,56 @@ const window05 = window * 0.05;
 
 const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   const { authState } = useContext(AuthContext);
-
-  const [friendsData, setFriendsData] = useState([]);
-
   const [friendsSelection, setFriendsSelection] = useState([]);
+  const navigation = useNavigation();
 
-  const [getFriends, { loading, data, error, called }] = useLazyQuery(
-    GET_USER_FRIENDS,
-    { variables: { userId: authState.user.uid } },
-  );
+  //   const [getFriends, { loading, data, error, called }] = useLazyQuery(
+  //     GET_USER_FRIENDS,
+  //     { variables: { userId: authState.user.uid } },
+  //   );
+  const [newChat] = useMutation(NEW_CHAT, {
+    onCompleted: ({ createChat }) => {
+      // console.log(createChat);
+
+      const {
+        chatId,
+        participants,
+        image,
+        name,
+        messages,
+        numMessages,
+      } = parseChats(createChat, authState.user.uid);
+
+      navigation.navigate("Conversation", {
+        chatId,
+        image,
+        name,
+        participants,
+        numMessages,
+        messages,
+      });
+    },
+  });
+
+  const newConversation = () => {
+    // navigate tp "Conversation page"
+    // useMutation for newConversation
+    // graphqlify(friendsSelection, "user");
+    console.log("graphqlify: ", graphqlify(friendsSelection, "user"));
+    console.log("friendsSelection ", friendsSelection);
+
+    const result = newChat({
+      variables: {
+        participants: graphqlify(friendsSelection, "user"),
+      },
+    });
+    // newChat({
+    //   variables: {
+    //     participants: graphqlify(friendsSelection, "user"),
+    //   },
+    // });
+    console.log("RESULT: ", result);
+  };
 
   const renderItem = ({ item }) => {
     console.log(item);
@@ -81,10 +123,11 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       title={"friends"}
       query={GET_USER_FRIENDS}
       variables={{ userId: authState.user.uid }}
-      setData={setFriendsData}
+      //   setData={setFriendsData}
       setSelection={setFriendsSelection}
       aliased={false}
       cancelButtonText={"Next"}
+      onClose={newConversation}
     />
   );
 });

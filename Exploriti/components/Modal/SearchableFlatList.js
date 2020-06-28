@@ -36,7 +36,9 @@ const SearchableFlatList = React.forwardRef(
       setSelection,
       max,
       aliased,
+      onClose,
       cancelButtonText,
+      // cancelButtonFunction
       offset,
       initialSelection,
     },
@@ -69,7 +71,6 @@ const SearchableFlatList = React.forwardRef(
           setFilteredList(data);
         }
       }
-      console.log("DATA:", data);
     }
 
     const onSelect = React.useCallback(
@@ -135,7 +136,10 @@ const SearchableFlatList = React.forwardRef(
         onChangeText={q => setSearchQuery(q)}
         text={searchQuery}
         hideBackground={true}
-        onCancelButtonPress={() => ref.current.close()}
+        onCancelButtonPress={() => {
+          ref.current.close();
+          console.log("close1");
+        }}
         cancelButtonText={cancelButtonText}
         showsCancelButton={true}
       />
@@ -169,9 +173,14 @@ const SearchableFlatList = React.forwardRef(
         HeaderComponent={search}
         onOpened={setInputFocus}
         onClose={() => {
-          setData(mapToString(selected, data, query));
+          if (setData) {
+            setData(mapToString(selected, data, query));
+          }
           if (setSelection) {
             setSelection(mapToIds(selected, data, query));
+          }
+          if (onClose) {
+            onClose();
           }
         }}
         modalTopOffset={offset ? offset : 0}
