@@ -35,6 +35,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
     onCompleted: ({ createChat }) => {
       // console.log(createChat);
 
+      
       const {
         chatId,
         participants,
