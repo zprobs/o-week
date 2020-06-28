@@ -23,7 +23,7 @@ const WIDTH = Dimensions.get('window').width;
 const EventInfoModal = React.forwardRef(({group}, ref) => {
 
   const Tabs = () => {
-    const [index, setIndex] = useState(3);
+    const [index, setIndex] = useState(0);
     const [routes] = useState([
       { key: 'first', title: 'Details' },
       { key: 'second', title: 'Guest List' },
@@ -99,7 +99,7 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
     <>
     <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true}/>
       <Text style={styles.sectionText}>Going</Text>
-      <HorizontalUserList data={going} />
+      <HorizontalUserList data={going} style={{marginBottom: 15}} />
       <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
       <HorizontalUserList data={going} />
 
@@ -155,7 +155,7 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
           showsVerticalScrollIndicator: false,
           bounces: false,
         }}
-        alwaysOpen={HEIGHT * 0.5}
+        alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />

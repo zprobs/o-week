@@ -11,7 +11,7 @@ const HorizontalUserList = ({data, style}) => {
 
 
     return (
-      <FlatList data={data} renderItem={renderItem} horizontal={true} style={style}/>
+      <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}}/>
     );
 }
 

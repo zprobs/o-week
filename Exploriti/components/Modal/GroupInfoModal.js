@@ -5,9 +5,10 @@ import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
 import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
-import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
+import {Event, DATA} from '../Orientation/Schedule';
+import {useNavigation} from '@react-navigation/native';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -16,6 +17,8 @@ const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
 const GroupInfoModal = React.forwardRef(({group}, ref) => {
+
+  const navigation = useNavigation();
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -28,7 +31,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     const renderScene = SceneMap({
       first: Overview,
       second: Members,
-      third: SecondRoute
+      third: Events
     });
 
     const renderTabBar = (props) => {
@@ -76,7 +79,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
             </View>
           </View>
         <Text style={styles.sectionText}>Leaderboard</Text>
-        <RankCard style={{margin: 25, marginBottom: 5}}/>
+        <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"}/>
         <Text style={styles.sectionText}>Description</Text>
         <Text style={styles.descriptionText}>{"Welcome to the best frosh group at UofT, hosted on the best online orientation platform at UofT! This app is so great you can view your leaderboard score as you compete with the other groups for points. Maybe there will be a prize for the top 3 teams or something! People earn points for thier leaders by completing games and quizes perhaps a scavenger hunt or two organized by the lovely staff at Orientation. Thank you!" }
         </Text>
@@ -93,9 +96,26 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
         </>
     );
 
-  const SecondRoute = () => (
-      <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-  );
+    const Events = () => {
+        const [day, setDay] = useState(0);
+        return (
+            <>
+              <View style={styles.scheduleDayContainer}>
+                <Text style={styles.scheduleDay}>Today</Text>
+                <Icon name={'chevron-down'} color={colours.text03} size={16}/>
+              </View>
+              <View style={styles.eventContainer}>
+                {
+                  DATA[day].events.map((event) => {
+                    return <Event time={event.time} title={event.title} style={{width: '100%'}} image={event.image} key={event.time + event.title + day}/>
+                  })
+                }
+              </View>
+            </>
+        );
+
+    }
+
 
 
 
@@ -107,7 +127,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
           showsVerticalScrollIndicator: false,
           bounces: false,
         }}
-        alwaysOpen={HEIGHT * 0.5}
+        alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
@@ -178,6 +198,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 25,
     letterSpacing: 0.87
   },
+  scheduleDay: {
+    ...FontSizes.Body,
+    ...FontWeights.Bold,
+    color: colours.text03,
+    marginRight: 5
+  },
+  scheduleDayContainer: {
+    flexDirection: 'row',
+    marginTop: 30,
+    marginLeft: 35,
+    alignItems: 'center'
+  },
+  eventContainer: {
+    paddingHorizontal: 25,
+    marginTop: 30,
+    alignItems: 'center'
+
+  }
 
 });
 

@@ -7,6 +7,8 @@ import Schedule from './Schedule';
 import GroupScreen from './GroupScreen';
 import EventScreen from './EventScreen';
 import Profile from '../MyProfile/Profile';
+import LinearGradient from 'react-native-linear-gradient';
+import LeaderBoard from './Leaderboard';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,12 @@ export default function Orientation() {
         options={{
           headerLeft: () => <DrawerIcon />,
           headerRight: () => <MessagesIcon />,
+            // headerBackground: () =>  (<LinearGradient
+            //     colors={['rgba(69,117, 191, 1)', 'rgba(0, 61, 122, 1)']}
+            //     style={{ flex: 1 }}
+            //
+            // />),
+            // headerTitle: ""
         }}
       />
       <Stack.Screen
@@ -55,6 +63,13 @@ export default function Orientation() {
                 headerShown: false,
             }}
         />
+        <Stack.Screen
+            name={"Leaderboard"}
+            component={LeaderBoard}
+            options={{
+                headerShown: false,
+            }}
+        />
 
 
 
@@ -62,3 +77,4 @@ export default function Orientation() {
     </Stack.Navigator>
   );
 }
+

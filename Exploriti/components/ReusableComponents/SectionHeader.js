@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         alignItems: 'center',
         backgroundColor: colours.white,
-        marginHorizontal: 25
+        paddingHorizontal: 25
     },
     title: {
         ...FontSizes.Label,

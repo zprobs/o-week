@@ -19,15 +19,8 @@ const HorizontalUserCard = ({id, name, image, isLeader }) => {
 const styles = StyleSheet.create({
    container: {
        backgroundColor: colours.base,
-       borderRadius: 20,
-       shadowRadius: 3,
-       shadowColor: '#000',
-       shadowOffset: {
-           width: 2,
-           height: 2
-       },
        alignItems: 'center',
-       marginHorizontal: 10
+       marginHorizontal: 10,
    },
     image: {
        backgroundColor: colours.placeholder,
@@ -41,23 +34,6 @@ const styles = StyleSheet.create({
         ...FontWeights.Bold,
         color: colours.text02
     },
-    leaderView: {
-       backgroundColor: 'red',
-        borderRadius: 11,
-        height: 22,
-        justifyContent: 'center',
-        paddingHorizontal: 10,
-        marginVertical: 7
-    },
-    leaderText: {
-       ...FontWeights.Bold,
-        ...FontSizes.SubText,
-        color: colours.white
-    },
-    locationText: {
-       ...FontSizes.SubText,
-        ...FontWeights.Regular,
-    }
 });
 
 export default HorizontalUserCard;

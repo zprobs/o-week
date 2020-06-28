@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Dimensions, Text} from 'react-native';
+import {StyleSheet, View, Dimensions, Text, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Fonts from '../../theme/Fonts';
 import {Theme} from '../../theme/Colours';
@@ -10,12 +10,14 @@ const {colours} = Theme.light;
 const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
 
-const RankCard = ({style}) => {
+const RankCard = ({style, onPress, rank}) => {
     return (
-        <LinearGradient colors={['rgb(247, 190, 100)', 'rgb(244, 166, 4)']} style={[styles.container, style]}>
+        <TouchableOpacity onPress={onPress} style={style}>
+
+        <LinearGradient colors={['rgb(247, 190, 100)', 'rgb(244, 166, 4)']} style={styles.container}>
             <View style={styles.ring} />
             <View style={styles.row}>
-                <Text style={styles.place}>3rd</Text>
+                <Text style={styles.place}>{rank}</Text>
                 <View style={{flexDirection: 'row'}}>
                     <View style={{marginRight: 22}}>
                         <Text style={styles.label}>Team Tag</Text>
@@ -32,6 +34,7 @@ const RankCard = ({style}) => {
                 <Icon name={'chevron-right'} color={colours.white} size={16}/>
             </View>
         </LinearGradient>
+        </TouchableOpacity>
     );
 }
 
@@ -49,8 +52,9 @@ const styles = StyleSheet.create({
         height: '130%',
         width: '70%',
         borderRadius: WIDTH*0.7 ,
-        borderWidth: 30,
-        borderColor: colours.white
+        borderWidth: 18,
+        borderColor: colours.white,
+        borderStyle: 'solid'
     },
     row: {
         flexDirection: 'row',

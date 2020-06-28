@@ -77,9 +77,11 @@ export default function Profile({ route }) {
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
     const friends = data.friends;
+    console.log('friends', friends)
 
     const friendsIds = [];
-    friends.map((item)=>friendsIds.push(item.friendId));
+    friends.map((item)=>friendsIds.push(item.id));
+    console.log('friendsID', friendsIds)
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -255,9 +257,9 @@ const UserInteractions = ({userId}) => {
 
     const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(REMOVE_FRIEND, {
         variables: {userId: authState.user.uid, friendId: userId},
-        update: (cache, { data: { addTodo } }) => {
+        update: (cache ) => {
             const { friends } = cache.readQuery({ query: GET_USER_FRIENDS, variables: {userId: authState.user.uid} });
-            const newFriends = friends.filter( (element) => element.friendId !== userId && element.userId !== authState.user.uid)
+            const newFriends = friends.filter( (element) => element.id !== userId )
             console.log("DELETING FRIENDS");
             console.log(friends);
             console.log(newFriends);
@@ -278,8 +280,8 @@ const UserInteractions = ({userId}) => {
           variables: { userId: authState.user.uid },
         });
         const newFriend = {
-          __typename: "friend",
-          friendId: userId,
+          __typename: "friendView",
+          id: userId,
           userId: authState.user.uid,
         };
         cache.writeQuery({
@@ -310,7 +312,7 @@ const UserInteractions = ({userId}) => {
         const isFriend = friendsData.friends.some((user)=> {
             console.log(user);
             console.log(userId);
-            return user.friendId === userId;
+            return user.id === userId;
         });
         console.log('isFriend', isFriend)
         if (isFriend) {

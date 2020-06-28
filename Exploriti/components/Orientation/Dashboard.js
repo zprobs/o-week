@@ -38,19 +38,11 @@ export default function Dashboard() {
     const listData = useMemo(() => [
         {
             title: "Groups",
-            data: [{title: "Orientation Crew", img: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg", count: 13}, {title: 'Sports Trivia', img: "https://www.tronsmart.com/img/cms/Blog/10%20celebration%20-%20football/9%20.jpg", count: 9 }]
-        },
-        {
-            title: "Orientation Groups",
-            data: ["GROUP A", "GROUP B", "GROUP C"]
-        },
-        {
-            title: "Other Groups",
-            data: ["GROUP A", "GROUP B", "GROUP C"]
+            data: [{title: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", count: 13}, {title: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", count: 9 }]
         },
         {
             title: "Events",
-            data: ["EVENT A", "EVENT B"]
+            data: [{title: "Registration", count: 56, image: "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg"}, {title: "Welcome Fest", count: 7, image: "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170"}, {title: "Scavenger Hunt", count: 14, image: "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg" }, {title: "Taking Care of Business", count: 4, image: "https://www.metromba.com/wp-content/uploads/2015/09/Rotman-Sept-2012-41-Smaller-e1443470483451-300x150.jpg"  } ]
         }
     ],[]);
 
@@ -102,11 +94,18 @@ export default function Dashboard() {
     };
 
     const renderItem = React.useCallback(({ item, section }) => {
+        let screen, options;
         if (section.title === "Groups") {
+            screen = "GroupScreen"
+            options = {group: item}
+        } else {
+            screen = "EventScreen"
+            options = {event: item}
+        }
             return (
-                <TouchableOpacity onPress={() => navigation.navigate("GroupScreen")}>
+                <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
                     <View style={styles.imageRow}>
-                        <Image source={{ uri: item.img }} style={styles.groupImage} />
+                        <Image source={{ uri: item.image }} style={styles.groupImage} />
                             <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']} locations={[0, 0.9]} style={styles.imageLabelContainer}>
                                 <UserCountPreview count={item.count} />
                                 <Text style={styles.imageLabelText}>{item.title}</Text>
@@ -114,8 +113,6 @@ export default function Dashboard() {
                     </View>
                 </TouchableOpacity>
             );
-        }
-        return <Item title={item} />;
     }, [navigation]);
 
 
@@ -134,11 +131,7 @@ export default function Dashboard() {
     );
 }
 
-const Item = ({ title }) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>{title}</Text>
-    </View>
-);
+
 
 
 
@@ -201,8 +194,6 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
         paddingBottom: 8
-
-
     },
     imageLabelText: {
        ...FontWeights.Bold,
@@ -222,6 +213,7 @@ const styles = StyleSheet.create({
         borderRadius: 33,
         marginHorizontal: 8,
         backgroundColor: colours.placeholder
-    }
+    },
+
 
 });
