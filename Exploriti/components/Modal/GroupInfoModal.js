@@ -79,7 +79,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
             </View>
           </View>
         <Text style={styles.sectionText}>Leaderboard</Text>
-        <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"}/>
+        <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"} gold={true}/>
         <Text style={styles.sectionText}>Description</Text>
         <Text style={styles.descriptionText}>{"Welcome to the best frosh group at UofT, hosted on the best online orientation platform at UofT! This app is so great you can view your leaderboard score as you compete with the other groups for points. Maybe there will be a prize for the top 3 teams or something! People earn points for thier leaders by completing games and quizes perhaps a scavenger hunt or two organized by the lovely staff at Orientation. Thank you!" }
         </Text>

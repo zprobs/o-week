@@ -25,7 +25,7 @@ const LeaderBoard = () => {
 }
 
 const renderItem = ({item}) => (
-    <RankCard rank={item} style={styles.rankCard} key={item}/>
+    <RankCard rank={item} style={styles.rankCard} key={item} gold={item==="3rd"}/>
 )
 
 const places = ["1st", "2nd", "3rd", "4th", "5th"]

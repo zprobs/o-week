@@ -10,35 +10,56 @@ const {colours} = Theme.light;
 const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
 
-const RankCard = ({style, onPress, rank}) => {
+const RankCard = ({style, onPress, rank, gold}) => {
+
+
+
+    const Content = ()=> (
+      <>
+        <View style={styles(gold).ring} />
+        <View style={styles(gold).row}>
+          <Text style={styles(gold).place}>{rank}</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ marginRight: 22 }}>
+              <Text style={styles(gold).label}>Team Tag</Text>
+              <Text style={styles(gold).text}>Broncos</Text>
+            </View>
+            <View>
+              <Text style={styles(gold).label}>Points</Text>
+              <Text style={styles(gold).text}>27, 098</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles(gold).moreInfo}>
+          <Text style={styles(gold).moreInfoText}>MORE INFO</Text>
+          <Icon
+            name={'chevron-right'}
+            color={gold ? colours.white : '#000'}
+            size={16}
+          />
+        </View>
+      </>
+    );
+
     return (
         <TouchableOpacity onPress={onPress} style={style}>
+            {
+                gold ? (
+                    <LinearGradient colors={['rgb(247, 190, 100)', 'rgb(244, 166, 4)']} style={styles(gold).container}>
+                        <Content/>
+                    </LinearGradient>
+                ) : (
+                    <View style={{...styles().container, backgroundColor: 'white'}}>
+                        <Content/>
+                    </View>
+                )
+            }
 
-        <LinearGradient colors={['rgb(247, 190, 100)', 'rgb(244, 166, 4)']} style={styles.container}>
-            <View style={styles.ring} />
-            <View style={styles.row}>
-                <Text style={styles.place}>{rank}</Text>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{marginRight: 22}}>
-                        <Text style={styles.label}>Team Tag</Text>
-                        <Text style={styles.text}>Broncos</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.label}>Points</Text>
-                        <Text style={styles.text}>27, 098</Text>
-                    </View>
-                </View>
-            </View>
-            <View style={styles.moreInfo}>
-                <Text style={styles.moreInfoText}>MORE INFO</Text>
-                <Icon name={'chevron-right'} color={colours.white} size={16}/>
-            </View>
-        </LinearGradient>
         </TouchableOpacity>
     );
 }
 
-const styles = StyleSheet.create({
+const styles = (gold) => StyleSheet.create({
     container: {
         borderRadius: 15,
         overflow: 'hidden',
@@ -53,7 +74,7 @@ const styles = StyleSheet.create({
         width: '70%',
         borderRadius: WIDTH*0.7 ,
         borderWidth: 18,
-        borderColor: colours.white,
+        borderColor: gold ? colours.white : '#000',
         borderStyle: 'solid'
     },
     row: {
@@ -65,18 +86,18 @@ const styles = StyleSheet.create({
     place: {
         ...FontSizes.SuperHeading,
         ...FontWeights.Bold,
-        color: colours.white,
+        color: gold ? colours.white : '#000',
     },
     label: {
         ...FontWeights.Bold,
         ...FontSizes.Body,
-        color: colours.white,
+        color: gold ? colours.white : '#000',
         opacity: 0.7
     },
     text: {
         ...FontSizes.Label,
         ...FontWeights.Bold,
-        color: colours.white,
+        color: gold ? colours.white : '#000',
 
     },
     moreInfo: {
@@ -89,7 +110,7 @@ const styles = StyleSheet.create({
     moreInfoText: {
         ...FontWeights.Bold,
         ...FontSizes.Caption,
-        color: colours.white,
+        color: gold ? colours.white : '#000',
         marginHorizontal: 12
     }
 
