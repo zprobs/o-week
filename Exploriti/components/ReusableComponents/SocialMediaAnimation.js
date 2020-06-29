@@ -1177,7 +1177,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         position: 'absolute',
         // Has to set color for elevation
-        backgroundColor: 'white',
+        backgroundColor: colours.placeholder,
          elevation: 6,
     },
 

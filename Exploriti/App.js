@@ -38,9 +38,85 @@ import Error from "./components/ReusableComponents/Error";
 import { GET_CURRENT_USER } from "./graphql";
 import Messages from "./components/Messages";
 import Notifications from "./components/Notifications";
+import AnimatedTabBar, {TabsConfig, BubbleTabConfig} from '@gorhom/animated-tabbar';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+
+const Star = ({color}) => (
+    <Icon name="star"  size={30} />
+);
+const Search = () => (
+    <Icon name="search"  size={30} />
+);
+const Bell = () => (
+    <Icon name="bell"  size={30} />
+);
+const Profile = () => (
+    <Icon name="user"  size={30} />
+);
+
+const tabs: TabsConfig<BubbleTabConfig> = {
+  Orientation: {
+    labelStyle: {
+      color: '#5B37B7',
+    },
+    icon: {
+      component: Star,
+      activeColor: 'rgba(91,55,183,1)',
+      inactiveColor: 'rgba(0,0,0,1)',
+    },
+    background: {
+      activeColor: 'rgba(223,215,243,1)',
+      inactiveColor: 'rgba(223,215,243,0)',
+    },
+  },
+  Explore: {
+    labelStyle: {
+      color: '#5B37B7',
+    },
+    icon: {
+      component: Search,
+      activeColor: 'rgba(91,55,183,1)',
+      inactiveColor: 'rgba(0,0,0,1)',
+    },
+    background: {
+      activeColor: 'rgba(223,215,243,1)',
+      inactiveColor: 'rgba(223,215,243,0)',
+    },
+  },
+  Notifications: {
+    labelStyle: {
+      color: '#5B37B7',
+    },
+    icon: {
+      component: Bell,
+      activeColor: 'rgba(91,55,183,1)',
+      inactiveColor: 'rgba(0,0,0,1)',
+    },
+    background: {
+      activeColor: 'rgba(223,215,243,1)',
+      inactiveColor: 'rgba(223,215,243,0)',
+    },
+  },
+
+  MyProfile: {
+    labelStyle: {
+      color: '#5B37B7',
+    },
+    icon: {
+      component: Profile,
+      activeColor: 'rgba(17,148,170,1)',
+      inactiveColor: 'rgba(0,0,0,1)',
+    },
+    background: {
+      activeColor: 'rgba(223,215,243,1)',
+      inactiveColor: 'rgba(223,215,243,0)',
+    },
+  },
+};
 
 const AuthStack = () => {
   return (
@@ -86,47 +162,34 @@ const MainStack = () => {
 };
 
 const HomeScreen = () => {
+
+
+
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+        tabBar={props => (
+            <AnimatedTabBar tabs={tabs} {...props} />
+        )}
+    >
       <Tab.Screen
         name="Orientation"
         component={Orientation}
-        options={{
-          tabBarLabel: "Orientation",
-          tabBarIcon: ({ color }) => (
-            <Icon name="star" color={color} size={30} />
-          ),
-        }}
+
       />
       <Tab.Screen
         name="Explore"
         component={Explore}
-        options={{
-          tabBarLabel: "Explore",
-          tabBarIcon: ({ color }) => (
-            <Icon name="search" color={color} size={30} />
-          ),
-        }}
+
       />
       <Tab.Screen
         name="Notifications"
         component={Notifications}
-        options={{
-          tabBarLabel: "Notifications",
-          tabBarIcon: ({ color }) => (
-            <Icon name="bell" color={color} size={30} />
-          ),
-        }}
+
       />
       <Tab.Screen
         name="MyProfile"
         component={MyProfile}
-        options={{
-          tabBarLabel: "MyProfile",
-          tabBarIcon: ({ color }) => (
-            <Icon name="user" color={color} size={30} />
-          ),
-        }}
+
       />
     </Tab.Navigator>
   );

@@ -3,9 +3,12 @@ import {StyleSheet, Text, Dimensions, View, TouchableOpacity} from 'react-native
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
-import DetailedUserList from '../ReusableComponents/DetailedUserList';
+import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
-import Animated from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/Feather';
+import RankCard from '../Orientation/RankCard';
+import {Event, DATA} from '../Orientation/Schedule';
+import {useNavigation} from '@react-navigation/native';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -15,29 +18,33 @@ const WIDTH = Dimensions.get('window').width;
 
 const GroupInfoModal = React.forwardRef(({group}, ref) => {
 
+  const navigation = useNavigation();
+
   const Tabs = () => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
       { key: 'first', title: 'Overview' },
-      { key: 'second', title: 'Second' },
+      { key: 'second', title: 'Members' },
+      { key: 'third', title: 'Events' },
     ]);
 
     const renderScene = SceneMap({
       first: Overview,
-      second: SecondRoute,
+      second: Members,
+      third: Events
     });
 
     const renderTabBar = (props) => {
       return <TabBar
           {...props}
-          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '25%', marginHorizontal: WIDTH*0.125 }}
+          indicatorStyle={{ backgroundColor: ThemeStatic.gold, width: '16.66%', marginLeft: WIDTH*0.083 }}
           style={styles.tabBar}
           renderLabel={({ route, focused, color }) => (
               <Text style={{ ...styles.tabText, color:  color }}>
                 {route.title}
               </Text>
               )}
-          activeColor={ThemeStatic.delete}
+          activeColor={ThemeStatic.gold}
           inactiveColor={colours.text03}
       />
     }
@@ -57,26 +64,58 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
 
     const Overview = () => (
       <>
-        <Text style={styles.sectionText}>LeaderBoard</Text>
-        <View style={styles.leaderBoardView}>
-          <View style={styles.pointsView}>
-            <Text style={styles.pointsText}>21,975 Points!</Text>
-            <Text style={styles.placeText}>3rd Place</Text>
-          </View>
-          <View style={styles.trophyView}>
-            <View style={styles.seeTrophiesView}>
-              <Text style={styles.seeTrophiesText}>SEE MEDALS</Text>
+          <View style={styles.contactContainer}>
+            <View style={styles.contactView}>
+              <Icon name={'phone'} size={18} style={styles.contactIcon} />
+              <Text style={styles.contactText}>Call</Text>
+            </View>
+            <View style={styles.contactView}>
+              <Icon name={'video'} size={18} style={styles.contactIcon}/>
+              <Text style={styles.contactText}>Video</Text>
+            </View>
+            <View style={styles.contactView}>
+              <Icon name={'message-square'} size={18} style={styles.contactIcon}/>
+              <Text style={styles.contactText}>Chat</Text>
             </View>
           </View>
-        </View>
-        <Text style={styles.sectionText}>Members</Text>
-        <DetailedUserList data={tempData} style={styles.detailedUserList} />
+        <Text style={styles.sectionText}>Leaderboard</Text>
+        <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"} gold={true}/>
+        <Text style={styles.sectionText}>Description</Text>
+        <Text style={styles.descriptionText}>{"Welcome to the best frosh group at UofT, hosted on the best online orientation platform at UofT! This app is so great you can view your leaderboard score as you compete with the other groups for points. Maybe there will be a prize for the top 3 teams or something! People earn points for thier leaders by completing games and quizes perhaps a scavenger hunt or two organized by the lovely staff at Orientation. Thank you!" }
+        </Text>
+
       </>
     );
 
-  const SecondRoute = () => (
-      <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-  );
+    const Members = () => (
+        <>
+          <Text style={styles.sectionText}>Leaders</Text>
+          <HorizontalUserList data={tempData} style={{marginTop: 10}}/>
+          <Text style={styles.sectionText}>Members</Text>
+          <HorizontalUserList data={tempData} style={{marginTop: 10}}/>
+        </>
+    );
+
+    const Events = () => {
+        const [day, setDay] = useState(0);
+        return (
+            <>
+              <View style={styles.scheduleDayContainer}>
+                <Text style={styles.scheduleDay}>Today</Text>
+                <Icon name={'chevron-down'} color={colours.text03} size={16}/>
+              </View>
+              <View style={styles.eventContainer}>
+                {
+                  DATA[day].events.map((event) => {
+                    return <Event time={event.time} title={event.title} style={{width: '100%'}} image={event.image} key={event.time + event.title + day}/>
+                  })
+                }
+              </View>
+            </>
+        );
+
+    }
+
 
 
 
@@ -88,7 +127,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
           showsVerticalScrollIndicator: false,
           bounces: false,
         }}
-        alwaysOpen={HEIGHT * 0.5}
+        alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
@@ -102,52 +141,35 @@ const styles = StyleSheet.create({
   sectionText: {
     ...FontSizes.Label,
     ...FontWeights.Bold,
-    color: colours.text01,
+    color: colours.text03,
     marginTop: 20,
       marginHorizontal: 20,
   },
-  leaderBoardView: {
+  contactContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 25,
+    marginTop: 20
+
+  },
+  contactView: {
     backgroundColor: colours.placeholder,
-    flexDirection: "row",
-    justifyContent: "space-around",
-      alignItems: 'center',
-    width: "100%",
-     paddingVertical: 24,
-      marginVertical: 20,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    flexDirection: 'row'
   },
-  pointsView: {
-    justifyContent: "center",
+  contactText: {
+    ...FontWeights.Regular,
+    ...FontSizes.Body,
+    color: colours.text03,
+    marginRight: 20
   },
-    pointsText : {
-      ...FontSizes.SubHeading,
-        ...FontWeights.Bold,
-
-    },
-    placeText: {
-      ...FontWeights.Bold,
-        ...FontSizes.Caption,
-        color: colours.text03
-
-    },
-  trophyView: {
-      justifyContent: "center"
+  contactIcon: {
+    paddingHorizontal: 15
   },
-    seeTrophiesView: {
-      backgroundColor: colours.text03,
-        height: 28,
-        borderRadius: 14,
-        justifyContent: 'center',
-        paddingHorizontal: 8
 
-    },
-    seeTrophiesText: {
-      ...FontWeights.Bold,
-        ...FontSizes.Caption,
-        color: colours.white
-    },
-    detailedUserList: {
-      marginTop: 15
-    },
+
   tabBar: {
     backgroundColor: colours.base,
     marginTop: 10,
@@ -166,6 +188,33 @@ const styles = StyleSheet.create({
   tabText: {
     ...FontSizes.Body,
     ...FontWeights.Bold
+  },
+  descriptionText: {
+    ...FontSizes.Body,
+    ...FontWeights.Regular,
+    color: colours.text03,
+    lineHeight: 22,
+    marginTop: 15,
+    marginHorizontal: 25,
+    letterSpacing: 0.87
+  },
+  scheduleDay: {
+    ...FontSizes.Body,
+    ...FontWeights.Bold,
+    color: colours.text03,
+    marginRight: 5
+  },
+  scheduleDayContainer: {
+    flexDirection: 'row',
+    marginTop: 30,
+    marginLeft: 35,
+    alignItems: 'center'
+  },
+  eventContainer: {
+    paddingHorizontal: 25,
+    marginTop: 30,
+    alignItems: 'center'
+
   }
 
 });

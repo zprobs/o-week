@@ -28,14 +28,14 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = 0.75 * WIDTH
 
-const Event = ({image, title, time}) => {
+ export const Event = ({image, title, time, style}) => {
 
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(false);
 
     return (
-      <View style={styles.event}>
+      <View style={{...styles.event, ...style}}>
         <View>
           <View style={{ flexDirection: "row" }}>
             <Image style={styles.eventImage} source={{ uri: image }} />
@@ -52,7 +52,7 @@ const Event = ({image, title, time}) => {
             </Text>
             <View style={styles.detailsView}>
               <UserCountPreview style={{marginLeft: 20}} count={8} />
-              <TouchableOpacity style={styles.detailsButton} onPress={()=>navigation.push('EventScreen')}>
+              <TouchableOpacity style={styles.detailsButton} onPress={()=>navigation.push('EventScreen', {event: {image: image, title: title, time: time}})}>
                 <Text style={styles.detailsText}>Details</Text>
               </TouchableOpacity>
             </View>
@@ -232,7 +232,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginVertical: 12,
-        maxWidth: ITEM_WIDTH
+        maxWidth: ITEM_WIDTH,
+        shadowRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 0
+        },
+        shadowOpacity: 0.2,
+        paddingVertical: 5
     },
     eventImage: {
        height: 54,
@@ -288,39 +296,35 @@ const styles = StyleSheet.create({
 
 export default Schedule;
 
-const DATA = [
+export const DATA = [
     {
         events: [
             {
                 title: "Registration",
                 image:
                     "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
-                time: "3:00pm",
+                time: "9:00am",
             },
             {
                 title: "Welcome Fest",
                 image:
                     "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
-                time: "5:30pm",
+                time: "11:30am",
+            },
+            {
+                title: "Taking Care of Business",
+                image:
+                    "https://www.metromba.com/wp-content/uploads/2015/09/Rotman-Sept-2012-41-Smaller-e1443470483451-300x150.jpg",
+                time: "3:00pm",
             },
             {
                 title: "Scavenger Hunt",
                 image:
                     "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
-                time: "1:00pm",
+                time: "5:00pm",
             },
-            {
-                title: "Event",
-                image:
-                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
-                time: "2:30pm",
-            },
-            {
-                title: "End",
-                image:
-                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
-                time: "3:00pm",
-            },
+
+
 
         ],
     },
@@ -328,22 +332,6 @@ const DATA = [
         events: [
             {
                 title: "Scavenger Hunt",
-                image:
-                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
-                time: "1:00pm",
-            },
-            {
-                title: "Event",
-                image:
-                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
-                time: "2:30pm",
-            },
-        ],
-    },
-    {
-        events: [
-            {
-                title: "Scavenger Hunt part 2",
                 image:
                     "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
                 time: "1:00pm",
@@ -366,6 +354,23 @@ const DATA = [
                     "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
                 time: "2:30pm",
             },
+        ],
+    },
+    {
+        events: [
+            {
+                title: "Scavenger Hunt part 2",
+                image:
+                    "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg",
+                time: "1:00pm",
+            },
+            {
+                title: "Event",
+                image:
+                    "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170",
+                time: "2:30pm",
+            },
+
         ],
     },
 ];

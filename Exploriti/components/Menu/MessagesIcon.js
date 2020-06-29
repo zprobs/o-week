@@ -15,6 +15,7 @@ export const MessagesIcon = () => {
       size={38}
       color="#000"
       onPress={() => navigation.navigate("Messages")}
+      style={{marginRight: 8}}
     />
   );
 };

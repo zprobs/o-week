@@ -142,6 +142,16 @@ export const GET_ALL_USERS = gql`
   }
 `;
 
+export const GET_USERS_WHERE = gql`
+    query getUsersWhere($_nin: [String!]!, $limit: Int = 7) {
+        users(where: {id: {_nin: $_nin}}, limit: $limit) {
+            id
+            image
+            name
+        }
+    }
+`;
+
 export const GET_PAGINATED_USERS = gql`
   query GET_PAGINATED_USERS($limit: Int!) {
     users(limit: $limit) {

@@ -4,6 +4,8 @@ import { DrawerIcon } from "../Menu/DrawerIcon";
 import { MessagesIcon } from '../Menu/MessagesIcon';
 import Search from './Search';
 import Profile from '../MyProfile/Profile';
+import GroupScreen from '../Orientation/GroupScreen';
+import EventScreen from '../Orientation/EventScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +28,8 @@ export default function Explore() {
         options={{
           headerLeft: () => <DrawerIcon />,
           headerRight: () => <MessagesIcon />,
+            headerTitle: "",
+            headerStyle: {shadowColor: 'transparent'},
         }}
       />
       <Stack.Screen
@@ -35,6 +39,21 @@ export default function Explore() {
           headerShown: false,
         }}
       />
+        <Stack.Screen
+            name="GroupScreen"
+            component={GroupScreen}
+            options={{
+                headerShown: false,
+            }}
+        />
+        <Stack.Screen
+            name="EventScreen"
+            component={EventScreen}
+            options={{
+                headerShown: false,
+            }}
+        />
+
     </Stack.Navigator>
   );
 }

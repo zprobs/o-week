@@ -10,17 +10,18 @@ const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
 const HEIGHT = Dimensions.get('window').height;
 
-const EventScreen = () => {
+const EventScreen = ({route}) => {
 
     const modalRef = useRef();
+    const {event} = route.params;
 
     return (
       <View style={styles.container}>
-        <ImageBackground source={{uri: "https://www.metromba.com/wp-content/uploads/2015/09/Rotman-Sept-2012-41-Smaller-e1443470483451-300x150.jpg"}} style={styles.backgroundImage}>
+        <ImageBackground source={{uri: event.image}} style={styles.backgroundImage}>
             <View style={styles.header}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>Taking Care of Business</Text>
+                    <Text style={styles.title}>{event.title}</Text>
                     <Text style={styles.date}>Today</Text>
                 </LinearGradient>
             </View>

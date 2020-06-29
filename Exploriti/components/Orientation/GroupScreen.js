@@ -10,17 +10,18 @@ const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
 const HEIGHT = Dimensions.get('window').height;
 
-const GroupScreen = () => {
+const GroupScreen = ({route}) => {
 
     const modalRef = useRef();
+    const {group} = route.params
 
     return (
       <View style={styles.container}>
-        <ImageBackground source={{uri: "https://www.mcgill.ca/firstyear/files/firstyear/frosh_2019.jpg"}} style={styles.backgroundImage}>
+        <ImageBackground source={{uri: group.image}} style={styles.backgroundImage}>
             <View style={styles.header}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>Orientation Crew</Text>
+                    <Text style={styles.title}>{group.title}</Text>
                 </LinearGradient>
             </View>
         </ImageBackground>

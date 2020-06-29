@@ -3,13 +3,13 @@ import {StyleSheet, Text, Dimensions, View, TouchableOpacity, Image, Linking} fr
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
-import DetailedUserList from '../ReusableComponents/DetailedUserList';
+import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import Animated from 'react-native-reanimated';
 import RSVPButton from '../ReusableComponents/RSVPButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EvilIcon from 'react-native-vector-icons/EvilIcons'
-import DetailedUserCard from '../ReusableComponents/DetailedUserCard';
+import HorizontalUserCard from '../ReusableComponents/HorizontalUserCard';
 import {linkError} from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
@@ -23,7 +23,7 @@ const WIDTH = Dimensions.get('window').width;
 const EventInfoModal = React.forwardRef(({group}, ref) => {
 
   const Tabs = () => {
-    const [index, setIndex] = useState(3);
+    const [index, setIndex] = useState(0);
     const [routes] = useState([
       { key: 'first', title: 'Details' },
       { key: 'second', title: 'Guest List' },
@@ -39,14 +39,14 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
     const renderTabBar = (props) => {
       return <TabBar
           {...props}
-          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '16.66%', marginLeft: WIDTH*0.083 }}
+          indicatorStyle={{ backgroundColor: ThemeStatic.gold, width: '16.66%', marginLeft: WIDTH*0.083 }}
           style={styles.tabBar}
           renderLabel={({ route, focused, color }) => (
               <Text style={{ ...styles.tabText, color:  color }}>
                 {route.title}
               </Text>
               )}
-          activeColor={ThemeStatic.delete}
+          activeColor={ThemeStatic.gold}
           inactiveColor={colours.text03}
       />
     }
@@ -99,9 +99,9 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
     <>
     <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true}/>
       <Text style={styles.sectionText}>Going</Text>
-      <DetailedUserList data={going} />
+      <HorizontalUserList data={going} style={{marginBottom: 15}} />
       <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-      <DetailedUserList data={going} />
+      <HorizontalUserList data={going} />
 
     </>
   )
@@ -155,7 +155,7 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
           showsVerticalScrollIndicator: false,
           bounces: false,
         }}
-        alwaysOpen={HEIGHT * 0.5}
+        alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginTop: 15,
     marginHorizontal: 12,
+    letterSpacing: 0.87
   },
   rsvp: {
     alignSelf: "center",
