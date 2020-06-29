@@ -7,10 +7,10 @@ import {
   Dimensions,
 } from "react-native";
 import { Modalize } from "react-native-modalize";
-import { Theme } from "../../theme/Colours";
+import { Theme , ThemeStatic } from "../../theme/Colours";
 import ModalHeader from "../Modal/ModalHeader";
 import Icon from "react-native-vector-icons/EvilIcons";
-import { ThemeStatic } from "../../theme/Colours";
+
 import FormInput from "../ReusableComponents/FormInput";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import Selection from "../ReusableComponents/Selection";
@@ -51,7 +51,7 @@ const EditProfileBottomModal = React.forwardRef(
       GET_USER_INTERESTS,
       { variables: { id: authState.user.uid } },
     );
-    const [editableImage, setEditableImage] = useState("");
+    const [editableImage, setEditableImage] = useState(image);
     const [editableName, setEditableName] = useState(name);
     const [editableYear, setEditableYear] = useState(year);
     const [editablePrograms, setEditablePrograms] = useState();
@@ -171,9 +171,7 @@ const EditProfileBottomModal = React.forwardRef(
             <View style={styles.content}>
               <ImageBackground
                 source={{
-                  uri: editableImage
-                    ? editableImage
-                    : "https://reactjs.org/logo-og.png",
+                  uri: editableImage || "https://reactjs.org/logo-og.png",
                 }}
                 style={styles.image}
                 imageStyle={styles.avatarImage}>
@@ -307,7 +305,7 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignSelf: "center",
       backgroundColor: colours.accent,
-      opacity: 0.8,
+      opacity: 0.5,
     },
     doneButton: {
       marginVertical: 20,
