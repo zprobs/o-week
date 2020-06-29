@@ -1,26 +1,22 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef } from 'react';
 import {
   View,
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-} from "react-native";
-import { Modalize } from "react-native-modalize";
-import { Theme , ThemeStatic } from "../../theme/Colours";
-import ModalHeader from "../Modal/ModalHeader";
-import Icon from "react-native-vector-icons/EvilIcons";
+} from 'react-native';
+import { Modalize } from 'react-native-modalize';
+import { Theme, ThemeStatic } from '../../theme/Colours';
+import ModalHeader from '../Modal/ModalHeader';
+import Icon from 'react-native-vector-icons/EvilIcons';
 
-import FormInput from "../ReusableComponents/FormInput";
-import ButtonColour from "../ReusableComponents/ButtonColour";
-import Selection from "../ReusableComponents/Selection";
-import RadioButtonFlatList from "../Modal/RadioButtonFlatList";
-import {
-  yearsData,
-  AuthContext,
-  yearToInt,
-} from "../../context";
-import SearchableFlatList from "../Modal/SearchableFlatList";
+import FormInput from '../ReusableComponents/FormInput';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import Selection from '../ReusableComponents/Selection';
+import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
+import { yearsData, AuthContext, yearToInt } from '../../context';
+import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
   GET_PROGRAMS,
@@ -28,8 +24,8 @@ import {
   GET_USER_INTERESTS,
   UPDATE_USER_INTERESTS,
   UPDATE_USER_PROGRAMS,
-} from "../../graphql";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+} from '../../graphql';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 
 /**
  * Modal for editing the logged in users data
@@ -46,11 +42,13 @@ const EditProfileBottomModal = React.forwardRef(
     const [updateUser] = useMutation(UPDATE_USER);
     const [updateInterests] = useMutation(UPDATE_USER_INTERESTS);
     const [updatePrograms] = useMutation(UPDATE_USER_PROGRAMS);
-      // only call query when modal has been opened
-    const [getInterests, { called, loading, data, error }] = useLazyQuery(
-      GET_USER_INTERESTS,
-      { variables: { id: authState.user.uid } },
-    );
+    // only call query when modal has been opened
+    const [
+      getInterests,
+      { called, loading, data, error },
+    ] = useLazyQuery(GET_USER_INTERESTS, {
+      variables: { id: authState.user.uid },
+    });
     const [editableImage, setEditableImage] = useState(image);
     const [editableName, setEditableName] = useState(name);
     const [editableYear, setEditableYear] = useState(year);
@@ -70,20 +68,20 @@ const EditProfileBottomModal = React.forwardRef(
     const onInterestRef = () => interestRef.current.open();
 
     const programTitle = () => {
-      if (programsSelection) return editablePrograms.join(", ");
-      return "Change program";
+      if (programsSelection) return editablePrograms.join(', ');
+      return 'Change program';
     };
 
     const interestTitle = () => {
       if (!called || loading || error || !interestsSelection) {
-        return "Change Interests";
+        return 'Change Interests';
       }
-      return editableInterests.join(", ");
+      return editableInterests.join(', ');
     };
 
     const yearTitle = () => {
       if (editableYear === year) {
-        return "Change year";
+        return 'Change year';
       }
       return editableYear;
     };
@@ -91,7 +89,7 @@ const EditProfileBottomModal = React.forwardRef(
     const initialInterestSelection = () => {
       const map = new Map();
       if (data && !error && data.user && data.user.interests)
-        data.user.interests.map(item =>
+        data.user.interests.map((item) =>
           map.set(item.interest.id.toString(), true),
         );
       return map;
@@ -99,7 +97,7 @@ const EditProfileBottomModal = React.forwardRef(
 
     const initialProgramSelection = () => {
       const map = new Map();
-      programs.map(userProgram =>
+      programs.map((userProgram) =>
         map.set(userProgram.program.id.toString(), true),
       );
       return map;
@@ -116,7 +114,7 @@ const EditProfileBottomModal = React.forwardRef(
       }
       if (programsSelection) {
         const objects = [];
-        programsSelection.map(program =>
+        programsSelection.map((program) =>
           objects.push({
             userId: authState.user.uid,
             programId: parseInt(program),
@@ -124,11 +122,11 @@ const EditProfileBottomModal = React.forwardRef(
         );
         await updatePrograms({
           variables: { userId: authState.user.uid, objects: objects },
-        }).catch(e => console.log(e));
+        }).catch((e) => console.log(e));
       }
       if (interestsSelection) {
         const objects = [];
-        interestsSelection.map(interest =>
+        interestsSelection.map((interest) =>
           objects.push({
             userId: authState.user.uid,
             interestId: parseInt(interest),
@@ -136,7 +134,7 @@ const EditProfileBottomModal = React.forwardRef(
         );
         await updateInterests({
           variables: { userId: authState.user.uid, objects: objects },
-        }).catch(e => console.log(e));
+        }).catch((e) => console.log(e));
       }
 
       if (Object.keys(fields).length !== 0) {
@@ -147,7 +145,7 @@ const EditProfileBottomModal = React.forwardRef(
             setIsUploading(false);
             ref.current.close();
           })
-          .catch(e => console.log(e));
+          .catch((e) => console.log(e));
       } else {
         setIsUploading(false);
         ref.current.close();
@@ -171,14 +169,14 @@ const EditProfileBottomModal = React.forwardRef(
             <View style={styles.content}>
               <ImageBackground
                 source={{
-                  uri: editableImage || "https://reactjs.org/logo-og.png",
+                  uri: editableImage || 'https://reactjs.org/logo-og.png',
                 }}
                 style={styles.image}
                 imageStyle={styles.avatarImage}>
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={() => {
-                    console.log("change image");
+                    console.log('change image');
                   }}
                   style={styles.imageOverlay}>
                   <Icon name="pencil" size={26} color={ThemeStatic.white} />
@@ -235,42 +233,44 @@ const EditProfileBottomModal = React.forwardRef(
           </View>
           <RadioButtonFlatList
             ref={yearRef}
-            title={"year"}
+            title={'year'}
             data={yearsData}
             selectedData={editableYear}
             setData={setEditableYear}
           />
         </Modalize>
-        {// only render the SearchableFlatList once the modal has been opened and data has been received so that initialSelection does not have to change.
+        {
+          // only render the SearchableFlatList once the modal has been opened and data has been received so that initialSelection does not have to change.
 
-        data ? (
-          <>
-            <SearchableFlatList
-              ref={programRef}
-              title={"programs"}
-              query={called ? GET_PROGRAMS : undefined}
-              setData={setEditablePrograms}
-              data={called ? null : ["default"]}
-              setSelection={setProgramsSelection}
-              initialSelection={initialProgramSelection()}
-              aliased={false}
-              max={4}
-              offset={Dimensions.get("window").height * 0.3}
-            />
-            <SearchableFlatList
-              ref={interestRef}
-              title={"interests"}
-              query={called ? GET_INTERESTS : undefined}
-              data={called ? null : ["default"]}
-              setData={setEditableInterests}
-              setSelection={setInterestsSelection}
-              initialSelection={initialInterestSelection()}
-              aliased={true}
-              max={5}
-              offset={Dimensions.get("window").height * 0.3}
-            />
-          </>
-        ) : null}
+          data ? (
+            <>
+              <SearchableFlatList
+                ref={programRef}
+                title={'programs'}
+                query={called ? GET_PROGRAMS : undefined}
+                setData={setEditablePrograms}
+                data={called ? null : ['default']}
+                setSelection={setProgramsSelection}
+                initialSelection={initialProgramSelection()}
+                aliased={false}
+                max={4}
+                offset={Dimensions.get('window').height * 0.3}
+              />
+              <SearchableFlatList
+                ref={interestRef}
+                title={'interests'}
+                query={called ? GET_INTERESTS : undefined}
+                data={called ? null : ['default']}
+                setData={setEditableInterests}
+                setSelection={setInterestsSelection}
+                initialSelection={initialInterestSelection()}
+                aliased={true}
+                max={5}
+                offset={Dimensions.get('window').height * 0.3}
+              />
+            </>
+          ) : null
+        }
       </>
     );
   },
@@ -279,38 +279,36 @@ const EditProfileBottomModal = React.forwardRef(
 const { colours } = Theme.light;
 
 const styles = StyleSheet.create({
-    container: {
-      backgroundColor: colours.base,
-       // marginTop: 25
-    },
-    content: {
-      flex: 1,
-    },
-    image: {
-      alignSelf: "center",
-      height: 100,
-      width: 100,
-      marginTop: 20,
-    },
-    avatarImage: {
-      backgroundColor: colours.placeholder,
-      borderRadius: 100,
-    },
-    imageOverlay: {
-      position: "absolute",
-      height: 100,
-      width: 100,
-      borderRadius: 100,
-      alignItems: "center",
-      justifyContent: "center",
-      alignSelf: "center",
-      backgroundColor: colours.accent,
-      opacity: 0.5,
-    },
-    doneButton: {
-      marginVertical: 20,
-    },
-
-  });
+  container: {
+    backgroundColor: colours.base,
+  },
+  content: {
+    flex: 1,
+  },
+  image: {
+    alignSelf: 'center',
+    height: 100,
+    width: 100,
+    marginTop: 20,
+  },
+  avatarImage: {
+    backgroundColor: colours.placeholder,
+    borderRadius: 100,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    height: 100,
+    width: 100,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: colours.accent,
+    opacity: 0.5,
+  },
+  doneButton: {
+    marginVertical: 20,
+  },
+});
 
 export default EditProfileBottomModal;

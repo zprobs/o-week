@@ -1,6 +1,9 @@
-import { createStackNavigator,TransitionPresets,CardStyleInterpolators } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from '@react-navigation/stack';
 import React from 'react';
-import { DrawerIcon } from "../Menu/DrawerIcon";
+import { DrawerIcon } from '../Menu/DrawerIcon';
 import { MessagesIcon } from '../Menu/MessagesIcon';
 import Search from './Search';
 import Profile from '../MyProfile/Profile';
@@ -15,21 +18,22 @@ const Stack = createStackNavigator();
  * @constructor
  */
 export default function Explore() {
-
   return (
-    <Stack.Navigator initialRouteName="Search" screenOptions={{
-      gestureEnabled: true,
-      gestureDirection: "horizontal",
-      ...TransitionPresets.SlideFromRightIOS
-    }}>
+    <Stack.Navigator
+      initialRouteName="Search"
+      screenOptions={{
+        gestureEnabled: true,
+        gestureDirection: 'horizontal',
+        ...TransitionPresets.SlideFromRightIOS,
+      }}>
       <Stack.Screen
         name="Search"
         component={Search}
         options={{
           headerLeft: () => <DrawerIcon />,
           headerRight: () => <MessagesIcon />,
-            headerTitle: "",
-            headerStyle: {shadowColor: 'transparent'},
+          headerTitle: '',
+          headerStyle: { shadowColor: 'transparent' },
         }}
       />
       <Stack.Screen
@@ -39,21 +43,20 @@ export default function Explore() {
           headerShown: false,
         }}
       />
-        <Stack.Screen
-            name="GroupScreen"
-            component={GroupScreen}
-            options={{
-                headerShown: false,
-            }}
-        />
-        <Stack.Screen
-            name="EventScreen"
-            component={EventScreen}
-            options={{
-                headerShown: false,
-            }}
-        />
-
+      <Stack.Screen
+        name="GroupScreen"
+        component={GroupScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="EventScreen"
+        component={EventScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }

@@ -2,6 +2,13 @@ import React from 'react';
 import {FlatList} from 'react-native';
 import HorizontalUserCard from './HorizontalUserCard';
 
+/**
+ * List of HorizontalUserCard
+ * @param data
+ * @param style
+ * @returns {*}
+ * @constructor
+ */
 const HorizontalUserList = ({data, style}) => {
 
     const renderItem = ({item}) => {

@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-import Fonts from "../../theme/Fonts";
-import { Theme } from "../../theme/Colours";
-import { useNavigation } from "@react-navigation/native";
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import Fonts from '../../theme/Fonts';
+import { Theme } from '../../theme/Colours';
+import { useNavigation } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
 /**
  * For rendering a list item. Shows a user in a list, probably a modal.
- * @param userId
- * @param avatar
- * @param name
+ * @param userId {string}
+ * @param image {string}
+ * @param name {string}
  * @param onPress
  * @param style Additional style for the entire card
  * @constructor
@@ -20,8 +20,7 @@ const UserCard = ({ userId, image, name, onPress, style }) => {
   const navigation = useNavigation();
 
   const navigateToProfile = () => {
-    console.log("navigate to profile");
-    navigation.push("Profile", { userId: userId });
+    navigation.push('Profile', { userId: userId });
   };
 
   return (
@@ -39,9 +38,9 @@ const UserCard = ({ userId, image, name, onPress, style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     borderRadius: 5,
-    width: "100%",
+    width: '100%',
   },
   avatarImage: {
     height: 50,
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingLeft: 10,
   },
   nameText: {

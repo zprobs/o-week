@@ -20,7 +20,11 @@ const {colours} = Theme.light
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
-const EventInfoModal = React.forwardRef(({group}, ref) => {
+/**
+ * @param event
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
+ */
+const EventInfoModal = React.forwardRef(({event}, ref) => {
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -85,15 +89,12 @@ const EventInfoModal = React.forwardRef(({group}, ref) => {
             <Text style={styles.iconLabel}>321 Bloor St. East</Text>
           </View>
           <Text style={styles.sectionText}>Description</Text>
-          <Text style={styles.descriptionText}>Taking care of business is an importnant aspect of daily life, and this event will help show you how to fully embrace your conscientious self. We will have a workshop led by the famous Computer Scientist Zachary Probst who will be detailing his life of hard work and how that paid off for him very handsomly. The event is free so make sure to bring a friend or two! There will also be free snacks and refreshments for all courtesy of the Salman Shahid Machine Learning Foundation.  </Text>
+          <Text style={styles.descriptionText}>Taking care of business is an important aspect of daily life, and this event will help show you how to fully embrace your conscientious self. We will have a workshop led by the famous Computer Scientist Zachary Probst who will be detailing his life of hard work and how that paid off for him very handsomly. The event is free so make sure to bring a friend or two! There will also be free snacks and refreshments for all courtesy of the Salman Shahid Machine Learning Foundation.  </Text>
         </View>
         </>
 
     );
 
-  const SecondRoute = () => (
-      <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-  );
 
   const GuestList = () => (
     <>

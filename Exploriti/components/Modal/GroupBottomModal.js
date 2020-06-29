@@ -13,8 +13,8 @@ const window05 = window * 0.05;
 /**
  * List modal of groups
  * @param data What is shown in the Flatlist
- * @param type Type = Member when the component is rendering the groups that a user is a member of
- * @param name The name of the user if it is not currentUser
+ * @param type {string} Type = Member when the component is rendering the groups that a user is a member of
+ * @param name {string} The name of the user if it is not currentUser
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const GroupBottomModal = React.forwardRef(

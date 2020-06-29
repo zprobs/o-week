@@ -16,6 +16,10 @@ const {colours} = Theme.light
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
+/**
+ * @param group An object of a group
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
+ */
 const GroupInfoModal = React.forwardRef(({group}, ref) => {
 
   const navigation = useNavigation();

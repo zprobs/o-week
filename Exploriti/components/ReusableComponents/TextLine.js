@@ -10,11 +10,11 @@ const { colours } = Theme.light;
 /**
  * A custom Text Input with three possible states: 'emailAddress', 'name', and 'password'
  * @param style Any custom styles for the container
- * @param label The label which will appear above the icon to the left of the text input
+ * @param label {string} The label which will appear above the icon to the left of the text input
  * @param icon An icon which will appear to the left of the text input
- * @param placeholder
- * @param color The color of the text within the text input
- * @param type State of the TextInput either 'emailAddress', 'password' or 'name'
+ * @param placeholder {string}
+ * @param color {string} The color of the text within the text input
+ * @param type {string} State of the TextInput either 'emailAddress', 'password' or 'name'
  * @returns {*}
  * @constructor
  */

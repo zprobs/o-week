@@ -1,6 +1,13 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 
+/**
+ *
+ * @param image
+ * @param onPress
+ * @returns {*}
+ * @constructor
+ */
 const ChatHeaderImage = ({ image, onPress }) => (
     <TouchableOpacity style={styles.container} activeOpacity={0.90} onPress={onPress}>
         <Image source={{uri: image}} style={styles.avatarImage} />

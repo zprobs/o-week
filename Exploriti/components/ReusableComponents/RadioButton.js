@@ -1,8 +1,14 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { ThemeStatic } from "../../theme/Colours";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { ThemeStatic } from '../../theme/Colours';
 
-function RadioButton({ selected }) {
+/**
+ * RadioButton for the RadioButtonFlatList
+ * @param selected
+ * @returns {*}
+ * @constructor
+ */
+const RadioButton = ({ selected }) => {
   return (
     <View style={styles.radioButton}>
       {selected ? (
@@ -18,7 +24,7 @@ function RadioButton({ selected }) {
       ) : null}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   radioButton: {
@@ -27,8 +33,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: ThemeStatic.lightBlue,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     margin: 10,
   },
 });

@@ -9,8 +9,6 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from "@react-navigation/native";
-import UserCountPreview from '../ReusableComponents/UserCountPreview';
-import LinearGradient from 'react-native-linear-gradient';
 import ImageCard from '../ReusableComponents/ImageCard';
 
 

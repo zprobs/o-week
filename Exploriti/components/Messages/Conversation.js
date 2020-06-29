@@ -25,6 +25,11 @@ import {
 
 const { colours } = Theme.light;
 
+/**
+ * Screen for showing a GiftedChat component and messaging users
+ * @returns {*}
+ * @constructor
+ */
 const Conversation = () => {
   const route = useRoute();
   const {

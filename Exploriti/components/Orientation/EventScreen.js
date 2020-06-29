@@ -1,15 +1,27 @@
-import React, {useRef} from 'react';
-import {ImageBackground, StyleSheet, Text, View, Dimensions} from 'react-native';
+import React, { useRef } from 'react';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+} from 'react-native';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Fonts from '../../theme/Fonts';
-import {Theme} from '../../theme/Colours';
-import LinearGradient from "react-native-linear-gradient";
+import { Theme } from '../../theme/Colours';
+import LinearGradient from 'react-native-linear-gradient';
 import EventInfoModal from '../Modal/EventInfoModal';
 
-const {FontWeights, FontSizes} = Fonts;
-const {colours} = Theme.light
+const { FontWeights, FontSizes } = Fonts;
+const { colours } = Theme.light;
 const HEIGHT = Dimensions.get('window').height;
 
+/**
+ * Screen that displays info for an event
+ * @param route The navigation params, contains event object
+ * @returns {*}
+ * @constructor
+ */
 const EventScreen = ({route}) => {
 
     const modalRef = useRef();

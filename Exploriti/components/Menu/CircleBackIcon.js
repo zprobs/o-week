@@ -1,16 +1,23 @@
-import React from "react";
-import Icon from "react-native-vector-icons/Feather";
-import { StyleSheet, View } from "react-native";
-import { ThemeStatic } from "../../theme/Colours";
-import { useNavigation } from "@react-navigation/native";
+import React from 'react';
+import Icon from 'react-native-vector-icons/Feather';
+import { StyleSheet, View } from 'react-native';
+import { ThemeStatic } from '../../theme/Colours';
+import { useNavigation } from '@react-navigation/native';
 
+/**
+ *
+ * @param onPress {function} an optional function that will be called before navigating back
+ * @param style
+ * @returns {*}
+ * @constructor
+ */
 const CircleBackIcon = ({ onPress, style }) => {
   const navigation = useNavigation();
   return (
-    <View style={{...styles.container, ...style}}>
+    <View style={{ ...styles.container, ...style }}>
       <Icon
-        name={"arrow-left"}
-        color={"#000"}
+        name={'arrow-left'}
+        color={'#000'}
         size={23}
         style={{ marginTop: 3 }}
         onPress={() => {
@@ -29,15 +36,15 @@ const styles = StyleSheet.create({
     width: 44,
     borderRadius: 22,
     elevation: 3,
-    alignItems: "center",
-    justifyContent: "center",
-      shadowRadius: 3,
-      shadowColor: '#000',
-      shadowOffset: {
-          width: 2,
-          height: 2
-      },
-      shadowOpacity: 0.7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowRadius: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
   },
 });
 

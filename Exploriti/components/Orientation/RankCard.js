@@ -10,9 +10,17 @@ const {colours} = Theme.light;
 const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
 
+/**
+ * a card to show an orientation group's rank in competition.
+ * @param style
+ * @param onPress {function}
+ * @param rank {string} the rank, ex: "1st" or "3rd"
+ * @param gold {boolean} background color. true = gold, false  = white
+ * @returns {*}
+ * @constructor
+ */
+
 const RankCard = ({style, onPress, rank, gold}) => {
-
-
 
     const Content = ()=> (
       <>

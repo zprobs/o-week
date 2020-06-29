@@ -9,7 +9,7 @@ const { FontWeights, FontSizes } = Fonts;
 
 /**
  * @param data the String array intended to be displayed
- * @param title
+ * @param title {string} Select your <<title>>
  * @param selectedData
  * @param setData A function to set the selected data after it has been picked
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}

@@ -11,16 +11,12 @@ import {
 import {Theme} from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import Fonts from '../../theme/Fonts';
-
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light;
 
 /**
  * SocialMediaAnimation is an animated picker for 6 different social media icons.
-<<<<<<< HEAD
-=======
  * @param openModal The method to open the NewSocialMediaLinkBottomModal
->>>>>>> a791778ff4b5ef0064ade015b81472e3183e9e27
  */
 export default class SocialMediaAnimation extends Component {
     constructor(props) {
@@ -48,6 +44,7 @@ export default class SocialMediaAnimation extends Component {
         this.isDraggingOutside = false;
         this.isJustDragInside = true;
 
+        // Timeout to allow animation to finish running
         this.goToModal = (icon) => {
             setTimeout(()=>
             {

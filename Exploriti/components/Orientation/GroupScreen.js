@@ -1,15 +1,27 @@
-import React, {useRef} from 'react';
-import {ImageBackground, StyleSheet, Text, View, Dimensions} from 'react-native';
+import React, { useRef } from 'react';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+} from 'react-native';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Fonts from '../../theme/Fonts';
-import {Theme} from '../../theme/Colours';
+import { Theme } from '../../theme/Colours';
 import GroupInfoModal from '../Modal/GroupInfoModal';
-import LinearGradient from "react-native-linear-gradient";
+import LinearGradient from 'react-native-linear-gradient';
 
-const {FontWeights, FontSizes} = Fonts;
-const {colours} = Theme.light
+const { FontWeights, FontSizes } = Fonts;
+const { colours } = Theme.light;
 const HEIGHT = Dimensions.get('window').height;
 
+/**
+ *
+ * @param route The navigation route params, should contain an Object group
+ * @returns {*}
+ * @constructor
+ */
 const GroupScreen = ({route}) => {
 
     const modalRef = useRef();
