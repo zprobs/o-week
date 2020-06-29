@@ -11,6 +11,7 @@ import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from "@react-navigation/native";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import LinearGradient from 'react-native-linear-gradient';
+import ImageCard from '../ReusableComponents/ImageCard';
 
 
 const {colours} = Theme.light;
@@ -51,7 +52,7 @@ export default function Dashboard() {
     )
 
     const Header = () => {
-        const {data : sayHiData, loading, error} = useQuery(GET_USERS_WHERE, {variables: {_nin: authState.user.uid }})
+        const {data : sayHiData} = useQuery(GET_USERS_WHERE, {variables: {_nin: authState.user.uid }})
         let count = 0;
 
         return (
@@ -104,13 +105,7 @@ export default function Dashboard() {
         }
             return (
                 <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-                    <View style={styles.imageRow}>
-                        <Image source={{ uri: item.image }} style={styles.groupImage} />
-                            <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']} locations={[0, 0.9]} style={styles.imageLabelContainer}>
-                                <UserCountPreview count={item.count} />
-                                <Text style={styles.imageLabelText}>{item.title}</Text>
-                            </LinearGradient>
-                    </View>
+                   <ImageCard item={item} />
                 </TouchableOpacity>
             );
     }, [navigation]);
@@ -172,35 +167,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 5,
     },
-    imageRow: {
-       flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        marginHorizontal: 25
-    },
-    groupImage: {
-       height: 180,
-        width: '100%',
-        borderRadius: 30,
-        marginHorizontal: 5
-    },
-    imageLabelContainer: {
-        position: 'absolute',
-        bottom: 20,
-        width: '100%',
-        justifyContent: 'center',
-        paddingLeft: 25,
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
-        paddingBottom: 8
-    },
-    imageLabelText: {
-       ...FontWeights.Bold,
-        ...FontSizes.Label,
-        marginTop: 5,
-        color: colours.white,
-    },
+
     userScrollView: {
        marginBottom: 10,
         marginTop: 24,

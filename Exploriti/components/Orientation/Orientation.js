@@ -32,7 +32,8 @@ export default function Orientation() {
             //     style={{ flex: 1 }}
             //
             // />),
-            // headerTitle: ""
+             headerTitle: "",
+            headerStyle: {shadowColor: 'transparent'},
         }}
       />
       <Stack.Screen

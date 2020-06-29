@@ -3,7 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { DrawerIcon } from "../Menu/DrawerIcon";
 import Profile from "./Profile";
 import {MessagesIcon} from '../Menu/MessagesIcon';
-
+import {Theme} from '../../theme/Colours';
+import LinearGradient from 'react-native-linear-gradient';
+const {colours} = Theme.light
 const Stack = createStackNavigator();
 
 /**
@@ -20,7 +22,9 @@ export default function MyProfile() {
         component={Profile}
         options={{
             headerLeft: () => <DrawerIcon/>,
-            headerRight: () => <MessagesIcon/>
+            headerRight: () => <MessagesIcon/>,
+            headerStyle: {shadowColor: 'transparent'},
+            headerTitle: ""
         }}
       /><Stack.Screen
         name="Profile"

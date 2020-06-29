@@ -21,7 +21,9 @@ export default function Notifications() {
                 component={NotificationsList}
                 options={{
                     headerLeft: () => <DrawerIcon/>,
-                    headerRight: () => <MessagesIcon/>
+                    headerRight: () => <MessagesIcon/>,
+                    headerTitle: "",
+                    headerStyle: {shadowColor: 'transparent'},
                 }}
             />
         </Stack.Navigator>

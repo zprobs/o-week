@@ -14,6 +14,7 @@ export const DrawerIcon = () => {
       size={38}
       color="#000"
       onPress={() => navigation.navigate("Settings")}
+      style={{marginLeft: 8}}
     />
   );
 };
