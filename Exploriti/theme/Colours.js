@@ -26,7 +26,8 @@ export const ThemeStatic = {
     onlineDotColor: {
         true: '#4caf50',
         false: '#BBBBBB'
-    }
+    },
+    gold: 'rgba(244,192,4,1)'
 };
 
 

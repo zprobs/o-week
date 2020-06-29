@@ -37,14 +37,14 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     const renderTabBar = (props) => {
       return <TabBar
           {...props}
-          indicatorStyle={{ backgroundColor: ThemeStatic.delete, width: '16.66%', marginLeft: WIDTH*0.083 }}
+          indicatorStyle={{ backgroundColor: ThemeStatic.gold, width: '16.66%', marginLeft: WIDTH*0.083 }}
           style={styles.tabBar}
           renderLabel={({ route, focused, color }) => (
               <Text style={{ ...styles.tabText, color:  color }}>
                 {route.title}
               </Text>
               )}
-          activeColor={ThemeStatic.delete}
+          activeColor={ThemeStatic.gold}
           inactiveColor={colours.text03}
       />
     }
