@@ -127,21 +127,22 @@ export const parseChats = (rawChat, userId) => {
     _id: chatId,
     participants,
     messages,
+    image,
     name: chatName,
     messages_aggregate: numMessages,
   } = rawChat;
 
   numMessages = numMessages.aggregate.count;
+  const otherParticipants = participants
+      .filter(
+          participant => participant._id !== userId
+      );
 
-  // const isOnline = isUserOnline(lastSeen);
-  let { image, lastSeen } = participants[0];
   const name = chatName
-    ? chatName
-    : participants
-        .filter(participant => participant._id !== userId)
-        .map(participant => participant.name)
-        .join(", ");
-  participants = participants.filter(participant => participant.id !== userId);
+      ? chatName
+      : otherParticipants
+          .map(participant => participant.name)
+          .join(", ");
 
   const isOnline = true;
   let parsedChat = {
@@ -153,6 +154,7 @@ export const parseChats = (rawChat, userId) => {
     numMessages: numMessages,
     isOnline: isOnline,
   };
+
   if (numMessages != 0) {
     const [lastMessage] = messages;
     const {
@@ -166,6 +168,10 @@ export const parseChats = (rawChat, userId) => {
     parsedChat["seen"] = seen;
     parsedChat["messageBody"] = messageBody;
     parsedChat["time"] = time;
+  }
+
+  if (otherParticipants.length === 1) {
+    parsedChat["image"] = otherParticipants[0].image;
   }
 
   return parsedChat;

@@ -14,13 +14,13 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {AuthContext } from '../../context';
+import {AuthContext, graphqlify, parseChats} from '../../context';
 import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
 import {
     CHECK_FRIEND_REQUESTS, CONFIRM_FRIEND_REQUEST,
     DELETE_FRIEND_REQUEST,
     GET_DETAILED_USER,
-    GET_USER_FRIENDS, REMOVE_FRIEND,
+    GET_USER_FRIENDS, NEW_CHAT, REMOVE_FRIEND,
     SEND_FRIEND_REQUEST,
 } from '../../graphql';
 import Error from '../ReusableComponents/Error';
@@ -32,6 +32,7 @@ import LoadingDots from '../ReusableComponents/LoadingDots';
 import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
 import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
+import {useNavigation} from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -90,7 +91,7 @@ export default function Profile({ route }) {
     const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
     const renderInteractions = () => {
-        return <UserInteractions userId={userId} friends={friends}/>;
+        return <UserInteractions userId={userId} friends={friends} navigation={useNavigation()} image={image}/>;
     };
 
     const openModal = (index) => {
@@ -234,9 +235,30 @@ const ProfileCard = ({
  * @returns {*}
  * @constructor
  */
-const UserInteractions = ({userId}) => {
-
+const UserInteractions = ({userId, navigation, image}) => {
     const {authState} = useContext(AuthContext);
+
+    const [newChat] = useMutation(NEW_CHAT, {
+        onCompleted: ({ createChat }) => {
+            const {
+                chatId,
+                participants,
+                image,
+                name,
+                messages,
+                numMessages,
+            } = parseChats(createChat, authState.user.uid);
+            console.log(navigation);
+            navigation.navigate("Conversation", {
+                chatId,
+                image,
+                name,
+                participants,
+                numMessages,
+                messages,
+            });
+        }
+    });
 
     const [checkFriendRequests, {data: requestsData, loading: requestsLoading, error: requestsError, called}] = useLazyQuery(CHECK_FRIEND_REQUESTS, {
         variables: {currentUser: authState.user.uid, otherUser: userId  },
@@ -353,8 +375,14 @@ const UserInteractions = ({userId}) => {
 
 
     const messageInteraction = async () => {
-
-
+        const friendsSelection = [userId, authState.user.uid];
+        const result = newChat({
+            variables: {
+                participants: graphqlify(friendsSelection, "user"),
+                image: image
+            }
+        });
+        console.log(result);
     };
 
     return (

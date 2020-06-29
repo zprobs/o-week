@@ -66,7 +66,7 @@ export default function Search() {
     if (error) return  <Error e={error}/>;
 
     const renderItem = ({item, section}) => {
-        if (section.title === 'Users') return <UserCard name={item.name} image={"https://reactjs.org/logo-og.png"} userId={item.id} style={styles.userCard}  />;
+        if (section.title === 'Users') return <UserCard name={item.name} image={item.image} userId={item.id} style={styles.userCard}  />;
         if (
             section.title === 'Orientation Groups' ||
             section.title === 'Events' ||

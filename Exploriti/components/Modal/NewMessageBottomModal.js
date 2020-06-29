@@ -46,23 +46,27 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
         numMessages,
         messages,
       });
-    },
+    }
   });
 
-  const newConversation = () => {
-    // navigate tp "Conversation page"
-    // useMutation for newConversation
-    // graphqlify(friendsSelection, "user");
-    const result = newChat({
-      variables: {
-        participants: graphqlify(friendsSelection, "user"),
-      },
-    });
-    console.log(result);
+  const newConversation = (participants) => {
+    const defaultImages = [
+      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
+      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
+      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
+      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2'
+    ];
+    if (participants.length !== 0) {
+      newChat({
+        variables: {
+          participants: graphqlify([...participants.map(participant => participant.id), authState.user.uid], "user"),
+          image: participants.length === 1 ? participants[0].image : defaultImages[Math.floor(Math.random() * defaultImages.length)]
+        }
+      });
+    }
   };
 
-  const renderItem = ({ item }) => {
-    console.log(item);
+  // const renderItem = ({ item }) => {
     // return (
     //   <TouchableOpacity
     //     onPress={() => {
@@ -74,7 +78,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
     //     <Text style={styles.text}>{item}</Text>
     //   </TouchableOpacity>
     // );
-  };
+  // };
 
   const listEmptyComponent = () => (
     <ImgBanner
@@ -109,11 +113,11 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       title={"friends"}
       query={GET_USER_FRIENDS}
       variables={{ userId: authState.user.uid }}
-      //   setData={setFriendsData}
       setSelection={setFriendsSelection}
       aliased={false}
       cancelButtonText={"Next"}
       onPress={newConversation}
+      initialSelection={null}
     />
   );
 });

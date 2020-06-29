@@ -167,9 +167,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 5,
     },
-
     userScrollView: {
-       marginBottom: 10,
+        marginBottom: 10,
         marginTop: 24,
         width: '100%',
         flexDirection: 'row',

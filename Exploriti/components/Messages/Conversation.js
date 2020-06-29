@@ -49,16 +49,17 @@ const Conversation = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [messageOffset, setMessageOffset] = useState(initialMessages.length);
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
-  const [loadEarlier, setLoadEarlier] = useState(messageOffset !== 0);
+  const [loadEarlier, setLoadEarlier] = useState(messageOffset < numMessages);
   const didSetFirst = useRef(false);
   const numToLoad = 5;
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
       chatId: chatId,
-      latestId: Math.max(...messages.map(item => item._id)),
+      latestId: messages.length === 0 ? 0 : Math.max(...messages.map(item => item._id)),
     },
     onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData);Math.max(...messages.map(item => item._id))
       if (didSetFirst.current) {
         setMessages(
           GiftedChat.append(messages, subscriptionData.data.messages),
@@ -97,6 +98,8 @@ const Conversation = () => {
   // }, [chatQueryData, chatQueryCalled, chatQueryLoading, chatSubscriptionData, chatSubscriptionLoading]);
 
   const onSend = updatedMessages => {
+    console.log(Math.max(...[].map(item => item._id)));
+    console.log(updatedMessages);
     const [updatedMessage] = updatedMessages;
     sendMessage({
       variables: {
@@ -133,12 +136,12 @@ const Conversation = () => {
     }
   };
 
-  //let content = <ConversationScreenPlaceholder />
+  // let content = <ConversationScreenPlaceholder />
 
   let content = <Text>Loading...</Text>;
 
   // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
-  //const transform = transformMessages(messages);
+  // const transform = transformMessages(messages);
   content = (
     <GiftedChat
       alignTop={false}

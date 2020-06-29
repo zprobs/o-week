@@ -54,11 +54,13 @@ const SearchableFlatList = React.forwardRef(
         const [count, setCount] = useState(0);
         // used to prevent the interests from being queried right away when visiting MyProfile
         const verifiedQuery = query ? query : NULL;
+        const didSetFirst = useRef(false);
         useQuery(verifiedQuery, {
             skip: query == undefined,
             variables: variables,
             onCompleted: (loadedData) => {
-                if (query && loadedData[title].length !== 0) {
+                if (!didSetFirst.current) {
+                    didSetFirst.current = true;
                     setFilteredList(loadedData[title]);
                     setUnfilteredList(loadedData[title]);
                 }
@@ -130,7 +132,7 @@ const SearchableFlatList = React.forwardRef(
                 onCancelButtonPress={() => {
                     ref.current.close();
                     if (onPress) {
-                        onPress();
+                        onPress(mapToObjects(selected));
                     }
                 }}
                 cancelButtonText={cancelButtonText}
@@ -241,6 +243,16 @@ function mapToIds(map, query) {
     map.forEach((value, key) => {
         if (value) {
             array.push(query ? key.id : key);
+        }
+    });
+    return array;
+}
+
+function mapToObjects(map) {
+    let array = [];
+    map.forEach((value, key) => {
+        if (value) {
+            array.push(key);
         }
     });
     return array;

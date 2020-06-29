@@ -37,17 +37,17 @@ export default function MessagesList() {
 
   const renderItem = ({ item }) => {
     const {
-      chatId: chatId,
-      participants: participants,
-      image: image,
-      name: name,
-      authorId: authorId,
-      messageBody: messageBody,
-      messages: messages,
-      numMessages: numMessages,
-      seen: seen,
-      time: time,
-      isOnline: isOnline,
+      chatId,
+      participants,
+      image,
+      name,
+      authorId,
+      messageBody,
+      messages,
+      numMessages,
+      seen,
+      time,
+      isOnline,
     } = parseChats(item, authState.user.uid);
 
     return (
@@ -89,15 +89,13 @@ export default function MessagesList() {
     },
   });
 
-  const {
-    data: friends,
-    loading: friendsLoading,
-    error: friendsError,
-  } = useQuery(GET_USER_FRIENDS, {
-    variables: { userId: authState.user.uid },
-  });
+  if (!chatsLoading) {
+    const a = chats.chats[0];
+    const b = chats.chats[1];
+    console.log([a].createdAt, [b].createdAt);
+  }
 
-  let content = (
+  const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
       data={
@@ -105,7 +103,7 @@ export default function MessagesList() {
           ? []
           : chatsError
           ? []
-          : chats.chats.filter(chat => chat.messages.length !== 0)
+          : chats.chats.filter(chat => chat.messages.length !== 0).sort(function(a, b){return [a].createdAt - [b].createdAt})
       }
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
@@ -133,7 +131,6 @@ export default function MessagesList() {
       </SafeAreaView>
       <NewMessageBottomModal
         ref={newMessageBottomModalRef}
-        friends={friendsLoading ? [] : friendsError ? [] : friends.friends}
       />
     </>
   );

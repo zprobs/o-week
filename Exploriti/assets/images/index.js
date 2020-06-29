@@ -10,7 +10,7 @@ const images = {
     bg: require("./background.png"),
     emptyMessages: require("./empty-messages.png"),
     emptyNotifications: require("./empty-notifications.png"),
-
+    default_user: require("./default.pdf")
 };
 
 export default images;
