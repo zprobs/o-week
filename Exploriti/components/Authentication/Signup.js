@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {useRef, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,14 +27,14 @@ import ImagePicker from "react-native-image-crop-picker";
 import "@react-native-firebase/auth";
 import firebase from "@react-native-firebase/app";
 import { useMutation } from "@apollo/react-hooks";
-import { SIGN_UP, GET_INTERESTS, GET_PROGRAMS } from "../../graphql";
+import { SIGN_UP, GET_INTERESTS, GET_PROGRAMS, } from "../../graphql";
 import {
   graphqlify,
   facultiesData,
   yearsData,
   yearToInt,
-  timeZoneData,
-} from "../../context";
+  timeZoneData, saveImage,
+} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get("window").height;
@@ -60,6 +60,7 @@ export default function Signup({ navigation }) {
   const [interests, setInterests] = useState([]);
   const [interestsSelection, setInterestsSelection] = useState([]);
   const [image, setImage] = useState(images.logo);
+  const [imageSelection, setImageSelection] = useState(null);
   const [page, setPage] = useState(1);
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [animatedNumber, setAnimatedNumber] = useState(0);
@@ -227,13 +228,15 @@ export default function Signup({ navigation }) {
       height: 400,
       cropping: true,
     })
-      .then(image => {
-        setImage({ uri: image.path });
+      .then(selectedImage => {
+        setImage({ uri: selectedImage.path } );
+        setImageSelection(selectedImage);
       })
       .catch(result => console.log(result));
   }
 
   function backButton() {
+    console.log(page);
     if (page === 1) {
       Alert.alert(
         "Wait a Second",
@@ -265,29 +268,32 @@ export default function Signup({ navigation }) {
     }
   }
 
-  function submit() {
+  async function submit() {
     setIsLoading(true);
-    let userData = {};
+    const userData = {};
+
+    const imageURL = await saveImage(imageSelection);
 
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(userCredential => {
         console.log(userCredential.user.uid);
-        userData["name"] = name;
-        userData["email"] = email;
-        userData["id"] = userCredential.user.uid;
-        userData["year"] = yearToInt(year);
-        userData["programs"] = graphqlify(programsSelection, "program");
-        userData["interests"] = graphqlify(interestsSelection, "interest");
-        console.log(userData["interests"]);
-        console.log(userData);
+        userData.name = name;
+        userData.email = email;
+        userData.id = userCredential.user.uid;
+        userData.year = yearToInt(year);
+        userData.programs = graphqlify(programsSelection, "program");
+        userData.interests = graphqlify(interestsSelection, "interest");
+        if (imageURL) {
+          userData.image = imageURL;
+        }
         submitUser({ variables: { data: userData } })
-          .then(result => {
-            console.log(result);
-            setIsLoading(false);
-          })
-          .catch(reason => console.log(reason));
+            .then(result => {
+              console.log(result);
+              setIsLoading(false);
+            })
+            .catch(reason => console.log(reason));
       })
       .catch(error => {
         console.log(error);
@@ -403,15 +409,15 @@ export default function Signup({ navigation }) {
               </View>
               <Selection title={programTitle()} onPress={onProgramRef} />
               <Selection
-                title={year ? year : "Select your year"}
+                title={year || "Select your year"}
                 onPress={onYearRef}
               />
               <Selection
-                title={faculty ? faculty : "Select your college"}
+                title={faculty || "Select your college"}
                 onPress={onFacultyRef}
               />
               <Selection
-                title={timeZone ? timeZone : "Select your time zone"}
+                title={timeZone || "Select your time zone"}
                 onPress={onTimeZoneRef}
               />
             </View>

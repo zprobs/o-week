@@ -1,5 +1,7 @@
 module.exports = {
-  root: true,
+  parserOptions: {
+    "ecmaVersion": 10,
+  },
   extends: [
     'standard',
     'prettier',
@@ -15,4 +17,3 @@ module.exports = {
     'standard'
   ]
 };
-

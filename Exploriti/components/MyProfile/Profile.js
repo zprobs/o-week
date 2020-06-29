@@ -8,8 +8,8 @@ import {
 } from "react-native";
 
 import Fonts from "../../theme/Fonts";
-import { Theme } from "../../theme/Colours";
-import { ThemeStatic } from "../../theme/Colours";
+import { Theme , ThemeStatic } from "../../theme/Colours";
+
 import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
@@ -73,7 +73,7 @@ export default function Profile({ route }) {
     if (error) return <Error e={error} />;
     const description = data.user.description;
     const name = data.user.name;
-    const image = "https://reactjs.org/logo-og.png";
+    const image = data.user.image === 'default_user.png' ? "https://reactjs.org/logo-og.png" : data.user.image;
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
     const friends = data.friends;
@@ -204,7 +204,7 @@ const ProfileCard = ({
       <View style={styles.info}>
         <Connections onPress={onFriendsOpen} total={friends ? friends.length : 0} type="FRIENDS" />
         <ImageBackground
-          source={{ uri: image ? image : "" }}
+          source={{ uri: image || "" }}
           style={styles.image}
           imageStyle={styles.avatarImage}>
           {editable && <EditProfile onEdit={onEdit} />}

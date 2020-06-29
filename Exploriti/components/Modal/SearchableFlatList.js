@@ -64,8 +64,6 @@ const SearchableFlatList = React.forwardRef(
                 }
             }
         });
-        console.log('ufl', unfilteredList);
-        console.log('fl', filteredList);
         const onSelect = React.useCallback(
             item => {
                 const newSelected = new Map(selected);
@@ -160,10 +158,10 @@ const SearchableFlatList = React.forwardRef(
                 onOpened={setInputFocus}
                 onClose={() => {
                     if (setData) {
-                        setData(mapToString(selected, data, query));
+                        setData(mapToString(selected, query));
                     }
                     if (setSelection) {
-                        setSelection(mapToIds(selected, data, query));
+                        setSelection(mapToIds(selected, query));
                     }
                 }}
                 modalTopOffset={offset ? offset : 0}
@@ -228,7 +226,7 @@ const styles = StyleSheet.create({
     },
 });
 
-function mapToString(map, data, query) {
+function mapToString(map, query) {
     let array = [];
     map.forEach((value, key) => {
         if (value) {
@@ -238,7 +236,7 @@ function mapToString(map, data, query) {
     return array;
 }
 
-function mapToIds(map, data, query) {
+function mapToIds(map, query) {
     let array = [];
     map.forEach((value, key) => {
         if (value) {

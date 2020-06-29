@@ -1,4 +1,6 @@
 import React, { createContext } from "react";
+import storage from '@react-native-firebase/storage';
+import { useMutation } from "@apollo/react-hooks";
 
 /**
  * The Context which contains the Firebase information about the current user. Contains object 'authState' which will have a value 'status' to
@@ -102,6 +104,23 @@ export const parseTimeElapsed = (utcTime: string) => {
     readableTime,
   };
 };
+
+export const userImage = 'userImage';
+
+export const saveImage = (image) => {
+  const { path, filename } = image;
+  const storageReference = storage().ref(filename);
+  return new Promise((resolve, reject) => {
+    storageReference.putFile(path)
+        .then(uploadData => {
+          storageReference.getDownloadURL()
+              .then(imageURL => {
+                resolve(imageURL);
+              });
+        })
+        .catch(err => reject(err));
+  });
+}
 
 export const parseChats = (rawChat, userId) => {
   let {
