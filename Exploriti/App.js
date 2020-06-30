@@ -39,24 +39,16 @@ import { GET_CURRENT_USER } from "./graphql";
 import Messages from "./components/Messages";
 import Notifications from "./components/Notifications";
 import AnimatedTabBar, {TabsConfig, BubbleTabConfig} from '@gorhom/animated-tabbar';
+import OrientationSVG from './assets/svg/OrientationSVG';
+import NotificationsSVG from './assets/svg/NotificationsSVG';
+import MyProfileSVG from './assets/svg/MyProfileSVG';
+import SearchSVG from './assets/svg/SearchSVG';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 
-const Star = ({color}) => (
-    <Icon name="star"  size={30} />
-);
-const Search = () => (
-    <Icon name="search"  size={30} />
-);
-const Bell = () => (
-    <Icon name="bell"  size={30} />
-);
-const Profile = () => (
-    <Icon name="user"  size={30} />
-);
 
 const tabs: TabsConfig<BubbleTabConfig> = {
   Orientation: {
@@ -64,7 +56,7 @@ const tabs: TabsConfig<BubbleTabConfig> = {
       color: '#5B37B7',
     },
     icon: {
-      component: Star,
+      component: OrientationSVG,
       activeColor: 'rgba(91,55,183,1)',
       inactiveColor: 'rgba(0,0,0,1)',
     },
@@ -78,7 +70,7 @@ const tabs: TabsConfig<BubbleTabConfig> = {
       color: '#5B37B7',
     },
     icon: {
-      component: Search,
+      component: SearchSVG,
       activeColor: 'rgba(91,55,183,1)',
       inactiveColor: 'rgba(0,0,0,1)',
     },
@@ -92,7 +84,7 @@ const tabs: TabsConfig<BubbleTabConfig> = {
       color: '#5B37B7',
     },
     icon: {
-      component: Bell,
+      component: NotificationsSVG,
       activeColor: 'rgba(91,55,183,1)',
       inactiveColor: 'rgba(0,0,0,1)',
     },
@@ -107,8 +99,8 @@ const tabs: TabsConfig<BubbleTabConfig> = {
       color: '#5B37B7',
     },
     icon: {
-      component: Profile,
-      activeColor: 'rgba(17,148,170,1)',
+      component: MyProfileSVG,
+      activeColor: 'rgba(91,55,183,1)',
       inactiveColor: 'rgba(0,0,0,1)',
     },
     background: {
