@@ -255,6 +255,7 @@ const EditProfileBottomModal = React.forwardRef(
                 aliased={false}
                 max={4}
                 offset={Dimensions.get('window').height * 0.3}
+                cancelButtonText={"Done"}
               />
               <SearchableFlatList
                 ref={interestRef}
@@ -267,6 +268,7 @@ const EditProfileBottomModal = React.forwardRef(
                 aliased={true}
                 max={5}
                 offset={Dimensions.get('window').height * 0.3}
+                cancelButtonText={"Done"}
               />
             </>
           ) : null

@@ -224,6 +224,7 @@ export default function Signup({ navigation }) {
         containerStyle={styles.button}
         onPress={nextPage}
         loading={isLoading}
+        loadColour={colour}
       />
     );
   };
@@ -297,7 +298,6 @@ export default function Signup({ navigation }) {
         submitUser({ variables: { data: userData } })
             .then(result => {
               console.log(result);
-              setIsLoading(false);
             })
             .catch(reason => console.log(reason));
       })
@@ -342,8 +342,7 @@ export default function Signup({ navigation }) {
       <ScrollView
         style={styles.scroll}
         horizontal={true}
-        showsHorizontalScro
-        llIndicator={false}
+        showsHorizontalScrollIndicator={false}
         bounces={false}
         scrollEnabled={false}
         pagingEnabled={true}
@@ -514,7 +513,7 @@ export default function Signup({ navigation }) {
         setSelection={() => {}}
         aliased={false}
         max={1}
-        query={false}
+        query={undefined}
         cancelButtonText={"Done"}
       />
     </View>

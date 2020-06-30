@@ -59,7 +59,7 @@ const SearchableFlatList = React.forwardRef(
       skip: query == undefined,
       variables: variables,
       onCompleted: (loadedData) => {
-        if (!didSetFirst.current) {
+        if (!didSetFirst.current && query) {
           didSetFirst.current = true;
           setFilteredList(loadedData[title]);
           setUnfilteredList(loadedData[title]);
@@ -111,7 +111,7 @@ const SearchableFlatList = React.forwardRef(
     const renderItem = ({ item }) => {
       const isSelected = !!selected.get(item);
       return (
-        <TouchableOpacity
+        <TouchableOpacity key={item}
           onPress={() => onSelect(item)}
           style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.item}>{query ? item.name : item}</Text>
@@ -149,7 +149,7 @@ const SearchableFlatList = React.forwardRef(
         ref={ref}
         flatListProps={{
           data: filteredList,
-          keyExtractor: (item) => item,
+          keyExtractor: query ?  (item) => item[0] : (item) => item,
           renderItem: renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,

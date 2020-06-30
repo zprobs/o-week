@@ -38,6 +38,9 @@ const UsersBottomModal = React.forwardRef(({ name, data, type }, ref) => {
     } else {
       subHeading = 'People you are friends with';
     }
+  } else if (type === "invite") {
+    heading = 'Invite';
+    subHeading = 'Invite someone you know'
   }
 
   const listEmptyComponent = () => (

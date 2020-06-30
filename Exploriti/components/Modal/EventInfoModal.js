@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {StyleSheet, Text, Dimensions, View, TouchableOpacity, Image, Linking} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -13,6 +13,7 @@ import HorizontalUserCard from '../ReusableComponents/HorizontalUserCard';
 import {linkError} from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
+import UsersBottomModal from './UsersBottomModal';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -25,6 +26,8 @@ const WIDTH = Dimensions.get('window').width;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
 const EventInfoModal = React.forwardRef(({event}, ref) => {
+
+  const inviteRef = useRef();
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -98,7 +101,7 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
 
   const GuestList = () => (
     <>
-    <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true}/>
+    <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
       <Text style={styles.sectionText}>Going</Text>
       <HorizontalUserList data={going} style={{marginBottom: 15}} />
       <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
@@ -127,7 +130,7 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
               <FeatherIcon name={"play"} size={13} color={ThemeStatic.lightBlue} style={{marginLeft: 2}} />
             </View>
         </LinearGradient>
-        <UserCountPreview count={33} style={styles.userCountPreview}/>
+        <UserCountPreview count={33} style={styles.userCountPreview} ref={inviteRef} />
       </TouchableOpacity>
 
     </View>
@@ -160,6 +163,7 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
+        <UsersBottomModal type={"invite"} ref={inviteRef}/>
       </Modalize>
     );
 });

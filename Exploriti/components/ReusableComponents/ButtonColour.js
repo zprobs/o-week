@@ -15,6 +15,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @param labelStyle Additional style customization for button text
  * @param color {string} The background color of the button
  * @param light {boolean} Weather or not the label text is light or dark
+ * @param loadColour {string} Optional string for the loading dots colour
  * @constructor
  */
 const ButtonColour = ({
@@ -26,6 +27,7 @@ const ButtonColour = ({
   labelStyle,
   colour,
   light,
+    loadColour
 }) => {
   const styles = StyleSheet.create({
     container: {
@@ -51,7 +53,7 @@ const ButtonColour = ({
   });
 
   let content = (
-    <LoadingDots background={'#fafafa'} activeBackground={ThemeStatic.white} />
+    <LoadingDots background={loadColour ? loadColour : '#fafafa'} activeBackground={loadColour ? loadColour : ThemeStatic.white} />
   );
   if (!loading)
     content = (
