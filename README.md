@@ -57,10 +57,21 @@ We have taken the approach of using functional components and hooks in this proj
 
 [Prettier](https://prettier.io/) is our code formatter of choice. Reference the `.prettierrc.js` file in home directory for details. In general please try to keep functions and components as short and simple as possible. 
 
+### Schema
+
+To download the GraphQL Schema follow the following steps:
+
+1. First install graphqurl globally 
+`npm install -g graphqurl`
+
+2. Whenever you want to get the most recent version run
+`gq https://exploriti-backend.herokuapp.com/v1/graphql -H 'X-Hasura-Admin-Secret: Liv7RYcLeKFPFuW4pJHX' --introspect > schema.graphql`
+In the root directory of the app
+
 ### Tips and Tricks
 
 * If you see a server error regarding your JWT token simply refresh the app 
-* If someone adds a dependency to package.json make sure you run `npm install` and rebuild the app 
+* If someone adds a dependency to package.json make sure you run `npm install` and rebuild the app (may also need to run `npx pod-install`)
 
 # Thank you for your help!
 
