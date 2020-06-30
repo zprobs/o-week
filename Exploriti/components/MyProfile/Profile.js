@@ -17,11 +17,14 @@ import GroupBottomModal from "../Modal/GroupBottomModal";
 import {AuthContext, graphqlify, parseChats} from '../../context';
 import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
 import {
-    CHECK_FRIEND_REQUESTS, CONFIRM_FRIEND_REQUEST,
-    DELETE_FRIEND_REQUEST,
-    GET_DETAILED_USER,
-    GET_USER_FRIENDS, NEW_CHAT, REMOVE_FRIEND,
-    SEND_FRIEND_REQUEST,
+  CHECK_FRIEND_REQUESTS,
+  CONFIRM_FRIEND_REQUEST,
+  DELETE_FRIEND_REQUEST,
+  GET_DETAILED_USER,
+  GET_USER_FRIENDS_ID,
+  NEW_CHAT,
+  REMOVE_FRIEND,
+  SEND_FRIEND_REQUEST,
 } from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
@@ -280,13 +283,13 @@ const UserInteractions = ({userId, navigation, image}) => {
     const [removeFriend, { error: removeError, loading: removeLoading}] = useMutation(REMOVE_FRIEND, {
         variables: {userId: authState.user.uid, friendId: userId},
         update: (cache ) => {
-            const { friends } = cache.readQuery({ query: GET_USER_FRIENDS, variables: {userId: authState.user.uid} });
+            const { friends } = cache.readQuery({ query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid} });
             const newFriends = friends.filter( (element) => element.id !== userId )
             console.log("DELETING FRIENDS");
             console.log(friends);
             console.log(newFriends);
             cache.writeQuery({
-                query: GET_USER_FRIENDS, variables: {userId: authState.user.uid},
+                query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid},
                 data: { friends: newFriends },
             })
         },
@@ -298,7 +301,7 @@ const UserInteractions = ({userId, navigation, image}) => {
       update: (cache, { data: { addTodo } }) => {
         // update friends list
         const { friends } = cache.readQuery({
-          query: GET_USER_FRIENDS,
+          query: GET_USER_FRIENDS_ID,
           variables: { userId: authState.user.uid },
         });
         const newFriend = {
@@ -307,7 +310,7 @@ const UserInteractions = ({userId, navigation, image}) => {
           userId: authState.user.uid,
         };
         cache.writeQuery({
-          query: GET_USER_FRIENDS,
+          query: GET_USER_FRIENDS_ID,
           variables: { userId: authState.user.uid },
           data: { friends: friends.concat([newFriend]) },
         });
@@ -316,7 +319,7 @@ const UserInteractions = ({userId, navigation, image}) => {
       onCompleted: checkFriendRequests,
     });
 
-    const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS, {
+    const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS_ID, {
         variables: {userId: authState.user.uid}
     });
 
