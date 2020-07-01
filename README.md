@@ -60,7 +60,7 @@ We have taken the approach of using functional components and hooks in this proj
 ### Tips and Tricks
 
 * If you see a server error regarding your JWT token simply refresh the app 
-* If someone adds a dependency to package.json make sure you run `npm install` and rebuild the app 
+* If someone adds a dependency to package.json make sure you run `npm install` and rebuild the app (may also need to run `npx pod-install`)
 
 # Thank you for your help!
 

@@ -202,6 +202,15 @@ export const GET_USER_FRIENDS = gql`
   }
 `;
 
+export const GET_USER_FRIENDS_ID = gql`
+    query getFriends($userId: String!) {
+        friends(where: { userId: { _eq: $userId } }) {
+            userId
+            id
+        }
+    }
+`;
+
 export const REMOVE_FRIEND = gql`
   mutation removeFriend($friendId: String!, $userId: String!) {
     removeFriend(friendId: $friendId, userId: $userId) {
