@@ -112,7 +112,8 @@ const SearchableFlatList = React.forwardRef(
     const renderItem = ({ item }) => {
       const isSelected = !!selected.get(item);
       return (
-        <TouchableOpacity key={item}
+        <TouchableOpacity
+          key={item}
           onPress={() => onSelect(item)}
           style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.item}>{query ? item.name : item} </Text>
@@ -123,25 +124,25 @@ const SearchableFlatList = React.forwardRef(
       );
     };
 
-    const renderItemWithImage = ({ item }) => {
+    const renderItemWithImage = ({ item, index }) => {
       const { image } = item;
       const isSelected = !!selected.get(item);
       return (
-        <TouchableOpacity
-          onPress={() => onSelect(item)}
-          style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-          <Image source={{ uri: image }} style={styles.image}></Image>
-          <View>
+        <View style={{ backgroundColor: index % 2 ? '#f2f2f2' : '#FFFFFF' }}>
+          <TouchableOpacity
+            onPress={() => onSelect(item)}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+            <Image source={{ uri: image }} style={styles.image}></Image>
             <Text style={styles.itemWithImage}>
               {query ? item.name : item}{' '}
             </Text>
-          </View>
-          <View style={styles.imageContainer}>
-            {isSelected ? (
-              <Icon name={'check'} style={styles.icon} size={28} />
-            ) : null}
-          </View>
-        </TouchableOpacity>
+            <View style={styles.imageContainer}>
+              {isSelected ? (
+                <Icon name={'check'} style={styles.icon} size={28} />
+              ) : null}
+            </View>
+          </TouchableOpacity>
+        </View>
       );
     };
 
