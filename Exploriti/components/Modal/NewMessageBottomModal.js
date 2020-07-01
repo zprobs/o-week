@@ -17,6 +17,7 @@ import { GET_USER_FRIENDS, NEW_CHAT } from '../../graphql';
 import SearchableFlatList from './SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 
+
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
 const window05 = window * 0.05;
@@ -25,6 +26,9 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   const { authState } = useContext(AuthContext);
   const [friendsSelection, setFriendsSelection] = useState([]);
   const navigation = useNavigation();
+
+  //  Selection needs to reset if  one makes a chat and then decides to back
+  // out of it
 
   const [newChat] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
