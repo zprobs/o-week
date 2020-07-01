@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -31,6 +31,7 @@ const SearchableFlatList = React.forwardRef(
       data,
       query,
       variables,
+      hasImage,
       title,
       setData,
       setSelection,
@@ -111,14 +112,37 @@ const SearchableFlatList = React.forwardRef(
     const renderItem = ({ item }) => {
       const isSelected = !!selected.get(item);
       return (
-        <TouchableOpacity key={item}
+        <TouchableOpacity
+          key={item}
           onPress={() => onSelect(item)}
           style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.item}>{query ? item.name : item}</Text>
+          <Text style={styles.item}>{query ? item.name : item} </Text>
           {isSelected ? (
             <Icon name={'check'} style={styles.icon} size={28} />
           ) : null}
         </TouchableOpacity>
+      );
+    };
+
+    const renderItemWithImage = ({ item, index }) => {
+      const { image } = item;
+      const isSelected = !!selected.get(item);
+      return (
+        <View style={{ backgroundColor: index % 2 ? '#f2f2f2' : '#FFFFFF' }}>
+          <TouchableOpacity
+            onPress={() => onSelect(item)}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+            <Image source={{ uri: image }} style={styles.image}></Image>
+            <Text style={styles.itemWithImage}>
+              {query ? item.name : item}{' '}
+            </Text>
+            <View style={styles.imageContainer}>
+              {isSelected ? (
+                <Icon name={'check'} style={styles.icon} size={28} />
+              ) : null}
+            </View>
+          </TouchableOpacity>
+        </View>
       );
     };
 
@@ -149,8 +173,8 @@ const SearchableFlatList = React.forwardRef(
         ref={ref}
         flatListProps={{
           data: filteredList,
-          keyExtractor: query ?  (item) => item[0] : (item) => item,
-          renderItem: renderItem,
+          keyExtractor: (item) => item,
+          renderItem: hasImage ? renderItemWithImage : renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,
           extraData: selected,
@@ -210,6 +234,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginLeft: 15,
   },
+  itemWithImage: {
+    ...FontWeights.Light,
+    ...FontSizes.Label,
+    marginVertical: 25,
+    marginLeft: 10,
+  },
   separator: {
     height: 0.5,
     backgroundColor: colours.text02,
@@ -221,10 +251,22 @@ const styles = StyleSheet.create({
     color: colours.accent,
     marginRight: 18,
   },
+  imageContainer: {
+    alignSelf: 'center',
+    marginLeft: 'auto',
+  },
   done: {
     width: '85%',
     alignSelf: 'center',
     zIndex: 4,
+  },
+  image: {
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    marginVertical: 10,
+    marginLeft: 10,
+    backgroundColor: colours.placeholder,
   },
 });
 
