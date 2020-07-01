@@ -9,6 +9,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
 import {Event, DATA} from '../Orientation/Schedule';
 import {useNavigation} from '@react-navigation/native';
+import {useQuery} from '@apollo/react-hooks';
+import {GET_USERS_BY_ID} from '../../graphql';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -91,14 +93,20 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
       </>
     );
 
-    const Members = () => (
-        <>
-          <Text style={styles.sectionText}>Leaders</Text>
-          <HorizontalUserList data={tempData} style={{marginTop: 10}}/>
-          <Text style={styles.sectionText}>Members</Text>
-          <HorizontalUserList data={tempData} style={{marginTop: 10}}/>
-        </>
-    );
+    const Members = () => {
+      const {data: members, loading: loadingMembers, error: errorMembers} = useQuery(GET_USERS_BY_ID, {variables: { _in: membersData }})
+
+      if (loadingMembers || errorMembers) return null
+      const leaders = members.users.splice(0,2);
+      return (
+          <>
+            <Text style={styles.sectionText}>Leaders</Text>
+            <HorizontalUserList data={leaders} style={{marginTop: 10}}/>
+            <Text style={styles.sectionText}>Members</Text>
+            <HorizontalUserList data={members.users} style={{marginTop: 10}}/>
+          </>
+      );
+    }
 
     const Events = () => {
         const [day, setDay] = useState(0);
@@ -111,7 +119,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
               <View style={styles.eventContainer}>
                 {
                   DATA[day].events.map((event) => {
-                    return <Event time={event.time} title={event.title} style={{width: '100%'}} image={event.image} key={event.time + event.title + day}/>
+                    return <Event time={event.time} title={event.title} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.time + event.title + day}/>
                   })
                 }
               </View>
@@ -217,10 +225,12 @@ const styles = StyleSheet.create({
   eventContainer: {
     paddingHorizontal: 25,
     marginTop: 30,
-    alignItems: 'center'
+    alignItems: 'center',
 
   }
 
 });
 
 export default GroupInfoModal;
+
+const membersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82", "2ts5t6mW3EWtqYJXduIxhUwaoKa2", "eRDdv1sh1WMT00lY5AJFtb36wgt1", "DIhiYwWGbrcrKwHAgpwqETPZD3x1", "UG3dfi96lDTTVuRoCTD8yHDdpyI3"];

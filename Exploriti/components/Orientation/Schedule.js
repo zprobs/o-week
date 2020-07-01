@@ -9,7 +9,7 @@ import {
   ScrollView,
   Animated,
   StatusBar,
-  TouchableOpacity,
+  TouchableOpacity, TouchableWithoutFeedback, LayoutAnimation
 } from 'react-native';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -42,44 +42,52 @@ export const Event = ({ image, title, time, style }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <View style={{ ...styles.event, ...style }}>
-      <View>
-        <View style={{ flexDirection: 'row' }}>
-          <Image style={styles.eventImage} source={{ uri: image }} />
-          <View style={{ justifyContent: 'center', paddingBottom: 5 }}>
-            <Text style={styles.eventTitle}>{title}</Text>
-            <Text style={styles.eventDate}>{time}</Text>
-          </View>
-        </View>
-        {expanded ? (
+      <TouchableWithoutFeedback onPress={()=>{
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpanded(!expanded)
+      }}
+      >
+          <View style={{...styles.eventShadow, ...style}}>
+
+        <View style={{...styles.event, width: '100%'}} >
           <View>
-            <Text style={styles.eventDescription}>
-              - Meet with crew at base{'\n'}- Activities start at 4:30{'\n'}-
-              Dinner with the crew at 8
-            </Text>
-            <View style={styles.detailsView}>
-              <UserCountPreview style={{ marginLeft: 20 }} count={8} />
-              <TouchableOpacity
-                style={styles.detailsButton}
-                onPress={() =>
-                  navigation.push('EventScreen', {
-                    event: { image: image, title: title, time: time },
-                  })
-                }>
-                <Text style={styles.detailsText}>Details</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row' }}>
+              <Image style={styles.eventImage} source={{ uri: image }} />
+              <View style={{ justifyContent: 'center', paddingBottom: 5 }}>
+                <Text style={styles.eventTitle}>{title}</Text>
+                <Text style={styles.eventDate}>{time}</Text>
+              </View>
             </View>
+            {expanded ? (
+                <View>
+                  <Text style={styles.eventDescription}>
+                    - Meet with crew at base{'\n'}- Activities start at 4:30{'\n'}-
+                    Dinner with the crew at 8
+                  </Text>
+                  <View style={styles.detailsView}>
+                    <UserCountPreview style={{ marginLeft: 20 }} count={8} />
+                    <TouchableOpacity
+                        style={styles.detailsButton}
+                        onPress={() =>
+                            navigation.push('EventScreen', {
+                              event: { image: image, title: title, time: time },
+                            })
+                        }>
+                      <Text style={styles.detailsText}>Details</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+            ) : null}
           </View>
-        ) : null}
-      </View>
-      <Icon
-        name={expanded ? 'chevron-up' : 'chevron-down'}
-        color={colours.text02}
-        size={32}
-        style={{ marginRight: 5 }}
-        onPress={() => setExpanded(!expanded)}
-      />
-    </View>
+          <Icon
+              name={expanded ? 'chevron-up' : 'chevron-down'}
+              color={colours.text02}
+              size={32}
+              style={{ marginRight: 5 }}
+          />
+        </View>
+          </View>
+      </TouchableWithoutFeedback>
   );
 };
 
@@ -232,6 +240,7 @@ const styles = StyleSheet.create({
   slide: {},
   carousel: {
     marginTop: 30,
+    height: HEIGHT
   },
   event: {
     backgroundColor: colours.base,
@@ -241,15 +250,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 12,
     maxWidth: ITEM_WIDTH,
-    shadowRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.2,
     paddingVertical: 5,
+      overflow: 'hidden'
   },
+    eventShadow: {
+      shadowRadius: 8,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.2,
+    },
   eventImage: {
     height: 54,
     width: 54,

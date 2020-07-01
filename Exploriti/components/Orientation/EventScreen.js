@@ -34,7 +34,7 @@ const EventScreen = ({route}) => {
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
                     <Text style={styles.title}>{event.title}</Text>
-                    <Text style={styles.date}>Today</Text>
+                    <Text style={styles.date}>Sept 7</Text>
                 </LinearGradient>
             </View>
         </ImageBackground>

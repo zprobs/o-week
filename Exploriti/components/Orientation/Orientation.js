@@ -9,6 +9,7 @@ import EventScreen from './EventScreen';
 import Profile from '../MyProfile/Profile';
 import LinearGradient from 'react-native-linear-gradient';
 import LeaderBoard from './Leaderboard';
+import Conversation from '../Messages/Conversation';
 
 const Stack = createStackNavigator();
 
@@ -70,6 +71,13 @@ export default function Orientation() {
           headerShown: false,
         }}
       />
+        <Stack.Screen
+            name="Conversation"
+            component={Conversation}
+            options={{
+                headerShown: false,
+            }}
+        />
     </Stack.Navigator>
   );
 }

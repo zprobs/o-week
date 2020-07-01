@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { DrawerIcon } from '../Menu/DrawerIcon';
 import Profile from './Profile';
 import { MessagesIcon } from '../Menu/MessagesIcon';
+import Conversation from '../Messages/Conversation';
 const Stack = createStackNavigator();
 
 /**
@@ -30,6 +31,13 @@ export default function MyProfile() {
           headerShown: false,
         }}
       />
+        <Stack.Screen
+            name="Conversation"
+            component={Conversation}
+            options={{
+                headerShown: false,
+            }}
+        />
     </Stack.Navigator>
   );
 }

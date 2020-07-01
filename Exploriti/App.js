@@ -43,11 +43,18 @@ import OrientationSVG from './assets/svg/OrientationSVG';
 import NotificationsSVG from './assets/svg/NotificationsSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
 import SearchSVG from './assets/svg/SearchSVG';
+import {UIManager, Platform} from 'react-native';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+if (
+    Platform.OS === "android" &&
+    UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 
 const tabs: TabsConfig<BubbleTabConfig> = {

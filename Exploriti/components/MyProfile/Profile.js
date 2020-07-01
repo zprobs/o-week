@@ -63,7 +63,6 @@ export default function Profile({ route }) {
 
     const isMyProfilePage = route.params == undefined;
     const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
-    console.log(userId);
     const isCurrentUser = (!(!isMyProfilePage && userId !== authState.user.uid));
 
     const { loading, error, data } = useQuery(GET_DETAILED_USER, {
@@ -81,11 +80,9 @@ export default function Profile({ route }) {
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
     const friends = data.friends;
-    console.log('friends', friends)
 
     const friendsIds = [];
     friends.map((item)=>friendsIds.push(item.id));
-    console.log('friendsID', friendsIds)
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -251,7 +248,6 @@ const UserInteractions = ({userId, navigation, image}) => {
                 messages,
                 numMessages,
             } = parseChats(createChat, authState.user.uid);
-            console.log(navigation);
             navigation.navigate("Conversation", {
                 chatId,
                 image,
@@ -299,7 +295,7 @@ const UserInteractions = ({userId, navigation, image}) => {
     const [confirmRequest, { error: confirmError, loading: confirmLoading }] = useMutation(CONFIRM_FRIEND_REQUEST, {
       variables: { recipient: authState.user.uid, sender: userId },
       update: (cache, { data: { addTodo } }) => {
-        // update friends list
+        // update friends list for currentUser
         const { friends } = cache.readQuery({
           query: GET_USER_FRIENDS_ID,
           variables: { userId: authState.user.uid },

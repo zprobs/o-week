@@ -160,6 +160,7 @@ const EditProfileBottomModal = React.forwardRef(
           modalStyle={styles.container}
           modalTopOffset={129}
           adjustToContentHeight
+          tapGestureEnabled={false}
           onOpen={getInterests}>
           <View style={{ paddingHorizontal: 20 }}>
             <ModalHeader

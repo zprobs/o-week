@@ -9,6 +9,7 @@ import Search from './Search';
 import Profile from '../MyProfile/Profile';
 import GroupScreen from '../Orientation/GroupScreen';
 import EventScreen from '../Orientation/EventScreen';
+import Conversation from '../Messages/Conversation';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,13 @@ export default function Explore() {
           headerShown: false,
         }}
       />
+        <Stack.Screen
+            name="Conversation"
+            component={Conversation}
+            options={{
+                headerShown: false,
+            }}
+        />
     </Stack.Navigator>
   );
 }

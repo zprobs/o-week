@@ -203,7 +203,7 @@ export const GET_USER_FRIENDS = gql`
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
-    query getFriends($userId: String!) {
+    query getFriendsID($userId: String!) {
         friends(where: { userId: { _eq: $userId } }) {
             userId
             id

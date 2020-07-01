@@ -14,6 +14,8 @@ import {linkError} from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import UsersBottomModal from './UsersBottomModal';
+import {useQuery} from '@apollo/react-hooks';
+import {GET_USERS_BY_ID} from '../../graphql';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -99,16 +101,25 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
     );
 
 
-  const GuestList = () => (
-    <>
-    <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
-      <Text style={styles.sectionText}>Going</Text>
-      <HorizontalUserList data={going} style={{marginBottom: 15}} />
-      <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-      <HorizontalUserList data={going} />
+  const GuestList = () => {
 
-    </>
-  )
+    const {data: going, loading: loadingGoing, error: errorGoing} = useQuery(GET_USERS_BY_ID, {variables: { _in: goingData }})
+
+
+    if (loadingGoing || errorGoing) return null
+    const invited = going.users.splice(0,3);
+
+    return (
+        <>
+          <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
+          <Text style={styles.sectionText}>Going</Text>
+          <HorizontalUserList data={going.users} style={{marginBottom: 15}} />
+          <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
+          <HorizontalUserList data={invited} />
+
+        </>
+    )
+  }
 
   const Join = () => (
     <View style={{paddingHorizontal: 40, marginTop: 20}}>
@@ -309,4 +320,4 @@ const styles = StyleSheet.create({
 
 export default EventInfoModal;
 
-const going = [{ name: "John", id: 1, isLeader: true}, { name: "Samantha", id: 2, leader: false}, { name: "Esso", id: 3, leader: false}, { name: "Garrette", id: 4, leader: false}, { name: "Jennifer", id: 5, leader: false}, { name: "Ashley", id: 6, leader: false}, { name: "Jacky", id: 7, leader: false}, { name: "Liam", id: 8, leader: false}]
+const goingData = ["SgckB0cHQgPiHqXOY8ZUWF7mtk22", "g77kAqY0pDP0QFusPYO0EuWuBPw1", "MeacvK7z4gWhfkCC6jTNAfEKgXJ3", "VfBJazsBbEhpdmJL3G4fmGyTyh93", "jSqUoMtjOIStGOBLPhxG11nNglE3", "Fvy98EKaKXRfMP7YSX96M272pHC3", "2ts5t6mW3EWtqYJXduIxhUwaoKa2"]
