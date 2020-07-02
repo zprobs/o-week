@@ -10,6 +10,7 @@ import Profile from '../MyProfile/Profile';
 import LinearGradient from 'react-native-linear-gradient';
 import LeaderBoard from './Leaderboard';
 import Conversation from '../Messages/Conversation';
+import Calendar from './Calendar';
 
 const Stack = createStackNavigator();
 
@@ -71,13 +72,20 @@ export default function Orientation() {
           headerShown: false,
         }}
       />
-        <Stack.Screen
-            name="Conversation"
-            component={Conversation}
-            options={{
-                headerShown: false,
-            }}
-        />
+      <Stack.Screen
+        name="Conversation"
+        component={Conversation}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Calendar"
+        component={Calendar}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }

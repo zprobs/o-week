@@ -111,7 +111,7 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
 
     return (
         <>
-          <RSVPButton unSelectedTitle={"Invite Friends"} selectedTitle={"Uninvite Friends"} style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
+          <RSVPButton unSelectedTitle={"Invite Friends"}  style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
           <Text style={styles.sectionText}>Going</Text>
           <HorizontalUserList data={going.users} style={{marginBottom: 15}} />
           <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
@@ -136,7 +136,7 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
       <TouchableOpacity onPress={openLink}>
         <Image source={{uri: "https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg"}} style={styles.eventImage}/>
         <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.videoTitleView}>
-          <Text style={styles.videoTitleText}>Click to Join</Text>
+          <Text style={styles.videoTitleText}>Tap to Join</Text>
             <View style={styles.smallPlayButton}>
               <FeatherIcon name={"play"} size={13} color={ThemeStatic.lightBlue} style={{marginLeft: 2}} />
             </View>

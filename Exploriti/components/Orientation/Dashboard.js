@@ -83,7 +83,6 @@ export default function Dashboard() {
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
           onPress={()=>{
-              StatusBar.setBarStyle('light-content')
               navigation.navigate('Schedule')
           }}
         />

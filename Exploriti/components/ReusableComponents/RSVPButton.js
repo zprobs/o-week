@@ -12,7 +12,7 @@ const { colours } = Theme.light;
  * @param onPress
  * @param style
  * @param selectedTitle {string} default title
- * @param unSelectedTitle {string}
+ * @param unSelectedTitle {string} only include if you want a second selected state
  * @param plusIcon {boolean} if true, render 'user-plus' icon else 'user-check
  * @returns {*}
  * @constructor
@@ -23,11 +23,12 @@ const RSVPButton = ({
   selectedTitle,
   unSelectedTitle,
   plusIcon,
+    invite
 }) => {
   const [selected, setSelected] = useState(false);
 
   const buttonPress = () => {
-    setSelected(!selected);
+    if (selectedTitle) setSelected(!selected);
     if (onPress) onPress();
   };
 

@@ -68,7 +68,10 @@ const EditProfileBottomModal = React.forwardRef(
     const onInterestRef = () => interestRef.current.open();
 
     const programTitle = () => {
-      if (programsSelection) return editablePrograms.join(', ');
+      if (programsSelection) {
+          if (editablePrograms[0] == undefined) editablePrograms.shift()
+          return editablePrograms.join(', ');
+      }
       return 'Change program';
     };
 
@@ -76,6 +79,7 @@ const EditProfileBottomModal = React.forwardRef(
       if (!called || loading || error || !interestsSelection) {
         return 'Change Interests';
       }
+      if (editableInterests[0] == undefined) editableInterests.shift();
       return editableInterests.join(', ');
     };
 

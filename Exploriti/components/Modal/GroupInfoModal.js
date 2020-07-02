@@ -7,10 +7,11 @@ import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
-import {Event, DATA} from '../Orientation/Schedule';
+import { DATA} from '../Orientation/Schedule';
 import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@apollo/react-hooks';
 import {GET_USERS_BY_ID} from '../../graphql';
+import EventCard from '../Orientation/EventCard';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -119,7 +120,7 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
               <View style={styles.eventContainer}>
                 {
                   DATA[day].events.map((event) => {
-                    return <Event time={event.time} title={event.title} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.time + event.title + day}/>
+                    return <EventCard time={event.time} title={event.title} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.time + event.title + day}/>
                   })
                 }
               </View>

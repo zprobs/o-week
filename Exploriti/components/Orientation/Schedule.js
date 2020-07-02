@@ -5,91 +5,26 @@ import {
   Text,
   View,
   Dimensions,
-  Image,
   ScrollView,
   Animated,
   StatusBar,
-  TouchableOpacity, TouchableWithoutFeedback, LayoutAnimation
 } from 'react-native';
-import GoBackHeader from '../Menu/GoBackHeader';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Carousel from 'react-native-snap-carousel';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/EvilIcons';
-import UserCountPreview from '../ReusableComponents/UserCountPreview';
+import EventCard from './EventCard';
+import Icon from 'react-native-vector-icons/Feather';
+
 
 const { FontWeights, FontSizes } = Fonts;
-const { colours } = Theme.light;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = 0.75 * WIDTH;
 
-/**
- * Event card, to be displayed in the schedule carousel
- * @param image {string}
- * @param title {string}
- * @param time {string}
- * @param style
- * @returns {*}
- * @constructor
- */
-export const Event = ({ image, title, time, style }) => {
-  const navigation = useNavigation();
 
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-      <TouchableWithoutFeedback onPress={()=>{
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setExpanded(!expanded)
-      }}
-      >
-          <View style={{...styles.eventShadow, ...style}}>
-
-        <View style={{...styles.event, width: '100%'}} >
-          <View>
-            <View style={{ flexDirection: 'row' }}>
-              <Image style={styles.eventImage} source={{ uri: image }} />
-              <View style={{ justifyContent: 'center', paddingBottom: 5 }}>
-                <Text style={styles.eventTitle}>{title}</Text>
-                <Text style={styles.eventDate}>{time}</Text>
-              </View>
-            </View>
-            {expanded ? (
-                <View>
-                  <Text style={styles.eventDescription}>
-                    - Meet with crew at base{'\n'}- Activities start at 4:30{'\n'}-
-                    Dinner with the crew at 8
-                  </Text>
-                  <View style={styles.detailsView}>
-                    <UserCountPreview style={{ marginLeft: 20 }} count={8} />
-                    <TouchableOpacity
-                        style={styles.detailsButton}
-                        onPress={() =>
-                            navigation.push('EventScreen', {
-                              event: { image: image, title: title, time: time },
-                            })
-                        }>
-                      <Text style={styles.detailsText}>Details</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-            ) : null}
-          </View>
-          <Icon
-              name={expanded ? 'chevron-up' : 'chevron-down'}
-              color={colours.text02}
-              size={32}
-              style={{ marginRight: 5 }}
-          />
-        </View>
-          </View>
-      </TouchableWithoutFeedback>
-  );
-};
 
 /**
  * Schedule to display events in a carousel
@@ -101,14 +36,15 @@ const Schedule = () => {
   const [index, setIndex] = useState(0);
   const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      StatusBar.setBarStyle('dark-content');
-    });
-
-    return unsubscribe;
-  }, [navigation]);
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('blur', () => {
+  //     StatusBar.setBarStyle('dark-content');
+  //   });
+  //
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const title = () => {
     switch (index) {
@@ -145,7 +81,7 @@ const Schedule = () => {
       <View style={styles.slide}>
         {item.events.map((event) => {
           return (
-            <Event
+            <EventCard
               title={event.title}
               image={event.image}
               time={event.time}
@@ -178,10 +114,17 @@ const Schedule = () => {
         colors={['#ed1b2f', '#fc8c62']}
         style={{ height: HEIGHT }}>
         <SafeAreaView>
+          {
+            isFocused ?
+                <StatusBar barStyle="light-content"/>
+                :
+                null
+          }
           <View style={styles.header}>
             <CircleBackIcon />
-            <Text style={styles.title}>Schedule</Text>
-            <View style={{ width: 44 }} />
+            <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
+              navigation.navigate('Calendar')
+            }} />
           </View>
           <View style={styles.date}>
             <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
@@ -209,16 +152,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  title: {
-    ...FontSizes.SubHeading,
-    ...FontWeights.Bold,
-    color: ThemeStatic.white,
-  },
+
   header: {
     flexDirection: 'row',
     marginHorizontal: 25,
     marginTop: 10,
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   date: {
@@ -242,76 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     height: HEIGHT
   },
-  event: {
-    backgroundColor: colours.base,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 12,
-    maxWidth: ITEM_WIDTH,
-    paddingVertical: 5,
-      overflow: 'hidden'
-  },
-    eventShadow: {
-      shadowRadius: 8,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      shadowOpacity: 0.2,
-    },
-  eventImage: {
-    height: 54,
-    width: 54,
-    borderRadius: 27,
-    marginVertical: 15,
-    marginHorizontal: 12,
-  },
-  eventTitle: {
-    ...FontWeights.Bold,
-    ...FontSizes.Label,
-    maxWidth: WIDTH * 0.4,
-    marginVertical: 8,
-  },
-  eventDate: {
-    ...FontSizes.Caption,
-    ...FontWeights.Bold,
-    color: colours.text03,
-  },
-  eventDescription: {
-    maxWidth: ITEM_WIDTH * 0.7,
-    padding: 15,
-    ...FontWeights.Bold,
-    ...FontSizes.Caption,
-    color: colours.text03,
-  },
-  detailsView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 12,
-    width: ITEM_WIDTH * 0.85,
-  },
-  detailsButton: {
-    height: 30,
-    borderRadius: 15,
-    shadowRadius: 2,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 1.5,
-      height: 1.5,
-    },
-    shadowOpacity: 0.6,
-    paddingHorizontal: 10,
-    backgroundColor: colours.base,
-    justifyContent: 'center',
-  },
-  detailsText: {
-    ...FontSizes.SubText,
-    ...FontWeights.Bold,
-    color: colours.text03,
-  },
+
 });
 
 export default Schedule;
