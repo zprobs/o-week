@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import { SettingToggle } from "../ReusableComponents/SettingToggle.js";
 import Fonts from "../../theme/Fonts";
-import { Theme } from "../../theme/Colours";
-import { ThemeStatic } from "../../theme/Colours";
 import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
 import ButtonColour from '../ReusableComponents/ButtonColour';
@@ -27,8 +25,9 @@ import {CloseIcon} from '../Menu/CloseIcon';
 import { BackIcon } from "../Menu/BackIcon";
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
-
+import {Theme} from '../../theme/Colours';
 const {FontWeights, FontSizes} = Fonts
+const {colours} = Theme.light;
 
 
 /**
@@ -57,7 +56,7 @@ export default function SettingsList() {
     };
 
   return(
-    <View style={{flex:9}}>
+    <View style={{flex:9, backgroundColor: colours.base}}>
       <View>
 
       <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>

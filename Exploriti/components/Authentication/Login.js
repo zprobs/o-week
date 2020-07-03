@@ -13,11 +13,12 @@ import {
 } from "react-native";
 import images from "../../assets/images";
 import Fonts from "../../theme/Fonts";
-import { Theme } from "../../theme/Colours";
+import {Theme, ThemeStatic} from '../../theme/Colours';
 import TextLine from "../ReusableComponents/TextLine";
 import ButtonColour from "../ReusableComponents/ButtonColour";
 import "@react-native-firebase/auth";
 import firebase from "@react-native-firebase/app";
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -68,7 +69,9 @@ export default function Login({ navigation }) {
           onPress={() => {
             navigation.navigate("Landing");
           }}>
-          <Image source={images.backArrow} style={styles.backArrow} />
+          <View style={styles.backArrow}>
+            <FeatherIcon name={'arrow-left'} size={32} color={ThemeStatic.white}/>
+          </View>
         </TouchableOpacity>
         <View style={styles.logo}>
           <Image
@@ -174,11 +177,15 @@ const styles = StyleSheet.create({
     color: colours.white,
   },
   backArrow: {
-    width: 40,
-    height: 40,
     left: width * 0.07,
     top: height * 0.02,
     zIndex: 2,
     position: "absolute",
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: ThemeStatic.delete,
+      alignItems: 'center',
+      justifyContent: 'center'
   },
 });

@@ -35,6 +35,7 @@ import {
   yearToInt,
   timeZoneData, saveImage,
 } from '../../context';
+import FeatherIcon from 'react-native-vector-icons/Feather'
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get("window").height;
@@ -322,7 +323,9 @@ export default function Signup({ navigation }) {
           transform: [{ translateY: page === 1 ? headerYOffset : 0 }],
         }}>
         <TouchableOpacity onPress={backButton}>
-          <Image source={images.backArrow} style={styles.backArrow} />
+          <View style={styles.backArrow}>
+            <FeatherIcon name={'arrow-left'} size={32} color={ThemeStatic.white}/>
+          </View>
         </TouchableOpacity>
         <View style={styles.countCircle}>
           <Animated.Text
@@ -520,6 +523,12 @@ export default function Signup({ navigation }) {
   );
 }
 
+const BackButton = () => (
+  <View>
+
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -537,10 +546,14 @@ const styles = StyleSheet.create({
     width: width,
   },
   backArrow: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     left: width * 0.07,
     top: height * 0.08,
+    borderRadius: 25,
+    backgroundColor: ThemeStatic.delete,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   header: {
     zIndex: 2,
@@ -623,4 +636,5 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: "center",
   },
+
 });

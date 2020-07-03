@@ -43,15 +43,7 @@ export default function Landing({ navigation }) {
     );
   }
 
-  const Slide = ({ title, content, img }) => {
-    return (
-      <View style={styles.slide}>
-        <Image source={img} style={styles.image} />
-        <Text style={styles.slideHeading}>{title}</Text>
-        <Text style={{ ...styles.slideText }}>{content}</Text>
-      </View>
-    );
-  };
+
 
   return (
     <>
@@ -125,6 +117,17 @@ export default function Landing({ navigation }) {
     </>
   );
 }
+
+
+const Slide = ({ title, content, img }) => {
+  return (
+      <View style={styles.slide}>
+        <Image source={img} style={styles.image} />
+        <Text style={styles.slideHeading}>{title}</Text>
+        <Text style={{ ...styles.slideText }}>{content}</Text>
+      </View>
+  );
+};
 
 const styles = StyleSheet.create({
   statsHead: {
