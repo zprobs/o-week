@@ -48,6 +48,7 @@
     "react-native-search-bar": "^3.5.1",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "^12.1.0",
+    "react-native-svg-transformer": "^0.14.3",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^6.6.0",
     "subscriptions-transport-ws": "^0.9.16"
@@ -68,6 +69,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "graphql": "^14.6.0",
     "jest": "^24.9.0",
+    "metro-config": "^0.60.0",
     "metro-react-native-babel-preset": "^0.58.0",
     "prettier": "^2.0.5",
     "react-test-renderer": "16.11.0"

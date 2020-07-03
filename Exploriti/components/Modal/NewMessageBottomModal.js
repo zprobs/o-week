@@ -9,7 +9,7 @@ import {
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
 import { Theme } from '../../theme/Colours';
-import Images from '../../assets/images';
+import EmptyMessages from '../../assets/svg/empty-messages.svg'
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { AuthContext, parseChats, graphqlify } from '../../context';
 import { useLazyQuery, useQuery, useMutation } from '@apollo/react-hooks';
@@ -94,7 +94,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
 
   const listEmptyComponent = () => (
     <ImgBanner
-      img={Images.emptyUsers}
+      Img={EmptyMessages}
       placeholder="No users found"
       spacing={0.16}
     />

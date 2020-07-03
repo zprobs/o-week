@@ -8,19 +8,19 @@ const window = Dimensions.get('window').height;
 
 /**
  * ImgBanner used for displaying empty list component images
- * @param img {string}
+ * @param img {component}
  * @param placeholder {string}
  * @param spacing {int}
  * @param textStyle
  * @returns {*}
  * @constructor
  */
-const ImgBanner = ({ img, placeholder, spacing, textStyle }) => {
+const ImgBanner = ({ Img, placeholder, spacing, textStyle }) => {
   const space = spacing * window;
 
   return (
     <View style={[styles.container, { marginTop: space || undefined }]}>
-      <Image source={img} />
+      <Img height={window*0.3} width={window*0.3} />
       <Text style={[styles.placeholderText, textStyle]}>{placeholder}</Text>
     </View>
   );

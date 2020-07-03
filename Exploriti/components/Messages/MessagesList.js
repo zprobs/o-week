@@ -11,7 +11,7 @@ import MessageCard from "./MessageCard";
 import ImgBanner from "../ReusableComponents/ImgBanner";
 import { useQuery, useSubscription } from "@apollo/react-hooks";
 import { GET_CHATS, GET_USER_FRIENDS } from "../../graphql";
-import Images from "../../assets/images";
+import EmptyMessages from "../../assets/svg/empty-messages.svg";
 import { AuthContext, parseChats } from "../../context";
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -69,9 +69,9 @@ export default function MessagesList() {
 
   const listEmptyComponent = () => (
     <ImgBanner
-      img={Images.emptyMessages}
+      Img={EmptyMessages}
       placeholder="No messages yet"
-      spacing={0.16}
+      spacing={0.15}
     />
   );
 

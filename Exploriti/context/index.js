@@ -179,6 +179,12 @@ export const parseChats = (rawChat, userId) => {
   return parsedChat;
 };
 
+/**
+ * Only used for demonstration purposes real data should be obtained from GraphQL
+ * @type {React.Context<null>}
+ */
+export const EventContext = createContext(null);
+
 export const yearsData = [
   'First Year',
   'Second Year',

@@ -1,5 +1,4 @@
 const images = {
-    emptyUsers: require("./empty-users.png"),
     landing1: require("./LANDING1.png"),
     landing2: require("./LANDING2.png"),
     landing3: require("./LANDING3.png"),
@@ -8,9 +7,7 @@ const images = {
     logo: require("./LOGOFINALWHITE.png"),
     backArrow: require("./backArrow.png"),
     bg: require("./background.png"),
-    emptyMessages: require("./empty-messages.png"),
-    emptyNotifications: require("./empty-notifications.png"),
-    default_user: require("./default.pdf")
+
 };
 
 export default images;

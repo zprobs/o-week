@@ -4,7 +4,7 @@ import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
 import UserCard from '../ReusableComponents/UserCard';
 import { Theme } from '../../theme/Colours';
-import Images from '../../assets/images';
+import EmptyConnections from '../../assets/svg/empty-connections.svg'
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USERS_BY_ID } from '../../graphql';
@@ -45,7 +45,7 @@ const UsersBottomModal = React.forwardRef(({ name, data, type }, ref) => {
 
   const listEmptyComponent = () => (
     <ImgBanner
-      img={Images.emptyUsers}
+      Img={EmptyConnections}
       placeholder="No users found"
       spacing={0.16}
     />

@@ -4,7 +4,7 @@ import { Modalize } from "react-native-modalize";
 import ModalHeader from "./ModalHeader";
 import { Theme } from "../../theme/Colours";
 import ImgBanner from "../ReusableComponents/ImgBanner";
-import Images from "../../assets/images";
+import EmptyConnections from '../../assets/svg/empty-connections.svg'
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -33,7 +33,7 @@ const GroupBottomModal = React.forwardRef(
 
     const ListEmptyComponent = () => (
       <ImgBanner
-        img={Images.emptyUsers}
+        Img={EmptyConnections}
         placeholder="No groups found"
         spacing={0.16}
       />

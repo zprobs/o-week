@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import { Text, View, StyleSheet, FlatList } from "react-native";
-import images from '../../assets/images';
+import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 
 
@@ -18,9 +18,9 @@ export default function NotificationsList() {
 
 const listEmptyComponent = () => (
     <ImgBanner
-        img={images.emptyNotifications}
+        Img={EmptyNotifications}
         placeholder="No notifications yet"
-         spacing={0.32}
+         spacing={0.15}
     />
 );
 

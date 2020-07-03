@@ -4,6 +4,8 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 
+// Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+
 const About = () => {
   const navigation = useNavigation();
   return(

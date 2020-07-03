@@ -12,6 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@apollo/react-hooks';
 import {GET_USERS_BY_ID} from '../../graphql';
 import EventCard from '../Orientation/EventCard';
+import TrophyList from '../Orientation/TrophyList';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -87,6 +88,8 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
           </View>
         <Text style={styles.sectionText}>Leaderboard</Text>
         <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"} gold={true}/>
+        <Text style={styles.sectionText}>Trophies</Text>
+        <TrophyList style={{margin: 25, marginBottom: 5}} data={trophiesData}/>
         <Text style={styles.sectionText}>Description</Text>
         <Text style={styles.descriptionText}>{"Welcome to the best frosh group at UofT, hosted on the best online orientation platform at UofT! This app is so great you can view your leaderboard score as you compete with the other groups for points. Maybe there will be a prize for the top 3 teams or something! People earn points for thier leaders by completing games and quizes perhaps a scavenger hunt or two organized by the lovely staff at Orientation. Thank you!" }
         </Text>
@@ -235,3 +238,4 @@ const styles = StyleSheet.create({
 export default GroupInfoModal;
 
 const membersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82", "2ts5t6mW3EWtqYJXduIxhUwaoKa2", "eRDdv1sh1WMT00lY5AJFtb36wgt1", "DIhiYwWGbrcrKwHAgpwqETPZD3x1", "UG3dfi96lDTTVuRoCTD8yHDdpyI3"];
+const trophiesData = [{name: 'Newbie', id: 1}, {name: 'Veteren', id: 2}, {name: 'Quick Thinking', id: 3}]
