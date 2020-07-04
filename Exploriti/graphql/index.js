@@ -1,5 +1,9 @@
 import gql from "graphql-tag";
 
+/**
+ * To get new Schema :
+ * gq https://exploriti-backend.herokuapp.com/v1/graphql -H 'X-Hasura-Admin-Secret: Liv7RYcLeKFPFuW4pJHX' --introspect > schema.graphql
+**/
 export const DETAILED_USER_FRAGMENT = gql`
   fragment DetailedUser on user {
     id
@@ -379,7 +383,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
       startDate
       endDate
       isOfficial
-      attendees {
+      attendees(where: {didAccept: {_eq: true}}) {
         user {
           image
           id
@@ -391,6 +395,18 @@ export const DETAILED_EVENT_FRAGMENT = gql`
         aggregate {
           count
         }
+      }
+      invited: attendees(where: {didAccept: {_eq: false}}) {
+        user {
+          image
+          id
+          name
+        }
+      }
+      invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
+          aggregate {
+              count
+          }
       }
     }
 `;
@@ -444,6 +460,36 @@ export const GET_SCHEDULED_EVENTS = gql`
                     count
                 }
             }
+        }
+    }
+`;
+
+export const SIGN_UP_USER_FOR_EVENT = gql`
+    mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
+        signUpUserForEvent(object: {didAccept: true, eventId: $eventId, userId: $userId}) {
+            userId
+            eventId
+            didAccept
+        }
+    }
+`
+
+export const INVITE_USER_TO_EVENT = gql`
+    mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
+        signUpUserForEvent(object: {didAccept: false, eventId: $eventId, userId: $userId}) {
+            userId
+            eventId
+            didAccept
+        }
+    }
+`
+
+export const CONFIRM_EVENT_INVITE = gql`
+    mutation signUpUserForEvent($eventId: uuid!, $userId: String!) {
+        confirmEventInvite(pk_columns: {eventId: $eventId, userId: $userId}, _set: {didAccept: true}) {
+            userId
+            eventId
+            didAccept
         }
     }
 `

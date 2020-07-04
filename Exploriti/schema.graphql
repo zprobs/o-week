@@ -723,6 +723,7 @@ type event {
   ): userEvent_aggregate!
   description: String
   email: String!
+  endDate: timestamptz!
   gallery(
     # JSON select path
     path: String
@@ -811,6 +812,7 @@ type event {
     # filter the rows returned
     where: eventQuestion_bool_exp
   ): eventQuestion_aggregate!
+  startDate: timestamptz!
   website: String
 }
 
@@ -855,6 +857,7 @@ input event_bool_exp {
   attendees: userEvent_bool_exp
   description: String_comparison_exp
   email: String_comparison_exp
+  endDate: timestamptz_comparison_exp
   gallery: jsonb_comparison_exp
   hosts: groupEvent_bool_exp
   id: uuid_comparison_exp
@@ -864,6 +867,7 @@ input event_bool_exp {
   location: jsonb_comparison_exp
   name: String_comparison_exp
   questions: eventQuestion_bool_exp
+  startDate: timestamptz_comparison_exp
   website: String_comparison_exp
 }
 
@@ -903,6 +907,7 @@ input event_insert_input {
   attendees: userEvent_arr_rel_insert_input
   description: String
   email: String
+  endDate: timestamptz
   gallery: jsonb
   hosts: groupEvent_arr_rel_insert_input
   id: uuid
@@ -912,6 +917,7 @@ input event_insert_input {
   location: jsonb
   name: String
   questions: eventQuestion_arr_rel_insert_input
+  startDate: timestamptz
   website: String
 }
 
@@ -919,9 +925,11 @@ input event_insert_input {
 type event_max_fields {
   description: String
   email: String
+  endDate: timestamptz
   id: uuid
   image: String
   name: String
+  startDate: timestamptz
   website: String
 }
 
@@ -929,9 +937,11 @@ type event_max_fields {
 input event_max_order_by {
   description: order_by
   email: order_by
+  endDate: order_by
   id: order_by
   image: order_by
   name: order_by
+  startDate: order_by
   website: order_by
 }
 
@@ -939,9 +949,11 @@ input event_max_order_by {
 type event_min_fields {
   description: String
   email: String
+  endDate: timestamptz
   id: uuid
   image: String
   name: String
+  startDate: timestamptz
   website: String
 }
 
@@ -949,9 +961,11 @@ type event_min_fields {
 input event_min_order_by {
   description: order_by
   email: order_by
+  endDate: order_by
   id: order_by
   image: order_by
   name: order_by
+  startDate: order_by
   website: order_by
 }
 
@@ -982,6 +996,7 @@ input event_order_by {
   attendees_aggregate: userEvent_aggregate_order_by
   description: order_by
   email: order_by
+  endDate: order_by
   gallery: order_by
   hosts_aggregate: groupEvent_aggregate_order_by
   id: order_by
@@ -991,6 +1006,7 @@ input event_order_by {
   location: order_by
   name: order_by
   questions_aggregate: eventQuestion_aggregate_order_by
+  startDate: order_by
   website: order_by
 }
 
@@ -1015,6 +1031,9 @@ enum event_select_column {
   email
 
   # column name
+  endDate
+
+  # column name
   gallery
 
   # column name
@@ -1036,6 +1055,9 @@ enum event_select_column {
   name
 
   # column name
+  startDate
+
+  # column name
   website
 }
 
@@ -1043,6 +1065,7 @@ enum event_select_column {
 input event_set_input {
   description: String
   email: String
+  endDate: timestamptz
   gallery: jsonb
   id: uuid
   image: String
@@ -1050,6 +1073,7 @@ input event_set_input {
   links: jsonb
   location: jsonb
   name: String
+  startDate: timestamptz
   website: String
 }
 
@@ -1062,6 +1086,9 @@ enum event_update_column {
   email
 
   # column name
+  endDate
+
+  # column name
   gallery
 
   # column name
@@ -1081,6 +1108,9 @@ enum event_update_column {
 
   # column name
   name
+
+  # column name
+  startDate
 
   # column name
   website
@@ -3872,6 +3902,13 @@ type mutation_root {
     on_conflict: groupInterest_on_conflict
   ): groupInterest
 
+  # update single row of the table: "userEvent"
+  confirmEventInvite(
+    # sets the columns of the filtered rows to the given values
+    _set: userEvent_set_input
+    pk_columns: userEvent_pk_columns_input!
+  ): userEvent
+
   # perform the action: "confirmFriendRequest"
   confirmFriendRequest(recipient: String!, sender: String!): ConfirmFriendRequestOutput
 
@@ -4325,15 +4362,6 @@ type mutation_root {
   # delete single row from the table: "userMember"
   leaveClub(groupId: uuid!, userId: String!): userMember
 
-  # insert a single row into the table: "userEvent"
-  registerUserForEvent(
-    # the row to be inserted
-    object: userEvent_insert_input!
-
-    # on conflict condition
-    on_conflict: userEvent_on_conflict
-  ): userEvent
-
   # insert a single row into the table: "userProgram"
   registerUserForProgram(
     # the row to be inserted
@@ -4414,6 +4442,15 @@ type mutation_root {
     # on conflict condition
     on_conflict: userChat_on_conflict
   ): userChat
+
+  # insert a single row into the table: "userEvent"
+  signUpUserForEvent(
+    # the row to be inserted
+    object: userEvent_insert_input!
+
+    # on conflict condition
+    on_conflict: userEvent_on_conflict
+  ): userEvent
 
   # update single row of the table: "event"
   updateEvent(
@@ -4895,13 +4932,6 @@ type mutation_root {
     # filter the rows which have to be updated
     where: userEvent_bool_exp!
   ): userEvent_mutation_response
-
-  # update single row of the table: "userEvent"
-  update_userEvent_by_pk(
-    # sets the columns of the filtered rows to the given values
-    _set: userEvent_set_input
-    pk_columns: userEvent_pk_columns_input!
-  ): userEvent
 
   # update data of the table: "userInterest"
   update_userInterest(
@@ -9329,6 +9359,8 @@ input userChat_variance_order_by {
 
 # columns and relationships of "userEvent"
 type userEvent {
+  didAccept: Boolean!
+
   # An object relationship
   event: event!
   eventId: uuid!
@@ -9369,6 +9401,7 @@ input userEvent_bool_exp {
   _and: [userEvent_bool_exp]
   _not: userEvent_bool_exp
   _or: [userEvent_bool_exp]
+  didAccept: Boolean_comparison_exp
   event: event_bool_exp
   eventId: uuid_comparison_exp
   user: user_bool_exp
@@ -9383,6 +9416,7 @@ enum userEvent_constraint {
 
 # input type for inserting data into table "userEvent"
 input userEvent_insert_input {
+  didAccept: Boolean
   event: event_obj_rel_insert_input
   eventId: uuid
   user: user_obj_rel_insert_input
@@ -9437,6 +9471,7 @@ input userEvent_on_conflict {
 
 # ordering options when selecting data from "userEvent"
 input userEvent_order_by {
+  didAccept: order_by
   event: event_order_by
   eventId: order_by
   user: user_order_by
@@ -9452,6 +9487,9 @@ input userEvent_pk_columns_input {
 # select columns of table "userEvent"
 enum userEvent_select_column {
   # column name
+  didAccept
+
+  # column name
   eventId
 
   # column name
@@ -9460,12 +9498,16 @@ enum userEvent_select_column {
 
 # input type for updating data in table "userEvent"
 input userEvent_set_input {
+  didAccept: Boolean
   eventId: uuid
   userId: String
 }
 
 # update columns of table "userEvent"
 enum userEvent_update_column {
+  # column name
+  didAccept
+
   # column name
   eventId
 
