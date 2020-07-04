@@ -385,6 +385,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
           id
           name
         }
+          didAccept
       }
       attendees_aggregate {
         aggregate {
@@ -423,6 +424,28 @@ export const GET_ALL_EVENTS = gql`
       }
     }
   }
+`
+
+export const GET_SCHEDULED_EVENTS = gql`
+    query GetScheduledEvents {
+        events(order_by: {startDate: asc}) {
+            id
+            image
+            name
+            startDate
+            description
+            attendees(limit: 3) {
+                user {
+                    image
+                }
+            }
+            attendees_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
 `
 
 /**

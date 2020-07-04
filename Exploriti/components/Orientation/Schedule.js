@@ -17,6 +17,8 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import EventCard from './EventCard';
 import Icon from 'react-native-vector-icons/Feather';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_SCHEDULED_EVENTS } from '../../graphql';
 
 
 const { FontWeights, FontSizes } = Fonts;
@@ -32,22 +34,49 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const Schedule = () => {
+  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS);
   const carouselRef = useRef();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState();
   const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
+  const [scheduleData, setScheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('blur', () => {
-  //     StatusBar.setBarStyle('dark-content');
-  //   });
-  //
-  //   return unsubscribe;
-  // }, [navigation]);
+  useEffect(()=> {
+    // separating all the events into pages based on which day they occur on.
+    if (!data || data.events.length===0) return;
+    let i = 0;
+    let array = [];
+    let date = new Date(data.events[0].startDate);
+    data.events.forEach((event)=>{
+      const thisDate = new Date(event.startDate);
+      console.log(thisDate)
+      if (thisDate.getFullYear() === date.getFullYear() && thisDate.getMonth() === date.getMonth() && thisDate.getDate() === date.getDate()) {
+        array.push(event)
+      } else {
+        scheduleData[i] = array;
+        i++;
+        array = [];
+        array.push(event);
+        date = new Date(event.startDate);
+      }
+    })
+    // one more time to catch the last day which isn't handeled in the for each loop
+    scheduleData[i] = array;
+    // to trigger a rerender to display the title date
+    setIndex(0);
+
+  }, [data])
+
+  if (loading || error) return null
+
+
+
 
   const title = () => {
-    switch (index) {
+    if (!scheduleData[index]) return null
+    const day = new Date(scheduleData[index][0].startDate).getDay()
+    switch (day) {
       case 0:
         return 'Sunday';
       case 1:
@@ -58,34 +87,37 @@ const Schedule = () => {
         return 'Wednesday';
       case 4:
         return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
     }
   };
 
-  const number = () => {
-    switch (index) {
-      case 0:
-        return '7th';
-      case 1:
-        return '8th';
-      case 2:
-        return '9th';
-      case 3:
-        return '10th';
-      case 4:
-        return '11th';
-    }
+
+  const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' })
+
+  const pageDate = () => {
+    if (!scheduleData[index]) return null;
+    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(new Date(scheduleData[index][0].startDate))
+    return `${month} ${day} ${year}`;
+
   };
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = ({ item }) => {
     return (
       <View style={styles.slide}>
-        {item.events.map((event) => {
+        {item.map((event) => {
           return (
             <EventCard
-              title={event.title}
+              id={event.id}
+              name={event.name}
               image={event.image}
-              time={event.time}
-              key={event.time + event.title + index}
+              startDate={event.startDate}
+              key={event.id}
+              userImages={event.attendees.map((attendee)=>attendee.user.image)}
+              count={event.attendees_aggregate.aggregate.count}
+              description={event.description}
             />
           );
         })}
@@ -108,8 +140,8 @@ const Schedule = () => {
     });
   };
 
+
   return (
-    <ScrollView style={styles.container} bounces={false}>
       <LinearGradient
         colors={['#ed1b2f', '#fc8c62']}
         style={{ height: HEIGHT }}>
@@ -120,21 +152,22 @@ const Schedule = () => {
                 :
                 null
           }
+          <ScrollView bounces={false}>
           <View style={styles.header}>
             <CircleBackIcon />
             <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
               navigation.navigate('Calendar')
             }} />
           </View>
-          <View style={styles.date}>
-            <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
-              {title()}
-            </Animated.Text>
-            <Text style={styles.dateText}>{'September ' + number()}</Text>
-          </View>
+            <View style={styles.date}>
+              <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
+                {title()}
+              </Animated.Text>
+              <Text style={styles.dateText}>{pageDate()}</Text>
+            </View>
           <Carousel
             ref={carouselRef}
-            data={DATA}
+            data={scheduleData}
             renderItem={renderItem}
             sliderWidth={WIDTH}
             itemWidth={ITEM_WIDTH}
@@ -142,16 +175,13 @@ const Schedule = () => {
             removeClippedSubviews={false}
             onBeforeSnapToItem={onSwipe}
           />
+          </ScrollView>
         </SafeAreaView>
       </LinearGradient>
-    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
 
   header: {
     flexDirection: 'row',
@@ -176,87 +206,14 @@ const styles = StyleSheet.create({
     color: ThemeStatic.placeholder,
     opacity: 0.8,
   },
-  slide: {},
+  slide: {
+  },
   carousel: {
     marginTop: 30,
-    height: HEIGHT
   },
 
 });
 
 export default Schedule;
 
-export const DATA = [
-  {
-    events: [
-      {
-        title: 'Registration',
-        image:
-          'https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg',
-        time: '9:00am',
-      },
-      {
-        title: 'Welcome Fest',
-        image:
-          'https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170',
-        time: '11:30am',
-      },
-      {
-        title: 'Taking Care of Business',
-        image:
-          'https://www.metromba.com/wp-content/uploads/2015/09/Rotman-Sept-2012-41-Smaller-e1443470483451-300x150.jpg',
-        time: '3:00pm',
-      },
-      {
-        title: 'Scavenger Hunt',
-        image:
-          'https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg',
-        time: '5:00pm',
-      },
-    ],
-  },
-  {
-    events: [
-      {
-        title: 'Scavenger Hunt',
-        image:
-          'https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg',
-        time: '1:00pm',
-      },
-      {
-        title: 'Event',
-        image:
-          'https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170',
-        time: '2:30pm',
-      },
-      {
-        title: 'Game',
-        image:
-          'https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg',
-        time: '1:00pm',
-      },
-      {
-        title: 'Event 2',
-        image:
-          'https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170',
-        time: '2:30pm',
-      },
-    ],
-  },
-  {
-    events: [
-      {
-        title: 'Scavenger Hunt part 2',
-        image:
-          'https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg',
-        time: '1:00pm',
-      },
-      {
-        title: 'Event',
-        image:
-          'https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170',
-        time: '2:30pm',
-      },
-    ],
-  },
-];
+

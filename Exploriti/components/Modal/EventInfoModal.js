@@ -126,7 +126,16 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
     if (loading || error) return null
 
-    const going = data.event.attendees.map((attendee) => attendee.user)
+    const going = [];
+    const invited = [];
+
+    data.event.attendees.map((attendee) => {
+      if (attendee.didAccept) {
+        going.push(attendee.user);
+      } else {
+        invited.push(attendee.user);
+      }
+    })
 
     return (
         <>
@@ -134,7 +143,7 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
           <Text style={styles.sectionText}>Going</Text>
           <HorizontalUserList data={going} style={{marginBottom: 15}} />
           <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-          <HorizontalUserList data={null} />
+          <HorizontalUserList data={invited} />
 
         </>
     )
@@ -160,7 +169,6 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
               <FeatherIcon name={"play"} size={13} color={ThemeStatic.lightBlue} style={{marginLeft: 2}} />
             </View>
         </LinearGradient>
-        <UserCountPreview count={33} style={styles.userCountPreview} ref={inviteRef} />
       </TouchableOpacity>
 
     </View>

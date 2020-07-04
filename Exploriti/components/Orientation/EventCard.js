@@ -23,9 +23,13 @@ const ITEM_WIDTH = 0.75 * WIDTH;
 
 /**
  * Event card, to be displayed in the schedule carousel
+ * @param id {string} eventId
  * @param image {string}
- * @param title {string}
- * @param time {string}
+ * @param name {string}
+ * @param startDate {string}
+ * @param userImages {[string]}
+ * @param count {int}
+ * @param description
  * @param style
  * @param calendar {boolean} if true is a calendar of events, false is an event
  * @param plus {boolean} true, icon = plus, false icon = check
@@ -35,13 +39,22 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ image, title, time, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState(plus ? true : isSelected);
 
     const icon = plus ? 'plus' : 'check';
+
+
+    let time;
+    if (startDate) {
+        const dateTimeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric', hour12: true, dayPeriod: 'short' })
+        const date = new Date(startDate);
+        const [{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
+        time = `${hour}:${minute}${dayPeriod}`;
+    }
 
     return (
       <TouchableWithoutFeedback
@@ -89,7 +102,7 @@ export const EventCard = ({ image, title, time, style, calendar ,plus, isSelecte
                     <Image style={styles.eventImage} source={{ uri: image }} />
                   )}
                   <View style={{ justifyContent: 'center', paddingBottom: 5 }}>
-                    <Text style={styles.eventTitle}>{title}</Text>
+                    <Text style={styles.eventTitle}>{name}</Text>
                     <Text style={styles.eventDate}>{time}</Text>
                   </View>
                 </View>
@@ -118,17 +131,14 @@ export const EventCard = ({ image, title, time, style, calendar ,plus, isSelecte
                   </View>
                 ) : (
                   <View>
-                    <Text style={styles.eventDescription}>
-                      - Meet with crew at base{'\n'}- Activities start at 4:30
-                      {'\n'}- Dinner with the crew at 8
-                    </Text>
+                    <Text numberOfLines={4} style={styles.eventDescription}>{description}</Text>
                     <View style={styles.detailsView}>
-                      <UserCountPreview style={{ marginLeft: 20 }} count={8} />
+                      <UserCountPreview style={{ marginLeft: 20 }} count={count} images={userImages} />
                       <TouchableOpacity
                         style={styles.detailsButton}
                         onPress={() =>
                           navigation.push('EventScreen', {
-                            event: { image: image, title: title, time: time },
+                            event: { image: image, name: name, startDate: startDate, id: id  },
                           })
                         }>
                         <Text style={styles.detailsText}>Details</Text>
@@ -195,6 +205,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: 12,
         width: ITEM_WIDTH * 0.85,
+        paddingHorizontal: 20
     },
     detailsButton: {
         height: 30,
