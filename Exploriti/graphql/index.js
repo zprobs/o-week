@@ -369,6 +369,62 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
+export const DETAILED_EVENT_FRAGMENT = gql`
+    fragment DetailedEvent on event {
+      description
+      id
+      image
+      location
+      name
+      startDate
+      endDate
+      isOfficial
+      attendees {
+        user {
+          image
+          id
+          name
+        }
+      }
+      attendees_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+`;
+
+export const GET_DETAILED_EVENT = gql`
+  query getDetailedEvent($id: uuid!) {
+    event(id: $id) {
+      ...DetailedEvent
+    }
+  }
+  ${DETAILED_EVENT_FRAGMENT}
+`;
+
+export const GET_ALL_EVENTS = gql`
+  query GetAllEvents {
+    events {
+      id
+      image
+      name
+      startDate
+      endDate
+      attendees(limit: 3) {
+        user {
+          image
+        }
+      }
+      attendees_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}

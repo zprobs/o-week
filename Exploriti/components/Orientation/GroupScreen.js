@@ -33,7 +33,7 @@ const GroupScreen = ({route}) => {
             <View style={styles.header}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>{group.title}</Text>
+                    <Text style={styles.title}>{group.name}</Text>
                 </LinearGradient>
             </View>
         </ImageBackground>

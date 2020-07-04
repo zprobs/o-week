@@ -15,7 +15,7 @@ import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import UsersBottomModal from './UsersBottomModal';
 import {useQuery} from '@apollo/react-hooks';
-import {GET_USERS_BY_ID} from '../../graphql';
+import {GET_DETAILED_EVENT, GET_USERS_BY_ID} from '../../graphql';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -24,12 +24,13 @@ const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
 /**
- * @param event
+ * @param eventId {string} the uuid for the event to be rendered
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
-const EventInfoModal = React.forwardRef(({event}, ref) => {
+const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
   const inviteRef = useRef();
+  const {loading, data, error} = useQuery(GET_DETAILED_EVENT, {variables: {id: eventId}})
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -73,49 +74,67 @@ const EventInfoModal = React.forwardRef(({event}, ref) => {
   };
 
 
-    const Details = () => (
-        <>
-        <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"}/>
-        <View style={styles.container}>
-          <View style={styles.iconView}>
-            <Image source={{uri: "https://www.iedp.com/media/1699/rotman-circle-blue.png"}} style={styles.icon} width={32} height={32} borderRadius={16}/>
-            <Text style={styles.iconLabel}>Rotman Event</Text>
-          </View>
-          <View style={styles.iconView}>
-            <FeatherIcon  style={styles.icon} name={'calendar'} size={32} color={colours.text03}/>
-            <Text style={styles.iconLabel}>September 7th</Text>
-          </View>
-          <View style={styles.iconView}>
-            <FeatherIcon  style={styles.icon} name={'clock'} size={32} color={colours.text03}/>
-            <Text style={styles.iconLabel}>3:00 - 4:00PM EST</Text>
-          </View>
-          <View style={styles.iconView}>
-            <FeatherIcon  style={styles.icon} name={'map-pin'} size={32} color={colours.text03}/>
-            <Text style={styles.iconLabel}>321 Bloor St. East</Text>
-          </View>
-          <Text style={styles.sectionText}>Description</Text>
-          <Text style={styles.descriptionText}>Taking care of business is an important aspect of daily life, and this event will help show you how to fully embrace your conscientious self. We will have a workshop led by the famous Computer Scientist Zachary Probst who will be detailing his life of hard work and how that paid off for him very handsomly. The event is free so make sure to bring a friend or two! There will also be free snacks and refreshments for all courtesy of the Salman Shahid Machine Learning Foundation.  </Text>
-        </View>
-        </>
+    const Details = () => {
+      if (loading) return null
+      if (error) return <Text>{error.message}</Text>
 
-    );
+      const date = new Date(data.event.startDate);
+      const end = new Date(data.event.endDate);
+      const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true, dayPeriod: 'short' })
+      const [{ value: month },,{ value: day },,{ value: year },, {value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
+      const [{ value: endMonth },,{ value: endDay },,{ value: endYear },, {value: endHour},,{value: endMinute},,{value: endDayPeriod}] = dateTimeFormat .formatToParts(end)
+      const parsedYear = year === "2020" ? "" : year
+
+
+      return (
+          <>
+            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"}/>
+            <View style={styles.container}>
+              {
+                data.event.isOfficial ?
+                    <View style={styles.iconView}>
+                      <Image source={{uri: "https://www.iedp.com/media/1699/rotman-circle-blue.png"}} style={styles.icon}
+                             width={32} height={32} borderRadius={16}/>
+                      <Text style={styles.iconLabel}>Rotman Event</Text>
+                    </View>
+                    :
+                    null
+              }
+              <View style={styles.iconView}>
+                <FeatherIcon style={styles.icon} name={'calendar'} size={32} color={colours.text03}/>
+                <Text style={styles.iconLabel}>{`${month} ${day} ${parsedYear}`}</Text>
+              </View>
+              <View style={styles.iconView}>
+                <FeatherIcon style={styles.icon} name={'clock'} size={32} color={colours.text03}/>
+                <Text style={styles.iconLabel}>{`${hour}:${minute} - ${endHour}:${endMinute} ${endDayPeriod} EST`}</Text>
+              </View>
+              <View style={styles.iconView}>
+                <FeatherIcon style={styles.icon} name={'map-pin'} size={32} color={colours.text03}/>
+                <Text style={styles.iconLabel}>{data.event.location}</Text>
+              </View>
+              <Text style={styles.sectionText}>Description</Text>
+              <Text style={styles.descriptionText}>{data.event.description}</Text>
+            </View>
+          </>
+
+      );
+    }
 
 
   const GuestList = () => {
 
-    const {data: going, loading: loadingGoing, error: errorGoing} = useQuery(GET_USERS_BY_ID, {variables: { _in: goingData }})
 
+    if (loading || error) return null
 
-    if (loadingGoing || errorGoing) return null
-    const invited = going.users.splice(0,3);
+    const going = data.event.attendees.map((attendee) => attendee.user)
 
     return (
         <>
           <RSVPButton unSelectedTitle={"Invite Friends"}  style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
           <Text style={styles.sectionText}>Going</Text>
-          <HorizontalUserList data={going.users} style={{marginBottom: 15}} />
+          <HorizontalUserList data={going} style={{marginBottom: 15}} />
           <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-          <HorizontalUserList data={invited} />
+          <HorizontalUserList data={null} />
 
         </>
     )

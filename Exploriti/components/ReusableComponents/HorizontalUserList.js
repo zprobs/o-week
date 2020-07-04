@@ -13,7 +13,7 @@ const HorizontalUserList = ({data, style}) => {
 
     const renderItem = ({item}) => {
         const {id, name, image} = item;
-        return <HorizontalUserCard image={image} name={name} id={id} key={id} />
+        return <HorizontalUserCard image={image} name={name} id={id} key={id.toString()} />
     }
 
 

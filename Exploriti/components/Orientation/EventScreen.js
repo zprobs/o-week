@@ -26,6 +26,11 @@ const EventScreen = ({route}) => {
 
     const modalRef = useRef();
     const {event} = route.params;
+    const date = new Date(event.startDate);
+    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' })
+    const [{ value: month },,{ value: day },,{ value: year },] = dateTimeFormat .formatToParts(date )
+
+    const parsedYear = year=== "2020" ? "" : year
 
     return (
       <View style={styles.container}>
@@ -33,12 +38,12 @@ const EventScreen = ({route}) => {
             <View style={styles.header}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>{event.title}</Text>
-                    <Text style={styles.date}>Sept 7</Text>
+                    <Text style={styles.title}>{event.name}</Text>
+                    <Text style={styles.date}>{`${month} ${day} ${parsedYear}`}</Text>
                 </LinearGradient>
             </View>
         </ImageBackground>
-          <EventInfoModal ref={modalRef}/>
+          <EventInfoModal ref={modalRef} eventId={event.id}/>
       </View>
     );
 }

@@ -9,40 +9,44 @@ const { FontWeights, FontSizes } = Fonts;
  * A small decorator to display how many users are involved in something
  * @param style
  * @param count {int} The amount of users involved
+ * @param images {[String]}
  * @returns {*}
  * @constructor
  */
-const UserCountPreview = ({ style, count }) => {
+const UserCountPreview = ({ style, count, images}) => {
+  if (!images) return null
+
+  let number = 0;
+  if (count > 3) {
+    number = count-3;
+  }
+
+
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.numberView}>
-        <Text style={styles.numberText}>{'+' + count}</Text>
+      <View style={[styles.container, style]}>
+        <View style={styles.numberView}>
+          {
+            number ? <Text style={styles.numberText}>{'+' + number}</Text> : null
+          }
+
+        </View>
+        <View style={styles.imageContainer}>
+          {
+            images.map((img, index)=> (
+              <Image
+                  source={{
+                    uri: img,
+                  }}
+                  style={{ ...styles.image, left: (index*17)-5, zIndex: 3 - index }}
+                  key={index}
+              />
+            ))
+          }
+
+        </View>
       </View>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{
-            uri:
-              'https://www.mainewomensnetwork.com/Resources/Pictures/vicki%20aqua%20headshot-smallmwn.jpg',
-          }}
-          style={{ ...styles.image, left: -5, zIndex: 3 }}
-        />
-        <Image
-          source={{
-            uri:
-              'https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70',
-          }}
-          style={{ ...styles.image, left: 12, zIndex: 2 }}
-        />
-        <Image
-          source={{
-            uri:
-              'https://miro.medium.com/max/3072/1*o-UCEnQ3VRCrHjI8cx4JBQ.jpeg',
-          }}
-          style={{ ...styles.image, left: 29, zIndex: 1 }}
-        />
-      </View>
-    </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -79,6 +83,8 @@ const styles = StyleSheet.create({
     width: 24,
     borderRadius: 12,
     position: 'absolute',
+      borderColor: 'black',
+    borderWidth: 0.2
   },
 });
 
