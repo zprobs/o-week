@@ -89,12 +89,6 @@ export default function MessagesList() {
     },
   });
 
-  if (!chatsLoading) {
-    const a = chats.chats[0];
-    const b = chats.chats[1];
-    console.log([a].createdAt, [b].createdAt);
-  }
-
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}

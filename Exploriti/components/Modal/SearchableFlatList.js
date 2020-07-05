@@ -56,17 +56,18 @@ const SearchableFlatList = React.forwardRef(
     // used to prevent the interests from being queried right away when visiting MyProfile
     const verifiedQuery = query ? query : NULL;
     const didSetFirst = useRef(false);
-    useQuery(verifiedQuery, {
+
+    const result = useQuery(verifiedQuery, {
       skip: query == undefined,
       variables: variables,
-      onCompleted: (loadedData) => {
-        if (!didSetFirst.current && query) {
-          didSetFirst.current = true;
-          setFilteredList(loadedData[title]);
-          setUnfilteredList(loadedData[title]);
-        }
-      },
     });
+
+    if (!result.loading && !didSetFirst.current) {
+      didSetFirst.current = true;
+      setFilteredList(result.data[title]);
+      setUnfilteredList(result.data[title]);
+    }
+
     const onSelect = React.useCallback(
       (item) => {
         const newSelected = new Map(selected);
