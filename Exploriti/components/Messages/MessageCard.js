@@ -3,10 +3,10 @@ import React, { useContext, useRef } from "react";
 import { TouchableOpacity, View, Text, Image, StyleSheet } from "react-native";
 import Fonts from "../../theme/Fonts";
 import { Theme, ThemeStatic } from "../../theme/Colours";
-import { AuthContext } from "../../context";
+import { AuthContext , parseTimeElapsed } from "../../context";
 import { useNavigation } from "@react-navigation/native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { parseTimeElapsed } from "../../context";
+
 import DeleteCardRightActions from "../ReusableComponents/DeleteCardRightActions";
 
 const { colours } = Theme.light;
@@ -32,9 +32,6 @@ const MessageCard = ({
   //  const [deleteChat, { loading: deleteChatLoading, called: deleteChatCalled }] = useMutation(MUTATION_DELETE_CHAT);
 
   const setSeenAndNavigate = () => {
-    // if (authorId !== user.id) {
-    //     messageSeen({ variables: { messageId } });
-    // }
     navigation.navigate("Conversation", {
       chatId,
       image,

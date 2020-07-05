@@ -9,7 +9,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from "../Menu/GoBackHeader";
 import MessageCard from "./MessageCard";
 import ImgBanner from "../ReusableComponents/ImgBanner";
-import { useQuery } from "@apollo/react-hooks";
+import {useSubscription} from '@apollo/react-hooks';
 import { GET_CHATS } from "../../graphql";
 import EmptyMessages from "../../assets/svg/empty-messages.svg";
 import { AuthContext, parseChats } from "../../context";
@@ -37,18 +37,17 @@ export default function MessagesList() {
 
   const renderItem = ({ item }) => {
     const {
-      chatId,
+      _id: chatId,
       participants,
-      image,
-      name,
-      authorId,
-      messageBody,
       messages,
-      numMessages,
-      seen,
-      time,
-      isOnline,
-    } = parseChats(item, authState.user.uid);
+      image,
+      name: chatName,
+      messagesAggregate
+    } = item;
+
+    const name = chatName || participants
+            .filter((participant) => participant._id !== authState.user.uid)
+            .map((participant) => participant.name).join(', ');
 
     return (
       <MessageCard
@@ -56,13 +55,12 @@ export default function MessagesList() {
         participants={participants}
         image={image}
         name={name}
-        authorId={authorId}
-        messageBody={messageBody}
         messages={messages}
-        numMessages={numMessages}
-        seen={seen}
-        time={time}
-        isOnline={isOnline}
+        numMessages={messagesAggregate.aggregate.count}
+        isOnline={true}
+        time={messagesAggregate.aggregate.max.date}
+        messageBody={messagesAggregate.aggregate.max.body}
+        authorId={messagesAggregate.aggregate.max.sender}
       />
     );
   };
@@ -80,17 +78,14 @@ export default function MessagesList() {
   const { authState } = useContext(AuthContext);
 
   const {
-    data: chats,
+    data: chatsData,
     loading: chatsLoading,
     error: chatsError,
-  } = useQuery(GET_CHATS, {
+  } = useSubscription(GET_CHATS, {
     variables: {
       user: authState.user.uid,
     },
-    pollInterval: 500,
   });
-
-  console.log(chats);
 
   const content = (
     <FlatList
@@ -100,7 +95,7 @@ export default function MessagesList() {
           ? []
           : chatsError
           ? []
-          : chats.chats
+          : chatsData.chats
       }
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}

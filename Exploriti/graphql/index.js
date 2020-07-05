@@ -312,9 +312,14 @@ export const DETAILED_CHAT = gql`
       name
       image
     }
-    messages_aggregate {
+    messagesAggregate: messages_aggregate {
       aggregate {
         count
+        max {
+          date
+          body
+          senderId
+        }
       }
     }
     messages(limit: 15, order_by: { date: desc }) {
@@ -325,7 +330,7 @@ export const DETAILED_CHAT = gql`
 `;
 
 export const GET_CHATS = gql`
-  query getChats($user: String!) {
+  subscription getChats($user: String!) {
     chats(limit: 15, order_by: {messages_aggregate: {max: {date: desc}}}, where: {_and: [{ participants: { id: { _eq: $user } } }, {messages: {}}]}) {
       ...DetailedChat
     }

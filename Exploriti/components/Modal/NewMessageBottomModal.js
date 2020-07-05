@@ -33,15 +33,21 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   const [newChat] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
       const {
-        chatId,
+        _id: chatId,
         participants,
-        image,
-        name,
         messages,
-        numMessages,
-      } = parseChats(createChat, authState.user.uid);
+        image,
+        name: chatName,
+        messagesAggregate
+      } = createChat;
 
-      navigation.navigate('Conversation', {
+      const name = chatName || participants
+          .filter((participant) => participant._id !== authState.user.uid)
+          .map((participant) => participant.name).join(', ');
+
+      const numMessages = messagesAggregate.aggregate.count;
+
+      navigation.navigate("Conversation", {
         chatId,
         image,
         name,
