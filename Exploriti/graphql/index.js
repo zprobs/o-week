@@ -287,23 +287,27 @@ export const GET_USER_LINKS = gql`
 
 export const MESSAGE_FRAGMENT = gql`
   fragment DetailedMessage on message {
+    id
     _id: id
     text: body
     createdAt: date
     user: sender {
+      id
       _id: id
       name
-      image
+      avatar: image
     }
   }
 `;
 
 export const DETAILED_CHAT = gql`
   fragment DetailedChat on chat {
+    id
     _id: id
     name
     image
     participants {
+      id
       _id: id
       name
       image
@@ -321,8 +325,8 @@ export const DETAILED_CHAT = gql`
 `;
 
 export const GET_CHATS = gql`
-  subscription getChats($user: String!) {
-    chats(where: { participants: { id: { _eq: $user } } }, limit: 15, order_by: {messages_aggregate: {min: {date: desc}}}) {
+  query getChats($user: String!) {
+    chats(limit: 15, order_by: {messages_aggregate: {max: {date: desc}}}, where: {_and: [{ participants: { id: { _eq: $user } } }, {messages: {}}]}) {
       ...DetailedChat
     }
   }
@@ -339,11 +343,15 @@ export const NEW_CHAT = gql`
 `;
 
 export const GET_NEW_MESSAGES = gql`
-  subscription getMessages($chatId: Int!, $latestId: Int!) {
+  subscription getMessages($chatId: Int!) {
     messages(
       where: {
-        _and: [{ chatId: { _eq: $chatId } }, { id: { _gt: $latestId } }]
-      }
+        _and: [
+          { chatId: { _eq: $chatId } } 
+        ]
+      },
+      limit: 1,
+      order_by: {date: desc}
     ) {
       ...DetailedMessage
     }
