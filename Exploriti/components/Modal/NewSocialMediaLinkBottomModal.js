@@ -48,7 +48,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
                 case 5:
                     return 'Twitter Page';
                 case 6:
-                    return 'Youtube Channel';
+                    return 'Tik Tok account';
                 default:
                     return 'Social Media';
             }
@@ -67,7 +67,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
                 case 5:
                     return 'www.twitter.com/';
                 case 6:
-                    return 'www.youtube.com/user/';
+                    return 'www.tiktok.com/@';
                 default:
                     return '';
             }
