@@ -374,14 +374,33 @@ const UserInteractions = ({userId, navigation, image}) => {
 
 
     const messageInteraction = async () => {
+        console.log('a');
         const friendsSelection = [userId, authState.user.uid];
-        const result = newChat({
+        newChat({
             variables: {
                 participants: graphqlify(friendsSelection, "user"),
                 image: image
-            }
+            },
+            onCompleted: ({ createChat }) => {
+                const {
+                    chatId,
+                    participants,
+                    image,
+                    name,
+                    messages,
+                    numMessages,
+                } = parseChats(createChat, authState.user.uid);
+
+                navigation.navigate('Conversation', {
+                    chatId,
+                    image,
+                    name,
+                    participants,
+                    numMessages,
+                    messages,
+                });
+            },
         });
-        console.log(result);
     };
 
     return (

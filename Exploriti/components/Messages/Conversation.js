@@ -60,51 +60,24 @@ const Conversation = () => {
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
-      chatId: chatId,
-      latestId: messages.length === 0 ? 0 : Math.max(...messages.map(item => item._id)),
+      chatId: chatId
     },
     onSubscriptionData: ({ subscriptionData }) => {
-      console.log(subscriptionData);Math.max(...messages.map(item => item._id))
+      const newMessage = subscriptionData.data.messages[0];
       if (didSetFirst.current) {
-        setMessages(
-          GiftedChat.append(messages, subscriptionData.data.messages),
-        );
+        console.log(newMessage.user._id !== authState.user.uid)
+        if (newMessage.user._id !== authState.user.uid) {
+          setMessages(
+              GiftedChat.append(messages, subscriptionData.data.messages),
+          );
+        }
       } else {
         didSetFirst.current = true;
       }
     },
   });
 
-  // const [queryChat, {
-  //     called: chatQueryCalled,
-  //     data: chatQueryData,
-  //     loading: chatQueryLoading,
-  //     error: chatQueryError
-  // }] = useLazyQuery(QUERY_CHAT, {
-  //     variables: { chatId },
-  //     fetchPolicy: 'network-only'
-  // });
-  // const { data: chatSubscriptionData, loading: chatSubscriptionLoading } = useSubscription(SUBSCRIPTION_CHAT, {
-  //     variables: { chatId }
-  // });
-  // const [addMessage] = useMutation(MUTATION_ADD_MESSAGE);
-  // const [connectChat] = useMutation(MUTATION_CONNECT_CHAT_TO_USERS);
-
-  // useEffect(() => {
-  //     if (!chatSubscriptionLoading) {
-  //         setMessages(chatSubscriptionData.chat.messages);
-  //     } else if (chatSubscriptionLoading) {
-  //         if (chatQueryCalled && !chatQueryLoading) {
-  //             setMessages(chatQueryData.chat.messages);
-  //         } else if (!chatQueryCalled) {
-  //             queryChat();
-  //         }
-  //     }
-  // }, [chatQueryData, chatQueryCalled, chatQueryLoading, chatSubscriptionData, chatSubscriptionLoading]);
-
   const onSend = updatedMessages => {
-    console.log(Math.max(...[].map(item => item._id)));
-    console.log(updatedMessages);
     const [updatedMessage] = updatedMessages;
     sendMessage({
       variables: {
@@ -113,6 +86,7 @@ const Conversation = () => {
         body: updatedMessage.text,
       },
     });
+    setMessages(GiftedChat.append(messages, updatedMessages));
   };
 
   const loadEarlierMessages = () => {

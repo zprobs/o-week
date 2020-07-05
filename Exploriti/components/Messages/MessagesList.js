@@ -9,8 +9,8 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import GoBackHeader from "../Menu/GoBackHeader";
 import MessageCard from "./MessageCard";
 import ImgBanner from "../ReusableComponents/ImgBanner";
-import { useQuery, useSubscription } from "@apollo/react-hooks";
-import { GET_CHATS, GET_USER_FRIENDS } from "../../graphql";
+import { useQuery } from "@apollo/react-hooks";
+import { GET_CHATS } from "../../graphql";
 import EmptyMessages from "../../assets/svg/empty-messages.svg";
 import { AuthContext, parseChats } from "../../context";
 const { colours } = Theme.light;
@@ -83,11 +83,14 @@ export default function MessagesList() {
     data: chats,
     loading: chatsLoading,
     error: chatsError,
-  } = useSubscription(GET_CHATS, {
+  } = useQuery(GET_CHATS, {
     variables: {
       user: authState.user.uid,
     },
+    pollInterval: 500,
   });
+
+  console.log(chats);
 
   const content = (
     <FlatList
@@ -97,7 +100,7 @@ export default function MessagesList() {
           ? []
           : chatsError
           ? []
-          : chats.chats.filter(chat => chat.messages.length !== 0).sort(function(a, b){return [a].createdAt - [b].createdAt})
+          : chats.chats
       }
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
