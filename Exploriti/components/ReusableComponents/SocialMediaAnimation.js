@@ -33,7 +33,7 @@ export default class SocialMediaAnimation extends Component {
            ;
 
         // Variables to check
-        // 0 = nothing, 1 = facebook, 2 = instagram, 3 = snapchat, 4 = linkedIn, 5 = Twitter, 6 = Youtube
+        // 0 = nothing, 1 = facebook, 2 = instagram, 3 = snapchat, 4 = linkedIn, 5 = Twitter, 6 = TikTok
         this.isTouchBtn = false;
 
         this.isLongTouch = false;
@@ -82,9 +82,9 @@ export default class SocialMediaAnimation extends Component {
         // Twitter
         this.pushIconTwitterUp = new Animated.Value(0);
         this.zoomIconTwitter = new Animated.Value(0.01);
-        // Youtube
-        this.pushIconYoutubeUp = new Animated.Value(0);
-        this.zoomIconYoutube = new Animated.Value(0.01);
+        // TikTok
+        this.pushIconTikTokUp = new Animated.Value(0);
+        this.zoomIconTikTok = new Animated.Value(0.01);
 
         // ------------------------------------------------------------------------------
         // Animation for zoom emoticons when drag
@@ -108,10 +108,10 @@ export default class SocialMediaAnimation extends Component {
         this.moveLeftIconLinkedInWhenRelease = new Animated.Value(124);
         this.moveLeftIconSnapchatWhenRelease = new Animated.Value(173);
         this.moveLeftIconTwitterWhenRelease = new Animated.Value(226);
-        this.moveLeftIconYoutubeWhenRelease = new Animated.Value(278);
+        this.moveLeftIconTikTokWhenRelease = new Animated.Value(278);
 
         // used to check if animation is complete before enabling panning
-        this.pushIconYoutubeUp.addListener(({value}) => this._value = value)
+        this.pushIconTikTokUp.addListener(({value}) => this._value = value)
 
         this.setupPanResponder();
     }
@@ -122,7 +122,7 @@ export default class SocialMediaAnimation extends Component {
             // prevent if user's dragging without long touch the button
             onMoveShouldSetPanResponder: (evt, gestureState) =>
 
-                this.isLongTouch && (this.pushIconYoutubeUp._value === 25),
+                this.isLongTouch && (this.pushIconTikTokUp._value === 25),
 
             onPanResponderGrant: (evt, gestureState) => {
                 this.handleEmoticonWhenDragging(evt, gestureState);
@@ -288,8 +288,8 @@ export default class SocialMediaAnimation extends Component {
         this.pushIconTwitterUp.setValue(0);
         this.zoomIconTwitter.setValue(0.01);
 
-        this.pushIconYoutubeUp.setValue(0);
-        this.zoomIconYoutube.setValue(0.01);
+        this.pushIconTikTokUp.setValue(0);
+        this.zoomIconTikTok.setValue(0.01);
 
         Animated.parallel([
             // Button
@@ -377,13 +377,13 @@ export default class SocialMediaAnimation extends Component {
                 useNativeDriver: false
             }),
 
-            Animated.timing(this.pushIconYoutubeUp, {
+            Animated.timing(this.pushIconTikTokUp, {
                 toValue: 25,
                 duration: 250 * this.timeDilation,
                 delay: 250,
                 useNativeDriver: false
             }),
-            Animated.timing(this.zoomIconYoutube, {
+            Animated.timing(this.zoomIconTikTok, {
                 toValue: 1,
                 duration: 250 * this.timeDilation,
                 delay: 250,
@@ -413,8 +413,8 @@ export default class SocialMediaAnimation extends Component {
         this.pushIconTwitterUp.setValue(25);
         this.zoomIconTwitter.setValue(1);
 
-        this.pushIconYoutubeUp.setValue(25);
-        this.zoomIconYoutube.setValue(1);
+        this.pushIconTikTokUp.setValue(25);
+        this.zoomIconTikTok.setValue(1);
 
         Animated.parallel([
             // Button
@@ -501,13 +501,13 @@ export default class SocialMediaAnimation extends Component {
                 useNativeDriver: false
             }),
 
-            Animated.timing(this.pushIconYoutubeUp, {
+            Animated.timing(this.pushIconTikTokUp, {
                 toValue: 0,
                 duration: 250 * this.timeDilation,
                 delay: 250,
                 useNativeDriver: false
             }),
-            Animated.timing(this.zoomIconYoutube, {
+            Animated.timing(this.zoomIconTikTok, {
                 toValue: 0.01,
                 duration: 250 * this.timeDilation,
                 delay: 250,
@@ -622,7 +622,7 @@ export default class SocialMediaAnimation extends Component {
         this.moveLeftIconLinkedInWhenRelease.setValue(124);
         this.moveLeftIconSnapchatWhenRelease.setValue(173);
         this.moveLeftIconTwitterWhenRelease.setValue(226);
-        this.moveLeftIconYoutubeWhenRelease.setValue(278);
+        this.moveLeftIconTikTokWhenRelease.setValue(278);
 
         Animated.parallel([
             Animated.timing(this.zoomIconWhenRelease, {
@@ -660,7 +660,7 @@ export default class SocialMediaAnimation extends Component {
                 duration: this.durationAnimationIconWhenRelease * this.timeDilation,
                 useNativeDriver: false
             }),
-            Animated.timing(this.moveLeftIconYoutubeWhenRelease, {
+            Animated.timing(this.moveLeftIconTikTokWhenRelease, {
                 toValue: 0,
                 duration: this.durationAnimationIconWhenRelease * this.timeDilation,
                 useNativeDriver: false
@@ -948,7 +948,7 @@ export default class SocialMediaAnimation extends Component {
                     </Animated.View>
                 </View>
 
-                {/* Icon Youtube*/}
+                {/* Icon TikTok*/}
                 <View style={styles.viewWrapIcon}>
                     {this.currentIconFocus === 6 ? (
                         <Animated.View
@@ -960,12 +960,12 @@ export default class SocialMediaAnimation extends Component {
                                     width: 50
                                 },
                             ]}>
-                            <Text style={styles.textDescription}>Youtube</Text>
+                            <Text style={styles.textDescription}>TikTok</Text>
                         </Animated.View>
                     ) : null}
                     <Animated.View
                         style={{
-                            marginBottom: this.pushIconYoutubeUp,
+                            marginBottom: this.pushIconTikTokUp,
                             transform: [
                                 {
                                     scale: this.isDragging
@@ -978,7 +978,7 @@ export default class SocialMediaAnimation extends Component {
                                                     : 0.8
                                         : this.isDraggingOutside
                                             ? this.zoomIconWhenDragOutside
-                                            : this.zoomIconYoutube,
+                                            : this.zoomIconTikTok,
                                 },
                             ],
                         }}>
@@ -986,7 +986,7 @@ export default class SocialMediaAnimation extends Component {
                             style={styles.imgIcon}
                             source={{
                                 uri:
-                                    "https://img.icons8.com/fluent/48/000000/play-button-circled.png"
+                                    "https://cdn141.picsart.com/305061469080211.png"
                             }}
                         />
                     </Animated.View>
@@ -1108,13 +1108,13 @@ export default class SocialMediaAnimation extends Component {
                     </Animated.View>
                 ) : null}
 
-                {/*Icon angry*/}
+                {/*Icon TikTok*/}
                 {this.whichIconUserChoose === 6 && !this.isDragging ? (
                     <Animated.View
                         style={{
                             width: 40,
                             height: 40,
-                            left: this.moveLeftIconYoutubeWhenRelease,
+                            left: this.moveLeftIconTikTokWhenRelease,
                             bottom: moveUpIcon,
                             transform: [{scale: this.zoomIconWhenRelease}],
                             position: 'absolute',
@@ -1123,7 +1123,7 @@ export default class SocialMediaAnimation extends Component {
                             style={styles.imgIcon}
                             source={{
                                 uri:
-                                    "https://img.icons8.com/fluent/48/000000/play-button-circled.png"
+                                    "https://cdn141.picsart.com/305061469080211.png"
                             }}
                         />
                     </Animated.View>

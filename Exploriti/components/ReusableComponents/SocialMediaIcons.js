@@ -63,7 +63,7 @@ function imgSource(type) {
     case 5:
       return 'https://img.icons8.com/color/48/000000/twitter-circled.png';
     case 6:
-      return 'https://img.icons8.com/fluent/48/000000/play-button-circled.png';
+      return 'https://cdn141.picsart.com/305061469080211.png';
     default:
       return 'https://img.icons8.com/fluent/48/000000/facebook-new.png';
   }
@@ -71,7 +71,7 @@ function imgSource(type) {
 
 /**
  * @Todo Use an API to get userID from the profile link that users enter so I can open facebook app directly
- * @param type The type of social media. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snapchat, 5: Twitter, 6: Youtube
+ * @param type The type of social media. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snapchat, 5: Twitter, 6: TikTok
  */
 function toLink(type, value) {
   const url = 'https://www.';
@@ -86,7 +86,7 @@ function toLink(type, value) {
       case 5:
         return 'twitter.com/';
       case 6:
-        return 'youtube.com/';
+        return 'tiktok.com/@';
       default:
         return '';
     }
