@@ -130,21 +130,31 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
     const invited = [];
 
     data.event.attendees.map((attendee) => {
-      if (attendee.didAccept) {
         going.push(attendee.user);
-      } else {
-        invited.push(attendee.user);
-      }
+    })
+    data.event.invited.map((attendee) => {
+      invited.push(attendee.user);
     })
 
     return (
         <>
           <RSVPButton unSelectedTitle={"Invite Friends"}  style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
-          <Text style={styles.sectionText}>Going</Text>
-          <HorizontalUserList data={going} style={{marginBottom: 15}} />
-          <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
-          <HorizontalUserList data={invited} />
-
+            {
+              going.length > 0 ? (
+                <>
+                  <Text style={styles.sectionText}>Going</Text>
+                  <HorizontalUserList data={going} style={{marginBottom: 15}} />
+                </>
+              ) : null
+            }
+            {
+              invited.length > 0 ? (
+                <>
+                  <Text style={{...styles.sectionText, marginTop: 0}}>Invited</Text>
+                  <HorizontalUserList data={invited} />
+                </>
+              ) : null
+            }
         </>
     )
   }

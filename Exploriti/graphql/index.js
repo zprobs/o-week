@@ -464,6 +464,28 @@ export const GET_SCHEDULED_EVENTS = gql`
     }
 `;
 
+export const GET_EVENTS_BY_ID = gql `
+    query GetEventsById($_in: [uuid!]!) {
+        events(where: {id: {_in: $_in}}, order_by: {startDate: asc}) {
+                id
+                image
+                name
+                startDate
+                description
+                attendees(limit: 3) {
+                    user {
+                        image
+                    }
+                }
+                attendees_aggregate {
+                    aggregate {
+                        count
+                    }
+                }
+        }
+    }
+`;
+
 export const SIGN_UP_USER_FOR_EVENT = gql`
     mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
         signUpUserForEvent(object: {didAccept: true, eventId: $eventId, userId: $userId}) {

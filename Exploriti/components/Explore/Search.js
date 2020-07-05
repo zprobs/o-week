@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, SectionList, Button, TouchableOpacity} from 'rea
 import SearchBar from "react-native-search-bar";
 import Fonts from "../../theme/Fonts";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_PAGINATED_USERS } from "../../graphql";
+import { GET_ALL_EVENTS, GET_PAGINATED_USERS } from '../../graphql';
 import Error from "../ReusableComponents/Error";
 import { useDebounce } from "../Modal/SearchableFlatList";
 import UserCard from "../ReusableComponents/UserCard";
@@ -25,7 +25,8 @@ export default function Search() {
    const [query, setQuery] = useState("");
    const debounceQuery = useDebounce(query, 300);
    const { loading, error, data } = useQuery(GET_PAGINATED_USERS, {variables: {limit: 50}});
-   const [filteredData, setFilteredData] = useState(data);
+  const { loading: eventsLoading, error: eventsError, data: eventsData } = useQuery(GET_ALL_EVENTS);
+  const [filteredData, setFilteredData] = useState(data);
    const firstRenderRef = useRef(true);
     const navigation = useNavigation();
 
@@ -36,17 +37,17 @@ export default function Search() {
         },
         {
             title: "Orientation Groups",
-            data: [{title: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", count: 13}, {title: 'Nursing Group 1', image: "https://reporter.mcgill.ca/wp-content/uploads/2019/08/frosh_2019-930x620.jpg", count: 9 }]
+            data: [{name: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", attendees_aggregate: {aggregate: {count: 13}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }]
         },
-        {
-            title: "Other Groups",
-            data: [{title: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", count: 9 }]
-        },
+        // {
+        //     // title: "Other Groups",
+        //     // data: [{title: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", count: 9 }]
+        // },
         {
             title: "Events",
-            data: [{title: "Registration", count: 56, image: "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg"}, {title: "Welcome Fest", count: 7, image: "https://www.omnihotels.com/-/media/images/hotels/mondtn/activities/mondtn-edifici-classici-universit%C3%A0.jpg?h=661&la=en&w=1170"}, {title: "Scavenger Hunt", count: 14, image: "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web-930x620.jpg" }, {title: "Taking Care of Business", count: 4, image: "https://www.metromba.com/wp-content/uploads/2015/09/Rotman-Sept-2012-41-Smaller-e1443470483451-300x150.jpg"  } ]
+            data: eventsData ? eventsData.events : []
         }
-    ],[filteredData]);
+    ],[filteredData, eventsData]);
 
     useEffect(() => {
         if (firstRenderRef.current) {
@@ -69,10 +70,8 @@ export default function Search() {
         if (section.title === 'Users') return <UserCard name={item.name} image={item.image} userId={item.id} style={styles.userCard}  />;
         if (
             section.title === 'Orientation Groups' ||
-            section.title === 'Events' ||
-            section.title === 'Other Groups'
+            section.title === 'Events'
         ) {
-            console.log('nav', navigation)
             let screen, options;
             if (section.title === "Events") {
                 screen = "EventScreen"
@@ -83,7 +82,7 @@ export default function Search() {
             }
             return (
                 <TouchableOpacity onPress={()=>navigation.navigate(screen, options)}>
-                    <ImageCard item={item} />
+                    <ImageCard item={item}  />
                 </TouchableOpacity>
             );
         }

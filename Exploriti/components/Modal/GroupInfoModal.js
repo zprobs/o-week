@@ -7,10 +7,9 @@ import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
-import { DATA} from '../Orientation/Schedule';
 import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@apollo/react-hooks';
-import {GET_USERS_BY_ID} from '../../graphql';
+import { GET_EVENTS_BY_ID, GET_USERS_BY_ID } from '../../graphql';
 import EventCard from '../Orientation/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 
@@ -104,26 +103,45 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
       const leaders = members.users.splice(0,2);
       return (
           <>
-            <Text style={styles.sectionText}>Leaders</Text>
-            <HorizontalUserList data={leaders} style={{marginTop: 10}}/>
-            <Text style={styles.sectionText}>Members</Text>
-            <HorizontalUserList data={members.users} style={{marginTop: 10}}/>
+            {
+              leaders.length > 0 ? (
+                <>
+                  <Text style={styles.sectionText}>Leaders</Text>
+                <HorizontalUserList data={leaders} style={{marginTop: 10}}/>
+                </>
+              ) : null
+            }
+            {
+              members.length > 0 ? (
+                <>
+                  <Text style={styles.sectionText}>Members</Text>
+                <HorizontalUserList data={members.users} style={{marginTop: 10}}/>
+                </>
+              ) : null
+            }
+
           </>
       );
     }
 
     const Events = () => {
         const [day, setDay] = useState(0);
+
+        const {loading: eventsLoading, data: eventsData, error: eventsError} = useQuery(GET_EVENTS_BY_ID, {variables: {_in: ["7858dd56-bea3-4ce9-9162-ac8edf641a12", "73114920-d7d4-4ae1-8362-fc8fe825bd01", "ab5c3a9d-42e8-4942-bb11-ad2f3b341ad2"]}});
+
+        if (eventsLoading) return null
+        if (eventsError) return <Text>{eventsError.message}</Text>
+
         return (
             <>
               <View style={styles.scheduleDayContainer}>
-                <Text style={styles.scheduleDay}>Today</Text>
+                <Text style={styles.scheduleDay}>Sept 3</Text>
                 <Icon name={'chevron-down'} color={colours.text03} size={16}/>
               </View>
               <View style={styles.eventContainer}>
                 {
-                  DATA[day].events.map((event) => {
-                    return <EventCard time={event.time} title={event.title} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.time + event.title + day}/>
+                  eventsData.events.map((event) => {
+                    return <EventCard startDate={event.startDate} name={event.name} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.id} count={event.attendees_aggregate.aggregate.count} description={event.description} userImages={event.attendees.map((attendee)=>attendee.user.image)} id={event.id}/>
                   })
                 }
               </View>
@@ -131,9 +149,6 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
         );
 
     }
-
-
-
 
 
     return (
@@ -151,7 +166,6 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     );
 });
 
-const tempData = [{name: "Anita", id: "1", isLeader: true}, {name: "Kevin", id: "2", isLeader: false}, {name: "Paul", id: "3", isLeader: false}];
 
 const styles = StyleSheet.create({
   sectionText: {
