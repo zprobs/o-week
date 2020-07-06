@@ -98,21 +98,21 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
 
     const Members = () => {
       const {data: members, loading: loadingMembers, error: errorMembers} = useQuery(GET_USERS_BY_ID, {variables: { _in: membersData }})
+      const {data: leaders, loading: loadingLeaders, error: errorLeaders} = useQuery(GET_USERS_BY_ID, {variables: { _in: leadersData }})
 
-      if (loadingMembers || errorMembers) return null
-      const leaders = members.users.splice(0,2);
+      if (loadingMembers || errorMembers || loadingLeaders || errorLeaders) return null
       return (
           <>
             {
-              leaders.length > 0 ? (
+              leaders.users.length > 0 ? (
                 <>
                   <Text style={styles.sectionText}>Leaders</Text>
-                <HorizontalUserList data={leaders} style={{marginTop: 10}}/>
+                <HorizontalUserList data={leaders.users} style={{marginTop: 10}}/>
                 </>
               ) : null
             }
             {
-              members.length > 0 ? (
+              members.users.length > 0 ? (
                 <>
                   <Text style={styles.sectionText}>Members</Text>
                 <HorizontalUserList data={members.users} style={{marginTop: 10}}/>
@@ -251,5 +251,6 @@ const styles = StyleSheet.create({
 
 export default GroupInfoModal;
 
-const membersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82", "2ts5t6mW3EWtqYJXduIxhUwaoKa2", "eRDdv1sh1WMT00lY5AJFtb36wgt1", "DIhiYwWGbrcrKwHAgpwqETPZD3x1", "UG3dfi96lDTTVuRoCTD8yHDdpyI3"];
+const membersData = [ "2ts5t6mW3EWtqYJXduIxhUwaoKa2", "eRDdv1sh1WMT00lY5AJFtb36wgt1", "DIhiYwWGbrcrKwHAgpwqETPZD3x1", "UG3dfi96lDTTVuRoCTD8yHDdpyI3"];
+const leadersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82"];
 const trophiesData = [{name: 'Newbie', id: 1}, {name: 'Veteren', id: 2}, {name: 'Quick Thinking', id: 3}]

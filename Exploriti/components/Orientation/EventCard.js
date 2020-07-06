@@ -27,6 +27,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param image {string}
  * @param name {string}
  * @param startDate {string}
+ * @param calenderType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
  * @param userImages {[string]}
  * @param count {int}
  * @param description
@@ -39,7 +40,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, calenderType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(false);
@@ -54,6 +55,8 @@ export const EventCard = ({ id, image, name, startDate, userImages, count, descr
         const date = new Date(startDate);
         const [{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
         time = `${hour}:${minute}${dayPeriod}`;
+    } else {
+        time = calenderType;
     }
 
     return (

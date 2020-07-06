@@ -62,7 +62,7 @@ const SearchableFlatList = React.forwardRef(
       variables: variables,
     });
 
-    if (!result.loading && !didSetFirst.current) {
+    if (!result.loading && !didSetFirst.current  && result.data) {
       didSetFirst.current = true;
       setFilteredList(result.data[title]);
       setUnfilteredList(result.data[title]);

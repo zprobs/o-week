@@ -70,8 +70,7 @@ export default function Profile({ route }) {
     });
 
     if (loading){
-        console.log('loading');
-        return <Text>Loading...</Text>;
+      return null
     }
     if (error) return <Error e={error} />;
     const description = data.user.description;
@@ -248,13 +247,16 @@ const UserInteractions = ({userId, navigation, image}) => {
                 messages,
                 numMessages,
             } = parseChats(createChat, authState.user.uid);
-            navigation.navigate("Conversation", {
-                chatId,
-                image,
-                name,
-                participants,
-                numMessages,
-                messages,
+            navigation.navigate("Messages", {
+                screen: 'Conversation',
+                params: {
+                    chatId,
+                    image,
+                    name,
+                    participants,
+                    numMessages,
+                    messages,
+                }
             });
         }
     });

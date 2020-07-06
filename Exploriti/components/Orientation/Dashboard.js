@@ -29,7 +29,7 @@ export default function Dashboard() {
     const {loading: eventLoading, error: eventError, data: eventData} = useQuery(GET_ALL_EVENTS);
 
     if (loading) {
-      return <Text>Loading</Text>;
+      return null;
     }
 
     if (error || eventError) {

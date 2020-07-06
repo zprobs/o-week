@@ -154,16 +154,15 @@ const Conversation = () => {
   return (
     <SafeAreaView style={styles.container}>
       <GoBackHeader
-        title={'name'}
-        ContentLeft={() => (
-          <ChatHeaderImage image={'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd'}  />
-        )}
+        title={name}
         titleStyle={styles.headerTitleStyle}
       />
       {content}
     </SafeAreaView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {

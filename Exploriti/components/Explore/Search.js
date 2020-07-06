@@ -63,7 +63,7 @@ export default function Search() {
         setFilteredData(data);
     }, [data]);
 
-    if (loading) return <Text>Loading...</Text>;
+    if (loading) return null;
     if (error) return  <Error e={error}/>;
 
     const renderItem = ({item, section}) => {

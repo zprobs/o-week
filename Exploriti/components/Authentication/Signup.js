@@ -450,7 +450,7 @@ export default function Signup({ navigation }) {
               <View>
                 <Text style={styles.title}>Finish Signing Up</Text>
                 <Text style={styles.caption}>
-                  Your Exploriti account is ready to be created. Just add a
+                  Your UofT Hub account is ready to be created. Just add a
                   profile picture and get started.
                 </Text>
               </View>

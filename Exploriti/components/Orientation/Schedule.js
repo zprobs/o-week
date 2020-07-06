@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   },
   carousel: {
     marginTop: 30,
+    height: HEIGHT
   },
 
 });

@@ -96,7 +96,7 @@ const Calendar = () => {
 
                         {
                             invites.map((invite, index)=>(
-                                <EventCard calendar={true} title={invite.name} time={invite.type} plus={true} remove={()=>removeInvite(index)} key={index} onPress={()=>acceptInvitation(index)}/>
+                                <EventCard calendar={true} name={invite.name} calenderType={invite.type} plus={true} remove={()=>removeInvite(index)} key={index} onPress={()=>acceptInvitation(index)}/>
                             ))
                         }
                         {
@@ -105,7 +105,7 @@ const Calendar = () => {
 
                         {
                             myCalenders.map((calendar, index)=>(
-                                <EventCard calendar={true} title={calendar.name} time={calendar.type} plus={false} remove={()=>removeCalendar(index)} isSelected={calendar.isSelected} key={index}/>
+                                <EventCard calendar={true} name={calendar.name} calenderType={calendar.type} plus={false} remove={()=>removeCalendar(index)} isSelected={calendar.isSelected} key={index}/>
                             ))
                         }
                     </View>

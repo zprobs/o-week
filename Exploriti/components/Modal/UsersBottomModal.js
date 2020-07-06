@@ -90,7 +90,7 @@ const UsersBottomModal = React.forwardRef(({ name, data, type }, ref) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
+    marginTop: 60,
     padding: 20,
     backgroundColor: colours.base,
   },
