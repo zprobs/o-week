@@ -35,6 +35,7 @@ const renderItem = ({ item }) => (
     style={styles.rankCard}
     key={item}
     gold={item === '3rd'}
+    points={110}
   />
 );
 

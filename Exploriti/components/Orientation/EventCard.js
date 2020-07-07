@@ -27,6 +27,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param image {string}
  * @param name {string}
  * @param startDate {string}
+ * @param longDate {boolean} if true then display the date aswell as the time
  * @param calenderType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
  * @param userImages {[string]}
  * @param count {int}
@@ -40,7 +41,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, calenderType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, longDate, calenderType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(false);
@@ -51,10 +52,10 @@ export const EventCard = ({ id, image, name, startDate, calenderType, userImages
 
     let time;
     if (startDate) {
-        const dateTimeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric', hour12: true, dayPeriod: 'short' })
+        const dateTimeFormat = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true, dayPeriod: 'short' })
         const date = new Date(startDate);
-        const [{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
-        time = `${hour}:${minute}${dayPeriod}`;
+        const [ { value: month },,{ value: day },,{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
+        time = longDate ? `${month} ${day}  ${hour}:${minute}${dayPeriod}` : `${hour}:${minute}${dayPeriod}`;
     } else {
         time = calenderType;
     }

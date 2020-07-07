@@ -20,7 +20,7 @@ const SectionHeader = ({ section: { title, data } }) => {
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.number}>{data.length}</Text>
       </View>
-      <Text style={styles.seeAll}>See All</Text>
+      <View style={{width: 10}} />
     </View>
   );
 };
@@ -46,11 +46,7 @@ const styles = StyleSheet.create({
     ...FontWeights.Bold,
     color: ThemeStatic.delete,
   },
-  seeAll: {
-    ...FontWeights.Bold,
-    ...FontSizes.Caption,
-    color: colours.text02,
-  },
+
 });
 
 export default SectionHeader;

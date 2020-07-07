@@ -19,7 +19,7 @@ const HorizontalUserList = ({data, style}) => {
     const Header = () => <View style={{width: 10}} />
 
     return (
-      <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}} ListHeaderComponent={Header}/>
+      <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}} ListHeaderComponent={Header} showsHorizontalScrollIndicator={false}/>
     );
 }
 

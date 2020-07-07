@@ -16,11 +16,12 @@ const HEIGHT = Dimensions.get('window').height
  * @param onPress {function}
  * @param rank {string} the rank, ex: "1st" or "3rd"
  * @param gold {boolean} background color. true = gold, false  = white
+ * @param points {int}
  * @returns {*}
  * @constructor
  */
 
-const RankCard = ({style, onPress, rank, gold}) => {
+const RankCard = ({style, onPress, rank, gold, points}) => {
 
     const Content = ()=> (
       <>
@@ -34,7 +35,7 @@ const RankCard = ({style, onPress, rank, gold}) => {
             </View>
             <View>
               <Text style={styles(gold).label}>Points</Text>
-              <Text style={styles(gold).text}>27, 098</Text>
+              <Text style={styles(gold).text}>{points.toLocaleString()}</Text>
             </View>
           </View>
         </View>

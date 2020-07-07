@@ -6,7 +6,7 @@ import Fonts from '../../theme/Fonts';
 import {useQuery} from '@apollo/react-hooks';
 import {GET_ALL_EVENTS, GET_CURRENT_USER, GET_USERS_WHERE} from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from "@react-navigation/native";
 import ImageCard from '../ReusableComponents/ImageCard';
@@ -50,7 +50,7 @@ export default function Dashboard() {
     ],[data]);
 
     const Arrow = () => (
-        <Icon name={'arrow-right'} color={ThemeStatic.white} size={28}/>
+        <Icon name={'arrow-right'} color={ThemeStatic.white} size={26}/>
     )
 
     const Header = () => {

@@ -19,6 +19,8 @@ import {
 import EventCard from '../Orientation/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import { AuthContext } from '../../context';
+import EmptyFeed from '../../assets/svg/empty-feed.svg';
+import ImgBanner from '../ReusableComponents/ImgBanner';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -118,6 +120,7 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
                 onPress={() => navigation.navigate('Leaderboard')}
                 rank={'3rd'}
                 gold={true}
+                points={data.group.trophies_aggregate.aggregate.sum.score}
               />
               <Text style={styles.sectionText}>Trophies</Text>
               <TrophyList
@@ -169,21 +172,23 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
         if (eventsLoading) return null
         if (eventsError) return <Text>{eventsError.message}</Text>
 
-        return (
-            <>
-              <View style={styles.scheduleDayContainer}>
-                <Text style={styles.scheduleDay}>Sept 3</Text>
-                <Icon name={'chevron-down'} color={colours.text03} size={16}/>
-              </View>
+        if (eventsData.events.length > 0) {
+          return (
               <View style={styles.eventContainer}>
                 {
                   eventsData.events.map((event) => {
-                    return <EventCard startDate={event.startDate} name={event.name} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.id} count={event.attendees_aggregate.aggregate.count} description={event.description} userImages={event.attendees.map((attendee)=>attendee.user.image)} id={event.id}/>
+                    return <EventCard startDate={event.startDate} name={event.name} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.id} count={event.attendees_aggregate.aggregate.count} description={event.description} userImages={event.attendees.map((attendee)=>attendee.user.image)} id={event.id} longDate={true}/>
                   })
                 }
               </View>
-            </>
-        );
+          );
+        } else {
+          return <ImgBanner
+            Img={EmptyFeed}
+            placeholder="No Events yet"
+            spacing={0}
+          />
+        }
 
     }
 
@@ -288,4 +293,3 @@ const styles = StyleSheet.create({
 
 export default GroupInfoModal;
 
-const leadersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82"];
