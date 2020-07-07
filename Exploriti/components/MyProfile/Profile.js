@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {AuthContext, graphqlify, parseChats} from '../../context';
+import {AuthContext, graphqlify } from '../../context';
 import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
 import {
   CHECK_FRIEND_REQUESTS,
@@ -237,29 +237,35 @@ const ProfileCard = ({
 const UserInteractions = ({userId, navigation, image}) => {
     const {authState} = useContext(AuthContext);
 
-    const [newChat] = useMutation(NEW_CHAT, {
-        onCompleted: ({ createChat }) => {
-            const {
-                chatId,
-                participants,
-                image,
-                name,
-                messages,
-                numMessages,
-            } = parseChats(createChat, authState.user.uid);
-            navigation.navigate("Messages", {
-                screen: 'Conversation',
-                params: {
-                    chatId,
-                    image,
-                    name,
-                    participants,
-                    numMessages,
-                    messages,
-                }
-            });
+  const [newChat] = useMutation(NEW_CHAT, {
+    onCompleted: ({ createChat }) => {
+      const {
+        _id: chatId,
+        participants,
+        messages,
+        image,
+        name: chatName,
+        messagesAggregate
+      } = createChat;
+
+      const name = chatName || participants
+        .filter((participant) => participant._id !== authState.user.uid)
+        .map((participant) => participant.name).join(', ');
+
+      const numMessages = messagesAggregate.aggregate.count;
+      navigation.navigate("Messages", {
+        screen: 'Conversation',
+        params: {
+          chatId,
+          image,
+          name,
+          participants,
+          numMessages,
+          messages,
         }
-    });
+      });
+    },
+  });
 
     const [checkFriendRequests, {data: requestsData, loading: requestsLoading, error: requestsError, called}] = useLazyQuery(CHECK_FRIEND_REQUESTS, {
         variables: {currentUser: authState.user.uid, otherUser: userId  },
@@ -376,32 +382,12 @@ const UserInteractions = ({userId, navigation, image}) => {
 
 
     const messageInteraction = async () => {
-        console.log('a');
         const friendsSelection = [userId, authState.user.uid];
         newChat({
             variables: {
                 participants: graphqlify(friendsSelection, "user"),
                 image: image
-            },
-            onCompleted: ({ createChat }) => {
-                const {
-                    chatId,
-                    participants,
-                    image,
-                    name,
-                    messages,
-                    numMessages,
-                } = parseChats(createChat, authState.user.uid);
-
-                navigation.navigate('Conversation', {
-                    chatId,
-                    image,
-                    name,
-                    participants,
-                    numMessages,
-                    messages,
-                });
-            },
+            }
         });
     };
 

@@ -127,58 +127,6 @@ export const saveImage = (image) => {
   });
 };
 
-export const parseChats = (rawChat, userId) => {
-  let {
-    _id: chatId,
-    participants,
-    messages,
-    image,
-    name: chatName,
-    messages_aggregate: numMessages,
-  } = rawChat;
-
-  numMessages = numMessages.aggregate.count;
-  const otherParticipants = participants.filter(
-    (participant) => participant._id !== userId,
-  );
-
-  const name = chatName
-    ? chatName
-    : otherParticipants.map((participant) => participant.name).join(', ');
-
-  const isOnline = true;
-  let parsedChat = {
-    chatId: chatId,
-    participants: participants,
-    image: image,
-    name: name,
-    messages: messages,
-    numMessages: numMessages,
-    isOnline: isOnline,
-  };
-
-  if (numMessages != 0) {
-    const [lastMessage] = messages;
-    const {
-      id: messageId,
-      user: { id: authorId },
-      seen,
-      text: messageBody,
-      createdAt: time,
-    } = lastMessage;
-    parsedChat['authorId'] = authorId;
-    parsedChat['seen'] = seen;
-    parsedChat['messageBody'] = messageBody;
-    parsedChat['time'] = time;
-  }
-
-  if (otherParticipants.length === 1) {
-    parsedChat['image'] = otherParticipants[0].image;
-  }
-
-  return parsedChat;
-};
-
 /**
  * Only used for demonstration purposes real data should be obtained from GraphQL
  * @type {React.Context<null>}
