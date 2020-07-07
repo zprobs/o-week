@@ -36,16 +36,18 @@ export default function Dashboard() {
       return <Text>{error.message}</Text>;
     }
 
+    console.log(data)
+
     const listData = useMemo(() => [
         {
             title: "Groups",
-            data: [{name: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", attendees_aggregate: {aggregate: {count: 13}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }, {name: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", attendees_aggregate: {aggregate: {count: 9}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }]
+            data:  data.user.member ? data.user.member.map((member)=>member.group) : []
         },
         // {
         //     title: "Events",
         //     data: eventData ? eventData.events : []
         // }
-    ],[]);
+    ],[data]);
 
     const Arrow = () => (
         <Icon name={'arrow-right'} color={ThemeStatic.white} size={28}/>
@@ -96,22 +98,25 @@ export default function Dashboard() {
     const renderItem = React.useCallback(({ item, section }) => {
         let screen, options
         const images = [];
+        let count = 0;
         if (section.title === "Groups") {
             screen = "GroupScreen"
             options = {group: item}
             item.members.map((member) => {
                 images.push(member.user.image);
             })
+          count = item.members_aggregate.aggregate.count
         } else {
             screen = "EventScreen"
             options = {event: item}
             item.attendees.map((attendee) => {
                 images.push(attendee.user.image);
             })
+            count = item.attendees_aggregate.aggregate.count
         }
             return (
                 <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-                   <ImageCard item={item} images={images} />
+                   <ImageCard item={item} images={images} count={count} />
                 </TouchableOpacity>
             );
     }, [navigation]);
@@ -179,6 +184,7 @@ const styles = StyleSheet.create({
         marginTop: 24,
         width: '100%',
         flexDirection: 'row',
+      paddingLeft: 15
     },
     userImage: {
        width: 66,

@@ -37,7 +37,7 @@ const GroupScreen = ({route}) => {
                 </LinearGradient>
             </View>
         </ImageBackground>
-          <GroupInfoModal ref={modalRef}/>
+          <GroupInfoModal ref={modalRef} groupId={group.id}/>
       </View>
     );
 }

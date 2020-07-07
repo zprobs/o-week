@@ -42,6 +42,24 @@ export const GET_CURRENT_USER = gql`
         id
         title
       }
+      member {
+          group {
+              id
+              name
+              image
+              members_aggregate {
+                  aggregate {
+                      count
+                  }
+              }
+              members(limit: 3) {
+                  user {
+                      id 
+                      image
+                  }
+              }
+          }
+      }  
     }
     friends(where: { userId: { _eq: $id } }) {
       id
@@ -443,6 +461,7 @@ export const GET_ALL_EVENTS = gql`
       endDate
       attendees(limit: 3) {
         user {
+            id
           image
         }
       }
@@ -465,6 +484,7 @@ export const GET_SCHEDULED_EVENTS = gql`
             description
             attendees(limit: 3) {
                 user {
+                    id
                     image
                 }
             }
@@ -487,6 +507,7 @@ export const GET_EVENTS_BY_ID = gql `
                 description
                 attendees(limit: 3) {
                     user {
+                        id
                         image
                     }
                 }
@@ -525,6 +546,60 @@ export const CONFIRM_EVENT_INVITE = gql`
             userId
             eventId
             didAccept
+        }
+    }
+`
+
+export const GET_USER_GROUPS = gql`
+  query getUserGroups($id: String!) {
+      user(id: $id) {
+          member {
+              group {
+                  id
+              }
+          }
+      }
+  }
+`
+
+export const GET_DETAILED_GROUP = gql`
+    query getDetailedGroup($id: uuid!) {
+        group(id: $id) {
+            id
+            name
+            image
+            description
+            members {
+                user {
+                    id
+                    image
+                    name
+                }
+            }
+            owners {
+                user {
+                    id
+                    image
+                    name
+                }
+            }
+            trophies {
+                    id
+                    name
+                    score
+            }
+            trophies_aggregate {
+                aggregate {
+                    sum {
+                        score
+                    }
+                }
+            }
+            events {
+                event {
+                    id
+                }
+            }
         }
     }
 `

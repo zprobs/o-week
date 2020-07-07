@@ -13,40 +13,32 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-const UserCountPreview = ({ style, count, images}) => {
-  if (!images) return null
+const UserCountPreview = ({ style, count, images }) => {
+  if (!images) return null;
 
   let number = 0;
   if (count > 3) {
-    number = count-3;
+    number = count - 3;
   }
 
-
   return (
-      <View style={[styles.container, style]}>
-        <View style={styles.numberView}>
-          {
-            number ? <Text style={styles.numberText}>{'+' + number}</Text> : null
-          }
-
-        </View>
-        <View style={styles.imageContainer}>
-          {
-            images.map((img, index)=> (
-              <Image
-                  source={{
-                    uri: img,
-                  }}
-                  style={{ ...styles.image, left: (index*17)-5, zIndex: 3 - index }}
-                  key={index}
-              />
-            ))
-          }
-
-        </View>
+    <View style={[styles.container, style]}>
+      <View style={styles.numberView}>
+        {number ? <Text style={styles.numberText}>{'+' + number}</Text> : null}
       </View>
+      <View style={styles.imageContainer}>
+        {images.map((img, index) => (
+          <Image
+            source={{
+              uri: img,
+            }}
+            style={{ ...styles.image, left: index * 17 - 5, zIndex: 3 - index }}
+            key={index}
+          />
+        ))}
+      </View>
+    </View>
   );
-
 };
 
 const styles = StyleSheet.create({
@@ -83,8 +75,8 @@ const styles = StyleSheet.create({
     width: 24,
     borderRadius: 12,
     position: 'absolute',
-      borderColor: 'black',
-    borderWidth: 0.2
+    borderColor: 'white',
+    borderWidth: 0.5,
   },
 });
 

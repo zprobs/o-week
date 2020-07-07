@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList} from 'react-native';
+import { FlatList, View } from 'react-native';
 import HorizontalUserCard from './HorizontalUserCard';
 
 /**
@@ -16,9 +16,10 @@ const HorizontalUserList = ({data, style}) => {
         return <HorizontalUserCard image={image} name={name} id={id} key={id.toString()} />
     }
 
+    const Header = () => <View style={{width: 10}} />
 
     return (
-      <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}}/>
+      <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}} ListHeaderComponent={Header}/>
     );
 }
 

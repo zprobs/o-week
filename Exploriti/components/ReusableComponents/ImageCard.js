@@ -11,17 +11,18 @@ const { FontWeights, FontSizes } = Fonts;
  * ImageCard for displaying groups and events in a list
  * @param item {Object} Either group or event
  * @param images {[String]} images for the user count preview
+ * @param count {int} the number of users involved
  * @returns {*}
  * @constructor
  */
-const ImageCard = ({ item , images}) => (
+const ImageCard = ({ item , images, count}) => (
   <View style={styles.imageRow}>
     <Image source={{ uri: item.image }} style={styles.groupImage} />
     <LinearGradient
       colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
       locations={[0, 0.9]}
       style={styles.imageLabelContainer}>
-      <UserCountPreview count={item.attendees_aggregate.aggregate.count} images={images} />
+      <UserCountPreview count={count} images={images} />
       <Text style={styles.imageLabelText}>{item.name}</Text>
     </LinearGradient>
   </View>

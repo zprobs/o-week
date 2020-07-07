@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {StyleSheet, Text, Dimensions, View, TouchableOpacity} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -9,9 +9,16 @@ import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
 import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@apollo/react-hooks';
-import { GET_EVENTS_BY_ID, GET_USERS_BY_ID } from '../../graphql';
+import {
+  GET_DETAILED_EVENT,
+  GET_DETAILED_GROUP,
+  GET_EVENTS_BY_ID,
+  GET_USER_GROUPS,
+  GET_USERS_BY_ID,
+} from '../../graphql';
 import EventCard from '../Orientation/EventCard';
 import TrophyList from '../Orientation/TrophyList';
+import { AuthContext } from '../../context';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -20,12 +27,13 @@ const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
 /**
- * @param group An object of a group
+ * @param group {object} An object of a group
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
  */
-const GroupInfoModal = React.forwardRef(({group}, ref) => {
+const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
 
   const navigation = useNavigation();
+  const {loading, data, error} = useQuery(GET_DETAILED_GROUP, {variables: {id: groupId}})
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -68,39 +76,66 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     );
   };
 
-  
 
 
-    const Overview = () => (
-      <>
-          <View style={styles.contactContainer}>
-            <View style={styles.contactView}>
-              <Icon name={'phone'} size={18} style={styles.contactIcon} />
-              <Text style={styles.contactText}>Call</Text>
-            </View>
-            <View style={styles.contactView}>
-              <Icon name={'video'} size={18} style={styles.contactIcon}/>
-              <Text style={styles.contactText}>Video</Text>
-            </View>
-            <View style={styles.contactView}>
-              <Icon name={'message-square'} size={18} style={styles.contactIcon}/>
-              <Text style={styles.contactText}>Chat</Text>
-            </View>
-          </View>
-        <Text style={styles.sectionText}>Leaderboard</Text>
-        <RankCard style={{margin: 25, marginBottom: 5}} onPress={()=>navigation.navigate('Leaderboard')} rank={"3rd"} gold={true}/>
-        <Text style={styles.sectionText}>Trophies</Text>
-        <TrophyList style={{margin: 25, marginBottom: 5}} data={trophiesData}/>
-        <Text style={styles.sectionText}>Description</Text>
-        <Text style={styles.descriptionText}>{"Welcome to the best frosh group at UofT, hosted on the best online orientation platform at UofT! This app is so great you can view your leaderboard score as you compete with the other groups for points. Maybe there will be a prize for the top 3 teams or something! People earn points for thier leaders by completing games and quizes perhaps a scavenger hunt or two organized by the lovely staff at Orientation. Thank you!" }
-        </Text>
 
-      </>
-    );
+    const Overview = () => {
+      const {authState} = useContext(AuthContext);
+      const {loading: groupsLoading, error: groupsError, data: groupsData} = useQuery(GET_USER_GROUPS, {variables: {id: authState.user.uid}});
+      if (loading || groupsLoading) return null
+      if (error || groupsError) return <Text>{error.message}</Text>
+
+      return (
+        <>
+          {
+           groupsData.user.member.map(member=>member.group.id).includes(groupId) ? (
+             <View style={styles.contactContainer}>
+               <View style={styles.contactView}>
+                 <Icon name={'phone'} size={18} style={styles.contactIcon} />
+                 <Text style={styles.contactText}>Call</Text>
+               </View>
+               <View style={styles.contactView}>
+                 <Icon name={'video'} size={18} style={styles.contactIcon} />
+                 <Text style={styles.contactText}>Video</Text>
+               </View>
+               <View style={styles.contactView}>
+                 <Icon
+                   name={'message-square'}
+                   size={18}
+                   style={styles.contactIcon}
+                 />
+                 <Text style={styles.contactText}>Chat</Text>
+               </View>
+             </View>
+           ) : null
+          }
+
+          {data.group.trophies.length > 0 ? (
+            <>
+              <Text style={styles.sectionText}>Leaderboard</Text>
+              <RankCard
+                style={{ margin: 25, marginBottom: 5 }}
+                onPress={() => navigation.navigate('Leaderboard')}
+                rank={'3rd'}
+                gold={true}
+              />
+              <Text style={styles.sectionText}>Trophies</Text>
+              <TrophyList
+                style={{ marginVertical: 25, marginBottom: 5 }}
+                data={data.group.trophies}
+              />
+            </>
+          ) : null}
+          <Text style={styles.sectionText}>Description</Text>
+          <Text style={styles.descriptionText}>{data.group.description}</Text>
+        </>
+      );
+    }
 
     const Members = () => {
-      const {data: members, loading: loadingMembers, error: errorMembers} = useQuery(GET_USERS_BY_ID, {variables: { _in: membersData }})
-      const {data: leaders, loading: loadingLeaders, error: errorLeaders} = useQuery(GET_USERS_BY_ID, {variables: { _in: leadersData }})
+      if (loading || error) return null
+      const {data: members, loading: loadingMembers, error: errorMembers} = useQuery(GET_USERS_BY_ID, {variables: { _in: data.group.members.map(member=>member.user.id) }})
+      const {data: leaders, loading: loadingLeaders, error: errorLeaders} = useQuery(GET_USERS_BY_ID, {variables: { _in: data.group.owners.map(owner=>owner.user.id) }})
 
       if (loadingMembers || errorMembers || loadingLeaders || errorLeaders) return null
       return (
@@ -127,9 +162,9 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     }
 
     const Events = () => {
-        const [day, setDay] = useState(0);
 
-        const {loading: eventsLoading, data: eventsData, error: eventsError} = useQuery(GET_EVENTS_BY_ID, {variables: {_in: ["7858dd56-bea3-4ce9-9162-ac8edf641a12", "73114920-d7d4-4ae1-8362-fc8fe825bd01", "ab5c3a9d-42e8-4942-bb11-ad2f3b341ad2"]}});
+        if (loading || error) return null
+        const {loading: eventsLoading, data: eventsData, error: eventsError} = useQuery(GET_EVENTS_BY_ID, {variables: {_in: data.group.events.map(event=>event.event.id)}});
 
         if (eventsLoading) return null
         if (eventsError) return <Text>{eventsError.message}</Text>
@@ -253,6 +288,4 @@ const styles = StyleSheet.create({
 
 export default GroupInfoModal;
 
-const membersData = [ "2ts5t6mW3EWtqYJXduIxhUwaoKa2", "eRDdv1sh1WMT00lY5AJFtb36wgt1", "DIhiYwWGbrcrKwHAgpwqETPZD3x1", "UG3dfi96lDTTVuRoCTD8yHDdpyI3"];
 const leadersData = ["980gZXCVjWMBsHXBmSgLVeyrVqm2", "PJS2gqhmpWTbffEpbKHj3UungR82"];
-const trophiesData = [{name: 'Newbie', id: 1}, {name: 'Veteren', id: 2}, {name: 'Quick Thinking', id: 3}]

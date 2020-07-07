@@ -1957,7 +1957,6 @@ input friendView_variance_order_by {
 type group {
   description: String
   email: String!
-  end: timestamptz!
 
   # An array relationship
   events(
@@ -2149,7 +2148,6 @@ type group {
     # filter the rows returned
     where: review_bool_exp
   ): review_aggregate!
-  start: timestamptz!
 
   # An array relationship
   tags(
@@ -2186,6 +2184,42 @@ type group {
     # filter the rows returned
     where: groupInterest_bool_exp
   ): groupInterest_aggregate!
+
+  # An array relationship
+  trophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
+  # An aggregated array relationship
+  trophies_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
   unsubscribable: Boolean!
   website: String
 }
@@ -2229,7 +2263,6 @@ input group_bool_exp {
   _or: [group_bool_exp]
   description: String_comparison_exp
   email: String_comparison_exp
-  end: timestamptz_comparison_exp
   events: groupEvent_bool_exp
   gallery: jsonb_comparison_exp
   id: uuid_comparison_exp
@@ -2240,8 +2273,8 @@ input group_bool_exp {
   owners: userOwner_bool_exp
   questions: groupQuestion_bool_exp
   reviews: review_bool_exp
-  start: timestamptz_comparison_exp
   tags: groupInterest_bool_exp
+  trophies: groupTrophy_bool_exp
   unsubscribable: Boolean_comparison_exp
   website: String_comparison_exp
 }
@@ -2278,7 +2311,6 @@ input group_delete_key_input {
 input group_insert_input {
   description: String
   email: String
-  end: timestamptz
   events: groupEvent_arr_rel_insert_input
   gallery: jsonb
   id: uuid
@@ -2289,8 +2321,8 @@ input group_insert_input {
   owners: userOwner_arr_rel_insert_input
   questions: groupQuestion_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
-  start: timestamptz
   tags: groupInterest_arr_rel_insert_input
+  trophies: groupTrophy_arr_rel_insert_input
   unsubscribable: Boolean
   website: String
 }
@@ -2299,11 +2331,9 @@ input group_insert_input {
 type group_max_fields {
   description: String
   email: String
-  end: timestamptz
   id: uuid
   image: String
   name: String
-  start: timestamptz
   website: String
 }
 
@@ -2311,11 +2341,9 @@ type group_max_fields {
 input group_max_order_by {
   description: order_by
   email: order_by
-  end: order_by
   id: order_by
   image: order_by
   name: order_by
-  start: order_by
   website: order_by
 }
 
@@ -2323,11 +2351,9 @@ input group_max_order_by {
 type group_min_fields {
   description: String
   email: String
-  end: timestamptz
   id: uuid
   image: String
   name: String
-  start: timestamptz
   website: String
 }
 
@@ -2335,11 +2361,9 @@ type group_min_fields {
 input group_min_order_by {
   description: order_by
   email: order_by
-  end: order_by
   id: order_by
   image: order_by
   name: order_by
-  start: order_by
   website: order_by
 }
 
@@ -2369,7 +2393,6 @@ input group_on_conflict {
 input group_order_by {
   description: order_by
   email: order_by
-  end: order_by
   events_aggregate: groupEvent_aggregate_order_by
   gallery: order_by
   id: order_by
@@ -2380,8 +2403,8 @@ input group_order_by {
   owners_aggregate: userOwner_aggregate_order_by
   questions_aggregate: groupQuestion_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
-  start: order_by
   tags_aggregate: groupInterest_aggregate_order_by
+  trophies_aggregate: groupTrophy_aggregate_order_by
   unsubscribable: order_by
   website: order_by
 }
@@ -2406,9 +2429,6 @@ enum group_select_column {
   email
 
   # column name
-  end
-
-  # column name
   gallery
 
   # column name
@@ -2424,9 +2444,6 @@ enum group_select_column {
   name
 
   # column name
-  start
-
-  # column name
   unsubscribable
 
   # column name
@@ -2437,13 +2454,11 @@ enum group_select_column {
 input group_set_input {
   description: String
   email: String
-  end: timestamptz
   gallery: jsonb
   id: uuid
   image: String
   links: jsonb
   name: String
-  start: timestamptz
   unsubscribable: Boolean
   website: String
 }
@@ -2457,9 +2472,6 @@ enum group_update_column {
   email
 
   # column name
-  end
-
-  # column name
   gallery
 
   # column name
@@ -2473,9 +2485,6 @@ enum group_update_column {
 
   # column name
   name
-
-  # column name
-  start
 
   # column name
   unsubscribable
@@ -3122,6 +3131,152 @@ type groupQuestion_variance_fields {
 # order by variance() on columns of table "groupQuestion"
 input groupQuestion_variance_order_by {
   questionId: order_by
+}
+
+# columns and relationships of "groupTrophy"
+type groupTrophy {
+  # An object relationship
+  group: group!
+  groupId: uuid!
+
+  # An object relationship
+  trophy: trophy!
+  trophyId: uuid!
+}
+
+# aggregated selection of "groupTrophy"
+type groupTrophy_aggregate {
+  aggregate: groupTrophy_aggregate_fields
+  nodes: [groupTrophy!]!
+}
+
+# aggregate fields of "groupTrophy"
+type groupTrophy_aggregate_fields {
+  count(columns: [groupTrophy_select_column!], distinct: Boolean): Int
+  max: groupTrophy_max_fields
+  min: groupTrophy_min_fields
+}
+
+# order by aggregate values of table "groupTrophy"
+input groupTrophy_aggregate_order_by {
+  count: order_by
+  max: groupTrophy_max_order_by
+  min: groupTrophy_min_order_by
+}
+
+# input type for inserting array relation for remote table "groupTrophy"
+input groupTrophy_arr_rel_insert_input {
+  data: [groupTrophy_insert_input!]!
+  on_conflict: groupTrophy_on_conflict
+}
+
+# Boolean expression to filter rows from the table "groupTrophy". All fields are combined with a logical 'AND'.
+input groupTrophy_bool_exp {
+  _and: [groupTrophy_bool_exp]
+  _not: groupTrophy_bool_exp
+  _or: [groupTrophy_bool_exp]
+  group: group_bool_exp
+  groupId: uuid_comparison_exp
+  trophy: trophy_bool_exp
+  trophyId: uuid_comparison_exp
+}
+
+# unique or primary key constraints on table "groupTrophy"
+enum groupTrophy_constraint {
+  # unique or primary key constraint
+  groupTrophy_pkey
+}
+
+# input type for inserting data into table "groupTrophy"
+input groupTrophy_insert_input {
+  group: group_obj_rel_insert_input
+  groupId: uuid
+  trophy: trophy_obj_rel_insert_input
+  trophyId: uuid
+}
+
+# aggregate max on columns
+type groupTrophy_max_fields {
+  groupId: uuid
+  trophyId: uuid
+}
+
+# order by max() on columns of table "groupTrophy"
+input groupTrophy_max_order_by {
+  groupId: order_by
+  trophyId: order_by
+}
+
+# aggregate min on columns
+type groupTrophy_min_fields {
+  groupId: uuid
+  trophyId: uuid
+}
+
+# order by min() on columns of table "groupTrophy"
+input groupTrophy_min_order_by {
+  groupId: order_by
+  trophyId: order_by
+}
+
+# response of any mutation on the table "groupTrophy"
+type groupTrophy_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [groupTrophy!]!
+}
+
+# input type for inserting object relation for remote table "groupTrophy"
+input groupTrophy_obj_rel_insert_input {
+  data: groupTrophy_insert_input!
+  on_conflict: groupTrophy_on_conflict
+}
+
+# on conflict condition type for table "groupTrophy"
+input groupTrophy_on_conflict {
+  constraint: groupTrophy_constraint!
+  update_columns: [groupTrophy_update_column!]!
+  where: groupTrophy_bool_exp
+}
+
+# ordering options when selecting data from "groupTrophy"
+input groupTrophy_order_by {
+  group: group_order_by
+  groupId: order_by
+  trophy: trophy_order_by
+  trophyId: order_by
+}
+
+# primary key columns input for table: "groupTrophy"
+input groupTrophy_pk_columns_input {
+  groupId: uuid!
+  trophyId: uuid!
+}
+
+# select columns of table "groupTrophy"
+enum groupTrophy_select_column {
+  # column name
+  groupId
+
+  # column name
+  trophyId
+}
+
+# input type for updating data in table "groupTrophy"
+input groupTrophy_set_input {
+  groupId: uuid
+  trophyId: uuid
+}
+
+# update columns of table "groupTrophy"
+enum groupTrophy_update_column {
+  # column name
+  groupId
+
+  # column name
+  trophyId
 }
 
 # expression to compare columns of type Int. All fields are combined with logical 'AND'.
@@ -3902,6 +4057,15 @@ type mutation_root {
     on_conflict: groupInterest_on_conflict
   ): groupInterest
 
+  # insert a single row into the table: "groupTrophy"
+  awardTrophy(
+    # the row to be inserted
+    object: groupTrophy_insert_input!
+
+    # on conflict condition
+    on_conflict: groupTrophy_on_conflict
+  ): groupTrophy
+
   # update single row of the table: "userEvent"
   confirmEventInvite(
     # sets the columns of the filtered rows to the given values
@@ -4032,6 +4196,12 @@ type mutation_root {
     where: groupQuestion_bool_exp!
   ): groupQuestion_mutation_response
 
+  # delete data from the table: "groupTrophy"
+  delete_groupTrophy(
+    # filter the rows which have to be deleted
+    where: groupTrophy_bool_exp!
+  ): groupTrophy_mutation_response
+
   # delete data from the table: "interest"
   delete_interest(
     # filter the rows which have to be deleted
@@ -4079,6 +4249,15 @@ type mutation_root {
     # filter the rows which have to be deleted
     where: review_bool_exp!
   ): review_mutation_response
+
+  # delete data from the table: "trophy"
+  delete_trophy(
+    # filter the rows which have to be deleted
+    where: trophy_bool_exp!
+  ): trophy_mutation_response
+
+  # delete single row from the table: "trophy"
+  delete_trophy_by_pk(id: uuid!): trophy
 
   # delete data from the table: "user"
   delete_user(
@@ -4206,6 +4385,15 @@ type mutation_root {
     on_conflict: groupQuestion_on_conflict
   ): groupQuestion_mutation_response
 
+  # insert data into the table: "groupTrophy"
+  insert_groupTrophy(
+    # the rows to be inserted
+    objects: [groupTrophy_insert_input!]!
+
+    # on conflict condition
+    on_conflict: groupTrophy_on_conflict
+  ): groupTrophy_mutation_response
+
   # insert data into the table: "interest"
   insert_interest(
     # the rows to be inserted
@@ -4286,6 +4474,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: review_on_conflict
   ): review_mutation_response
+
+  # insert data into the table: "trophy"
+  insert_trophy(
+    # the rows to be inserted
+    objects: [trophy_insert_input!]!
+
+    # on conflict condition
+    on_conflict: trophy_on_conflict
+  ): trophy_mutation_response
+
+  # insert a single row into the table: "trophy"
+  insert_trophy_one(
+    # the row to be inserted
+    object: trophy_insert_input!
+
+    # on conflict condition
+    on_conflict: trophy_on_conflict
+  ): trophy
 
   # insert data into the table: "user"
   insert_user(
@@ -4391,6 +4597,9 @@ type mutation_root {
 
   # delete single row from the table: "groupInterest"
   removeTagFromGroup(groupId: uuid!, interestId: Int!): groupInterest
+
+  # delete single row from the table: "groupTrophy"
+  removeTrophy(groupId: uuid!, trophyId: uuid!): groupTrophy
 
   # delete single row from the table: "userEvent"
   removeUserFromEvent(eventId: uuid!, userId: String!): userEvent
@@ -4710,6 +4919,22 @@ type mutation_root {
     pk_columns: groupQuestion_pk_columns_input!
   ): groupQuestion
 
+  # update data of the table: "groupTrophy"
+  update_groupTrophy(
+    # sets the columns of the filtered rows to the given values
+    _set: groupTrophy_set_input
+
+    # filter the rows which have to be updated
+    where: groupTrophy_bool_exp!
+  ): groupTrophy_mutation_response
+
+  # update single row of the table: "groupTrophy"
+  update_groupTrophy_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: groupTrophy_set_input
+    pk_columns: groupTrophy_pk_columns_input!
+  ): groupTrophy
+
   # update data of the table: "interest"
   update_interest(
     # append existing jsonb value of filtered columns with new jsonb value
@@ -4873,6 +5098,28 @@ type mutation_root {
     _set: review_set_input
     pk_columns: review_pk_columns_input!
   ): review
+
+  # update data of the table: "trophy"
+  update_trophy(
+    # increments the integer columns with given value of the filtered values
+    _inc: trophy_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: trophy_set_input
+
+    # filter the rows which have to be updated
+    where: trophy_bool_exp!
+  ): trophy_mutation_response
+
+  # update single row of the table: "trophy"
+  update_trophy_by_pk(
+    # increments the integer columns with given value of the filtered values
+    _inc: trophy_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: trophy_set_input
+    pk_columns: trophy_pk_columns_input!
+  ): trophy
 
   # update data of the table: "user"
   update_user(
@@ -5896,6 +6143,24 @@ type query_root {
     where: friendView_bool_exp
   ): [friendView!]!
 
+  # fetch data from the table: "groupTrophy"
+  getTrophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
 
@@ -6015,6 +6280,27 @@ type query_root {
 
   # fetch data from the table: "groupQuestion" using primary key columns
   groupQuestion_by_pk(groupId: uuid!, questionId: Int!): groupQuestion
+
+  # fetch aggregated fields from the table: "groupTrophy"
+  groupTrophy_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
+
+  # fetch data from the table: "groupTrophy" using primary key columns
+  groupTrophy_by_pk(groupId: uuid!, trophyId: uuid!): groupTrophy
 
   # fetch aggregated fields from the table: "group"
   group_aggregate(
@@ -6285,6 +6571,45 @@ type query_root {
 
   # fetch data from the table: "review" using primary key columns
   review_by_pk(id: Int!): review
+
+  # fetch data from the table: "trophy"
+  trophy(
+    # distinct select on columns
+    distinct_on: [trophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophy_order_by!]
+
+    # filter the rows returned
+    where: trophy_bool_exp
+  ): [trophy!]!
+
+  # fetch aggregated fields from the table: "trophy"
+  trophy_aggregate(
+    # distinct select on columns
+    distinct_on: [trophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophy_order_by!]
+
+    # filter the rows returned
+    where: trophy_bool_exp
+  ): trophy_aggregate!
+
+  # fetch data from the table: "trophy" using primary key columns
+  trophy_by_pk(id: uuid!): trophy
 
   # fetch data from the table: "user" using primary key columns
   user(id: String!): user
@@ -7509,6 +7834,24 @@ type subscription_root {
     where: friendView_bool_exp
   ): [friendView!]!
 
+  # fetch data from the table: "groupTrophy"
+  getTrophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
 
@@ -7628,6 +7971,27 @@ type subscription_root {
 
   # fetch data from the table: "groupQuestion" using primary key columns
   groupQuestion_by_pk(groupId: uuid!, questionId: Int!): groupQuestion
+
+  # fetch aggregated fields from the table: "groupTrophy"
+  groupTrophy_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
+
+  # fetch data from the table: "groupTrophy" using primary key columns
+  groupTrophy_by_pk(groupId: uuid!, trophyId: uuid!): groupTrophy
 
   # fetch aggregated fields from the table: "group"
   group_aggregate(
@@ -7898,6 +8262,45 @@ type subscription_root {
 
   # fetch data from the table: "review" using primary key columns
   review_by_pk(id: Int!): review
+
+  # fetch data from the table: "trophy"
+  trophy(
+    # distinct select on columns
+    distinct_on: [trophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophy_order_by!]
+
+    # filter the rows returned
+    where: trophy_bool_exp
+  ): [trophy!]!
+
+  # fetch aggregated fields from the table: "trophy"
+  trophy_aggregate(
+    # distinct select on columns
+    distinct_on: [trophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophy_order_by!]
+
+    # filter the rows returned
+    where: trophy_bool_exp
+  ): trophy_aggregate!
+
+  # fetch data from the table: "trophy" using primary key columns
+  trophy_by_pk(id: uuid!): trophy
 
   # fetch data from the table: "user" using primary key columns
   user(id: String!): user
@@ -8186,6 +8589,310 @@ input timestamptz_comparison_exp {
   _lte: timestamptz
   _neq: timestamptz
   _nin: [timestamptz!]
+}
+
+# columns and relationships of "trophy"
+type trophy {
+  description: String!
+
+  # An array relationship
+  groupTrophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
+  # An aggregated array relationship
+  groupTrophies_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
+  id: uuid!
+  name: String!
+  score: Int!
+}
+
+# aggregated selection of "trophy"
+type trophy_aggregate {
+  aggregate: trophy_aggregate_fields
+  nodes: [trophy!]!
+}
+
+# aggregate fields of "trophy"
+type trophy_aggregate_fields {
+  avg: trophy_avg_fields
+  count(columns: [trophy_select_column!], distinct: Boolean): Int
+  max: trophy_max_fields
+  min: trophy_min_fields
+  stddev: trophy_stddev_fields
+  stddev_pop: trophy_stddev_pop_fields
+  stddev_samp: trophy_stddev_samp_fields
+  sum: trophy_sum_fields
+  var_pop: trophy_var_pop_fields
+  var_samp: trophy_var_samp_fields
+  variance: trophy_variance_fields
+}
+
+# order by aggregate values of table "trophy"
+input trophy_aggregate_order_by {
+  avg: trophy_avg_order_by
+  count: order_by
+  max: trophy_max_order_by
+  min: trophy_min_order_by
+  stddev: trophy_stddev_order_by
+  stddev_pop: trophy_stddev_pop_order_by
+  stddev_samp: trophy_stddev_samp_order_by
+  sum: trophy_sum_order_by
+  var_pop: trophy_var_pop_order_by
+  var_samp: trophy_var_samp_order_by
+  variance: trophy_variance_order_by
+}
+
+# input type for inserting array relation for remote table "trophy"
+input trophy_arr_rel_insert_input {
+  data: [trophy_insert_input!]!
+  on_conflict: trophy_on_conflict
+}
+
+# aggregate avg on columns
+type trophy_avg_fields {
+  score: Float
+}
+
+# order by avg() on columns of table "trophy"
+input trophy_avg_order_by {
+  score: order_by
+}
+
+# Boolean expression to filter rows from the table "trophy". All fields are combined with a logical 'AND'.
+input trophy_bool_exp {
+  _and: [trophy_bool_exp]
+  _not: trophy_bool_exp
+  _or: [trophy_bool_exp]
+  description: String_comparison_exp
+  groupTrophies: groupTrophy_bool_exp
+  id: uuid_comparison_exp
+  name: String_comparison_exp
+  score: Int_comparison_exp
+}
+
+# unique or primary key constraints on table "trophy"
+enum trophy_constraint {
+  # unique or primary key constraint
+  trophy_pkey
+}
+
+# input type for incrementing integer column in table "trophy"
+input trophy_inc_input {
+  score: Int
+}
+
+# input type for inserting data into table "trophy"
+input trophy_insert_input {
+  description: String
+  groupTrophies: groupTrophy_arr_rel_insert_input
+  id: uuid
+  name: String
+  score: Int
+}
+
+# aggregate max on columns
+type trophy_max_fields {
+  description: String
+  id: uuid
+  name: String
+  score: Int
+}
+
+# order by max() on columns of table "trophy"
+input trophy_max_order_by {
+  description: order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# aggregate min on columns
+type trophy_min_fields {
+  description: String
+  id: uuid
+  name: String
+  score: Int
+}
+
+# order by min() on columns of table "trophy"
+input trophy_min_order_by {
+  description: order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# response of any mutation on the table "trophy"
+type trophy_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [trophy!]!
+}
+
+# input type for inserting object relation for remote table "trophy"
+input trophy_obj_rel_insert_input {
+  data: trophy_insert_input!
+  on_conflict: trophy_on_conflict
+}
+
+# on conflict condition type for table "trophy"
+input trophy_on_conflict {
+  constraint: trophy_constraint!
+  update_columns: [trophy_update_column!]!
+  where: trophy_bool_exp
+}
+
+# ordering options when selecting data from "trophy"
+input trophy_order_by {
+  description: order_by
+  groupTrophies_aggregate: groupTrophy_aggregate_order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# primary key columns input for table: "trophy"
+input trophy_pk_columns_input {
+  id: uuid!
+}
+
+# select columns of table "trophy"
+enum trophy_select_column {
+  # column name
+  description
+
+  # column name
+  id
+
+  # column name
+  name
+
+  # column name
+  score
+}
+
+# input type for updating data in table "trophy"
+input trophy_set_input {
+  description: String
+  id: uuid
+  name: String
+  score: Int
+}
+
+# aggregate stddev on columns
+type trophy_stddev_fields {
+  score: Float
+}
+
+# order by stddev() on columns of table "trophy"
+input trophy_stddev_order_by {
+  score: order_by
+}
+
+# aggregate stddev_pop on columns
+type trophy_stddev_pop_fields {
+  score: Float
+}
+
+# order by stddev_pop() on columns of table "trophy"
+input trophy_stddev_pop_order_by {
+  score: order_by
+}
+
+# aggregate stddev_samp on columns
+type trophy_stddev_samp_fields {
+  score: Float
+}
+
+# order by stddev_samp() on columns of table "trophy"
+input trophy_stddev_samp_order_by {
+  score: order_by
+}
+
+# aggregate sum on columns
+type trophy_sum_fields {
+  score: Int
+}
+
+# order by sum() on columns of table "trophy"
+input trophy_sum_order_by {
+  score: order_by
+}
+
+# update columns of table "trophy"
+enum trophy_update_column {
+  # column name
+  description
+
+  # column name
+  id
+
+  # column name
+  name
+
+  # column name
+  score
+}
+
+# aggregate var_pop on columns
+type trophy_var_pop_fields {
+  score: Float
+}
+
+# order by var_pop() on columns of table "trophy"
+input trophy_var_pop_order_by {
+  score: order_by
+}
+
+# aggregate var_samp on columns
+type trophy_var_samp_fields {
+  score: Float
+}
+
+# order by var_samp() on columns of table "trophy"
+input trophy_var_samp_order_by {
+  score: order_by
+}
+
+# aggregate variance on columns
+type trophy_variance_fields {
+  score: Float
+}
+
+# order by variance() on columns of table "trophy"
+input trophy_variance_order_by {
+  score: order_by
 }
 
 # columns and relationships of "user"
