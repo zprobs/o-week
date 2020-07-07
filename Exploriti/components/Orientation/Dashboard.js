@@ -26,13 +26,13 @@ export default function Dashboard() {
     const {loading, error, data} = useQuery(GET_CURRENT_USER, {variables: {id: authState.user.uid}});
 
     // for demo purposes only, In actual app GET_CURRENT_USER will return a list of user events
-    const {loading: eventLoading, error: eventError, data: eventData} = useQuery(GET_ALL_EVENTS);
+    // const {loading: eventLoading, error: eventError, data: eventData} = useQuery(GET_ALL_EVENTS);
 
     if (loading) {
       return null;
     }
 
-    if (error || eventError) {
+    if (error) {
       return <Text>{error.message}</Text>;
     }
 
@@ -41,11 +41,11 @@ export default function Dashboard() {
             title: "Groups",
             data: [{name: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", attendees_aggregate: {aggregate: {count: 13}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }, {name: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", attendees_aggregate: {aggregate: {count: 9}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }]
         },
-        {
-            title: "Events",
-            data: eventData ? eventData.events : []
-        }
-    ],[eventData]);
+        // {
+        //     title: "Events",
+        //     data: eventData ? eventData.events : []
+        // }
+    ],[]);
 
     const Arrow = () => (
         <Icon name={'arrow-right'} color={ThemeStatic.white} size={28}/>
@@ -120,9 +120,7 @@ export default function Dashboard() {
 
     return (
         <View style={styles.container}>
-            {
-                eventLoading ? <Text>Loading...</Text>
-                    :
+
                     <SectionList
                         sections={listData}
                         keyExtractor={(item, index) => item + index}
@@ -131,7 +129,6 @@ export default function Dashboard() {
                         ListHeaderComponent={Header}
                         showsVerticalScrollIndicator={false}
                     />
-            }
         </View>
     );
 }

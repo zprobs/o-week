@@ -68,6 +68,8 @@ const GroupInfoModal = React.forwardRef(({group}, ref) => {
     );
   };
 
+  
+
 
     const Overview = () => (
       <>

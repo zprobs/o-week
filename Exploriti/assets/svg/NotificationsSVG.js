@@ -1,9 +1,19 @@
 import * as React from 'react';
 import Animated from 'react-native-reanimated';
-import Svg, { G, Path, Circle, PathProps, CircleProps } from 'react-native-svg';
+import Svg, { G, Path, Rect, Line} from 'react-native-svg';
+import Icon from 'react-native-vector-icons/Feather'
+import { useRef } from 'react';
 
 const AnimatedPath = Animated.createAnimatedComponent(
     Path
+)
+
+const AnimatedRect = Animated.createAnimatedComponent(
+  Rect
+)
+
+const AnimatedLine = Animated.createAnimatedComponent(
+  Line
 )
 
 
@@ -12,6 +22,9 @@ Animated.addWhitelistedNativeProps({
 });
 
 const NotificationsSVG = ({ color, size }) => {
+
+  console.log(size)
+
     return (
         <Svg width={size} height={size} viewBox="0 0 24 24">
             <AnimatedPath
@@ -23,7 +36,9 @@ const NotificationsSVG = ({ color, size }) => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
             />
+
         </Svg>
+
     );
 };
 
