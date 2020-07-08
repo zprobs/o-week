@@ -520,6 +520,17 @@ export const GET_EVENTS_BY_ID = gql `
     }
 `;
 
+export const CHECK_USER_EVENT_ACCEPTED = gql`
+    query MyQuery($_eventId: uuid!, $userId: String!) {
+        user(id: $userId) {
+            events(where: {eventId: {_eq: $_eventId}}) {
+                didAccept
+                eventId
+            }
+        }
+    }
+`
+
 export const SIGN_UP_USER_FOR_EVENT = gql`
     mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
         signUpUserForEvent(object: {didAccept: true, eventId: $eventId, userId: $userId}) {

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {StyleSheet, Text, Dimensions, View, TouchableOpacity, Image, Linking} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -15,7 +15,8 @@ import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import UsersBottomModal from './UsersBottomModal';
 import {useQuery} from '@apollo/react-hooks';
-import {GET_DETAILED_EVENT, GET_USERS_BY_ID} from '../../graphql';
+import { CHECK_USER_EVENT_ACCEPTED, GET_DETAILED_EVENT, GET_USERS_BY_ID } from '../../graphql';
+import { AuthContext } from '../../context';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -29,6 +30,7 @@ const WIDTH = Dimensions.get('window').width;
  */
 const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
+  const {authState} = useContext(AuthContext);
   const inviteRef = useRef();
   const {loading, data, error} = useQuery(GET_DETAILED_EVENT, {variables: {id: eventId}})
 
@@ -75,6 +77,10 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
 
     const Details = () => {
+
+      const {loading: acceptLoading, data: acceptData, error :acceptError} = useQuery(CHECK_USER_EVENT_ACCEPTED, {variables: {eventId: eventId, userId: authState.user.uid}})
+
+
       if (loading) return null
       if (error) return <Text>{error.message}</Text>
 
@@ -88,7 +94,7 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
       return (
           <>
-            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"}/>
+            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={false}/>
             <View style={styles.container}>
               {
                 data.event.isOfficial ?
@@ -106,7 +112,7 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
               </View>
               <View style={styles.iconView}>
                 <FeatherIcon style={styles.icon} name={'clock'} size={32} color={colours.text03}/>
-                <Text style={styles.iconLabel}>{`${hour}:${minute} - ${endHour}:${endMinute} ${endDayPeriod} EST`}</Text>
+                <Text style={styles.iconLabel}>{`${hour}:${minute} - ${endHour}:${endMinute} ${endDayPeriod}`}</Text>
               </View>
               <View style={styles.iconView}>
                 <FeatherIcon style={styles.icon} name={'map-pin'} size={32} color={colours.text03}/>
