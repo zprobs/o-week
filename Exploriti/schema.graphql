@@ -94,6 +94,7 @@ type chat {
     # filter the rows returned
     where: chatUserView_bool_exp
   ): chatUserView_aggregate!
+  unsubscribable: Boolean!
 
   # An array relationship
   users(
@@ -194,6 +195,7 @@ input chat_bool_exp {
   messages: message_bool_exp
   name: String_comparison_exp
   participants: chatUserView_bool_exp
+  unsubscribable: Boolean_comparison_exp
   users: userChat_bool_exp
 }
 
@@ -214,6 +216,7 @@ input chat_insert_input {
   image: String
   messages: message_arr_rel_insert_input
   name: String
+  unsubscribable: Boolean
   users: userChat_arr_rel_insert_input
 }
 
@@ -274,6 +277,7 @@ input chat_order_by {
   messages_aggregate: message_aggregate_order_by
   name: order_by
   participants_aggregate: chatUserView_aggregate_order_by
+  unsubscribable: order_by
   users_aggregate: userChat_aggregate_order_by
 }
 
@@ -292,6 +296,9 @@ enum chat_select_column {
 
   # column name
   name
+
+  # column name
+  unsubscribable
 }
 
 # input type for updating data in table "chat"
@@ -299,6 +306,7 @@ input chat_set_input {
   id: Int
   image: String
   name: String
+  unsubscribable: Boolean
 }
 
 # aggregate stddev on columns
@@ -351,6 +359,9 @@ enum chat_update_column {
 
   # column name
   name
+
+  # column name
+  unsubscribable
 }
 
 # aggregate var_pop on columns
@@ -2188,7 +2199,7 @@ type group {
   # An array relationship
   trophies(
     # distinct select on columns
-    distinct_on: [groupTrophy_select_column!]
+    distinct_on: [trophyGroupView_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -2197,16 +2208,16 @@ type group {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [groupTrophy_order_by!]
+    order_by: [trophyGroupView_order_by!]
 
     # filter the rows returned
-    where: groupTrophy_bool_exp
-  ): [groupTrophy!]!
+    where: trophyGroupView_bool_exp
+  ): [trophyGroupView!]!
 
   # An aggregated array relationship
   trophies_aggregate(
     # distinct select on columns
-    distinct_on: [groupTrophy_select_column!]
+    distinct_on: [trophyGroupView_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -2215,11 +2226,11 @@ type group {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [groupTrophy_order_by!]
+    order_by: [trophyGroupView_order_by!]
 
     # filter the rows returned
-    where: groupTrophy_bool_exp
-  ): groupTrophy_aggregate!
+    where: trophyGroupView_bool_exp
+  ): trophyGroupView_aggregate!
   unsubscribable: Boolean!
   website: String
 }
@@ -2274,7 +2285,7 @@ input group_bool_exp {
   questions: groupQuestion_bool_exp
   reviews: review_bool_exp
   tags: groupInterest_bool_exp
-  trophies: groupTrophy_bool_exp
+  trophies: trophyGroupView_bool_exp
   unsubscribable: Boolean_comparison_exp
   website: String_comparison_exp
 }
@@ -2322,7 +2333,6 @@ input group_insert_input {
   questions: groupQuestion_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
   tags: groupInterest_arr_rel_insert_input
-  trophies: groupTrophy_arr_rel_insert_input
   unsubscribable: Boolean
   website: String
 }
@@ -2404,7 +2414,7 @@ input group_order_by {
   questions_aggregate: groupQuestion_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
   tags_aggregate: groupInterest_aggregate_order_by
-  trophies_aggregate: groupTrophy_aggregate_order_by
+  trophies_aggregate: trophyGroupView_aggregate_order_by
   unsubscribable: order_by
   website: order_by
 }
@@ -4271,9 +4281,6 @@ type mutation_root {
     where: userChat_bool_exp!
   ): userChat_mutation_response
 
-  # delete single row from the table: "userChat"
-  delete_userChat_by_pk(chatId: Int!, userId: String!): userChat
-
   # delete data from the table: "userEvent"
   delete_userEvent(
     # filter the rows which have to be deleted
@@ -4643,15 +4650,6 @@ type mutation_root {
     on_conflict: userOwner_on_conflict
   ): userOwner
 
-  # insert a single row into the table: "userChat"
-  signUpForChat(
-    # the row to be inserted
-    object: userChat_insert_input!
-
-    # on conflict condition
-    on_conflict: userChat_on_conflict
-  ): userChat
-
   # insert a single row into the table: "userEvent"
   signUpUserForEvent(
     # the row to be inserted
@@ -4660,6 +4658,18 @@ type mutation_root {
     # on conflict condition
     on_conflict: userEvent_on_conflict
   ): userEvent
+
+  # insert a single row into the table: "userChat"
+  subscribeToChat(
+    # the row to be inserted
+    object: userChat_insert_input!
+
+    # on conflict condition
+    on_conflict: userChat_on_conflict
+  ): userChat
+
+  # delete single row from the table: "userChat"
+  unsubscribeFromChat(chatId: Int!, userId: String!): userChat
 
   # update single row of the table: "event"
   updateEvent(
@@ -6590,6 +6600,42 @@ type query_root {
     where: trophy_bool_exp
   ): [trophy!]!
 
+  # fetch data from the table: "trophyGroupView"
+  trophyGroupView(
+    # distinct select on columns
+    distinct_on: [trophyGroupView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophyGroupView_order_by!]
+
+    # filter the rows returned
+    where: trophyGroupView_bool_exp
+  ): [trophyGroupView!]!
+
+  # fetch aggregated fields from the table: "trophyGroupView"
+  trophyGroupView_aggregate(
+    # distinct select on columns
+    distinct_on: [trophyGroupView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophyGroupView_order_by!]
+
+    # filter the rows returned
+    where: trophyGroupView_bool_exp
+  ): trophyGroupView_aggregate!
+
   # fetch aggregated fields from the table: "trophy"
   trophy_aggregate(
     # distinct select on columns
@@ -8281,6 +8327,42 @@ type subscription_root {
     where: trophy_bool_exp
   ): [trophy!]!
 
+  # fetch data from the table: "trophyGroupView"
+  trophyGroupView(
+    # distinct select on columns
+    distinct_on: [trophyGroupView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophyGroupView_order_by!]
+
+    # filter the rows returned
+    where: trophyGroupView_bool_exp
+  ): [trophyGroupView!]!
+
+  # fetch aggregated fields from the table: "trophyGroupView"
+  trophyGroupView_aggregate(
+    # distinct select on columns
+    distinct_on: [trophyGroupView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [trophyGroupView_order_by!]
+
+    # filter the rows returned
+    where: trophyGroupView_bool_exp
+  ): trophyGroupView_aggregate!
+
   # fetch aggregated fields from the table: "trophy"
   trophy_aggregate(
     # distinct select on columns
@@ -8895,6 +8977,206 @@ input trophy_variance_order_by {
   score: order_by
 }
 
+# columns and relationships of "trophyGroupView"
+type trophyGroupView {
+  description: String
+  groupId: uuid
+  id: uuid
+  name: String
+  score: Int
+}
+
+# aggregated selection of "trophyGroupView"
+type trophyGroupView_aggregate {
+  aggregate: trophyGroupView_aggregate_fields
+  nodes: [trophyGroupView!]!
+}
+
+# aggregate fields of "trophyGroupView"
+type trophyGroupView_aggregate_fields {
+  avg: trophyGroupView_avg_fields
+  count(columns: [trophyGroupView_select_column!], distinct: Boolean): Int
+  max: trophyGroupView_max_fields
+  min: trophyGroupView_min_fields
+  stddev: trophyGroupView_stddev_fields
+  stddev_pop: trophyGroupView_stddev_pop_fields
+  stddev_samp: trophyGroupView_stddev_samp_fields
+  sum: trophyGroupView_sum_fields
+  var_pop: trophyGroupView_var_pop_fields
+  var_samp: trophyGroupView_var_samp_fields
+  variance: trophyGroupView_variance_fields
+}
+
+# order by aggregate values of table "trophyGroupView"
+input trophyGroupView_aggregate_order_by {
+  avg: trophyGroupView_avg_order_by
+  count: order_by
+  max: trophyGroupView_max_order_by
+  min: trophyGroupView_min_order_by
+  stddev: trophyGroupView_stddev_order_by
+  stddev_pop: trophyGroupView_stddev_pop_order_by
+  stddev_samp: trophyGroupView_stddev_samp_order_by
+  sum: trophyGroupView_sum_order_by
+  var_pop: trophyGroupView_var_pop_order_by
+  var_samp: trophyGroupView_var_samp_order_by
+  variance: trophyGroupView_variance_order_by
+}
+
+# aggregate avg on columns
+type trophyGroupView_avg_fields {
+  score: Float
+}
+
+# order by avg() on columns of table "trophyGroupView"
+input trophyGroupView_avg_order_by {
+  score: order_by
+}
+
+# Boolean expression to filter rows from the table "trophyGroupView". All fields are combined with a logical 'AND'.
+input trophyGroupView_bool_exp {
+  _and: [trophyGroupView_bool_exp]
+  _not: trophyGroupView_bool_exp
+  _or: [trophyGroupView_bool_exp]
+  description: String_comparison_exp
+  groupId: uuid_comparison_exp
+  id: uuid_comparison_exp
+  name: String_comparison_exp
+  score: Int_comparison_exp
+}
+
+# aggregate max on columns
+type trophyGroupView_max_fields {
+  description: String
+  groupId: uuid
+  id: uuid
+  name: String
+  score: Int
+}
+
+# order by max() on columns of table "trophyGroupView"
+input trophyGroupView_max_order_by {
+  description: order_by
+  groupId: order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# aggregate min on columns
+type trophyGroupView_min_fields {
+  description: String
+  groupId: uuid
+  id: uuid
+  name: String
+  score: Int
+}
+
+# order by min() on columns of table "trophyGroupView"
+input trophyGroupView_min_order_by {
+  description: order_by
+  groupId: order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# ordering options when selecting data from "trophyGroupView"
+input trophyGroupView_order_by {
+  description: order_by
+  groupId: order_by
+  id: order_by
+  name: order_by
+  score: order_by
+}
+
+# select columns of table "trophyGroupView"
+enum trophyGroupView_select_column {
+  # column name
+  description
+
+  # column name
+  groupId
+
+  # column name
+  id
+
+  # column name
+  name
+
+  # column name
+  score
+}
+
+# aggregate stddev on columns
+type trophyGroupView_stddev_fields {
+  score: Float
+}
+
+# order by stddev() on columns of table "trophyGroupView"
+input trophyGroupView_stddev_order_by {
+  score: order_by
+}
+
+# aggregate stddev_pop on columns
+type trophyGroupView_stddev_pop_fields {
+  score: Float
+}
+
+# order by stddev_pop() on columns of table "trophyGroupView"
+input trophyGroupView_stddev_pop_order_by {
+  score: order_by
+}
+
+# aggregate stddev_samp on columns
+type trophyGroupView_stddev_samp_fields {
+  score: Float
+}
+
+# order by stddev_samp() on columns of table "trophyGroupView"
+input trophyGroupView_stddev_samp_order_by {
+  score: order_by
+}
+
+# aggregate sum on columns
+type trophyGroupView_sum_fields {
+  score: Int
+}
+
+# order by sum() on columns of table "trophyGroupView"
+input trophyGroupView_sum_order_by {
+  score: order_by
+}
+
+# aggregate var_pop on columns
+type trophyGroupView_var_pop_fields {
+  score: Float
+}
+
+# order by var_pop() on columns of table "trophyGroupView"
+input trophyGroupView_var_pop_order_by {
+  score: order_by
+}
+
+# aggregate var_samp on columns
+type trophyGroupView_var_samp_fields {
+  score: Float
+}
+
+# order by var_samp() on columns of table "trophyGroupView"
+input trophyGroupView_var_samp_order_by {
+  score: order_by
+}
+
+# aggregate variance on columns
+type trophyGroupView_variance_fields {
+  score: Float
+}
+
+# order by variance() on columns of table "trophyGroupView"
+input trophyGroupView_variance_order_by {
+  score: order_by
+}
+
 # columns and relationships of "user"
 type user {
   college: String
@@ -9377,6 +9659,7 @@ type user {
     # filter the rows returned
     where: review_bool_exp
   ): review_aggregate!
+  timezone: String!
 
   # An array relationship
   userChats(
@@ -9500,6 +9783,7 @@ input user_bool_exp {
   programs: userProgram_bool_exp
   questions: question_bool_exp
   reviews: review_bool_exp
+  timezone: String_comparison_exp
   userChats: userChat_bool_exp
   year: Int_comparison_exp
 }
@@ -9555,6 +9839,7 @@ input user_insert_input {
   programs: userProgram_arr_rel_insert_input
   questions: question_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
+  timezone: String
   userChats: userChat_arr_rel_insert_input
   year: Int
 }
@@ -9568,6 +9853,7 @@ type user_max_fields {
   image: String
   name: String
   notificationToken: String
+  timezone: String
   year: Int
 }
 
@@ -9580,6 +9866,7 @@ input user_max_order_by {
   image: order_by
   name: order_by
   notificationToken: order_by
+  timezone: order_by
   year: order_by
 }
 
@@ -9592,6 +9879,7 @@ type user_min_fields {
   image: String
   name: String
   notificationToken: String
+  timezone: String
   year: Int
 }
 
@@ -9604,6 +9892,7 @@ input user_min_order_by {
   image: order_by
   name: order_by
   notificationToken: order_by
+  timezone: order_by
   year: order_by
 }
 
@@ -9653,6 +9942,7 @@ input user_order_by {
   programs_aggregate: userProgram_aggregate_order_by
   questions_aggregate: question_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
+  timezone: order_by
   userChats_aggregate: userChat_aggregate_order_by
   year: order_by
 }
@@ -9697,6 +9987,9 @@ enum user_select_column {
   notificationToken
 
   # column name
+  timezone
+
+  # column name
   year
 }
 
@@ -9711,6 +10004,7 @@ input user_set_input {
   links: jsonb
   name: String
   notificationToken: String
+  timezone: String
   year: Int
 }
 
@@ -9782,6 +10076,9 @@ enum user_update_column {
 
   # column name
   notificationToken
+
+  # column name
+  timezone
 
   # column name
   year

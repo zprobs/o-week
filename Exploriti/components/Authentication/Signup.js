@@ -85,6 +85,8 @@ export default function Signup({ navigation }) {
 
   const [submitUser] = useMutation(SIGN_UP);
 
+  console.log(timeZone);
+
   const onProgramRef = () => programRef.current.open();
   const onYearRef = () => yearRef.current.open();
   const onFacultyRef = () => facultyRef.current.open();
@@ -291,11 +293,13 @@ export default function Signup({ navigation }) {
         userData.email = email;
         userData.id = userCredential.user.uid;
         userData.year = yearToInt(year);
+         userData.timezone = timeZone[0]
         userData.programs = graphqlify(programsSelection, "program");
         userData.interests = graphqlify(interestsSelection, "interest");
         if (imageURL) {
           userData.image = imageURL;
         }
+        console.log(userData);
         submitUser({ variables: { data: userData } })
             .then(result => {
               console.log(result);

@@ -208,7 +208,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 12,
-        width: ITEM_WIDTH * 0.85,
         paddingHorizontal: 20
     },
     detailsButton: {
