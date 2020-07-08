@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import Icon from 'react-native-vector-icons/Feather';
+import LoadingDots from './LoadingDots';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -19,18 +20,24 @@ const { colours } = Theme.light;
  * @constructor
  */
 const RSVPButton = ({
-  onPress,
   style,
   selectedTitle,
   unSelectedTitle,
   plusIcon,
-  isSelected
+  isSelected,
+  selectedOnPress,
+  unSelectedOnPress,
+  loading
 }) => {
   const [selected, setSelected] = useState(isSelected);
 
   const buttonPress = () => {
-    if (selectedTitle) setSelected(!selected);
-    if (onPress) onPress();
+    setSelected(!selected);
+    if (selected) {
+      selectedOnPress()
+    } else {
+      unSelectedOnPress();
+    }
   };
 
   const defaultIcon = plusIcon ? 'user-plus' : 'user-check';
@@ -47,9 +54,16 @@ const RSVPButton = ({
         style={{ padding: 4 }}
         color={selected ? 'white' : 'black'}
       />
-      <Text style={styles.title}>
-        {selected ? selectedTitle : unSelectedTitle}
-      </Text>
+      {
+        loading ? (
+          <LoadingDots background={'#fafafa'} activeBackground={'#ffffff'} />
+        ) : (
+          <Text style={styles.title}>
+            {selected ? selectedTitle : unSelectedTitle}
+          </Text>
+        )
+      }
+
       <View style={{ width: 32 }} />
     </TouchableOpacity>
   );

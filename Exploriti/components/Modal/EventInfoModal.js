@@ -14,9 +14,16 @@ import {linkError} from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from "react-native-linear-gradient";
 import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import UsersBottomModal from './UsersBottomModal';
-import {useQuery} from '@apollo/react-hooks';
-import { CHECK_USER_EVENT_ACCEPTED, GET_DETAILED_EVENT, GET_USERS_BY_ID } from '../../graphql';
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
+import {
+  CHECK_USER_EVENT_ACCEPTED,
+  GET_DETAILED_EVENT, GET_EVENT_ATTENDANCE,
+  GET_USERS_BY_ID,
+  REMOVE_USER_FROM_EVENT,
+  SIGN_UP_USER_FOR_EVENT,
+} from '../../graphql';
 import { AuthContext } from '../../context';
+import  gql from 'graphql-tag';
 
 const {FontWeights, FontSizes} = Fonts;
 const {colours} = Theme.light
@@ -79,10 +86,26 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
     const Details = () => {
 
       const {loading: acceptLoading, data: acceptData, error :acceptError} = useQuery(CHECK_USER_EVENT_ACCEPTED, {variables: {eventId: eventId, userId: authState.user.uid}})
+      const [signUp, {loading: signUpLoading}] = useMutation(SIGN_UP_USER_FOR_EVENT, {variables: {eventId: eventId, userId: authState.user.uid}});
+      const [remove, {loading: removeLoading, error: removeError}] = useMutation(REMOVE_USER_FROM_EVENT, {
+          variables: { eventId: eventId, userId: authState.user.uid },
+        refetchQueries: [{
+            query: GET_EVENT_ATTENDANCE,
+          variables: {eventId: eventId}
+        }, {
+            query: CHECK_USER_EVENT_ACCEPTED,
+          variables: {eventId: eventId, userId: authState.user.uid}
+        }]}
+          
+        );
 
+      if (removeError) console.log(removeError.message);
 
-      if (loading) return null
-      if (error) return <Text>{error.message}</Text>
+      const mutationLoading = signUpLoading || removeLoading
+      console.log('mutationLoading', mutationLoading, signUpLoading, removeLoading);
+
+      if (loading || acceptLoading) return null
+      if (error || acceptError) return <Text>{acceptError ? acceptError.message : error.message}</Text>
 
       const date = new Date(data.event.startDate);
       const end = new Date(data.event.endDate);
@@ -91,10 +114,13 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
       const [{ value: endMonth },,{ value: endDay },,{ value: endYear },, {value: endHour},,{value: endMinute},,{value: endDayPeriod}] = dateTimeFormat .formatToParts(end)
       const parsedYear = year === "2020" ? "" : year
 
+      const isInvited = acceptData.user.events.length > 0;
+      const isAccepted = isInvited && acceptData.user.events[0].didAccept;
+
 
       return (
           <>
-            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={false}/>
+            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={isAccepted} loading={mutationLoading} unSelectedOnPress={signUp} selectedOnPress={remove}/>
             <View style={styles.container}>
               {
                 data.event.isOfficial ?
@@ -202,7 +228,6 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
       linkError(error, "Video");
     })
   }
-
 
 
 

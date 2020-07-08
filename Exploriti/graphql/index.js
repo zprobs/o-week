@@ -433,6 +433,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
           id
           name
         }
+          didAccept
       }
       invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
           aggregate {
@@ -521,9 +522,10 @@ export const GET_EVENTS_BY_ID = gql `
 `;
 
 export const CHECK_USER_EVENT_ACCEPTED = gql`
-    query MyQuery($_eventId: uuid!, $userId: String!) {
+    query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
         user(id: $userId) {
-            events(where: {eventId: {_eq: $_eventId}}) {
+            id
+            events(where: {event: {id: {_eq: $eventId}}}) {
                 didAccept
                 eventId
             }
@@ -531,14 +533,53 @@ export const CHECK_USER_EVENT_ACCEPTED = gql`
     }
 `
 
+const EVENT_ATTENDANCE_FRAGMENT = gql`
+    fragment EventAttendance on event {
+        id
+        attendees(where: {didAccept: {_eq: true}}) {
+            user {
+                image
+                id
+                name
+            }
+            didAccept
+        }
+        attendees_aggregate {
+            aggregate {
+                count
+            }
+        }
+    }
+`
+
+export const GET_EVENT_ATTENDANCE = gql`
+    query GetEventAttendance($eventId: uuid!) {
+        event(id: $eventId) {
+            ...EventAttendance
+        }
+    }
+    ${EVENT_ATTENDANCE_FRAGMENT}
+`
+
 export const SIGN_UP_USER_FOR_EVENT = gql`
-    mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
+    mutation SignUpUserForEvent($eventId: uuid!, $userId: String!) {
         signUpUserForEvent(object: {didAccept: true, eventId: $eventId, userId: $userId}) {
             userId
             eventId
             didAccept
+            event {
+               ...EventAttendance
+            }
+            user {
+                id
+                events(where: {event: {id: {_eq: $eventId}}}) {
+                    didAccept
+                    eventId
+                } 
+            }
         }
     }
+  ${EVENT_ATTENDANCE_FRAGMENT}
 `
 
 export const INVITE_USER_TO_EVENT = gql`
@@ -547,16 +588,40 @@ export const INVITE_USER_TO_EVENT = gql`
             userId
             eventId
             didAccept
+            event {
+                ...EventAttendance
+            }
+        }
+    }
+  ${EVENT_ATTENDANCE_FRAGMENT}
+`
+
+export const REMOVE_USER_FROM_EVENT = gql`
+    mutation removeUserFromEvent($eventId: uuid!, $userId: String!) {
+        removeUserFromEvent( eventId: $eventId, userId: $userId) {
+            userId
+            eventId
+            didAccept
         }
     }
 `
 
 export const CONFIRM_EVENT_INVITE = gql`
-    mutation signUpUserForEvent($eventId: uuid!, $userId: String!) {
+    mutation confirmEventInvite($eventId: uuid!, $userId: String!) {
         confirmEventInvite(pk_columns: {eventId: $eventId, userId: $userId}, _set: {didAccept: true}) {
             userId
             eventId
             didAccept
+            event {
+                ...EventAttendance
+            }
+            user {
+                id
+                events {
+                    didAccept
+                    eventId
+                }
+            }
         }
     }
 `

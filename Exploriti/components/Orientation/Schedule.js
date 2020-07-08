@@ -50,7 +50,6 @@ const Schedule = () => {
     let date = new Date(data.events[0].startDate);
     data.events.forEach((event)=>{
       const thisDate = new Date(event.startDate);
-      console.log(thisDate)
       if (thisDate.getFullYear() === date.getFullYear() && thisDate.getMonth() === date.getMonth() && thisDate.getDate() === date.getDate()) {
         array.push(event)
       } else {
