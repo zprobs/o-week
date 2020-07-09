@@ -18,9 +18,10 @@ const window05 = window * 0.05;
  * @param name {string} the name of user other than the current user. Do not include if current user
  * @param data What is shown in the Flatlist. An array of Strings representing userIds
  * @param type {string} Type = Friends when the component is rendering the users that a user is friends with
+ * @param onPress {function} an optional onPress() for if you don't want to navigate to profile
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
-const UsersBottomModal = React.forwardRef(({ name, data, type }, ref) => {
+const UsersBottomModal = React.forwardRef(({ name, data, type, onPress }, ref) => {
 
   // use Lazy Query so that it is not executed unless opened
   const [
@@ -60,6 +61,7 @@ const UsersBottomModal = React.forwardRef(({ name, data, type }, ref) => {
         name={name}
         key={id}
         style={styles.userCard}
+        onPress={onPress}
       />
     );
   };

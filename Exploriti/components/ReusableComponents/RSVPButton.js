@@ -32,11 +32,11 @@ const RSVPButton = ({
   const [selected, setSelected] = useState(isSelected);
 
   const buttonPress = () => {
-    setSelected(!selected);
+    if (selectedTitle) setSelected(!selected);
     if (selected) {
       selectedOnPress()
     } else {
-      unSelectedOnPress();
+      if (unSelectedOnPress) unSelectedOnPress();
     }
   };
 

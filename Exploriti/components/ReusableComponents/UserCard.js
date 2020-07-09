@@ -12,7 +12,7 @@ const { colours } = Theme.light;
  * @param userId {string}
  * @param image {string}
  * @param name {string}
- * @param onPress
+ * @param onPress {function} A function which will pass the userId as a parameter
  * @param style Additional style for the entire card
  * @constructor
  */
@@ -26,7 +26,7 @@ const UserCard = ({ userId, image, name, onPress, style }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.95}
-      onPress={navigateToProfile}
+      onPress={onPress ? ()=>onPress(userId) : navigateToProfile}
       style={[styles.container, style]}>
       <Image source={{ uri: image }} style={styles.avatarImage} />
       <View style={styles.info}>

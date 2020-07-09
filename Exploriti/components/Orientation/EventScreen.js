@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -11,6 +11,11 @@ import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import LinearGradient from 'react-native-linear-gradient';
 import EventInfoModal from '../Modal/EventInfoModal';
+import UsersBottomModal from '../Modal/UsersBottomModal';
+import { Modalize } from 'react-native-modalize';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GET_USER_FRIENDS, INVITE_USER_TO_EVENT } from '../../graphql';
+import { AuthContext } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -25,12 +30,31 @@ const HEIGHT = Dimensions.get('window').height;
 const EventScreen = ({route}) => {
 
     const modalRef = useRef();
+    const inviteRef = useRef();
+  const {authState} = useContext(AuthContext);
+  const [invite] = useMutation(INVITE_USER_TO_EVENT);
+  const [tabIndex, setTabIndex] = useState(0);  // used to prevent tabs from defaulting to 0 after rerender
+
+
     const {event} = route.params;
     const date = new Date(event.startDate);
     const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' })
     const [{ value: month },,{ value: day },,{ value: year },] = dateTimeFormat .formatToParts(date )
 
     const parsedYear = year=== "2020" ? "" : year
+
+  const userFriends = () => {
+    const {loading: friendsLoading, data: friendsData, error: friendsError} = useQuery(GET_USER_FRIENDS, {variables: {userId: authState.user.uid}} );
+    if (friendsLoading || friendsError) return null ;
+    const friendsIds = [];
+    friendsData.friends.map((item)=>friendsIds.push(item.id));
+    return friendsIds
+  }
+
+  const inviteUserToEvent = (userId) => {
+      setTabIndex(1)
+      invite({variables: {userId: userId, eventId: event.id}}).then(inviteRef.current.close()).catch(e=>console.log(e))
+  }
 
     return (
       <View style={styles.container}>
@@ -43,9 +67,10 @@ const EventScreen = ({route}) => {
                 </LinearGradient>
             </View>
         </ImageBackground>
-          <EventInfoModal ref={modalRef} eventId={event.id}/>
+          <EventInfoModal ref={modalRef} eventId={event.id} inviteRef={inviteRef} initialIndex={tabIndex}/>
+        <UsersBottomModal type={"invite"} ref={inviteRef} data={userFriends()} onPress={inviteUserToEvent}/>
       </View>
-    );
+);
 }
 
 const styles = StyleSheet.create({

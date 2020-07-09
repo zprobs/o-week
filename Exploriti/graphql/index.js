@@ -59,7 +59,7 @@ export const GET_CURRENT_USER = gql`
                   }
               }
           }
-      }  
+      }
     }
     friends(where: { userId: { _eq: $id } }) {
       id
@@ -589,11 +589,23 @@ export const INVITE_USER_TO_EVENT = gql`
             eventId
             didAccept
             event {
-                ...EventAttendance
+                id
+                invited: attendees(where: {didAccept: {_eq: false}}) {
+                    user {
+                        image
+                        id
+                        name
+                    }
+                    didAccept
+                }
+                invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
+                    aggregate {
+                        count
+                    }
+                }
             }
         }
     }
-  ${EVENT_ATTENDANCE_FRAGMENT}
 `
 
 export const REMOVE_USER_FROM_EVENT = gql`

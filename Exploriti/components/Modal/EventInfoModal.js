@@ -17,7 +17,7 @@ import UsersBottomModal from './UsersBottomModal';
 import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_EVENT_ACCEPTED,
-  GET_DETAILED_EVENT, GET_EVENT_ATTENDANCE,
+  GET_DETAILED_EVENT, GET_EVENT_ATTENDANCE, GET_USER_FRIENDS,
   GET_USERS_BY_ID,
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
@@ -33,16 +33,17 @@ const WIDTH = Dimensions.get('window').width;
 
 /**
  * @param eventId {string} the uuid for the event to be rendered
+ * @param inviteRef {Ref} the reference to the usersBottomModal where users can invite their friends
+ * @param initialIndex {int} the initial state of the tab index
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
-const EventInfoModal = React.forwardRef(({eventId}, ref) => {
+const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref) => {
 
   const {authState} = useContext(AuthContext);
-  const inviteRef = useRef();
   const {loading, data, error} = useQuery(GET_DETAILED_EVENT, {variables: {id: eventId}})
 
   const Tabs = () => {
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(initialIndex);
     const [routes] = useState([
       { key: 'first', title: 'Details' },
       { key: 'second', title: 'Guest List' },
@@ -96,7 +97,7 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
             query: CHECK_USER_EVENT_ACCEPTED,
           variables: {eventId: eventId, userId: authState.user.uid}
         }]}
-          
+
         );
 
       if (removeError) console.log(removeError.message);
@@ -170,7 +171,7 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
     return (
         <>
-          <RSVPButton unSelectedTitle={"Invite Friends"}  style={styles.rsvp} plusIcon={true} onPress={()=>inviteRef.current.open()}/>
+          <RSVPButton unSelectedTitle={"Invite Friends"}  style={styles.rsvp} plusIcon={true} unSelectedOnPress={()=>inviteRef.current.open()}/>
             {
               going.length > 0 ? (
                 <>
@@ -231,6 +232,8 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
 
 
 
+
+
     return (
       <Modalize
         ref={ref}
@@ -242,7 +245,6 @@ const EventInfoModal = React.forwardRef(({eventId}, ref) => {
         modalTopOffset={110}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
-        <UsersBottomModal type={"invite"} ref={inviteRef}/>
       </Modalize>
     );
 });
