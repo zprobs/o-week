@@ -16,8 +16,8 @@ import UserCountPreview from '../ReusableComponents/UserCountPreview';
 import UsersBottomModal from './UsersBottomModal';
 import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CHECK_USER_EVENT_ACCEPTED,
-  GET_DETAILED_EVENT, GET_EVENT_ATTENDANCE, GET_USER_FRIENDS,
+  CHECK_USER_EVENT_ACCEPTED, CONFIRM_EVENT_INVITE,
+  GET_DETAILED_EVENT, GET_EVENT_ATTENDANCE, GET_EVENT_INVITED, GET_USER_FRIENDS,
   GET_USERS_BY_ID,
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
@@ -86,8 +86,25 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
 
     const Details = () => {
 
+      /**
+       * @Todo fix this selected problem. It flashes when deleting an RSVP
+       */
+      const [isSelected, setIsSelected] = useState(false);
+
       const {loading: acceptLoading, data: acceptData, error :acceptError} = useQuery(CHECK_USER_EVENT_ACCEPTED, {variables: {eventId: eventId, userId: authState.user.uid}})
       const [signUp, {loading: signUpLoading}] = useMutation(SIGN_UP_USER_FOR_EVENT, {variables: {eventId: eventId, userId: authState.user.uid}});
+      const [confirm, {loading: confirmLoading, error: confirmError}] = useMutation(CONFIRM_EVENT_INVITE, {variables: {eventId: eventId, userId: authState.user.uid},
+        refetchQueries: [{
+          query: GET_EVENT_ATTENDANCE,
+          variables: {eventId: eventId}
+        }, {
+          query: CHECK_USER_EVENT_ACCEPTED,
+          variables: {eventId: eventId, userId: authState.user.uid}
+        }, {
+          query: GET_EVENT_INVITED,
+          variables: {eventId: eventId}
+        },]
+      });
       const [remove, {loading: removeLoading, error: removeError}] = useMutation(REMOVE_USER_FROM_EVENT, {
           variables: { eventId: eventId, userId: authState.user.uid },
         refetchQueries: [{
@@ -101,11 +118,11 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
         );
 
       if (removeError) console.log(removeError.message);
+      if (confirmError) console.log('confirmError', confirmError.message);
 
-      const mutationLoading = signUpLoading || removeLoading
-      console.log('mutationLoading', mutationLoading, signUpLoading, removeLoading);
+      const mutationLoading = signUpLoading || removeLoading || confirmLoading || acceptLoading
 
-      if (loading || acceptLoading) return null
+      if (loading) return null
       if (error || acceptError) return <Text>{acceptError ? acceptError.message : error.message}</Text>
 
       const date = new Date(data.event.startDate);
@@ -115,13 +132,21 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
       const [{ value: endMonth },,{ value: endDay },,{ value: endYear },, {value: endHour},,{value: endMinute},,{value: endDayPeriod}] = dateTimeFormat .formatToParts(end)
       const parsedYear = year === "2020" ? "" : year
 
-      const isInvited = acceptData.user.events.length > 0;
-      const isAccepted = isInvited && acceptData.user.events[0].didAccept;
+      const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
+      const isAccepted = acceptData ? isInvited && acceptData.user.events[0].didAccept : false;
 
+      if (!acceptLoading) {
+        console.log('isInvited', isInvited);
+        console.log('isAccepted', isAccepted);
+        if (isSelected != isAccepted) setIsSelected(isAccepted);
+      }
+
+
+      console.log('isSelected', isSelected);
 
       return (
           <>
-            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={isAccepted} loading={mutationLoading} unSelectedOnPress={signUp} selectedOnPress={remove}/>
+            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={isSelected} loading={mutationLoading} unSelectedOnPress={(isInvited && !isSelected) ? confirm : signUp} selectedOnPress={remove}/>
             <View style={styles.container}>
               {
                 data.event.isOfficial ?

@@ -29,11 +29,9 @@ const RSVPButton = ({
   unSelectedOnPress,
   loading
 }) => {
-  const [selected, setSelected] = useState(isSelected);
 
   const buttonPress = () => {
-    if (selectedTitle) setSelected(!selected);
-    if (selected) {
+    if (isSelected) {
       selectedOnPress()
     } else {
       if (unSelectedOnPress) unSelectedOnPress();
@@ -42,24 +40,24 @@ const RSVPButton = ({
 
   const defaultIcon = plusIcon ? 'user-plus' : 'user-check';
 
-  const color = selected ? ThemeStatic.blackPurple : colours.placeholder;
+  const color = isSelected ? ThemeStatic.blackPurple : colours.placeholder;
 
   return (
     <TouchableOpacity
       style={{ ...styles.container, ...style, backgroundColor: color }}
       onPress={buttonPress}>
       <Icon
-        name={selected ? 'user-x' : defaultIcon}
+        name={isSelected ? 'user-x' : defaultIcon}
         size={26}
         style={{ padding: 4 }}
-        color={selected ? 'white' : 'black'}
+        color={isSelected ? 'white' : 'black'}
       />
       {
         loading ? (
           <LoadingDots background={'#fafafa'} activeBackground={'#ffffff'} />
         ) : (
           <Text style={styles.title}>
-            {selected ? selectedTitle : unSelectedTitle}
+            {isSelected ? selectedTitle : unSelectedTitle}
           </Text>
         )
       }

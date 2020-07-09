@@ -2018,7 +2018,7 @@ type group {
   # An array relationship
   members(
     # distinct select on columns
-    distinct_on: [userMember_select_column!]
+    distinct_on: [userGroup_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -2027,16 +2027,16 @@ type group {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
+    order_by: [userGroup_order_by!]
 
     # filter the rows returned
-    where: userMember_bool_exp
-  ): [userMember!]!
+    where: userGroup_bool_exp
+  ): [userGroup!]!
 
   # An aggregated array relationship
   members_aggregate(
     # distinct select on columns
-    distinct_on: [userMember_select_column!]
+    distinct_on: [userGroup_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -2045,48 +2045,12 @@ type group {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
+    order_by: [userGroup_order_by!]
 
     # filter the rows returned
-    where: userMember_bool_exp
-  ): userMember_aggregate!
+    where: userGroup_bool_exp
+  ): userGroup_aggregate!
   name: String!
-
-  # An array relationship
-  owners(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): [userOwner!]!
-
-  # An aggregated array relationship
-  owners_aggregate(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): userOwner_aggregate!
 
   # An array relationship
   questions(
@@ -2279,9 +2243,8 @@ input group_bool_exp {
   id: uuid_comparison_exp
   image: String_comparison_exp
   links: jsonb_comparison_exp
-  members: userMember_bool_exp
+  members: userGroup_bool_exp
   name: String_comparison_exp
-  owners: userOwner_bool_exp
   questions: groupQuestion_bool_exp
   reviews: review_bool_exp
   tags: groupInterest_bool_exp
@@ -2327,9 +2290,8 @@ input group_insert_input {
   id: uuid
   image: String
   links: jsonb
-  members: userMember_arr_rel_insert_input
+  members: userGroup_arr_rel_insert_input
   name: String
-  owners: userOwner_arr_rel_insert_input
   questions: groupQuestion_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
   tags: groupInterest_arr_rel_insert_input
@@ -2408,9 +2370,8 @@ input group_order_by {
   id: order_by
   image: order_by
   links: order_by
-  members_aggregate: userMember_aggregate_order_by
+  members_aggregate: userGroup_aggregate_order_by
   name: order_by
-  owners_aggregate: userOwner_aggregate_order_by
   questions_aggregate: groupQuestion_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
   tags_aggregate: groupInterest_aggregate_order_by
@@ -4287,23 +4248,17 @@ type mutation_root {
     where: userEvent_bool_exp!
   ): userEvent_mutation_response
 
+  # delete data from the table: "userGroup"
+  delete_userGroup(
+    # filter the rows which have to be deleted
+    where: userGroup_bool_exp!
+  ): userGroup_mutation_response
+
   # delete data from the table: "userInterest"
   delete_userInterest(
     # filter the rows which have to be deleted
     where: userInterest_bool_exp!
   ): userInterest_mutation_response
-
-  # delete data from the table: "userMember"
-  delete_userMember(
-    # filter the rows which have to be deleted
-    where: userMember_bool_exp!
-  ): userMember_mutation_response
-
-  # delete data from the table: "userOwner"
-  delete_userOwner(
-    # filter the rows which have to be deleted
-    where: userOwner_bool_exp!
-  ): userOwner_mutation_response
 
   # delete data from the table: "userProgram"
   delete_userProgram(
@@ -4527,6 +4482,15 @@ type mutation_root {
     on_conflict: userEvent_on_conflict
   ): userEvent_mutation_response
 
+  # insert data into the table: "userGroup"
+  insert_userGroup(
+    # the rows to be inserted
+    objects: [userGroup_insert_input!]!
+
+    # on conflict condition
+    on_conflict: userGroup_on_conflict
+  ): userGroup_mutation_response
+
   # insert data into the table: "userInterest"
   insert_userInterest(
     # the rows to be inserted
@@ -4535,24 +4499,6 @@ type mutation_root {
     # on conflict condition
     on_conflict: userInterest_on_conflict
   ): userInterest_mutation_response
-
-  # insert data into the table: "userMember"
-  insert_userMember(
-    # the rows to be inserted
-    objects: [userMember_insert_input!]!
-
-    # on conflict condition
-    on_conflict: userMember_on_conflict
-  ): userMember_mutation_response
-
-  # insert data into the table: "userOwner"
-  insert_userOwner(
-    # the rows to be inserted
-    objects: [userOwner_insert_input!]!
-
-    # on conflict condition
-    on_conflict: userOwner_on_conflict
-  ): userOwner_mutation_response
 
   # insert data into the table: "userProgram"
   insert_userProgram(
@@ -4563,17 +4509,17 @@ type mutation_root {
     on_conflict: userProgram_on_conflict
   ): userProgram_mutation_response
 
-  # insert a single row into the table: "userMember"
+  # insert a single row into the table: "userGroup"
   joinClub(
     # the row to be inserted
-    object: userMember_insert_input!
+    object: userGroup_insert_input!
 
     # on conflict condition
-    on_conflict: userMember_on_conflict
-  ): userMember
+    on_conflict: userGroup_on_conflict
+  ): userGroup
 
-  # delete single row from the table: "userMember"
-  leaveClub(groupId: uuid!, userId: String!): userMember
+  # delete single row from the table: "userGroup"
+  leaveClub(groupId: uuid!, userId: String!): userGroup
 
   # insert a single row into the table: "userProgram"
   registerUserForProgram(
@@ -4592,9 +4538,6 @@ type mutation_root {
 
   # delete single row from the table: "userInterest"
   removeInterestFromUser(interestId: Int!, userId: String!): userInterest
-
-  # delete single row from the table: "userOwner"
-  removeOwnerOfClub(groupId: uuid!, userId: String!): userOwner
 
   # delete single row from the table: "eventQuestion"
   removeQuestionFromEvent(eventId: uuid!, questionId: Int!): eventQuestion
@@ -4640,15 +4583,6 @@ type mutation_root {
     # on conflict condition
     on_conflict: notification_on_conflict
   ): notification
-
-  # insert a single row into the table: "userOwner"
-  setOwnerOfClub(
-    # the row to be inserted
-    object: userOwner_insert_input!
-
-    # on conflict condition
-    on_conflict: userOwner_on_conflict
-  ): userOwner
 
   # insert a single row into the table: "userEvent"
   signUpUserForEvent(
@@ -5190,6 +5124,22 @@ type mutation_root {
     where: userEvent_bool_exp!
   ): userEvent_mutation_response
 
+  # update data of the table: "userGroup"
+  update_userGroup(
+    # sets the columns of the filtered rows to the given values
+    _set: userGroup_set_input
+
+    # filter the rows which have to be updated
+    where: userGroup_bool_exp!
+  ): userGroup_mutation_response
+
+  # update single row of the table: "userGroup"
+  update_userGroup_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: userGroup_set_input
+    pk_columns: userGroup_pk_columns_input!
+  ): userGroup
+
   # update data of the table: "userInterest"
   update_userInterest(
     # increments the integer columns with given value of the filtered values
@@ -5211,38 +5161,6 @@ type mutation_root {
     _set: userInterest_set_input
     pk_columns: userInterest_pk_columns_input!
   ): userInterest
-
-  # update data of the table: "userMember"
-  update_userMember(
-    # sets the columns of the filtered rows to the given values
-    _set: userMember_set_input
-
-    # filter the rows which have to be updated
-    where: userMember_bool_exp!
-  ): userMember_mutation_response
-
-  # update single row of the table: "userMember"
-  update_userMember_by_pk(
-    # sets the columns of the filtered rows to the given values
-    _set: userMember_set_input
-    pk_columns: userMember_pk_columns_input!
-  ): userMember
-
-  # update data of the table: "userOwner"
-  update_userOwner(
-    # sets the columns of the filtered rows to the given values
-    _set: userOwner_set_input
-
-    # filter the rows which have to be updated
-    where: userOwner_bool_exp!
-  ): userOwner_mutation_response
-
-  # update single row of the table: "userOwner"
-  update_userOwner_by_pk(
-    # sets the columns of the filtered rows to the given values
-    _set: userOwner_set_input
-    pk_columns: userOwner_pk_columns_input!
-  ): userOwner
 
   # update data of the table: "userProgram"
   update_userProgram(
@@ -6738,6 +6656,45 @@ type query_root {
   # fetch data from the table: "userEvent" using primary key columns
   userEvent_by_pk(eventId: uuid!, userId: String!): userEvent
 
+  # fetch data from the table: "userGroup"
+  userGroup(
+    # distinct select on columns
+    distinct_on: [userGroup_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userGroup_order_by!]
+
+    # filter the rows returned
+    where: userGroup_bool_exp
+  ): [userGroup!]!
+
+  # fetch aggregated fields from the table: "userGroup"
+  userGroup_aggregate(
+    # distinct select on columns
+    distinct_on: [userGroup_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userGroup_order_by!]
+
+    # filter the rows returned
+    where: userGroup_bool_exp
+  ): userGroup_aggregate!
+
+  # fetch data from the table: "userGroup" using primary key columns
+  userGroup_by_pk(groupId: uuid!, userId: String!): userGroup
+
   # fetch data from the table: "userInterest"
   userInterest(
     # distinct select on columns
@@ -6776,84 +6733,6 @@ type query_root {
 
   # fetch data from the table: "userInterest" using primary key columns
   userInterest_by_pk(interestId: Int!, userId: String!): userInterest
-
-  # fetch data from the table: "userMember"
-  userMember(
-    # distinct select on columns
-    distinct_on: [userMember_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
-
-    # filter the rows returned
-    where: userMember_bool_exp
-  ): [userMember!]!
-
-  # fetch aggregated fields from the table: "userMember"
-  userMember_aggregate(
-    # distinct select on columns
-    distinct_on: [userMember_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
-
-    # filter the rows returned
-    where: userMember_bool_exp
-  ): userMember_aggregate!
-
-  # fetch data from the table: "userMember" using primary key columns
-  userMember_by_pk(groupId: uuid!, userId: String!): userMember
-
-  # fetch data from the table: "userOwner"
-  userOwner(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): [userOwner!]!
-
-  # fetch aggregated fields from the table: "userOwner"
-  userOwner_aggregate(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): userOwner_aggregate!
-
-  # fetch data from the table: "userOwner" using primary key columns
-  userOwner_by_pk(groupId: uuid!, userId: String!): userOwner
 
   # fetch data from the table: "userProgram"
   userProgram(
@@ -8465,6 +8344,45 @@ type subscription_root {
   # fetch data from the table: "userEvent" using primary key columns
   userEvent_by_pk(eventId: uuid!, userId: String!): userEvent
 
+  # fetch data from the table: "userGroup"
+  userGroup(
+    # distinct select on columns
+    distinct_on: [userGroup_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userGroup_order_by!]
+
+    # filter the rows returned
+    where: userGroup_bool_exp
+  ): [userGroup!]!
+
+  # fetch aggregated fields from the table: "userGroup"
+  userGroup_aggregate(
+    # distinct select on columns
+    distinct_on: [userGroup_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userGroup_order_by!]
+
+    # filter the rows returned
+    where: userGroup_bool_exp
+  ): userGroup_aggregate!
+
+  # fetch data from the table: "userGroup" using primary key columns
+  userGroup_by_pk(groupId: uuid!, userId: String!): userGroup
+
   # fetch data from the table: "userInterest"
   userInterest(
     # distinct select on columns
@@ -8503,84 +8421,6 @@ type subscription_root {
 
   # fetch data from the table: "userInterest" using primary key columns
   userInterest_by_pk(interestId: Int!, userId: String!): userInterest
-
-  # fetch data from the table: "userMember"
-  userMember(
-    # distinct select on columns
-    distinct_on: [userMember_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
-
-    # filter the rows returned
-    where: userMember_bool_exp
-  ): [userMember!]!
-
-  # fetch aggregated fields from the table: "userMember"
-  userMember_aggregate(
-    # distinct select on columns
-    distinct_on: [userMember_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
-
-    # filter the rows returned
-    where: userMember_bool_exp
-  ): userMember_aggregate!
-
-  # fetch data from the table: "userMember" using primary key columns
-  userMember_by_pk(groupId: uuid!, userId: String!): userMember
-
-  # fetch data from the table: "userOwner"
-  userOwner(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): [userOwner!]!
-
-  # fetch aggregated fields from the table: "userOwner"
-  userOwner_aggregate(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): userOwner_aggregate!
-
-  # fetch data from the table: "userOwner" using primary key columns
-  userOwner_by_pk(groupId: uuid!, userId: String!): userOwner
 
   # fetch data from the table: "userProgram"
   userProgram(
@@ -9292,7 +9132,7 @@ type user {
   ): friendRequest_aggregate!
 
   # An array relationship
-  friendsRecipient(
+  friends(
     # distinct select on columns
     distinct_on: [friend_select_column!]
 
@@ -9310,43 +9150,7 @@ type user {
   ): [friend!]!
 
   # An aggregated array relationship
-  friendsRecipient_aggregate(
-    # distinct select on columns
-    distinct_on: [friend_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [friend_order_by!]
-
-    # filter the rows returned
-    where: friend_bool_exp
-  ): friend_aggregate!
-
-  # An array relationship
-  friendsSender(
-    # distinct select on columns
-    distinct_on: [friend_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [friend_order_by!]
-
-    # filter the rows returned
-    where: friend_bool_exp
-  ): [friend!]!
-
-  # An aggregated array relationship
-  friendsSender_aggregate(
+  friends_aggregate(
     # distinct select on columns
     distinct_on: [friend_select_column!]
 
@@ -9409,7 +9213,7 @@ type user {
   # An array relationship
   member(
     # distinct select on columns
-    distinct_on: [userMember_select_column!]
+    distinct_on: [userGroup_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -9418,16 +9222,16 @@ type user {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
+    order_by: [userGroup_order_by!]
 
     # filter the rows returned
-    where: userMember_bool_exp
-  ): [userMember!]!
+    where: userGroup_bool_exp
+  ): [userGroup!]!
 
   # An aggregated array relationship
   member_aggregate(
     # distinct select on columns
-    distinct_on: [userMember_select_column!]
+    distinct_on: [userGroup_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -9436,11 +9240,11 @@ type user {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [userMember_order_by!]
+    order_by: [userGroup_order_by!]
 
     # filter the rows returned
-    where: userMember_bool_exp
-  ): userMember_aggregate!
+    where: userGroup_bool_exp
+  ): userGroup_aggregate!
 
   # An array relationship
   messages(
@@ -9515,42 +9319,6 @@ type user {
     # filter the rows returned
     where: notification_bool_exp
   ): notification_aggregate!
-
-  # An array relationship
-  owner(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): [userOwner!]!
-
-  # An aggregated array relationship
-  owner_aggregate(
-    # distinct select on columns
-    distinct_on: [userOwner_select_column!]
-
-    # limit the number of rows returned
-    limit: Int
-
-    # skip the first n rows. Use only with order_by
-    offset: Int
-
-    # sort the rows by one or more columns
-    order_by: [userOwner_order_by!]
-
-    # filter the rows returned
-    where: userOwner_bool_exp
-  ): userOwner_aggregate!
 
   # An array relationship
   programs(
@@ -9767,19 +9535,17 @@ input user_bool_exp {
   events: userEvent_bool_exp
   friendRequestsReceived: friendRequest_bool_exp
   friendRequestsSent: friendRequest_bool_exp
-  friendsRecipient: friend_bool_exp
-  friendsSender: friend_bool_exp
+  friends: friend_bool_exp
   id: String_comparison_exp
   image: String_comparison_exp
   interests: userInterest_bool_exp
   isOfficial: Boolean_comparison_exp
   links: jsonb_comparison_exp
-  member: userMember_bool_exp
+  member: userGroup_bool_exp
   messages: message_bool_exp
   name: String_comparison_exp
   notificationToken: String_comparison_exp
   notifications: notification_bool_exp
-  owner: userOwner_bool_exp
   programs: userProgram_bool_exp
   questions: question_bool_exp
   reviews: review_bool_exp
@@ -9823,19 +9589,17 @@ input user_insert_input {
   events: userEvent_arr_rel_insert_input
   friendRequestsReceived: friendRequest_arr_rel_insert_input
   friendRequestsSent: friendRequest_arr_rel_insert_input
-  friendsRecipient: friend_arr_rel_insert_input
-  friendsSender: friend_arr_rel_insert_input
+  friends: friend_arr_rel_insert_input
   id: String
   image: String
   interests: userInterest_arr_rel_insert_input
   isOfficial: Boolean
   links: jsonb
-  member: userMember_arr_rel_insert_input
+  member: userGroup_arr_rel_insert_input
   messages: message_arr_rel_insert_input
   name: String
   notificationToken: String
   notifications: notification_arr_rel_insert_input
-  owner: userOwner_arr_rel_insert_input
   programs: userProgram_arr_rel_insert_input
   questions: question_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
@@ -9926,19 +9690,17 @@ input user_order_by {
   events_aggregate: userEvent_aggregate_order_by
   friendRequestsReceived_aggregate: friendRequest_aggregate_order_by
   friendRequestsSent_aggregate: friendRequest_aggregate_order_by
-  friendsRecipient_aggregate: friend_aggregate_order_by
-  friendsSender_aggregate: friend_aggregate_order_by
+  friends_aggregate: friend_aggregate_order_by
   id: order_by
   image: order_by
   interests_aggregate: userInterest_aggregate_order_by
   isOfficial: order_by
   links: order_by
-  member_aggregate: userMember_aggregate_order_by
+  member_aggregate: userGroup_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
   name: order_by
   notificationToken: order_by
   notifications_aggregate: notification_aggregate_order_by
-  owner_aggregate: userOwner_aggregate_order_by
   programs_aggregate: userProgram_aggregate_order_by
   questions_aggregate: question_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
@@ -10519,6 +10281,174 @@ enum userEvent_update_column {
   userId
 }
 
+# columns and relationships of "userGroup"
+type userGroup {
+  # An object relationship
+  group: group!
+  groupId: uuid!
+  isOwner: Boolean!
+  onCalendar: Boolean!
+
+  # An object relationship
+  user: user!
+  userId: String!
+}
+
+# aggregated selection of "userGroup"
+type userGroup_aggregate {
+  aggregate: userGroup_aggregate_fields
+  nodes: [userGroup!]!
+}
+
+# aggregate fields of "userGroup"
+type userGroup_aggregate_fields {
+  count(columns: [userGroup_select_column!], distinct: Boolean): Int
+  max: userGroup_max_fields
+  min: userGroup_min_fields
+}
+
+# order by aggregate values of table "userGroup"
+input userGroup_aggregate_order_by {
+  count: order_by
+  max: userGroup_max_order_by
+  min: userGroup_min_order_by
+}
+
+# input type for inserting array relation for remote table "userGroup"
+input userGroup_arr_rel_insert_input {
+  data: [userGroup_insert_input!]!
+  on_conflict: userGroup_on_conflict
+}
+
+# Boolean expression to filter rows from the table "userGroup". All fields are combined with a logical 'AND'.
+input userGroup_bool_exp {
+  _and: [userGroup_bool_exp]
+  _not: userGroup_bool_exp
+  _or: [userGroup_bool_exp]
+  group: group_bool_exp
+  groupId: uuid_comparison_exp
+  isOwner: Boolean_comparison_exp
+  onCalendar: Boolean_comparison_exp
+  user: user_bool_exp
+  userId: String_comparison_exp
+}
+
+# unique or primary key constraints on table "userGroup"
+enum userGroup_constraint {
+  # unique or primary key constraint
+  userMember_pkey
+}
+
+# input type for inserting data into table "userGroup"
+input userGroup_insert_input {
+  group: group_obj_rel_insert_input
+  groupId: uuid
+  isOwner: Boolean
+  onCalendar: Boolean
+  user: user_obj_rel_insert_input
+  userId: String
+}
+
+# aggregate max on columns
+type userGroup_max_fields {
+  groupId: uuid
+  userId: String
+}
+
+# order by max() on columns of table "userGroup"
+input userGroup_max_order_by {
+  groupId: order_by
+  userId: order_by
+}
+
+# aggregate min on columns
+type userGroup_min_fields {
+  groupId: uuid
+  userId: String
+}
+
+# order by min() on columns of table "userGroup"
+input userGroup_min_order_by {
+  groupId: order_by
+  userId: order_by
+}
+
+# response of any mutation on the table "userGroup"
+type userGroup_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [userGroup!]!
+}
+
+# input type for inserting object relation for remote table "userGroup"
+input userGroup_obj_rel_insert_input {
+  data: userGroup_insert_input!
+  on_conflict: userGroup_on_conflict
+}
+
+# on conflict condition type for table "userGroup"
+input userGroup_on_conflict {
+  constraint: userGroup_constraint!
+  update_columns: [userGroup_update_column!]!
+  where: userGroup_bool_exp
+}
+
+# ordering options when selecting data from "userGroup"
+input userGroup_order_by {
+  group: group_order_by
+  groupId: order_by
+  isOwner: order_by
+  onCalendar: order_by
+  user: user_order_by
+  userId: order_by
+}
+
+# primary key columns input for table: "userGroup"
+input userGroup_pk_columns_input {
+  groupId: uuid!
+  userId: String!
+}
+
+# select columns of table "userGroup"
+enum userGroup_select_column {
+  # column name
+  groupId
+
+  # column name
+  isOwner
+
+  # column name
+  onCalendar
+
+  # column name
+  userId
+}
+
+# input type for updating data in table "userGroup"
+input userGroup_set_input {
+  groupId: uuid
+  isOwner: Boolean
+  onCalendar: Boolean
+  userId: String
+}
+
+# update columns of table "userGroup"
+enum userGroup_update_column {
+  # column name
+  groupId
+
+  # column name
+  isOwner
+
+  # column name
+  onCalendar
+
+  # column name
+  userId
+}
+
 # columns and relationships of "userInterest"
 type userInterest {
   # An object relationship
@@ -10764,298 +10694,6 @@ type userInterest_variance_fields {
 # order by variance() on columns of table "userInterest"
 input userInterest_variance_order_by {
   interestId: order_by
-}
-
-# columns and relationships of "userMember"
-type userMember {
-  # An object relationship
-  group: group!
-  groupId: uuid!
-
-  # An object relationship
-  user: user!
-  userId: String!
-}
-
-# aggregated selection of "userMember"
-type userMember_aggregate {
-  aggregate: userMember_aggregate_fields
-  nodes: [userMember!]!
-}
-
-# aggregate fields of "userMember"
-type userMember_aggregate_fields {
-  count(columns: [userMember_select_column!], distinct: Boolean): Int
-  max: userMember_max_fields
-  min: userMember_min_fields
-}
-
-# order by aggregate values of table "userMember"
-input userMember_aggregate_order_by {
-  count: order_by
-  max: userMember_max_order_by
-  min: userMember_min_order_by
-}
-
-# input type for inserting array relation for remote table "userMember"
-input userMember_arr_rel_insert_input {
-  data: [userMember_insert_input!]!
-  on_conflict: userMember_on_conflict
-}
-
-# Boolean expression to filter rows from the table "userMember". All fields are combined with a logical 'AND'.
-input userMember_bool_exp {
-  _and: [userMember_bool_exp]
-  _not: userMember_bool_exp
-  _or: [userMember_bool_exp]
-  group: group_bool_exp
-  groupId: uuid_comparison_exp
-  user: user_bool_exp
-  userId: String_comparison_exp
-}
-
-# unique or primary key constraints on table "userMember"
-enum userMember_constraint {
-  # unique or primary key constraint
-  userMember_pkey
-}
-
-# input type for inserting data into table "userMember"
-input userMember_insert_input {
-  group: group_obj_rel_insert_input
-  groupId: uuid
-  user: user_obj_rel_insert_input
-  userId: String
-}
-
-# aggregate max on columns
-type userMember_max_fields {
-  groupId: uuid
-  userId: String
-}
-
-# order by max() on columns of table "userMember"
-input userMember_max_order_by {
-  groupId: order_by
-  userId: order_by
-}
-
-# aggregate min on columns
-type userMember_min_fields {
-  groupId: uuid
-  userId: String
-}
-
-# order by min() on columns of table "userMember"
-input userMember_min_order_by {
-  groupId: order_by
-  userId: order_by
-}
-
-# response of any mutation on the table "userMember"
-type userMember_mutation_response {
-  # number of affected rows by the mutation
-  affected_rows: Int!
-
-  # data of the affected rows by the mutation
-  returning: [userMember!]!
-}
-
-# input type for inserting object relation for remote table "userMember"
-input userMember_obj_rel_insert_input {
-  data: userMember_insert_input!
-  on_conflict: userMember_on_conflict
-}
-
-# on conflict condition type for table "userMember"
-input userMember_on_conflict {
-  constraint: userMember_constraint!
-  update_columns: [userMember_update_column!]!
-  where: userMember_bool_exp
-}
-
-# ordering options when selecting data from "userMember"
-input userMember_order_by {
-  group: group_order_by
-  groupId: order_by
-  user: user_order_by
-  userId: order_by
-}
-
-# primary key columns input for table: "userMember"
-input userMember_pk_columns_input {
-  groupId: uuid!
-  userId: String!
-}
-
-# select columns of table "userMember"
-enum userMember_select_column {
-  # column name
-  groupId
-
-  # column name
-  userId
-}
-
-# input type for updating data in table "userMember"
-input userMember_set_input {
-  groupId: uuid
-  userId: String
-}
-
-# update columns of table "userMember"
-enum userMember_update_column {
-  # column name
-  groupId
-
-  # column name
-  userId
-}
-
-# columns and relationships of "userOwner"
-type userOwner {
-  # An object relationship
-  group: group!
-  groupId: uuid!
-
-  # An object relationship
-  user: user!
-  userId: String!
-}
-
-# aggregated selection of "userOwner"
-type userOwner_aggregate {
-  aggregate: userOwner_aggregate_fields
-  nodes: [userOwner!]!
-}
-
-# aggregate fields of "userOwner"
-type userOwner_aggregate_fields {
-  count(columns: [userOwner_select_column!], distinct: Boolean): Int
-  max: userOwner_max_fields
-  min: userOwner_min_fields
-}
-
-# order by aggregate values of table "userOwner"
-input userOwner_aggregate_order_by {
-  count: order_by
-  max: userOwner_max_order_by
-  min: userOwner_min_order_by
-}
-
-# input type for inserting array relation for remote table "userOwner"
-input userOwner_arr_rel_insert_input {
-  data: [userOwner_insert_input!]!
-  on_conflict: userOwner_on_conflict
-}
-
-# Boolean expression to filter rows from the table "userOwner". All fields are combined with a logical 'AND'.
-input userOwner_bool_exp {
-  _and: [userOwner_bool_exp]
-  _not: userOwner_bool_exp
-  _or: [userOwner_bool_exp]
-  group: group_bool_exp
-  groupId: uuid_comparison_exp
-  user: user_bool_exp
-  userId: String_comparison_exp
-}
-
-# unique or primary key constraints on table "userOwner"
-enum userOwner_constraint {
-  # unique or primary key constraint
-  userOwner_pkey
-}
-
-# input type for inserting data into table "userOwner"
-input userOwner_insert_input {
-  group: group_obj_rel_insert_input
-  groupId: uuid
-  user: user_obj_rel_insert_input
-  userId: String
-}
-
-# aggregate max on columns
-type userOwner_max_fields {
-  groupId: uuid
-  userId: String
-}
-
-# order by max() on columns of table "userOwner"
-input userOwner_max_order_by {
-  groupId: order_by
-  userId: order_by
-}
-
-# aggregate min on columns
-type userOwner_min_fields {
-  groupId: uuid
-  userId: String
-}
-
-# order by min() on columns of table "userOwner"
-input userOwner_min_order_by {
-  groupId: order_by
-  userId: order_by
-}
-
-# response of any mutation on the table "userOwner"
-type userOwner_mutation_response {
-  # number of affected rows by the mutation
-  affected_rows: Int!
-
-  # data of the affected rows by the mutation
-  returning: [userOwner!]!
-}
-
-# input type for inserting object relation for remote table "userOwner"
-input userOwner_obj_rel_insert_input {
-  data: userOwner_insert_input!
-  on_conflict: userOwner_on_conflict
-}
-
-# on conflict condition type for table "userOwner"
-input userOwner_on_conflict {
-  constraint: userOwner_constraint!
-  update_columns: [userOwner_update_column!]!
-  where: userOwner_bool_exp
-}
-
-# ordering options when selecting data from "userOwner"
-input userOwner_order_by {
-  group: group_order_by
-  groupId: order_by
-  user: user_order_by
-  userId: order_by
-}
-
-# primary key columns input for table: "userOwner"
-input userOwner_pk_columns_input {
-  groupId: uuid!
-  userId: String!
-}
-
-# select columns of table "userOwner"
-enum userOwner_select_column {
-  # column name
-  groupId
-
-  # column name
-  userId
-}
-
-# input type for updating data in table "userOwner"
-input userOwner_set_input {
-  groupId: uuid
-  userId: String
-}
-
-# update columns of table "userOwner"
-enum userOwner_update_column {
-  # column name
-  groupId
-
-  # column name
-  userId
 }
 
 # columns and relationships of "userProgram"

@@ -552,6 +552,24 @@ const EVENT_ATTENDANCE_FRAGMENT = gql`
     }
 `
 
+const EVENT_INVITED_FRAGMENT = gql`
+    fragment EventInvited on event {
+        invited: attendees(where: {didAccept: {_eq: false}}) {
+            user {
+                image
+                id
+                name
+            }
+            didAccept
+        }
+        invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
+            aggregate {
+                count
+            }
+        }
+    }
+`
+
 export const GET_EVENT_ATTENDANCE = gql`
     query GetEventAttendance($eventId: uuid!) {
         event(id: $eventId) {
@@ -559,6 +577,16 @@ export const GET_EVENT_ATTENDANCE = gql`
         }
     }
     ${EVENT_ATTENDANCE_FRAGMENT}
+`
+
+export const GET_EVENT_INVITED = gql`
+    query GetEventAttendance($eventId: uuid!) {
+        event(id: $eventId) {
+            id
+            ...EventInvited
+        }
+    }
+    ${EVENT_INVITED_FRAGMENT}
 `
 
 export const SIGN_UP_USER_FOR_EVENT = gql`
@@ -624,18 +652,9 @@ export const CONFIRM_EVENT_INVITE = gql`
             userId
             eventId
             didAccept
-            event {
-                ...EventAttendance
-            }
-            user {
-                id
-                events {
-                    didAccept
-                    eventId
-                }
-            }
         }
     }
+
 `
 
 export const GET_USER_GROUPS = gql`
