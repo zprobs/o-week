@@ -42,17 +42,17 @@ export const GET_CURRENT_USER = gql`
         id
         title
       }
-      member {
+      member(where: {isOwner: {_eq: false}}) {
           group {
               id
               name
               image
-              members_aggregate {
+              members_aggregate(where: {isOwner: {_eq: false}}) {
                   aggregate {
                       count
                   }
               }
-              members(limit: 3) {
+              members(limit: 3, where: {isOwner: {_eq: false}}) {
                   user {
                       id 
                       image
@@ -641,7 +641,7 @@ export const CONFIRM_EVENT_INVITE = gql`
 export const GET_USER_GROUPS = gql`
   query getUserGroups($id: String!) {
       user(id: $id) {
-          member {
+          member(where: {isOwner: {_eq: false}}) {
               group {
                   id
               }
@@ -657,14 +657,14 @@ export const GET_DETAILED_GROUP = gql`
             name
             image
             description
-            members {
+            members(where: {isOwner: {_eq: false}}) {
                 user {
                     id
                     image
                     name
                 }
             }
-            owners {
+            owners: members(where: {isOwner: {_eq: true}}) {
                 user {
                     id
                     image
