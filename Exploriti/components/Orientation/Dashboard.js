@@ -97,28 +97,17 @@ export default function Dashboard() {
 
     const renderItem = React.useCallback(({ item, section }) => {
         let screen, options
-        const images = [];
-        let count = 0;
-        let object;
+
         if (section.title === "Groups") {
             screen = "GroupScreen"
-            object = item.group
-            options = {group: object, isOwner: item.isOwner}
-          object.members.map((member) => {
-                images.push(member.user.image);
-            })
-          count = object.members_aggregate.aggregate.count
+            options = {groupId: item.group.id, isOwner: item.isOwner}
         } else {
             screen = "EventScreen"
             options = {event: item}
-            item.attendees.map((attendee) => {
-                images.push(attendee.user.image);
-            })
-            count = item.attendees_aggregate.aggregate.count
         }
             return (
                 <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-                   <ImageCard item={object} images={images} count={count} />
+                   <ImageCard groupId={item.group.id}/>
                 </TouchableOpacity>
             );
     }, [navigation]);

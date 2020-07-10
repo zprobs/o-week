@@ -22,7 +22,7 @@ const UserCard = ({ userId, groupId, image, name, onPress, style }) => {
 
   const id = userId ? userId : groupId
   const destination = userId ? 'Profile' : 'GroupScreen';
-  const options = userId ? {userId: userId} : {group: {id: groupId, name: name, image: image}}
+  const options = userId ? {userId: userId} : {groupId: groupId}
 
   const navigateToProfile = () => {
     navigation.push(destination, options);

@@ -52,19 +52,7 @@ export const GET_CURRENT_USER = gql`
           isOwner
         group {
           id
-          name
-          image
-          members_aggregate(where: { isOwner: { _eq: false } }) {
-            aggregate {
-              count
-            }
-          }
-          members(limit: 3, where: { isOwner: { _eq: false } }) {
-            user {
-              id
-              image
-            }
-          }
+          
         }
       }
     }
@@ -692,6 +680,27 @@ export const GET_USER_GROUPS = gql`
   }
 `;
 
+export const GET_GROUP = gql`
+    query getGroup($id: uuid!) {
+        group(id: $id) {
+            id
+            name
+            image
+            members_aggregate(where: { isOwner: { _eq: false } }) {
+                aggregate {
+                    count
+                }
+            }
+            members(limit: 3, where: { isOwner: { _eq: false } }) {
+                user {
+                    id
+                    image
+                }
+            }
+        }
+    }
+`
+
 export const GET_DETAILED_GROUP = gql`
   query getDetailedGroup($id: uuid!) {
     group(id: $id) {
@@ -734,9 +743,21 @@ export const GET_DETAILED_GROUP = gql`
   }
 `;
 
+export const UPDATE_GROUP = gql`
+  mutation updateGroup($id: uuid!, $data: group_set_input!) {
+    updateGroup(pk_columns: {id: $id}, _set: $data) {
+      id
+      description
+      name
+      image
+    }
+  }
+`;
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}
+ * Todo Come up with a better solution this is hideous
  */
 export const NULL = gql`
   {

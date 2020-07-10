@@ -12,6 +12,9 @@ import { Theme } from '../../theme/Colours';
 import GroupInfoModal from '../Modal/GroupInfoModal';
 import LinearGradient from 'react-native-linear-gradient';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
+import GroupEditModal from '../Modal/GroupEditModal';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_GROUP } from '../../graphql';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -26,7 +29,22 @@ const HEIGHT = Dimensions.get('window').height;
 const GroupScreen = ({route}) => {
 
     const modalRef = useRef();
-    const {group, isOwner} = route.params
+    const editRef = useRef();
+    const {groupId, isOwner} = route.params
+  console.log(groupId)
+  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}, fetchPolicy: 'cache-only'})
+  if (loading) console.log('groupScreen loading (NOT HAPPEN)')
+
+  const {group} = data;
+
+  const edit = () => {
+      modalRef.current.close();
+      editRef.current.open();
+  }
+
+  const onCloseEdit = () => {
+      modalRef.current.open();
+  }
 
     return (
       <View style={styles.container}>
@@ -35,9 +53,8 @@ const GroupScreen = ({route}) => {
               <View style={styles.icons}>
                 <CircleBackIcon style={styles.circleBackIcon}/>
                 {
-                  isOwner ? <CircleEditIcon style={styles.circleEditIcon} /> : null
+                  isOwner ? <CircleEditIcon style={styles.circleEditIcon} onPress={edit} /> : null
                 }
-
               </View>
                 <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
                     <Text style={styles.title}>{group.name}</Text>
@@ -45,6 +62,7 @@ const GroupScreen = ({route}) => {
             </View>
         </ImageBackground>
           <GroupInfoModal ref={modalRef} groupId={group.id}/>
+        <GroupEditModal ref={editRef} groupId={group.id} onClose={onCloseEdit}/>
       </View>
     );
 }

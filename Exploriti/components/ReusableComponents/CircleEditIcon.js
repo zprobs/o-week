@@ -17,9 +17,7 @@ const CircleEditIcon = ({ onPress, style }) => {
         name={'edit'}
         color={'#000'}
         size={23}
-        onPress={() => {
-          if (onPress) onPress();
-        }}
+        onPress={onPress}
       />
     </View>
   );

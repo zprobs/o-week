@@ -197,7 +197,7 @@ const EditProfileBottomModal = React.forwardRef(
               <FormInput
                 ref={null}
                 label="Description"
-                placeholder="example: hey, I am a doggo"
+                placeholder="example: hey, I am a student"
                 value={editableDescription}
                 onChangeText={setEditableDescription}
                 multiline

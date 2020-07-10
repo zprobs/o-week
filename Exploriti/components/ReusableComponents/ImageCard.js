@@ -4,6 +4,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import UserCountPreview from './UserCountPreview';
 import { Theme } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_GROUP } from '../../graphql';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -15,18 +17,36 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-const ImageCard = ({ item , images, count}) => (
-  <View style={styles.imageRow}>
-    <Image source={{ uri: item.image }} style={styles.groupImage} />
-    <LinearGradient
-      colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
-      locations={[0, 0.9]}
-      style={styles.imageLabelContainer}>
-      <UserCountPreview count={count} images={images} />
-      <Text style={styles.imageLabelText}>{item.name}</Text>
-    </LinearGradient>
-  </View>
-);
+const ImageCard = ({ groupId }) => {
+
+
+
+  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}})
+
+  if (loading || error) return null;
+
+  const {group} = data
+
+  const images = [];
+  group.members.map((member) => {
+    images.push(member.user.image);
+  })
+  const count = group.members_aggregate.aggregate.count
+
+
+  return (
+    <View style={styles.imageRow}>
+      <Image source={{ uri: group.image }} style={styles.groupImage}/>
+      <LinearGradient
+        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
+        locations={[0, 0.9]}
+        style={styles.imageLabelContainer}>
+        <UserCountPreview count={count} images={images}/>
+        <Text style={styles.imageLabelText}>{group.name}</Text>
+      </LinearGradient>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   imageRow: {
