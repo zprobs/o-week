@@ -49,6 +49,7 @@ export const GET_CURRENT_USER = gql`
         title
       }
       member {
+          isOwner
         group {
           id
           name

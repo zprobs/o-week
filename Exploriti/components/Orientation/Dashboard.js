@@ -41,7 +41,7 @@ export default function Dashboard() {
     const listData = useMemo(() => [
         {
             title: "Groups",
-            data:  data.user.member ? data.user.member.map((member)=>member.group) : []
+            data:  data.user.member ? data.user.member : []
         },
         // {
         //     title: "Events",
@@ -99,13 +99,15 @@ export default function Dashboard() {
         let screen, options
         const images = [];
         let count = 0;
+        let object;
         if (section.title === "Groups") {
             screen = "GroupScreen"
-            options = {group: item}
-            item.members.map((member) => {
+            object = item.group
+            options = {group: object, isOwner: item.isOwner}
+          object.members.map((member) => {
                 images.push(member.user.image);
             })
-          count = item.members_aggregate.aggregate.count
+          count = object.members_aggregate.aggregate.count
         } else {
             screen = "EventScreen"
             options = {event: item}
@@ -116,7 +118,7 @@ export default function Dashboard() {
         }
             return (
                 <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-                   <ImageCard item={item} images={images} count={count} />
+                   <ImageCard item={object} images={images} count={count} />
                 </TouchableOpacity>
             );
     }, [navigation]);
