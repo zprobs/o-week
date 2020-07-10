@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {StyleSheet, Text, Dimensions, View, TouchableOpacity, Image, Linking} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -117,12 +117,19 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
 
         );
 
+      const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
+      const isAccepted = acceptData ? isInvited && acceptData.user.events[0].didAccept : false;
+
+      useEffect(()=> {
+        setIsSelected(isAccepted);
+      }, [acceptData])
+
       if (removeError) console.log(removeError.message);
       if (confirmError) console.log('confirmError', confirmError.message);
 
-      const mutationLoading = signUpLoading || removeLoading || confirmLoading || acceptLoading
+      const mutationLoading = signUpLoading || confirmLoading || acceptLoading || removeLoading
 
-      if (loading) return null
+      if (loading || acceptLoading) return null
       if (error || acceptError) return <Text>{acceptError ? acceptError.message : error.message}</Text>
 
       const date = new Date(data.event.startDate);
@@ -131,14 +138,6 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
       const [{ value: month },,{ value: day },,{ value: year },, {value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
       const [{ value: endMonth },,{ value: endDay },,{ value: endYear },, {value: endHour},,{value: endMinute},,{value: endDayPeriod}] = dateTimeFormat .formatToParts(end)
       const parsedYear = year === "2020" ? "" : year
-
-      const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
-      const isAccepted = acceptData ? isInvited && acceptData.user.events[0].didAccept : false;
-
-      if (!acceptLoading) {
-
-        if (isSelected != isAccepted) setIsSelected(isAccepted);
-      }
 
 
 
