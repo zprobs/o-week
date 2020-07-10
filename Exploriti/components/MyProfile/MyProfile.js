@@ -4,6 +4,7 @@ import { DrawerIcon } from '../Menu/DrawerIcon';
 import Profile from './Profile';
 import { MessagesIcon } from '../Menu/MessagesIcon';
 import Conversation from '../Messages/Conversation';
+import GroupScreen from '../Orientation/GroupScreen';
 const Stack = createStackNavigator();
 
 /**
@@ -31,13 +32,20 @@ export default function MyProfile() {
           headerShown: false,
         }}
       />
-        <Stack.Screen
-            name="Conversation"
-            component={Conversation}
-            options={{
-                headerShown: false,
-            }}
-        />
+      <Stack.Screen
+        name="Conversation"
+        component={Conversation}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={'GroupScreen'}
+        component={GroupScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }

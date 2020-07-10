@@ -5,6 +5,10 @@ import ModalHeader from "./ModalHeader";
 import { Theme } from "../../theme/Colours";
 import ImgBanner from "../ReusableComponents/ImgBanner";
 import EmptyConnections from '../../assets/svg/empty-connections.svg'
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
+import { GET_USER_GROUPS } from '../../graphql';
+import { AuthContext } from '../../context';
+import UserCard from '../ReusableComponents/UserCard';
 
 const { colours } = Theme.light;
 const window = Dimensions.get("window").height;
@@ -15,10 +19,20 @@ const window05 = window * 0.05;
  * @param data What is shown in the Flatlist
  * @param type {string} Type = Member when the component is rendering the groups that a user is a member of
  * @param name {string} The name of the user if it is not currentUser
+ * @param onPress {function} optional function to replace navigation
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const GroupBottomModal = React.forwardRef(
-  ({ name, data, type }, ref) => {
+  ({ name, type, userId, onPress }, ref) => {
+
+    const [getGroups, {data, called, loading, error}] = useLazyQuery(GET_USER_GROUPS, {variables: {id: userId }})
+
+    console.log('userID', userId);
+    console.log('loading', loading);
+    console.log('error', error);
+    console.log('data', data);
+
+
     let heading;
     let subHeading;
 
@@ -40,7 +54,17 @@ const GroupBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      return <Text>Group Card</Text>;
+      const { id, image, name } = item.group;
+      return (
+        <UserCard
+          groupId={id}
+          image={image}
+          name={name}
+          key={id}
+          style={styles.userCard}
+          onPress={onPress}
+        />
+      );
     };
 
     const header = () => (
@@ -54,12 +78,15 @@ const GroupBottomModal = React.forwardRef(
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: data,
+          data: data ? data.user.member : null,
           ListEmptyComponent: ListEmptyComponent,
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,
+          keyExtractor: item => item.group.id
         }}
+        onOpen={called ? null : getGroups}
+        disableScrollIfPossible={true}
       />
     );
   },
@@ -67,7 +94,7 @@ const GroupBottomModal = React.forwardRef(
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 40,
+      marginTop: 60,
       padding: 20,
       backgroundColor: colours.base,
     },
@@ -85,6 +112,9 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "flex-start",
     },
+  userCard: {
+      marginVertical: 12
+  }
   });
 
 export default GroupBottomModal;

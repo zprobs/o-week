@@ -136,13 +136,11 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
       const isAccepted = acceptData ? isInvited && acceptData.user.events[0].didAccept : false;
 
       if (!acceptLoading) {
-        console.log('isInvited', isInvited);
-        console.log('isAccepted', isAccepted);
+
         if (isSelected != isAccepted) setIsSelected(isAccepted);
       }
 
 
-      console.log('isSelected', isSelected);
 
       return (
           <>

@@ -7,7 +7,7 @@ import { Theme } from '../../theme/Colours';
 import EmptyConnections from '../../assets/svg/empty-connections.svg'
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { GET_USERS_BY_ID } from '../../graphql';
+import { GET_USER_FRIENDS, GET_USERS_BY_ID } from '../../graphql';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -16,18 +16,19 @@ const window05 = window * 0.05;
 /**
  * List modal of users
  * @param name {string} the name of user other than the current user. Do not include if current user
+ * @param userId {string} userId of the user
  * @param data What is shown in the Flatlist. An array of Strings representing userIds
  * @param type {string} Type = Friends when the component is rendering the users that a user is friends with
  * @param onPress {function} an optional onPress() for if you don't want to navigate to profile
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
-const UsersBottomModal = React.forwardRef(({ name, data, type, onPress }, ref) => {
+const UsersBottomModal = React.forwardRef(({ name, userId, type, onPress }, ref) => {
 
   // use Lazy Query so that it is not executed unless opened
   const [
     getUsers,
     { data: userData, loading, error, called },
-  ] = useLazyQuery(GET_USERS_BY_ID, { variables: { _in: data } });
+  ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId } });
 
   let heading;
   let subHeading;
@@ -77,7 +78,7 @@ const UsersBottomModal = React.forwardRef(({ name, data, type, onPress }, ref) =
       modalStyle={styles.container}
       flatListProps={{
         showsVerticalScrollIndicator: false,
-        data: userData ? userData.users : null,
+        data: userData ? userData.friends : null,
         ListEmptyComponent: listEmptyComponent,
         style: listContainer,
         renderItem: renderItem,

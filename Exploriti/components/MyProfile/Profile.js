@@ -78,10 +78,8 @@ export default function Profile({ route }) {
     const image = data.user.image === 'default_user.png' ? "https://reactjs.org/logo-og.png" : data.user.image;
     const programs = data.user.programs.map(userProgram => userProgram.program.name).join(', ');
     const year = data.user.year;
-    const friends = data.friends;
-
-    const friendsIds = [];
-    friends.map((item)=>friendsIds.push(item.id));
+    const friendCount = data.user.friends_aggregate.aggregate.count;
+    const groupCount = data.user.member_aggregate.aggregate.count;
 
     const onEdit = () => editProfileBottomModalRef.current.open();
     const onOptions = () => optionsBottomModalRef.current.open();
@@ -90,7 +88,7 @@ export default function Profile({ route }) {
     const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
     const renderInteractions = () => {
-        return <UserInteractions userId={userId} friends={friends} navigation={useNavigation()} image={image}/>;
+        return <UserInteractions userId={userId}  navigation={useNavigation()} image={image}/>;
     };
 
     const openModal = (index) => {
@@ -119,17 +117,18 @@ export default function Profile({ route }) {
                     onGroupsOpen={onGroupsOpen}
                     renderInteractions={isCurrentUser ? null : renderInteractions}
                     userId={userId}
-                    friends={friends}
+                    groupCount={groupCount}
+                    friendCount={friendCount}
                 />
                 { isCurrentUser ? <SocialMediaAnimation openModal={openModal}/> : null }
             </SafeAreaView>
             <UsersBottomModal
                 ref={usersBottomModalRef}
-                data={friendsIds}
                 type="Friends"
                 name={isCurrentUser ? null : name}
+                userId={userId}
             />
-            <GroupBottomModal ref={groupBottomModalRef} data={null} type="Member" name={isCurrentUser ? null : name} />
+            <GroupBottomModal ref={groupBottomModalRef} userId={userId} type="Member" name={isCurrentUser ? null : name} />
             {isCurrentUser ? (
                 <>
                 <EditProfileBottomModal
@@ -184,7 +183,8 @@ const Connections = ({ total, type, onPress }) => {
  * @param description
  * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
  * @param userId
- * @param friends A list of the users friends
+ * @param groupCount Number of groups
+ * @param friendCount Number of friends
  * @returns {*}
  * @constructor
  */
@@ -199,19 +199,20 @@ const ProfileCard = ({
   description,
   renderInteractions,
     userId,
-    friends
+  groupCount,
+  friendCount
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        <Connections onPress={onFriendsOpen} total={friends ? friends.length : 0} type="FRIENDS" />
+        <Connections onPress={onFriendsOpen} total={friendCount} type="FRIENDS" />
         <ImageBackground
           source={{ uri: image || "" }}
           style={styles.image}
           imageStyle={styles.avatarImage}>
           {editable && <EditProfile onEdit={onEdit} />}
         </ImageBackground>
-        <Connections onPress={onGroupsOpen} total={0} type="GROUPS" />
+        <Connections onPress={onGroupsOpen} total={groupCount} type="GROUPS" />
       </View>
       <View style={styles.name}>
         <Text style={styles.usernameText}>{name}</Text>

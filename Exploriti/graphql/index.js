@@ -1,9 +1,9 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 /**
  * To get new Schema :
  * gq https://exploriti-backend.herokuapp.com/v1/graphql -H 'X-Hasura-Admin-Secret: Liv7RYcLeKFPFuW4pJHX' --introspect > schema.graphql
-**/
+ **/
 export const DETAILED_USER_FRAGMENT = gql`
   fragment DetailedUser on user {
     id
@@ -18,6 +18,16 @@ export const DETAILED_USER_FRAGMENT = gql`
     }
     image
     year
+    member_aggregate {
+      aggregate {
+        count
+      }
+    }
+    friends_aggregate {
+      aggregate {
+        count
+      }
+    }
   }
 `;
 
@@ -25,10 +35,6 @@ export const GET_DETAILED_USER = gql`
   query getDetailedUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
-    }
-    friends(where: { userId: { _eq: $id } }) {
-      id
-      userId
     }
   }
   ${DETAILED_USER_FRAGMENT}
@@ -42,28 +48,24 @@ export const GET_CURRENT_USER = gql`
         id
         title
       }
-      member(where: {isOwner: {_eq: false}}) {
-          group {
-              id
-              name
-              image
-              members_aggregate(where: {isOwner: {_eq: false}}) {
-                  aggregate {
-                      count
-                  }
-              }
-              members(limit: 3, where: {isOwner: {_eq: false}}) {
-                  user {
-                      id 
-                      image
-                  }
-              }
+      member {
+        group {
+          id
+          name
+          image
+          members_aggregate(where: { isOwner: { _eq: false } }) {
+            aggregate {
+              count
+            }
           }
+          members(limit: 3, where: { isOwner: { _eq: false } }) {
+            user {
+              id
+              image
+            }
+          }
+        }
       }
-    }
-    friends(where: { userId: { _eq: $id } }) {
-      id
-      userId
     }
   }
   ${DETAILED_USER_FRAGMENT}
@@ -165,13 +167,13 @@ export const GET_ALL_USERS = gql`
 `;
 
 export const GET_USERS_WHERE = gql`
-    query getUsersWhere($_nin: [String!]!, $limit: Int = 7) {
-        users(where: {id: {_nin: $_nin}}, limit: $limit) {
-            id
-            image
-            name
-        }
+  query getUsersWhere($_nin: [String!]!, $limit: Int = 7) {
+    users(where: { id: { _nin: $_nin } }, limit: $limit) {
+      id
+      image
+      name
     }
+  }
 `;
 
 export const GET_PAGINATED_USERS = gql`
@@ -225,12 +227,12 @@ export const GET_USER_FRIENDS = gql`
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
-    query getFriendsID($userId: String!) {
-        friends(where: { userId: { _eq: $userId } }) {
-            userId
-            id
-        }
+  query getFriendsID($userId: String!) {
+    friends(where: { userId: { _eq: $userId } }) {
+      userId
+      id
     }
+  }
 `;
 
 export const REMOVE_FRIEND = gql`
@@ -349,7 +351,13 @@ export const DETAILED_CHAT = gql`
 
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
-    chats(limit: 15, order_by: {messages_aggregate: {max: {date: desc}}}, where: {_and: [{ participants: { id: { _eq: $user } } }, {messages: {}}]}) {
+    chats(
+      limit: 15
+      order_by: { messages_aggregate: { max: { date: desc } } }
+      where: {
+        _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
+      }
+    ) {
       ...DetailedChat
     }
   }
@@ -357,7 +365,10 @@ export const GET_CHATS = gql`
 `;
 
 export const NEW_CHAT = gql`
-  mutation newChat($participants: userChat_arr_rel_insert_input!, $image: String!) {
+  mutation newChat(
+    $participants: userChat_arr_rel_insert_input!
+    $image: String!
+  ) {
     createChat(object: { users: $participants, image: $image }) {
       ...DetailedChat
     }
@@ -368,13 +379,9 @@ export const NEW_CHAT = gql`
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {
     messages(
-      where: {
-        _and: [
-          { chatId: { _eq: $chatId } } 
-        ]
-      },
-      limit: 1,
-      order_by: {date: desc}
+      where: { _and: [{ chatId: { _eq: $chatId } }] }
+      limit: 1
+      order_by: { date: desc }
     ) {
       ...DetailedMessage
     }
@@ -405,42 +412,44 @@ export const SEND_MESSAGE = gql`
 `;
 
 export const DETAILED_EVENT_FRAGMENT = gql`
-    fragment DetailedEvent on event {
-      description
-      id
-      image
-      location
-      name
-      startDate
-      endDate
-      isOfficial
-      attendees(where: {didAccept: {_eq: true}}) {
-        user {
-          image
-          id
-          name
-        }
-          didAccept
+  fragment DetailedEvent on event {
+    description
+    id
+    image
+    location
+    name
+    startDate
+    endDate
+    isOfficial
+    attendees(where: { didAccept: { _eq: true } }) {
+      user {
+        image
+        id
+        name
       }
-      attendees_aggregate {
-        aggregate {
-          count
-        }
-      }
-      invited: attendees(where: {didAccept: {_eq: false}}) {
-        user {
-          image
-          id
-          name
-        }
-          didAccept
-      }
-      invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
-          aggregate {
-              count
-          }
+      didAccept
+    }
+    attendees_aggregate {
+      aggregate {
+        count
       }
     }
+    invited: attendees(where: { didAccept: { _eq: false } }) {
+      user {
+        image
+        id
+        name
+      }
+      didAccept
+    }
+    invited_aggregate: attendees_aggregate(
+      where: { didAccept: { _eq: false } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
 `;
 
 export const GET_DETAILED_EVENT = gql`
@@ -462,7 +471,7 @@ export const GET_ALL_EVENTS = gql`
       endDate
       attendees(limit: 3) {
         user {
-            id
+          id
           image
         }
       }
@@ -473,243 +482,256 @@ export const GET_ALL_EVENTS = gql`
       }
     }
   }
-`
-
-export const GET_SCHEDULED_EVENTS = gql`
-    query GetScheduledEvents {
-        events(order_by: {startDate: asc}) {
-            id
-            image
-            name
-            startDate
-            description
-            attendees(limit: 3) {
-                user {
-                    id
-                    image
-                }
-            }
-            attendees_aggregate {
-                aggregate {
-                    count
-                }
-            }
-        }
-    }
 `;
 
-export const GET_EVENTS_BY_ID = gql `
-    query GetEventsById($_in: [uuid!]!) {
-        events(where: {id: {_in: $_in}}, order_by: {startDate: asc}) {
-                id
-                image
-                name
-                startDate
-                description
-                attendees(limit: 3) {
-                    user {
-                        id
-                        image
-                    }
-                }
-                attendees_aggregate {
-                    aggregate {
-                        count
-                    }
-                }
+export const GET_SCHEDULED_EVENTS = gql`
+  query GetScheduledEvents {
+    events(order_by: { startDate: asc }) {
+      id
+      image
+      name
+      startDate
+      description
+      attendees(limit: 3) {
+        user {
+          id
+          image
         }
+      }
+      attendees_aggregate {
+        aggregate {
+          count
+        }
+      }
     }
+  }
+`;
+
+export const GET_EVENTS_BY_ID = gql`
+  query GetEventsById($_in: [uuid!]!) {
+    events(where: { id: { _in: $_in } }, order_by: { startDate: asc }) {
+      id
+      image
+      name
+      startDate
+      description
+      attendees(limit: 3) {
+        user {
+          id
+          image
+        }
+      }
+      attendees_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
 `;
 
 export const CHECK_USER_EVENT_ACCEPTED = gql`
-    query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
-        user(id: $userId) {
-            id
-            events(where: {event: {id: {_eq: $eventId}}}) {
-                didAccept
-                eventId
-            }
-        }
+  query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
+    user(id: $userId) {
+      id
+      events(where: { event: { id: { _eq: $eventId } } }) {
+        didAccept
+        eventId
+      }
     }
-`
+  }
+`;
 
 const EVENT_ATTENDANCE_FRAGMENT = gql`
-    fragment EventAttendance on event {
+  fragment EventAttendance on event {
+    id
+    attendees(where: { didAccept: { _eq: true } }) {
+      user {
+        image
         id
-        attendees(where: {didAccept: {_eq: true}}) {
-            user {
-                image
-                id
-                name
-            }
-            didAccept
-        }
-        attendees_aggregate {
-            aggregate {
-                count
-            }
-        }
+        name
+      }
+      didAccept
     }
-`
+    attendees_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
 
 const EVENT_INVITED_FRAGMENT = gql`
-    fragment EventInvited on event {
-        invited: attendees(where: {didAccept: {_eq: false}}) {
-            user {
-                image
-                id
-                name
-            }
-            didAccept
-        }
-        invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
-            aggregate {
-                count
-            }
-        }
+  fragment EventInvited on event {
+    invited: attendees(where: { didAccept: { _eq: false } }) {
+      user {
+        image
+        id
+        name
+      }
+      didAccept
     }
-`
+    invited_aggregate: attendees_aggregate(
+      where: { didAccept: { _eq: false } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
 
 export const GET_EVENT_ATTENDANCE = gql`
-    query GetEventAttendance($eventId: uuid!) {
-        event(id: $eventId) {
-            ...EventAttendance
-        }
+  query GetEventAttendance($eventId: uuid!) {
+    event(id: $eventId) {
+      ...EventAttendance
     }
-    ${EVENT_ATTENDANCE_FRAGMENT}
-`
+  }
+  ${EVENT_ATTENDANCE_FRAGMENT}
+`;
 
 export const GET_EVENT_INVITED = gql`
-    query GetEventAttendance($eventId: uuid!) {
-        event(id: $eventId) {
-            id
-            ...EventInvited
-        }
+  query GetEventAttendance($eventId: uuid!) {
+    event(id: $eventId) {
+      id
+      ...EventInvited
     }
-    ${EVENT_INVITED_FRAGMENT}
-`
+  }
+  ${EVENT_INVITED_FRAGMENT}
+`;
 
 export const SIGN_UP_USER_FOR_EVENT = gql`
-    mutation SignUpUserForEvent($eventId: uuid!, $userId: String!) {
-        signUpUserForEvent(object: {didAccept: true, eventId: $eventId, userId: $userId}) {
-            userId
-            eventId
-            didAccept
-            event {
-               ...EventAttendance
-            }
-            user {
-                id
-                events(where: {event: {id: {_eq: $eventId}}}) {
-                    didAccept
-                    eventId
-                } 
-            }
+  mutation SignUpUserForEvent($eventId: uuid!, $userId: String!) {
+    signUpUserForEvent(
+      object: { didAccept: true, eventId: $eventId, userId: $userId }
+    ) {
+      userId
+      eventId
+      didAccept
+      event {
+        ...EventAttendance
+      }
+      user {
+        id
+        events(where: { event: { id: { _eq: $eventId } } }) {
+          didAccept
+          eventId
         }
+      }
     }
+  }
   ${EVENT_ATTENDANCE_FRAGMENT}
-`
+`;
 
 export const INVITE_USER_TO_EVENT = gql`
-    mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
-        signUpUserForEvent(object: {didAccept: false, eventId: $eventId, userId: $userId}) {
-            userId
-            eventId
-            didAccept
-            event {
-                id
-                invited: attendees(where: {didAccept: {_eq: false}}) {
-                    user {
-                        image
-                        id
-                        name
-                    }
-                    didAccept
-                }
-                invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
-                    aggregate {
-                        count
-                    }
-                }
-            }
+  mutation inviteUserToEvent($eventId: uuid!, $userId: String!) {
+    signUpUserForEvent(
+      object: { didAccept: false, eventId: $eventId, userId: $userId }
+    ) {
+      userId
+      eventId
+      didAccept
+      event {
+        id
+        invited: attendees(where: { didAccept: { _eq: false } }) {
+          user {
+            image
+            id
+            name
+          }
+          didAccept
         }
+        invited_aggregate: attendees_aggregate(
+          where: { didAccept: { _eq: false } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
     }
-`
+  }
+`;
 
 export const REMOVE_USER_FROM_EVENT = gql`
-    mutation removeUserFromEvent($eventId: uuid!, $userId: String!) {
-        removeUserFromEvent( eventId: $eventId, userId: $userId) {
-            userId
-            eventId
-            didAccept
-        }
+  mutation removeUserFromEvent($eventId: uuid!, $userId: String!) {
+    removeUserFromEvent(eventId: $eventId, userId: $userId) {
+      userId
+      eventId
+      didAccept
     }
-`
+  }
+`;
 
 export const CONFIRM_EVENT_INVITE = gql`
-    mutation confirmEventInvite($eventId: uuid!, $userId: String!) {
-        confirmEventInvite(pk_columns: {eventId: $eventId, userId: $userId}, _set: {didAccept: true}) {
-            userId
-            eventId
-            didAccept
-        }
+  mutation confirmEventInvite($eventId: uuid!, $userId: String!) {
+    confirmEventInvite(
+      pk_columns: { eventId: $eventId, userId: $userId }
+      _set: { didAccept: true }
+    ) {
+      userId
+      eventId
+      didAccept
     }
-
-`
+  }
+`;
 
 export const GET_USER_GROUPS = gql`
   query getUserGroups($id: String!) {
-      user(id: $id) {
-          member(where: {isOwner: {_eq: false}}) {
-              group {
-                  id
-              }
-          }
-      }
-  }
-`
-
-export const GET_DETAILED_GROUP = gql`
-    query getDetailedGroup($id: uuid!) {
-        group(id: $id) {
-            id
+    user(id: $id) {
+        id
+      member {
+        group {
+          id
             name
             image
-            description
-            members(where: {isOwner: {_eq: false}}) {
-                user {
-                    id
-                    image
-                    name
-                }
-            }
-            owners: members(where: {isOwner: {_eq: true}}) {
-                user {
-                    id
-                    image
-                    name
-                }
-            }
-            trophies {
-                    id
-                    name
-                    score
-            }
-            trophies_aggregate {
-                aggregate {
-                    sum {
-                        score
-                    }
-                }
-            }
-            events {
-                event {
-                    id
-                }
-            }
         }
+      }
     }
-`
+  }
+`;
+
+export const GET_DETAILED_GROUP = gql`
+  query getDetailedGroup($id: uuid!) {
+    group(id: $id) {
+      id
+      name
+      image
+      description
+      members(where: { isOwner: { _eq: false } }) {
+        user {
+          id
+          image
+          name
+        }
+      }
+      owners: members(where: { isOwner: { _eq: true } }) {
+        user {
+          id
+          image
+          name
+        }
+      }
+      trophies {
+        id
+        name
+        score
+      }
+      trophies_aggregate {
+        aggregate {
+          sum {
+            score
+          }
+        }
+      }
+      events {
+        event {
+          id
+        }
+      }
+    }
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

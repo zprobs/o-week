@@ -9,24 +9,29 @@ const { colours } = Theme.light;
 
 /**
  * For rendering a list item. Shows a user in a list, probably a modal.
- * @param userId {string}
+ * @param userId {string} used when you want to navigate to a profile page
+ * @param groupId {string} used when you want to navigate to a group page
  * @param image {string}
  * @param name {string}
  * @param onPress {function} A function which will pass the userId as a parameter
  * @param style Additional style for the entire card
  * @constructor
  */
-const UserCard = ({ userId, image, name, onPress, style }) => {
+const UserCard = ({ userId, groupId, image, name, onPress, style }) => {
   const navigation = useNavigation();
 
+  const id = userId ? userId : groupId
+  const destination = userId ? 'Profile' : 'GroupScreen';
+  const options = userId ? {userId: userId} : {group: {id: groupId, name: name, image: image}}
+
   const navigateToProfile = () => {
-    navigation.push('Profile', { userId: userId });
+    navigation.push(destination, options);
   };
 
   return (
     <TouchableOpacity
       activeOpacity={0.95}
-      onPress={onPress ? ()=>onPress(userId) : navigateToProfile}
+      onPress={onPress ? ()=>onPress(id) : navigateToProfile}
       style={[styles.container, style]}>
       <Image source={{ uri: image }} style={styles.avatarImage} />
       <View style={styles.info}>
