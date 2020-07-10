@@ -7,14 +7,15 @@ import { ThemeStatic } from '../../theme/Colours';
  *
  * @param onPress {function}
  * @param style
+ * @param icon {string} Feather icon to be shown. Defaults to edit
  * @returns {*}
  * @constructor
  */
-const CircleEditIcon = ({ onPress, style }) => {
+const CircleEditIcon = ({ onPress, style, icon }) => {
   return (
     <View style={{ ...styles.container, ...style }}>
       <Icon
-        name={'edit'}
+        name={icon ? icon : 'edit'}
         color={'#000'}
         size={23}
         onPress={onPress}

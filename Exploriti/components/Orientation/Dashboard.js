@@ -25,9 +25,6 @@ export default function Dashboard() {
     const navigation = useNavigation();
     const {loading, error, data} = useQuery(GET_CURRENT_USER, {variables: {id: authState.user.uid}});
 
-    // for demo purposes only, In actual app GET_CURRENT_USER will return a list of user events
-    // const {loading: eventLoading, error: eventError, data: eventData} = useQuery(GET_ALL_EVENTS);
-
     if (loading) {
       return null;
     }

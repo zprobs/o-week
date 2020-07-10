@@ -13,53 +13,45 @@ import { GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
 
-const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
+/**
+ * Modal for creating an event accessable only by Leaders through the Group page
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly groupName?: *, readonly onClose?: *}> & React.RefAttributes<unknown>>}
+ */
+const NewEventModal = React.forwardRef(({groupId, onClose, groupName}, ref) => {
 
-  const [getGroup, {loading, data, error, called}] = useLazyQuery(GET_DETAILED_GROUP, {variables: {id: groupId}})
-  const [updateGroup] = useMutation(UPDATE_GROUP)
-  const [editableName, setEditableName] = useState();
-  const [editableImage, setEditableImage] = useState();
-  const [editableDescription, setEditableDescription] = useState();
+  const [name, setName] = useState();
+  const [image, setImage] = useState();
+  const [description, setDescription] = useState();
+  const [location, setLocation] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(()=> {
-    if (data) {
-      setEditableName(data.group.name);
-      setEditableDescription(data.group.description);
-      setEditableImage(data.group.image);
-    }
-  }, [data])
 
   const onDone = () => {
     setIsUploading(true)
-    const fields = {};
-    if (editableName !== data.group.name) fields.name = editableName;
-    if (editableDescription !== data.group.description) fields.description = editableDescription;
-    console.log(fields);
-    updateGroup({variables: {id: groupId, data: fields}}).then(
-      ()=> {
-        setIsUploading(false);
-        ref.current.close();
-      }
-    ).catch(e=>console.log(e.message));
+
   };
 
 
-  if (loading) console.log('should not see loading group')
 
-  let content;
-
-  if (called && data) {
-    content = (
+  return (
+    <Modalize
+      ref={ref}
+      scrollViewProps={{
+        showsVerticalScrollIndicator: false,
+        bounces: false,
+      }}
+      modalTopOffset={110}
+      onClose={onClose}
+      rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
       <View style={{ paddingHorizontal: 20 }}>
         <ModalHeader
-          heading="Edit group"
-          subHeading="Edit your group's information"
+          heading="Create event"
+          subHeading={`Create an Event for ${groupName}`}
         />
         <View style={styles.content}>
           <ImageBackground
             source={{
-              uri: editableImage ,
+              uri: image,
             }}
             style={styles.image}
             imageStyle={styles.avatarImage}>
@@ -76,17 +68,27 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
           <FormInput
             ref={null}
             label="Name"
-            value={editableName}
-            onChangeText={setEditableName}
+            value={name}
+            onChangeText={setName}
+            placeholder={"example: Beach Day"}
           />
           <FormInput
             ref={null}
             label="Description"
-            placeholder="example: This group is incredible"
-            value={editableDescription}
-            onChangeText={setEditableDescription}
+            placeholder="example: This event is brought to you by our sponsors"
+            value={description}
+            onChangeText={setDescription}
             multiline
             characterRestriction={200}
+          />
+
+          <FormInput
+            ref={null}
+            label="Location"
+            placeholder="example: 321 Bloor St."
+            value={location}
+            onChangeText={setLocation}
+            characterRestriction={50}
           />
 
 
@@ -101,21 +103,6 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
           />
         </View>
       </View>
-    )
-  }
-
-  return (
-    <Modalize
-      ref={ref}
-      scrollViewProps={{
-        showsVerticalScrollIndicator: false,
-        bounces: false,
-      }}
-      modalTopOffset={110}
-      onClose={onClose}
-      onOpen={getGroup}
-      rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
-      {content}
     </Modalize>
   )
 
@@ -151,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupEditModal;
+export default NewEventModal;

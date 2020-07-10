@@ -11,9 +11,7 @@ const { FontWeights, FontSizes } = Fonts;
 
 /**
  * ImageCard for displaying groups and events in a list
- * @param item {Object} Either group or event
- * @param images {[String]} images for the user count preview
- * @param count {int} the number of users involved
+ * @param groupId {string} The id of group to be displayed
  * @returns {*}
  * @constructor
  */
