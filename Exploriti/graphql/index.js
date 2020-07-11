@@ -754,6 +754,31 @@ export const UPDATE_GROUP = gql`
   }
 `;
 
+export const GET_GROUP_EVENTS = gql`
+    query getGroupEvents($id: uuid!) {
+        group(id: $id) {
+            id
+            events {
+                event {
+                    id
+                }
+            }
+        }
+    }
+`
+
+export const CREATE_EVENT = gql`
+    mutation createEvent($data: event_insert_input!) {
+        createEvent(object: $data) {
+            id
+            name
+            image
+            description
+            startDate
+        }
+    }
+`;
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}
