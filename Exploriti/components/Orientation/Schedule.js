@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,7 +19,7 @@ import EventCard from './EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-
+import {AuthContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -34,14 +34,18 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const Schedule = () => {
-  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS);
+  const {authState} = useContext(AuthContext);
+  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS, {
+    variables: {
+      userId: authState.user.uid
+    }
+  });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
   const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
   const [scheduleData, setScheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-
   useEffect(()=> {
     // separating all the events into pages based on which day they occur on.
     if (!data || data.events.length===0) return;
@@ -67,9 +71,9 @@ const Schedule = () => {
 
   }, [data])
 
+  console.log(loading);
+
   if (loading || error) return null
-
-
 
 
   const title = () => {
@@ -100,7 +104,6 @@ const Schedule = () => {
     if (!scheduleData[index]) return null;
     const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(new Date(scheduleData[index][0].startDate))
     return `${month} ${day} ${year}`;
-
   };
 
   const renderItem = ({ item }) => {
@@ -155,7 +158,7 @@ const Schedule = () => {
           <View style={styles.header}>
             <CircleBackIcon />
             <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
-              navigation.navigate('Calendar')
+              navigation.navigate('Calendar', {myCalendars: data.initialCalendars.member})
             }} />
           </View>
             <View style={styles.date}>
@@ -215,5 +218,3 @@ const styles = StyleSheet.create({
 });
 
 export default Schedule;
-
-

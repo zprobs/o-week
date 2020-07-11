@@ -28,7 +28,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param name {string}
  * @param startDate {string}
  * @param longDate {boolean} if true then display the date aswell as the time
- * @param calenderType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
+ * @param calendarType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
  * @param userImages {[string]}
  * @param count {int}
  * @param description
@@ -41,11 +41,11 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, longDate, calenderType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(false);
-    const [selected, setSelected] = useState(plus ? true : isSelected);
+    const [selected, setSelected] = useState(isSelected);
 
     const icon = plus ? 'plus' : 'check';
 
@@ -57,7 +57,7 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
         const [ { value: month },,{ value: day },,{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
         time = longDate ? `${month} ${day}  ${hour}:${minute}${dayPeriod}` : `${hour}:${minute}${dayPeriod}`;
     } else {
-        time = calenderType;
+        time = calendarType;
     }
 
     return (
@@ -89,8 +89,8 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
                         if (plus) {
                             onPress && onPress();
                         } else {
-                            onPress && onPress();
-                            setSelected(!selected)
+                            onPress && onPress(!selected);
+                            setSelected(!selected);
                         }
                     }}
                     >

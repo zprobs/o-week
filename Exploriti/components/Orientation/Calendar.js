@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
     SafeAreaView,
     StyleSheet,
@@ -13,10 +13,13 @@ import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Carousel from 'react-native-snap-carousel';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import EventCard from './EventCard';
 import Icon from 'react-native-vector-icons/Feather';
+import {useMutation} from '@apollo/react-hooks';
+import {UPDATE_CALENDARS} from '../../graphql';
+import {AuthContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -31,40 +34,55 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const Calendar = () => {
+    const {authState} = useContext(AuthContext);
+    const route = useRoute();
+    const {
+        myCalendars
+    } = route.params;
     const navigation = useNavigation();
     const isFocused = useIsFocused();
-    const [invites, setInvites] = useState(invitesDATA);
-    const [myCalenders, setMyCalendars] = useState(myCalendarsDATA)
+    // const [invites, setInvites] = useState(invitesDATA);
+    // const [myCalendars, setMyCalendars] = useState(initialCalendars);
+    const [updateCalendars] = useMutation(UPDATE_CALENDARS);
 
-    const removeCalendar = (key) => {
-        const newCalendar = [];
-        myCalenders.map((calendar, index)=> {
-            if (index !== key) {
-                newCalendar.push(calendar);
+    const updateOnCalendar = (calendar, selected) => {
+        updateCalendars({
+            variables: {
+                groupId: calendar.groupId,
+                userId: authState.user.uid,
+                onCalendar: selected
             }
         })
-        setMyCalendars(newCalendar);
     }
 
-    const removeInvite = (key) => {
-        const newInvites = [];
-        let toReturn;
-        invites.map((invite, index)=> {
-            if (index !== key) {
-                newInvites.push(invite);
-            } else {
-                toReturn = invite;
-            }
-        })
-        setInvites(newInvites);
-        return toReturn
-    }
+    // {
+    //     invites.length > 0 ? <Text style={styles.dateText}>Invites</Text> : null
+    // }
+    //
+    // {
+    //     invites.map((invite, index)=>(
+    //         <EventCard calendar={true} name={invite.name} calendarType={invite.type} plus={true} remove={()=>removeInvite(index)} key={index} onPress={()=>acceptInvitation(index)}/>
+    //     ))
+    // }
 
-    const acceptInvitation = (key) => {
-        const newCal = removeInvite(key);
-        setMyCalendars([...myCalenders, newCal]);
+    // const removeInvite = (key) => {
+    //     const newInvites = [];
+    //     let toReturn;
+    //     invites.map((invite, index)=> {
+    //         if (index !== key) {
+    //             newInvites.push(invite);
+    //         } else {
+    //             toReturn = invite;
+    //         }
+    //     })
+    //     setInvites(newInvites);
+    //     return toReturn
+    // }
 
-    }
+    // const acceptInvitation = (key) => {
+    //     const newCal = removeInvite(key);
+    //     setMyCalendars([...myCalendars, newCal]);
+    // }
 
 
 
@@ -91,21 +109,12 @@ const Calendar = () => {
                     </View>
                     <View style={styles.calendarsContainer}>
                         {
-                            invites.length > 0 ? <Text style={styles.dateText}>Invites</Text> : null
+                            myCalendars.length > 0 ? <Text style={styles.dateText}>My Calendars</Text> : null
                         }
 
                         {
-                            invites.map((invite, index)=>(
-                                <EventCard calendar={true} name={invite.name} calenderType={invite.type} plus={true} remove={()=>removeInvite(index)} key={index} onPress={()=>acceptInvitation(index)}/>
-                            ))
-                        }
-                        {
-                            myCalenders.length > 0 ? <Text style={styles.dateText}>My Calendars</Text> : null
-                        }
-
-                        {
-                            myCalenders.map((calendar, index)=>(
-                                <EventCard calendar={true} name={calendar.name} calenderType={calendar.type} plus={false} remove={()=>removeCalendar(index)} isSelected={calendar.isSelected} key={index}/>
+                            myCalendars.map((calendar, index)=>(
+                                <EventCard calendar={true} name={calendar.group.name} calendarType={calendar.group.groupType} plus={false} onPress={(selected)=>updateOnCalendar(calendar, selected)} isSelected={calendar.onCalendar} key={index}/>
                             ))
                         }
                     </View>
@@ -157,6 +166,6 @@ const styles = StyleSheet.create({
 
 export default Calendar;
 
-const invitesDATA = [{name: 'Rotman', type: 'Program Group', isSelected: false}]
+// const invitesDATA = [{name: 'Rotman', type: 'Program Group', isSelected: false}]
 const myCalendarsDATA = [{name: 'Woodsworth', type: 'Orientation Group', isSelected: true}, {name: 'Arts & Science', type: 'Orientation Group', isSelected: true}, {name: 'Sports Trivia', type: 'Group', isSelected: false}]
 

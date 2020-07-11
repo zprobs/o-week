@@ -473,9 +473,40 @@ export const GET_ALL_EVENTS = gql`
   }
 `;
 
+export const UPDATE_CALENDARS = gql`
+  mutation updateCalendars($userId: String!, $groupId: uuid!, $onCalendar: Boolean!) {
+    updateUserGroup(pk_columns: {groupId: $groupId, userId: $userId}, _set: {onCalendar: $onCalendar}) {
+      initialCalendars: user {
+        id
+        member {
+          groupId
+          group {
+            id
+            name
+            groupType
+          }
+          onCalendar
+        }
+      }
+    }
+  }
+`;
+
 export const GET_SCHEDULED_EVENTS = gql`
-  query GetScheduledEvents {
-    events(order_by: { startDate: asc }) {
+  query GetScheduledEvents($userId: String!) {
+    initialCalendars: user(id: $userId) {
+      id
+      member {
+        groupId
+        group {
+          id
+          name
+          groupType
+        }
+        onCalendar
+      }
+    }
+    events(order_by: { startDate: asc }, where: {hosts: {group: {members: {_and: {onCalendar: {_eq: true}, userId: {_eq: $userId}}}}}}) {
       id
       image
       name
