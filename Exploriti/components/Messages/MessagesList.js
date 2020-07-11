@@ -58,9 +58,8 @@ export default function MessagesList() {
         messages={messages}
         numMessages={messagesAggregate.aggregate.count}
         isOnline={true}
-        time={messagesAggregate.aggregate.max.date}
-        messageBody={messagesAggregate.aggregate.max.body}
-        authorId={messagesAggregate.aggregate.max.sender}
+        time={messages[0].createdAt}
+        messageBody={messages[0].text}
       />
     );
   };

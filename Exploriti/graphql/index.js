@@ -324,11 +324,6 @@ export const DETAILED_CHAT = gql`
     messagesAggregate: messages_aggregate {
       aggregate {
         count
-        max {
-          date
-          body
-          senderId
-        }
       }
     }
     messages(limit: 15, order_by: { date: desc }) {
