@@ -26,6 +26,7 @@ export default function Dashboard() {
     const {loading, error, data} = useQuery(GET_CURRENT_USER, {variables: {id: authState.user.uid}});
 
     if (loading) {
+      console.log('DashBoard Loading Current User')
       return null;
     }
 

@@ -70,6 +70,7 @@ export default function Profile({ route }) {
     });
 
     if (loading){
+      console.log('Profile Loading Detailed User');
       return null
     }
     if (error) return <Error e={error} />;

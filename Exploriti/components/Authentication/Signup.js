@@ -85,7 +85,6 @@ export default function Signup({ navigation }) {
 
   const [submitUser] = useMutation(SIGN_UP);
 
-  console.log(timeZone);
 
   const onProgramRef = () => programRef.current.open();
   const onYearRef = () => yearRef.current.open();
@@ -246,7 +245,6 @@ export default function Signup({ navigation }) {
   }
 
   function backButton() {
-    console.log(page);
     if (page === 1) {
       Alert.alert(
         "Wait a Second",
