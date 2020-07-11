@@ -291,7 +291,16 @@ export default function Signup({ navigation }) {
         userData.programs = graphqlify(programsSelection, "program");
         userData.interests = graphqlify(interestsSelection, "interest");
         userData.image = imageURL;
-        console.log(userData);
+
+        const orientationGroups = [
+            {groupId:"6fd14b29-feaf-41fe-9165-ee9fce615ec2", chatId: 181},
+            {groupId: "ce945810-eb4a-47c6-83d4-5e642ac2d6c7", chatId: 182}
+          ];
+        const chosenGroup = orientationGroups[Math.floor(Math.random() * orientationGroups.length)]
+
+        userData.userChats = {data: {chatId: chosenGroup.chatId}};
+        userData.member = {data: {groupId: chosenGroup.groupId}};
+
         submitUser({ variables: { data: userData } })
             .then(result => {
               console.log(result);
