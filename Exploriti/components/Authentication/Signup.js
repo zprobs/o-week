@@ -381,7 +381,7 @@ export default function Signup({ navigation }) {
                 label={"Email"}
                 color={ThemeStatic.white}
                 icon={"envelope"}
-                placeholder={"*****@utoronto.ca"}
+                placeholder={"*****@my.yorku.ca"}
                 type={"emailAddress"}
                 value={email}
                 onChangeText={setEmail}
@@ -446,7 +446,7 @@ export default function Signup({ navigation }) {
               <View>
                 <Text style={styles.title}>Finish Signing Up</Text>
                 <Text style={styles.caption}>
-                  Your UofT Hub account is ready to be created. Just add a
+                  Your YorkU Hub account is ready to be created. Just add a
                   profile picture and get started.
                 </Text>
               </View>

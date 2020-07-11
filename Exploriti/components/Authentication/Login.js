@@ -84,7 +84,7 @@ export default function Login({ navigation }) {
           label={"Email"}
           color={colours.white}
           icon={"envelope"}
-          placeholder={"first.last@utoronto.ca"}
+          placeholder={"first.last@my.yorku.ca"}
           type={"emailAddress"}
           value={email}
           onChangeText={setEmail}

@@ -18,7 +18,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import EventCard from './EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import {useMutation} from '@apollo/react-hooks';
-import {UPDATE_CALENDARS} from '../../graphql';
+import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
 import {AuthContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -51,7 +51,11 @@ const Calendar = () => {
                 groupId: calendar.groupId,
                 userId: authState.user.uid,
                 onCalendar: selected
-            }
+            },
+            refetchQueries: [{
+                query: GET_SCHEDULED_EVENTS,
+                variables: {userId: authState.user.uid}
+            }]
         })
     }
 

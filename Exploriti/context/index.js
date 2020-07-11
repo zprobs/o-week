@@ -157,13 +157,14 @@ export const yearsData = [
   'Graduate School',
 ];
 export const facultiesData = [
-  'Woodsworth',
-  'Trinity',
-  'Victoria',
-  'University',
-  'Innis',
-  'St. Michael',
+  'Bethune',
+  'Calumet',
+  'Vanier',
+  'Glendon',
+  'McLaughlin',
+  'Stong',
   'New College',
+  'Winters'
 ];
 export const timeZoneData = [
   'Europe/Andorra',

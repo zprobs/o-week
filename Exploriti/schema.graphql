@@ -2008,6 +2008,43 @@ type group {
     # JSON select path
     path: String
   ): jsonb!
+
+  # An array relationship
+  groupTrophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
+  # An aggregated array relationship
+  groupTrophies_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
+  groupType: String!
   id: uuid!
   image: String!
   links(
@@ -2240,6 +2277,8 @@ input group_bool_exp {
   email: String_comparison_exp
   events: groupEvent_bool_exp
   gallery: jsonb_comparison_exp
+  groupTrophies: groupTrophy_bool_exp
+  groupType: String_comparison_exp
   id: uuid_comparison_exp
   image: String_comparison_exp
   links: jsonb_comparison_exp
@@ -2287,6 +2326,8 @@ input group_insert_input {
   email: String
   events: groupEvent_arr_rel_insert_input
   gallery: jsonb
+  groupTrophies: groupTrophy_arr_rel_insert_input
+  groupType: String
   id: uuid
   image: String
   links: jsonb
@@ -2303,6 +2344,7 @@ input group_insert_input {
 type group_max_fields {
   description: String
   email: String
+  groupType: String
   id: uuid
   image: String
   name: String
@@ -2313,6 +2355,7 @@ type group_max_fields {
 input group_max_order_by {
   description: order_by
   email: order_by
+  groupType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -2323,6 +2366,7 @@ input group_max_order_by {
 type group_min_fields {
   description: String
   email: String
+  groupType: String
   id: uuid
   image: String
   name: String
@@ -2333,6 +2377,7 @@ type group_min_fields {
 input group_min_order_by {
   description: order_by
   email: order_by
+  groupType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -2367,6 +2412,8 @@ input group_order_by {
   email: order_by
   events_aggregate: groupEvent_aggregate_order_by
   gallery: order_by
+  groupTrophies_aggregate: groupTrophy_aggregate_order_by
+  groupType: order_by
   id: order_by
   image: order_by
   links: order_by
@@ -2403,6 +2450,9 @@ enum group_select_column {
   gallery
 
   # column name
+  groupType
+
+  # column name
   id
 
   # column name
@@ -2426,6 +2476,7 @@ input group_set_input {
   description: String
   email: String
   gallery: jsonb
+  groupType: String
   id: uuid
   image: String
   links: jsonb
@@ -2444,6 +2495,9 @@ enum group_update_column {
 
   # column name
   gallery
+
+  # column name
+  groupType
 
   # column name
   id
@@ -4677,6 +4731,13 @@ type mutation_root {
     pk_columns: user_pk_columns_input!
   ): user
 
+  # update single row of the table: "userGroup"
+  updateUserGroup(
+    # sets the columns of the filtered rows to the given values
+    _set: userGroup_set_input
+    pk_columns: userGroup_pk_columns_input!
+  ): userGroup
+
   # update data of the table: "chat"
   update_chat(
     # increments the integer columns with given value of the filtered values
@@ -5132,13 +5193,6 @@ type mutation_root {
     # filter the rows which have to be updated
     where: userGroup_bool_exp!
   ): userGroup_mutation_response
-
-  # update single row of the table: "userGroup"
-  update_userGroup_by_pk(
-    # sets the columns of the filtered rows to the given values
-    _set: userGroup_set_input
-    pk_columns: userGroup_pk_columns_input!
-  ): userGroup
 
   # update data of the table: "userInterest"
   update_userInterest(
@@ -9149,6 +9203,42 @@ type user {
     where: friend_bool_exp
   ): [friend!]!
 
+  # An array relationship
+  friendsByFriendid(
+    # distinct select on columns
+    distinct_on: [friend_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [friend_order_by!]
+
+    # filter the rows returned
+    where: friend_bool_exp
+  ): [friend!]!
+
+  # An aggregated array relationship
+  friendsByFriendid_aggregate(
+    # distinct select on columns
+    distinct_on: [friend_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [friend_order_by!]
+
+    # filter the rows returned
+    where: friend_bool_exp
+  ): friend_aggregate!
+
   # An aggregated array relationship
   friends_aggregate(
     # distinct select on columns
@@ -9427,7 +9517,7 @@ type user {
     # filter the rows returned
     where: review_bool_exp
   ): review_aggregate!
-  timezone: String!
+  timezone: String
 
   # An array relationship
   userChats(
@@ -9536,6 +9626,7 @@ input user_bool_exp {
   friendRequestsReceived: friendRequest_bool_exp
   friendRequestsSent: friendRequest_bool_exp
   friends: friend_bool_exp
+  friendsByFriendid: friend_bool_exp
   id: String_comparison_exp
   image: String_comparison_exp
   interests: userInterest_bool_exp
@@ -9590,6 +9681,7 @@ input user_insert_input {
   friendRequestsReceived: friendRequest_arr_rel_insert_input
   friendRequestsSent: friendRequest_arr_rel_insert_input
   friends: friend_arr_rel_insert_input
+  friendsByFriendid: friend_arr_rel_insert_input
   id: String
   image: String
   interests: userInterest_arr_rel_insert_input
@@ -9690,6 +9782,7 @@ input user_order_by {
   events_aggregate: userEvent_aggregate_order_by
   friendRequestsReceived_aggregate: friendRequest_aggregate_order_by
   friendRequestsSent_aggregate: friendRequest_aggregate_order_by
+  friendsByFriendid_aggregate: friend_aggregate_order_by
   friends_aggregate: friend_aggregate_order_by
   id: order_by
   image: order_by
