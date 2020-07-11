@@ -33,7 +33,9 @@ import {
   facultiesData,
   yearsData,
   yearToInt,
-  timeZoneData, saveImage,
+  timeZoneData,
+  saveImage,
+  getDefaultImage
 } from '../../context';
 import FeatherIcon from 'react-native-vector-icons/Feather'
 
@@ -60,13 +62,7 @@ export default function Signup({ navigation }) {
   const [timeZone, setTimezone] = useState();
   const [interests, setInterests] = useState([]);
   const [interestsSelection, setInterestsSelection] = useState([]);
-  const defaultImages = [
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2'
-  ];
-  const [image, setImage] = useState({uri: defaultImages[Math.floor(Math.random() * defaultImages.length)]});
+  const [image, setImage] = useState(getDefaultImage());
   const [imageSelection, setImageSelection] = useState(null);
   const [page, setPage] = useState(1);
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
@@ -238,7 +234,7 @@ export default function Signup({ navigation }) {
       cropping: true,
     })
       .then(selectedImage => {
-        setImage({ uri: selectedImage.path } );
+        setImage(selectedImage.path);
         setImageSelection(selectedImage);
       })
       .catch(result => console.log(result));
@@ -280,7 +276,7 @@ export default function Signup({ navigation }) {
     setIsLoading(true);
     const userData = {};
 
-    const imageURL = imageSelection ? await saveImage(imageSelection) : image.uri;
+    const imageURL = imageSelection ? await saveImage(imageSelection) : image;
 
     firebase
       .auth()
@@ -291,12 +287,10 @@ export default function Signup({ navigation }) {
         userData.email = email;
         userData.id = userCredential.user.uid;
         userData.year = yearToInt(year);
-         userData.timezone = timeZone[0]
+        userData.timezone = (timeZone && timeZone.length !== 0) ? timeZone[0] : null;
         userData.programs = graphqlify(programsSelection, "program");
         userData.interests = graphqlify(interestsSelection, "interest");
-        if (imageURL) {
-          userData.image = imageURL;
-        }
+        userData.image = imageURL;
         console.log(userData);
         submitUser({ variables: { data: userData } })
             .then(result => {
@@ -457,7 +451,7 @@ export default function Signup({ navigation }) {
                 </Text>
               </View>
               <View>
-                <Image style={styles.profilePic} source={image} />
+                <Image style={styles.profilePic} source={{uri: image}} />
                 <TouchableOpacity onPress={pickImage}>
                   <Text
                     style={[
