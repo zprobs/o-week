@@ -471,7 +471,7 @@ export const GET_ALL_EVENTS = gql`
 export const UPDATE_CALENDARS = gql`
   mutation updateCalendars($userId: String!, $groupId: uuid!, $onCalendar: Boolean!) {
     updateUserGroup(pk_columns: {groupId: $groupId, userId: $userId}, _set: {onCalendar: $onCalendar}) {
-      initialCalendars: user {
+       user {
         id
         member {
           groupId
@@ -489,7 +489,7 @@ export const UPDATE_CALENDARS = gql`
 
 export const GET_SCHEDULED_EVENTS = gql`
   query GetScheduledEvents($userId: String!) {
-    initialCalendars: user(id: $userId) {
+     user(id: $userId) {
       id
       member {
         groupId
@@ -518,6 +518,9 @@ export const GET_SCHEDULED_EVENTS = gql`
           count
         }
       }
+        hosts {
+            groupId
+        }
     }
   }
 `;
