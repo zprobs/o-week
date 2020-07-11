@@ -36,15 +36,16 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param calendar {boolean} if true is a calendar of events, false is an event
  * @param plus {boolean} true, icon = plus, false icon = check
  * @param isSelected {boolean} If it is a calendar, weather or not it is selected
+ * @param isExpanded {boolean} The initial state of the card
  * @param remove {function} a function for deleting this item using its key
  * @param onPress {function} a function for calendars when the icon is pressed
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, isExpanded, remove, onPress}) => {
     const navigation = useNavigation();
 
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(isExpanded);
     const [selected, setSelected] = useState(isSelected);
 
     const icon = plus ? 'plus' : 'check';
@@ -119,19 +120,14 @@ export const EventCard = ({ id, image, name, startDate, longDate, calendarType, 
               </View>
               {expanded ? (
                 calendar ? (
-                  <View style={{ flexDirection: 'row' }}>
-                    <ButtonColour
-                      label={'Delete'}
-                      containerStyle={{ width: '30%', marginVertical: 10 }}
-                      labelStyle={{ color: ThemeStatic.delete }}
-                      onPress={remove}
-                    />
+                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <ButtonColour
                       label={'Add to phone calendar'}
-                      containerStyle={{ width: '60%', marginVertical: 10 }}
-                      light={true}
-                      colour={colours.accent}
+                      containerStyle={{ width: '70%' }}
+                      labelStyle={{ color: ThemeStatic.accent }}
+                      onPress={remove}
                     />
+
                   </View>
                 ) : (
                   <View>

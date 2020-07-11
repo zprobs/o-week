@@ -118,7 +118,7 @@ const Calendar = () => {
 
                         {
                             myCalendars.map((calendar, index)=>(
-                                <EventCard calendar={true} name={calendar.group.name} calendarType={calendar.group.groupType} plus={false} onPress={(selected)=>updateOnCalendar(calendar, selected)} isSelected={calendar.onCalendar} key={index}/>
+                                <EventCard calendar={true} name={calendar.group.name} calendarType={calendar.group.groupType} plus={false} onPress={(selected)=>updateOnCalendar(calendar, selected)} isSelected={calendar.onCalendar} key={index} isExpanded={true}/>
                             ))
                         }
                     </View>
