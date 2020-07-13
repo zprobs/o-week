@@ -114,12 +114,24 @@ export const parseTimeElapsed = (utcTime: string) => {
  * Uploads the given image data to Google Firebase Storage and returns a promise
  * representing the URL of the uploaded image
  *
- * @param image
+ * @param image: image data to upload
+ * @param previous: url of previous image to delete (optional)
  * @returns {Promise<R>}
  */
-export const saveImage = (image) => {
+export const saveImage = (image, previous = null) => {
   const { path, filename } = image;
   const storageReference = storage().ref(filename);
+
+  if (previous) {
+    storage().ref(storage().refFromURL(previous).fullPath).delete()
+        .then(() => {
+          console.log("Successfully deleted image!");
+        }).catch((error) => {
+          console.log(error);
+        }
+    );
+  }
+
   return new Promise((resolve, reject) => {
     storageReference
       .putFile(path)

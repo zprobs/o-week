@@ -12,7 +12,7 @@ import ImgBanner from "../ReusableComponents/ImgBanner";
 import {useSubscription} from '@apollo/react-hooks';
 import { GET_CHATS } from "../../graphql";
 import EmptyMessages from "../../assets/svg/empty-messages.svg";
-import { AuthContext, parseChats } from "../../context";
+import {AuthContext, parseChats, saveImage} from '../../context';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
