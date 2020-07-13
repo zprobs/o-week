@@ -50,6 +50,8 @@ import Schedule from './components/Orientation/Schedule';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// console.disableYellowBox = true;
+
 if (
   Platform.OS === 'android' &&
   UIManager.setLayoutAnimationEnabledExperimental
