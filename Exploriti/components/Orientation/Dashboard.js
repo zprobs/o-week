@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         marginTop: 24,
         width: '100%',
         flexDirection: 'row',
-      paddingLeft: 15
+      paddingLeft: 15,
     },
     userImage: {
        width: 66,

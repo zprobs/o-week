@@ -348,6 +348,15 @@ export const GET_CHATS = gql`
   ${DETAILED_CHAT}
 `;
 
+export const GET_CHAT_BY_ID = gql`
+    query getChatById($id: Int!) {
+        chat(id: $id) {
+            ...DetailedChat
+        }
+    }
+    ${DETAILED_CHAT}
+`
+
 export const NEW_CHAT = gql`
   mutation newChat(
     $participants: userChat_arr_rel_insert_input!

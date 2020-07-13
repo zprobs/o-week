@@ -10,6 +10,7 @@ import RankCard from '../Orientation/RankCard';
 import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@apollo/react-hooks';
 import {
+  GET_CHAT_BY_ID,
   GET_DETAILED_EVENT,
   GET_DETAILED_GROUP,
   GET_EVENTS_BY_ID,
@@ -83,9 +84,19 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
 
     const Overview = () => {
       const {authState} = useContext(AuthContext);
+      // temp for the demo
+      const chat = groupId==="ce945810-eb4a-47c6-83d4-5e642ac2d6c7" ? 182 : 181
       const {loading: groupsLoading, error: groupsError, data: groupsData} = useQuery(GET_USER_GROUPS, {variables: {id: authState.user.uid}});
-      if (loading || groupsLoading) return null
-      if (error || groupsError) return <Text>{error.message}</Text>
+      const {loading: chatLoading, error: chatError, data: chatData} = useQuery(GET_CHAT_BY_ID, {variables: {id: chat}});
+      if (loading || groupsLoading || chatLoading) return null
+      if (error || groupsError || chatError) return <Text>{error ? error.message : chatError ? chatError.message : groupsError.message}</Text>
+
+      const {chatId,
+        image,
+        name,
+        participants,
+        numMessages,
+        messages,} = chatData.chat;
 
       return (
         <>
@@ -100,14 +111,28 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
                  <Icon name={'video'} size={18} style={styles.contactIcon} />
                  <Text style={styles.contactText}>Video</Text>
                </View>
-               <View style={styles.contactView}>
+               <TouchableOpacity style={styles.contactView}
+               onPress={()=>{
+                 navigation.navigate("Messages", {
+                   screen: 'Conversation',
+                   params: {
+                     chatId,
+                     image,
+                     name,
+                     participants,
+                     numMessages,
+                     messages,
+                   }
+                 });
+               }}
+               >
                  <Icon
                    name={'message-square'}
                    size={18}
                    style={styles.contactIcon}
                  />
                  <Text style={styles.contactText}>Chat</Text>
-               </View>
+               </TouchableOpacity>
              </View>
            ) : null
           }
