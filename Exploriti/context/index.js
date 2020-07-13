@@ -155,12 +155,6 @@ export const getDefaultImage = () => {
   return defaultImages[Math.floor(Math.random() * defaultImages.length)];
 };
 
-/**
- * Only used for demonstration purposes real data should be obtained from GraphQL
- * @type {React.Context<null>}
- */
-export const EventContext = createContext(null);
-
 export const yearsData = [
   'First Year',
   'Second Year',

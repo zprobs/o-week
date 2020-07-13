@@ -15,7 +15,7 @@ import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import { yearsData, AuthContext, yearToInt } from '../../context';
+import { yearsData, AuthContext, yearToInt, saveImage } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
@@ -26,6 +26,7 @@ import {
   UPDATE_USER_PROGRAMS,
 } from '../../graphql';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import ImagePicker from "react-native-image-crop-picker";
 
 /**
  * Modal for editing the logged in users data
@@ -50,6 +51,7 @@ const EditProfileBottomModal = React.forwardRef(
       variables: { id: authState.user.uid },
     });
     const [editableImage, setEditableImage] = useState(image);
+    const [imageSelection, setImageSelection] = useState(image);
     const [editableName, setEditableName] = useState(name);
     const [editableYear, setEditableYear] = useState(year);
     const [editablePrograms, setEditablePrograms] = useState();
@@ -107,6 +109,19 @@ const EditProfileBottomModal = React.forwardRef(
       return map;
     };
 
+    const changeImage = () => {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      })
+        .then(selectedImage => {
+          setEditableImage(selectedImage.path);
+          setImageSelection(selectedImage);
+        })
+        .catch(result => console.log(result));
+    }
+
     const onDone = async () => {
       setIsUploading(true);
       const fields = {};
@@ -139,6 +154,11 @@ const EditProfileBottomModal = React.forwardRef(
         await updateInterests({
           variables: { userId: authState.user.uid, objects: objects },
         }).catch((e) => console.log(e));
+      }
+
+      if (imageSelection) {
+        const imageURL = await saveImage(imageSelection, image);
+        fields.image = imageURL
       }
 
       if (Object.keys(fields).length !== 0) {
@@ -174,15 +194,13 @@ const EditProfileBottomModal = React.forwardRef(
             <View style={styles.content}>
               <ImageBackground
                 source={{
-                  uri: editableImage || 'https://reactjs.org/logo-og.png',
+                  uri: editableImage,
                 }}
                 style={styles.image}
                 imageStyle={styles.avatarImage}>
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  onPress={() => {
-                    console.log('change image');
-                  }}
+                  onPress={changeImage}
                   style={styles.imageOverlay}>
                   <Icon name="pencil" size={26} color={ThemeStatic.white} />
                 </TouchableOpacity>
