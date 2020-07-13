@@ -51,7 +51,7 @@ const EditProfileBottomModal = React.forwardRef(
       variables: { id: authState.user.uid },
     });
     const [editableImage, setEditableImage] = useState(image);
-    const [imageSelection, setImageSelection] = useState(image);
+    const [imageSelection, setImageSelection] = useState();
     const [editableName, setEditableName] = useState(name);
     const [editableYear, setEditableYear] = useState(year);
     const [editablePrograms, setEditablePrograms] = useState();
