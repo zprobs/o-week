@@ -40,13 +40,24 @@ export const GET_DETAILED_USER = gql`
   ${DETAILED_USER_FRAGMENT}
 `;
 
+export const DETAILED_NOTIFICATION_FRAGMENT = gql`
+    fragment DetailedNotification on notification {
+        id
+        message
+        recipient
+        timestamp
+        title
+        type
+        typeId
+    }
+`;
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
       notifications {
-        id
-        title
+        ...DetailedNotification
       }
       member {
         isOwner
@@ -58,6 +69,7 @@ export const GET_CURRENT_USER = gql`
     }
   }
   ${DETAILED_USER_FRAGMENT}
+  ${DETAILED_NOTIFICATION_FRAGMENT}
 `;
 
 export const GET_USER_INTERESTS = gql`
@@ -134,6 +146,15 @@ export const UPDATE_USER_PROGRAMS = gql`
       }
     }
   }
+`;
+
+export const SEND_NOTIFICATION = gql`
+    mutation sendNotification($message: String!, $recipient: String!, $title: String!, $type: String!, $typeId: String!) {
+        sendNotification(object: {message: $message, recipient: $recipient, title: $title, type: $type, typeId: $typeId}) {
+            ...DetailedNotification
+        }
+    }
+    ${DETAILED_NOTIFICATION_FRAGMENT}
 `;
 
 export const SIGN_UP = gql`
