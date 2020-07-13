@@ -13,10 +13,11 @@ const { colours } = Theme.light;
  * @param onChangeText
  * @param multiline
  * @param label The label rendered above the text input
+ * @param characterRestriction {int} char limit
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly label?: *, readonly onChangeText?: *, readonly multiline?: *, readonly error?: *, readonly placeholder?: *, readonly value?: *}> & React.RefAttributes<unknown>>}
  */
 const FormInput = React.forwardRef(
-  ({ placeholder, value, onChangeText, multiline, label, error }, ref) => {
+  ({ placeholder, value, onChangeText, multiline, label, error, characterRestriction }, ref) => {
     return (
       <>
         <Text style={styles().labelTextStyle}>{label}</Text>
@@ -31,6 +32,7 @@ const FormInput = React.forwardRef(
           value={value}
           multiline={multiline || false}
           returnKeyType={multiline ? "default" : "done"}
+          maxLength={characterRestriction}
         />
       </>
     );
