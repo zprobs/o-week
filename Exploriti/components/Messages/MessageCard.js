@@ -115,61 +115,6 @@ const MessageCard = ({
     />
   );
 
-  // const offsetX = new Value(width/2);
-  // const gestureState = new Value(-1);
-  // const offsetX=
-
-  // const onChangeGestureEvent = (nativeEvent) => {
-  //   console.log('native Event: ', nativeEvent);
-  //   const gestureEvent = event([{ nativeEvent }]);
-
-  //   return { onHandlerStateChange: gestureEvent, onGestureEvent: gestureEvent };
-  // };
-
-  // const handlePanGesture = ({ nativeEvent }) => {
-  //   const dragX = new Value(0);
-  //   const velocity = new Value(0);
-  //   const positionX = new Value(0);
-  //   const state = new Value(State.UNDETERMINED);
-
-  //   const { x, translationX, velocityX } = nativeEvent;
-
-  //   // const gestureHandler = onChangeGestureEvent({
-  //   //   x: positionX,
-  //   //   translationX: dragX,
-  //   //   velocityX: velocity,
-  //   //   state,
-  //   // });
-  //   console.log('gestureEvent:', nativeEvent);
-
-  //   return {
-  //     x: positionX,
-  //     velocityX: velocity,
-  //     translationX: dragX,
-  //     state,
-  //   };
-  // };
-
-  // const { velocity} = handlePanGesture();
-
-  // const translateX = dragX;
-
-  // const transX = cond();
-  // eq(gestureState, State.ACTIVE),
-  // add(offsetX, dragX),
-  // set(offsetX, add(offsetX, dragX)),
-
-  // const Layout =()=>{
-  //   return
-  // }
-  // const dragXRef = useRef(new Animated.Value(0));
-  // const offsetXRef = useRef(new Animated.Value(0));
-  // const stateRef = useRef(new Animated.Value(State.UNDETERMINED));
-  // const [state] = useState(new Animated.Value(State.UNDETERMINED));
-  // const dragX = dragXRef.current;
-  // const offsetX = offsetXRef.current;
-  // const state = stateRef.current;
-
   const onGestureEvent = (nativeEvent) => {
     const gestureEvent = Animated.event([{ nativeEvent }]);
 
@@ -349,7 +294,6 @@ const MessageCard = ({
     ],
     [],
   );
-  // useCode(()=>[cond(eq(state,State.ACTIVE),set(translateX,add(offsetX,)))],[]);
 
   return (
     // <Swipeable
