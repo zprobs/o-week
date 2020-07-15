@@ -50,6 +50,8 @@ import Schedule from './components/Orientation/Schedule';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// console.disableYellowBox = true;
+
 if (
   Platform.OS === 'android' &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -117,13 +119,14 @@ const AuthStack = () => {
 
 const MainStack = () => {
   const { authState } = useContext(AuthContext);
-  const userId = authState.user.uid;
 
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
-    variables: { id: userId },
+    variables: { id: authState.user.uid },
   });
 
-  if (loading) return <Loading />;
+  if (loading){
+    return <Loading />;
+  }
   if (error) return <Error e={error} />;
 
   if (data.user == null)
@@ -232,6 +235,7 @@ export default function App() {
     link,
     cache: new InMemoryCache(),
   });
+
 
   return (
     <ApolloProvider client={client}>

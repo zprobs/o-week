@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,7 +19,7 @@ import EventCard from './EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-
+import {AuthContext} from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -34,22 +34,40 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const Schedule = () => {
-  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS);
+  const {authState} = useContext(AuthContext);
+  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS, {
+    variables: {
+      userId: authState.user.uid
+    }
+  });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
   const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
   const [scheduleData, setScheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-
   useEffect(()=> {
     // separating all the events into pages based on which day they occur on.
     if (!data || data.events.length===0) return;
+
+    // reset schedule data (Kind of a weird solution and I honestly dont fully understand so may not be efficient or stable)
+    scheduleData.forEach((item)=>item=null);
+    scheduleData.length = 0;
+
+    // keep track of all groupIds that are not on user's calendar and then don't render event if that group made it
+    const notOnCalendar = [];
+    data.user.member.forEach((member)=>{
+      if (!member.onCalendar) notOnCalendar.push(member.groupId);
+    })
+
+
     let i = 0;
     let array = [];
-    let date = new Date(data.events[0].startDate);
+    let date = undefined;
     data.events.forEach((event)=>{
+      if (notOnCalendar.includes(event.hosts[0].groupId)) return
       const thisDate = new Date(event.startDate);
+      if (date === undefined) date = thisDate;
       if (thisDate.getFullYear() === date.getFullYear() && thisDate.getMonth() === date.getMonth() && thisDate.getDate() === date.getDate()) {
         array.push(event)
       } else {
@@ -61,19 +79,18 @@ const Schedule = () => {
       }
     })
     // one more time to catch the last day which isn't handeled in the for each loop
-    scheduleData[i] = array;
+    if (array.length > 0) scheduleData[i] = array;
     // to trigger a rerender to display the title date
     setIndex(0);
 
   }, [data])
 
+
   if (loading || error) return null
 
 
-
-
   const title = () => {
-    if (!scheduleData[index]) return null
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return null
     const day = new Date(scheduleData[index][0].startDate).getDay()
     switch (day) {
       case 0:
@@ -97,10 +114,9 @@ const Schedule = () => {
   const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' })
 
   const pageDate = () => {
-    if (!scheduleData[index]) return null;
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return null;
     const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(new Date(scheduleData[index][0].startDate))
     return `${month} ${day} ${year}`;
-
   };
 
   const renderItem = ({ item }) => {
@@ -117,6 +133,7 @@ const Schedule = () => {
               userImages={event.attendees.map((attendee)=>attendee.user.image)}
               count={event.attendees_aggregate.aggregate.count}
               description={event.description}
+              hosts={event.hosts}
             />
           );
         })}
@@ -155,7 +172,7 @@ const Schedule = () => {
           <View style={styles.header}>
             <CircleBackIcon />
             <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
-              navigation.navigate('Calendar')
+              navigation.navigate('Calendar', {myCalendars: data.user.member})
             }} />
           </View>
             <View style={styles.date}>
@@ -215,5 +232,3 @@ const styles = StyleSheet.create({
 });
 
 export default Schedule;
-
-

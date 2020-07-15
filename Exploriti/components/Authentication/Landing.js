@@ -61,7 +61,7 @@ export default function Landing({ navigation }) {
           pagingEnabled>
           <Slide
             key={1}
-            title={"Welcome to UofT Hub!"}
+            title={"Welcome to YorkU Hub!"}
             content={
               "Find out what's going on around you, and make the most out of your orientation experience, the simple way."
             }
@@ -71,7 +71,7 @@ export default function Landing({ navigation }) {
             key={2}
             title={"Get Involved, Easily"}
             content={
-              "UofT Hub is your orientation concierge. Frosh, events, groups... Discover them all!"
+              "YorkU Hub is your orientation concierge. Frosh, events, groups... Discover them all!"
             }
             img={images.landing2}
           />
@@ -79,7 +79,7 @@ export default function Landing({ navigation }) {
             key={3}
             title={"Relevant Results"}
             content={
-              "UofT Hub uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"
+              "YorkU Hub uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"
             }
             img={images.landing3}
           />
@@ -87,7 +87,7 @@ export default function Landing({ navigation }) {
             key={4}
             title={"Get Social"}
             content={
-              "See what events and clubs all of your friends are involved in. Everything is more fun with friends, even UofT Hub."
+              "See what events and clubs all of your friends are involved in. Everything is more fun with friends, even YorkU Hub."
             }
             img={images.landing4}
           />

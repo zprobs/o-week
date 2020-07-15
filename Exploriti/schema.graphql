@@ -4,6 +4,153 @@ schema {
   subscription: subscription_root
 }
 
+# columns and relationships of "block"
+type block {
+  blockedId: String!
+  blockerId: String!
+
+  # An object relationship
+  user: user!
+
+  # An object relationship
+  userByBlockedid: user!
+}
+
+# aggregated selection of "block"
+type block_aggregate {
+  aggregate: block_aggregate_fields
+  nodes: [block!]!
+}
+
+# aggregate fields of "block"
+type block_aggregate_fields {
+  count(columns: [block_select_column!], distinct: Boolean): Int
+  max: block_max_fields
+  min: block_min_fields
+}
+
+# order by aggregate values of table "block"
+input block_aggregate_order_by {
+  count: order_by
+  max: block_max_order_by
+  min: block_min_order_by
+}
+
+# input type for inserting array relation for remote table "block"
+input block_arr_rel_insert_input {
+  data: [block_insert_input!]!
+  on_conflict: block_on_conflict
+}
+
+# Boolean expression to filter rows from the table "block". All fields are combined with a logical 'AND'.
+input block_bool_exp {
+  _and: [block_bool_exp]
+  _not: block_bool_exp
+  _or: [block_bool_exp]
+  blockedId: String_comparison_exp
+  blockerId: String_comparison_exp
+  user: user_bool_exp
+  userByBlockedid: user_bool_exp
+}
+
+# unique or primary key constraints on table "block"
+enum block_constraint {
+  # unique or primary key constraint
+  block_pkey
+}
+
+# input type for inserting data into table "block"
+input block_insert_input {
+  blockedId: String
+  blockerId: String
+  user: user_obj_rel_insert_input
+  userByBlockedid: user_obj_rel_insert_input
+}
+
+# aggregate max on columns
+type block_max_fields {
+  blockedId: String
+  blockerId: String
+}
+
+# order by max() on columns of table "block"
+input block_max_order_by {
+  blockedId: order_by
+  blockerId: order_by
+}
+
+# aggregate min on columns
+type block_min_fields {
+  blockedId: String
+  blockerId: String
+}
+
+# order by min() on columns of table "block"
+input block_min_order_by {
+  blockedId: order_by
+  blockerId: order_by
+}
+
+# response of any mutation on the table "block"
+type block_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [block!]!
+}
+
+# input type for inserting object relation for remote table "block"
+input block_obj_rel_insert_input {
+  data: block_insert_input!
+  on_conflict: block_on_conflict
+}
+
+# on conflict condition type for table "block"
+input block_on_conflict {
+  constraint: block_constraint!
+  update_columns: [block_update_column!]!
+  where: block_bool_exp
+}
+
+# ordering options when selecting data from "block"
+input block_order_by {
+  blockedId: order_by
+  blockerId: order_by
+  user: user_order_by
+  userByBlockedid: user_order_by
+}
+
+# primary key columns input for table: "block"
+input block_pk_columns_input {
+  blockedId: String!
+  blockerId: String!
+}
+
+# select columns of table "block"
+enum block_select_column {
+  # column name
+  blockedId
+
+  # column name
+  blockerId
+}
+
+# input type for updating data in table "block"
+input block_set_input {
+  blockedId: String
+  blockerId: String
+}
+
+# update columns of table "block"
+enum block_update_column {
+  # column name
+  blockedId
+
+  # column name
+  blockerId
+}
+
 # expression to compare columns of type Boolean. All fields are combined with logical 'AND'.
 input Boolean_comparison_exp {
   _eq: Boolean
@@ -2008,6 +2155,43 @@ type group {
     # JSON select path
     path: String
   ): jsonb!
+
+  # An array relationship
+  groupTrophies(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): [groupTrophy!]!
+
+  # An aggregated array relationship
+  groupTrophies_aggregate(
+    # distinct select on columns
+    distinct_on: [groupTrophy_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupTrophy_order_by!]
+
+    # filter the rows returned
+    where: groupTrophy_bool_exp
+  ): groupTrophy_aggregate!
+  groupType: String!
   id: uuid!
   image: String!
   links(
@@ -2240,6 +2424,8 @@ input group_bool_exp {
   email: String_comparison_exp
   events: groupEvent_bool_exp
   gallery: jsonb_comparison_exp
+  groupTrophies: groupTrophy_bool_exp
+  groupType: String_comparison_exp
   id: uuid_comparison_exp
   image: String_comparison_exp
   links: jsonb_comparison_exp
@@ -2287,6 +2473,8 @@ input group_insert_input {
   email: String
   events: groupEvent_arr_rel_insert_input
   gallery: jsonb
+  groupTrophies: groupTrophy_arr_rel_insert_input
+  groupType: String
   id: uuid
   image: String
   links: jsonb
@@ -2303,6 +2491,7 @@ input group_insert_input {
 type group_max_fields {
   description: String
   email: String
+  groupType: String
   id: uuid
   image: String
   name: String
@@ -2313,6 +2502,7 @@ type group_max_fields {
 input group_max_order_by {
   description: order_by
   email: order_by
+  groupType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -2323,6 +2513,7 @@ input group_max_order_by {
 type group_min_fields {
   description: String
   email: String
+  groupType: String
   id: uuid
   image: String
   name: String
@@ -2333,6 +2524,7 @@ type group_min_fields {
 input group_min_order_by {
   description: order_by
   email: order_by
+  groupType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -2367,6 +2559,8 @@ input group_order_by {
   email: order_by
   events_aggregate: groupEvent_aggregate_order_by
   gallery: order_by
+  groupTrophies_aggregate: groupTrophy_aggregate_order_by
+  groupType: order_by
   id: order_by
   image: order_by
   links: order_by
@@ -2403,6 +2597,9 @@ enum group_select_column {
   gallery
 
   # column name
+  groupType
+
+  # column name
   id
 
   # column name
@@ -2426,6 +2623,7 @@ input group_set_input {
   description: String
   email: String
   gallery: jsonb
+  groupType: String
   id: uuid
   image: String
   links: jsonb
@@ -2444,6 +2642,9 @@ enum group_update_column {
 
   # column name
   gallery
+
+  # column name
+  groupType
 
   # column name
   id
@@ -3619,21 +3820,6 @@ input interest_variance_order_by {
   id: order_by
 }
 
-scalar json
-
-# expression to compare columns of type json. All fields are combined with logical 'AND'.
-input json_comparison_exp {
-  _eq: json
-  _gt: json
-  _gte: json
-  _in: [json!]
-  _is_null: Boolean
-  _lt: json
-  _lte: json
-  _neq: json
-  _nin: [json!]
-}
-
 scalar jsonb
 
 # expression to compare columns of type jsonb. All fields are combined with logical 'AND'.
@@ -4037,15 +4223,21 @@ type mutation_root {
     on_conflict: groupTrophy_on_conflict
   ): groupTrophy
 
+  # insert a single row into the table: "block"
+  blockUser(
+    # the row to be inserted
+    object: block_insert_input!
+
+    # on conflict condition
+    on_conflict: block_on_conflict
+  ): block
+
   # update single row of the table: "userEvent"
   confirmEventInvite(
     # sets the columns of the filtered rows to the given values
     _set: userEvent_set_input
     pk_columns: userEvent_pk_columns_input!
   ): userEvent
-
-  # perform the action: "confirmFriendRequest"
-  confirmFriendRequest(recipient: String!, sender: String!): ConfirmFriendRequestOutput
 
   # insert a single row into the table: "chat"
   createChat(
@@ -4112,6 +4304,9 @@ type mutation_root {
 
   # delete single row from the table: "user"
   deleteUser(id: String!): user
+
+  # delete single row from the table: "block"
+  delete_block_by_pk(blockedId: String!, blockerId: String!): block
 
   # delete data from the table: "chat"
   delete_chat(
@@ -4265,6 +4460,15 @@ type mutation_root {
     # filter the rows which have to be deleted
     where: userProgram_bool_exp!
   ): userProgram_mutation_response
+
+  # insert data into the table: "block"
+  insert_block(
+    # the rows to be inserted
+    objects: [block_insert_input!]!
+
+    # on conflict condition
+    on_conflict: block_on_conflict
+  ): block_mutation_response
 
   # insert data into the table: "chat"
   insert_chat(
@@ -4602,6 +4806,12 @@ type mutation_root {
     on_conflict: userChat_on_conflict
   ): userChat
 
+  # delete data from the table: "block"
+  unblockUser(
+    # filter the rows which have to be deleted
+    where: block_bool_exp!
+  ): block_mutation_response
+
   # delete single row from the table: "userChat"
   unsubscribeFromChat(chatId: Int!, userId: String!): userChat
 
@@ -4676,6 +4886,29 @@ type mutation_root {
     _set: user_set_input
     pk_columns: user_pk_columns_input!
   ): user
+
+  # update single row of the table: "userGroup"
+  updateUserGroup(
+    # sets the columns of the filtered rows to the given values
+    _set: userGroup_set_input
+    pk_columns: userGroup_pk_columns_input!
+  ): userGroup
+
+  # update data of the table: "block"
+  update_block(
+    # sets the columns of the filtered rows to the given values
+    _set: block_set_input
+
+    # filter the rows which have to be updated
+    where: block_bool_exp!
+  ): block_mutation_response
+
+  # update single row of the table: "block"
+  update_block_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: block_set_input
+    pk_columns: block_pk_columns_input!
+  ): block
 
   # update data of the table: "chat"
   update_chat(
@@ -5133,13 +5366,6 @@ type mutation_root {
     where: userGroup_bool_exp!
   ): userGroup_mutation_response
 
-  # update single row of the table: "userGroup"
-  update_userGroup_by_pk(
-    # sets the columns of the filtered rows to the given values
-    _set: userGroup_set_input
-    pk_columns: userGroup_pk_columns_input!
-  ): userGroup
-
   # update data of the table: "userInterest"
   update_userInterest(
     # increments the integer columns with given value of the filtered values
@@ -5188,12 +5414,12 @@ type mutation_root {
 # columns and relationships of "notification"
 type notification {
   id: Int!
-  image: String!
-  link: String!
   message: String!
   recipient: String!
   timestamp: timestamptz!
   title: String!
+  type: String!
+  typeId: String!
 
   # An object relationship
   user: user!
@@ -5257,12 +5483,12 @@ input notification_bool_exp {
   _not: notification_bool_exp
   _or: [notification_bool_exp]
   id: Int_comparison_exp
-  image: String_comparison_exp
-  link: String_comparison_exp
   message: String_comparison_exp
   recipient: String_comparison_exp
   timestamp: timestamptz_comparison_exp
   title: String_comparison_exp
+  type: String_comparison_exp
+  typeId: String_comparison_exp
   user: user_bool_exp
 }
 
@@ -5280,57 +5506,57 @@ input notification_inc_input {
 # input type for inserting data into table "notification"
 input notification_insert_input {
   id: Int
-  image: String
-  link: String
   message: String
   recipient: String
   timestamp: timestamptz
   title: String
+  type: String
+  typeId: String
   user: user_obj_rel_insert_input
 }
 
 # aggregate max on columns
 type notification_max_fields {
   id: Int
-  image: String
-  link: String
   message: String
   recipient: String
   timestamp: timestamptz
   title: String
+  type: String
+  typeId: String
 }
 
 # order by max() on columns of table "notification"
 input notification_max_order_by {
   id: order_by
-  image: order_by
-  link: order_by
   message: order_by
   recipient: order_by
   timestamp: order_by
   title: order_by
+  type: order_by
+  typeId: order_by
 }
 
 # aggregate min on columns
 type notification_min_fields {
   id: Int
-  image: String
-  link: String
   message: String
   recipient: String
   timestamp: timestamptz
   title: String
+  type: String
+  typeId: String
 }
 
 # order by min() on columns of table "notification"
 input notification_min_order_by {
   id: order_by
-  image: order_by
-  link: order_by
   message: order_by
   recipient: order_by
   timestamp: order_by
   title: order_by
+  type: order_by
+  typeId: order_by
 }
 
 # response of any mutation on the table "notification"
@@ -5358,12 +5584,12 @@ input notification_on_conflict {
 # ordering options when selecting data from "notification"
 input notification_order_by {
   id: order_by
-  image: order_by
-  link: order_by
   message: order_by
   recipient: order_by
   timestamp: order_by
   title: order_by
+  type: order_by
+  typeId: order_by
   user: user_order_by
 }
 
@@ -5378,12 +5604,6 @@ enum notification_select_column {
   id
 
   # column name
-  image
-
-  # column name
-  link
-
-  # column name
   message
 
   # column name
@@ -5394,17 +5614,23 @@ enum notification_select_column {
 
   # column name
   title
+
+  # column name
+  type
+
+  # column name
+  typeId
 }
 
 # input type for updating data in table "notification"
 input notification_set_input {
   id: Int
-  image: String
-  link: String
   message: String
   recipient: String
   timestamp: timestamptz
   title: String
+  type: String
+  typeId: String
 }
 
 # aggregate stddev on columns
@@ -5453,12 +5679,6 @@ enum notification_update_column {
   id
 
   # column name
-  image
-
-  # column name
-  link
-
-  # column name
   message
 
   # column name
@@ -5469,6 +5689,12 @@ enum notification_update_column {
 
   # column name
   title
+
+  # column name
+  type
+
+  # column name
+  typeId
 }
 
 # aggregate var_pop on columns
@@ -5804,6 +6030,45 @@ input program_variance_order_by {
 
 # query root
 type query_root {
+  # fetch data from the table: "block"
+  block(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): [block!]!
+
+  # fetch aggregated fields from the table: "block"
+  block_aggregate(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): block_aggregate!
+
+  # fetch data from the table: "block" using primary key columns
+  block_by_pk(blockedId: String!, blockerId: String!): block
+
   # fetch data from the table: "chat" using primary key columns
   chat(id: Int!): chat
 
@@ -7492,6 +7757,45 @@ input String_comparison_exp {
 
 # subscription root
 type subscription_root {
+  # fetch data from the table: "block"
+  block(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): [block!]!
+
+  # fetch aggregated fields from the table: "block"
+  block_aggregate(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): block_aggregate!
+
+  # fetch data from the table: "block" using primary key columns
+  block_by_pk(blockedId: String!, blockerId: String!): block
+
   # fetch data from the table: "chat" using primary key columns
   chat(id: Int!): chat
 
@@ -9019,6 +9323,77 @@ input trophyGroupView_variance_order_by {
 
 # columns and relationships of "user"
 type user {
+  # An array relationship
+  blockedBy(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): [block!]!
+
+  # An aggregated array relationship
+  blockedBy_aggregate(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): block_aggregate!
+
+  # An array relationship
+  blocker(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): [block!]!
+
+  # An aggregated array relationship
+  blocker_aggregate(
+    # distinct select on columns
+    distinct_on: [block_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [block_order_by!]
+
+    # filter the rows returned
+    where: block_bool_exp
+  ): block_aggregate!
   college: String
   description: String
   email: String!
@@ -9149,6 +9524,42 @@ type user {
     where: friend_bool_exp
   ): [friend!]!
 
+  # An array relationship
+  friendsByFriendid(
+    # distinct select on columns
+    distinct_on: [friend_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [friend_order_by!]
+
+    # filter the rows returned
+    where: friend_bool_exp
+  ): [friend!]!
+
+  # An aggregated array relationship
+  friendsByFriendid_aggregate(
+    # distinct select on columns
+    distinct_on: [friend_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [friend_order_by!]
+
+    # filter the rows returned
+    where: friend_bool_exp
+  ): friend_aggregate!
+
   # An aggregated array relationship
   friends_aggregate(
     # distinct select on columns
@@ -9204,7 +9615,7 @@ type user {
     # filter the rows returned
     where: userInterest_bool_exp
   ): userInterest_aggregate!
-  isOfficial: Boolean!
+  isAdmin: Boolean!
   links(
     # JSON select path
     path: String
@@ -9427,7 +9838,7 @@ type user {
     # filter the rows returned
     where: review_bool_exp
   ): review_aggregate!
-  timezone: String!
+  timezone: String
 
   # An array relationship
   userChats(
@@ -9529,6 +9940,8 @@ input user_bool_exp {
   _and: [user_bool_exp]
   _not: user_bool_exp
   _or: [user_bool_exp]
+  blockedBy: block_bool_exp
+  blocker: block_bool_exp
   college: String_comparison_exp
   description: String_comparison_exp
   email: String_comparison_exp
@@ -9536,10 +9949,11 @@ input user_bool_exp {
   friendRequestsReceived: friendRequest_bool_exp
   friendRequestsSent: friendRequest_bool_exp
   friends: friend_bool_exp
+  friendsByFriendid: friend_bool_exp
   id: String_comparison_exp
   image: String_comparison_exp
   interests: userInterest_bool_exp
-  isOfficial: Boolean_comparison_exp
+  isAdmin: Boolean_comparison_exp
   links: jsonb_comparison_exp
   member: userGroup_bool_exp
   messages: message_bool_exp
@@ -9583,6 +9997,8 @@ input user_inc_input {
 
 # input type for inserting data into table "user"
 input user_insert_input {
+  blockedBy: block_arr_rel_insert_input
+  blocker: block_arr_rel_insert_input
   college: String
   description: String
   email: String
@@ -9590,10 +10006,11 @@ input user_insert_input {
   friendRequestsReceived: friendRequest_arr_rel_insert_input
   friendRequestsSent: friendRequest_arr_rel_insert_input
   friends: friend_arr_rel_insert_input
+  friendsByFriendid: friend_arr_rel_insert_input
   id: String
   image: String
   interests: userInterest_arr_rel_insert_input
-  isOfficial: Boolean
+  isAdmin: Boolean
   links: jsonb
   member: userGroup_arr_rel_insert_input
   messages: message_arr_rel_insert_input
@@ -9684,17 +10101,20 @@ input user_on_conflict {
 
 # ordering options when selecting data from "user"
 input user_order_by {
+  blockedBy_aggregate: block_aggregate_order_by
+  blocker_aggregate: block_aggregate_order_by
   college: order_by
   description: order_by
   email: order_by
   events_aggregate: userEvent_aggregate_order_by
   friendRequestsReceived_aggregate: friendRequest_aggregate_order_by
   friendRequestsSent_aggregate: friendRequest_aggregate_order_by
+  friendsByFriendid_aggregate: friend_aggregate_order_by
   friends_aggregate: friend_aggregate_order_by
   id: order_by
   image: order_by
   interests_aggregate: userInterest_aggregate_order_by
-  isOfficial: order_by
+  isAdmin: order_by
   links: order_by
   member_aggregate: userGroup_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
@@ -9737,7 +10157,7 @@ enum user_select_column {
   image
 
   # column name
-  isOfficial
+  isAdmin
 
   # column name
   links
@@ -9762,7 +10182,7 @@ input user_set_input {
   email: String
   id: String
   image: String
-  isOfficial: Boolean
+  isAdmin: Boolean
   links: jsonb
   name: String
   notificationToken: String
@@ -9828,7 +10248,7 @@ enum user_update_column {
   image
 
   # column name
-  isOfficial
+  isAdmin
 
   # column name
   links

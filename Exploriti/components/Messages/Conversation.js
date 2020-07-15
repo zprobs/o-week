@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { AuthContext } from "../../context";
+import {AuthContext, saveImage} from '../../context';
 import {
   useMutation,
   useSubscription,
@@ -35,7 +35,6 @@ const Conversation = () => {
   const {
     chatId,
     name,
-    image,
     participants,
     numMessages,
     messages: initialMessages,

@@ -9,6 +9,8 @@ import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
+import ImagePicker from "react-native-image-crop-picker";
+import { saveImage } from '../../context';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -19,6 +21,7 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
   const [updateGroup] = useMutation(UPDATE_GROUP)
   const [editableName, setEditableName] = useState();
   const [editableImage, setEditableImage] = useState();
+  const [imageSelection, setImageSelection] = useState();
   const [editableDescription, setEditableDescription] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
@@ -27,21 +30,39 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
       setEditableName(data.group.name);
       setEditableDescription(data.group.description);
       setEditableImage(data.group.image);
+
     }
   }, [data])
 
-  const onDone = () => {
+  const changeImage = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(selectedImage => {
+        setEditableImage(selectedImage.path);
+        setImageSelection(selectedImage);
+      })
+      .catch(result => console.log(result));
+  }
+
+  const onDone = async () => {
     setIsUploading(true)
     const fields = {};
     if (editableName !== data.group.name) fields.name = editableName;
     if (editableDescription !== data.group.description) fields.description = editableDescription;
+    if (imageSelection) {
+      const imageURL = await saveImage(imageSelection, data.group.image);
+      fields.image = imageURL
+    }
     console.log(fields);
-    updateGroup({variables: {id: groupId, data: fields}}).then(
-      ()=> {
+    updateGroup({ variables: { id: groupId, data: fields } }).then(
+      () => {
         setIsUploading(false);
         ref.current.close();
       }
-    ).catch(e=>console.log(e.message));
+    ).catch(e => console.log(e.message));
   };
 
 
@@ -65,9 +86,7 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
             imageStyle={styles.avatarImage}>
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() => {
-                console.log('change image');
-              }}
+              onPress={changeImage}
               style={styles.imageOverlay}>
               <Icon name="pencil" size={26} color={ThemeStatic.white} />
             </TouchableOpacity>

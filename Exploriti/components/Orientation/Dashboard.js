@@ -26,6 +26,7 @@ export default function Dashboard() {
     const {loading, error, data} = useQuery(GET_CURRENT_USER, {variables: {id: authState.user.uid}});
 
     if (loading) {
+      console.log('DashBoard Loading Current User')
       return null;
     }
 
@@ -97,7 +98,7 @@ export default function Dashboard() {
 
         if (section.title === "Groups") {
             screen = "GroupScreen"
-            options = {groupId: item.group.id, isOwner: item.isOwner}
+            options = {groupId: item.group.id}
         } else {
             screen = "EventScreen"
             options = {event: item}
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
         marginTop: 24,
         width: '100%',
         flexDirection: 'row',
-      paddingLeft: 15
+      paddingLeft: 15,
     },
     userImage: {
        width: 66,

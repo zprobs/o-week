@@ -12,7 +12,7 @@ import ImgBanner from "../ReusableComponents/ImgBanner";
 import {useSubscription} from '@apollo/react-hooks';
 import { GET_CHATS } from "../../graphql";
 import EmptyMessages from "../../assets/svg/empty-messages.svg";
-import { AuthContext, parseChats } from "../../context";
+import {AuthContext, parseChats, saveImage} from '../../context';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -58,9 +58,8 @@ export default function MessagesList() {
         messages={messages}
         numMessages={messagesAggregate.aggregate.count}
         isOnline={true}
-        time={messagesAggregate.aggregate.max.date}
-        messageBody={messagesAggregate.aggregate.max.body}
-        authorId={messagesAggregate.aggregate.max.sender}
+        time={messages[0].createdAt}
+        messageBody={messages[0].text}
       />
     );
   };

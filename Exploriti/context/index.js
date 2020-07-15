@@ -110,11 +110,28 @@ export const parseTimeElapsed = (utcTime: string) => {
   };
 };
 
-export const userImage = 'userImage';
-
-export const saveImage = (image) => {
+/**
+ * Uploads the given image data to Google Firebase Storage and returns a promise
+ * representing the URL of the uploaded image
+ *
+ * @param image: image data to upload
+ * @param previous: url of previous image to delete (optional)
+ * @returns {Promise<R>}
+ */
+export const saveImage = (image, previous = null) => {
   const { path, filename } = image;
   const storageReference = storage().ref(filename);
+
+  if (previous) {
+    storage().ref(storage().refFromURL(previous).fullPath).delete()
+        .then(() => {
+          console.log("Successfully deleted image!");
+        }).catch((error) => {
+          console.log(error);
+        }
+    );
+  }
+
   return new Promise((resolve, reject) => {
     storageReference
       .putFile(path)
@@ -127,11 +144,16 @@ export const saveImage = (image) => {
   });
 };
 
-/**
- * Only used for demonstration purposes real data should be obtained from GraphQL
- * @type {React.Context<null>}
- */
-export const EventContext = createContext(null);
+
+export const getDefaultImage = () => {
+  const defaultImages = [
+    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
+    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
+    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
+    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2'
+  ];
+  return defaultImages[Math.floor(Math.random() * defaultImages.length)];
+};
 
 export const yearsData = [
   'First Year',
@@ -141,13 +163,14 @@ export const yearsData = [
   'Graduate School',
 ];
 export const facultiesData = [
-  'Woodsworth',
-  'Trinity',
-  'Victoria',
-  'University',
-  'Innis',
-  'St. Michael',
+  'Bethune',
+  'Calumet',
+  'Vanier',
+  'Glendon',
+  'McLaughlin',
+  'Stong',
   'New College',
+  'Winters'
 ];
 export const timeZoneData = [
   'Europe/Andorra',

@@ -70,6 +70,7 @@ export default function Profile({ route }) {
     });
 
     if (loading){
+      console.log('Profile Loading Detailed User');
       return null
     }
     if (error) return <Error e={error} />;
@@ -202,17 +203,21 @@ const ProfileCard = ({
   groupCount,
   friendCount
 }) => {
+
+  const friendType = friendCount === 1 ? 'FRIEND' : 'FRIENDS'
+  const groupType = groupCount === 1 ? 'GROUP' : 'GROUPS';
+
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        <Connections onPress={onFriendsOpen} total={friendCount} type="FRIENDS" />
+        <Connections onPress={onFriendsOpen} total={friendCount} type={friendType} />
         <ImageBackground
           source={{ uri: image || "" }}
           style={styles.image}
           imageStyle={styles.avatarImage}>
           {editable && <EditProfile onEdit={onEdit} />}
         </ImageBackground>
-        <Connections onPress={onGroupsOpen} total={groupCount} type="GROUPS" />
+        <Connections onPress={onGroupsOpen} total={groupCount} type={groupType} />
       </View>
       <View style={styles.name}>
         <Text style={styles.usernameText}>{name}</Text>
@@ -327,10 +332,6 @@ const UserInteractions = ({userId, navigation, image}) => {
     const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS_ID, {
         variables: {userId: authState.user.uid}
     });
-
-    if (friendsLoading) {
-        console.log('Should not happen');
-    }
 
     let content;
     let friendInteraction = () => {return undefined};

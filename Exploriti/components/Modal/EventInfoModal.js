@@ -142,36 +142,71 @@ const EventInfoModal = React.forwardRef(({eventId, inviteRef, initialIndex}, ref
 
 
       return (
-          <>
-            <RSVPButton style={styles.rsvp} selectedTitle={"Cancel RSVP"} unSelectedTitle={"Tap to RSVP"} isSelected={isSelected} loading={mutationLoading} unSelectedOnPress={(isInvited && !isSelected) ? confirm : signUp} selectedOnPress={remove}/>
-            <View style={styles.container}>
-              {
-                data.event.isOfficial ?
-                    <View style={styles.iconView}>
-                      <Image source={{uri: "https://www.iedp.com/media/1699/rotman-circle-blue.png"}} style={styles.icon}
-                             width={32} height={32} borderRadius={16}/>
-                      <Text style={styles.iconLabel}>Rotman Event</Text>
-                    </View>
-                    :
-                    null
-              }
+        <>
+          <RSVPButton
+            style={styles.rsvp}
+            selectedTitle={'Cancel RSVP'}
+            unSelectedTitle={'Tap to RSVP'}
+            isSelected={isSelected}
+            loading={mutationLoading}
+            unSelectedOnPress={isInvited && !isSelected ? confirm : signUp}
+            selectedOnPress={remove}
+          />
+          <View style={styles.container}>
+            {data.event.isOfficial ? (
               <View style={styles.iconView}>
-                <FeatherIcon style={styles.icon} name={'calendar'} size={32} color={colours.text03}/>
-                <Text style={styles.iconLabel}>{`${month} ${day} ${parsedYear}`}</Text>
+                <Image
+                  source={{
+                    uri:
+                      'https://www.iedp.com/media/1699/rotman-circle-blue.png',
+                  }}
+                  style={styles.icon}
+                  width={32}
+                  height={32}
+                  borderRadius={16}
+                />
+                <Text style={styles.iconLabel}>Rotman Event</Text>
               </View>
+            ) : null}
+            <View style={styles.iconView}>
+              <FeatherIcon
+                style={styles.icon}
+                name={'calendar'}
+                size={32}
+                color={colours.text03}
+              />
+              <Text
+                style={
+                  styles.iconLabel
+                }>{`${month} ${day} ${parsedYear}`}</Text>
+            </View>
+            <View style={styles.iconView}>
+              <FeatherIcon
+                style={styles.icon}
+                name={'clock'}
+                size={32}
+                color={colours.text03}
+              />
+              <Text
+                style={
+                  styles.iconLabel
+                }>{`${hour}:${minute} - ${endHour}:${endMinute} ${endDayPeriod}`}</Text>
+            </View>
+            { data.event.location.constructor !== Object ? (
               <View style={styles.iconView}>
-                <FeatherIcon style={styles.icon} name={'clock'} size={32} color={colours.text03}/>
-                <Text style={styles.iconLabel}>{`${hour}:${minute} - ${endHour}:${endMinute} ${endDayPeriod}`}</Text>
-              </View>
-              <View style={styles.iconView}>
-                <FeatherIcon style={styles.icon} name={'map-pin'} size={32} color={colours.text03}/>
+                <FeatherIcon
+                  style={styles.icon}
+                  name={'map-pin'}
+                  size={32}
+                  color={colours.text03}
+                />
                 <Text style={styles.iconLabel}>{data.event.location}</Text>
               </View>
-              <Text style={styles.sectionText}>Description</Text>
-              <Text style={styles.descriptionText}>{data.event.description}</Text>
-            </View>
-          </>
-
+            ) : null}
+            <Text style={styles.sectionText}>Description</Text>
+            <Text style={styles.descriptionText}>{data.event.description}</Text>
+          </View>
+        </>
       );
     }
 

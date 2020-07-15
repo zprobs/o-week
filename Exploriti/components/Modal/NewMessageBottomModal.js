@@ -11,7 +11,7 @@ import ModalHeader from './ModalHeader';
 import { Theme } from '../../theme/Colours';
 import EmptyMessages from '../../assets/svg/empty-messages.svg'
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { AuthContext, parseChats, graphqlify } from '../../context';
+import {AuthContext, parseChats, graphqlify, getDefaultImage} from '../../context';
 import { useLazyQuery, useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_USER_FRIENDS, NEW_CHAT } from '../../graphql';
 import SearchableFlatList from './SearchableFlatList';
@@ -59,12 +59,6 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   });
 
   const newConversation = (participants) => {
-    const defaultImages = [
-      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
-      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
-      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
-      'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2',
-    ];
     if (participants.length !== 0) {
       newChat({
         variables: {
@@ -78,7 +72,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
           image:
             participants.length === 1
               ? participants[0].image
-              : defaultImages[Math.floor(Math.random() * defaultImages.length)],
+              : getDefaultImage()
         },
       });
     }

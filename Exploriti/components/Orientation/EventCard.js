@@ -28,7 +28,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param name {string}
  * @param startDate {string}
  * @param longDate {boolean} if true then display the date aswell as the time
- * @param calenderType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
+ * @param calendarType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
  * @param userImages {[string]}
  * @param count {int}
  * @param description
@@ -36,16 +36,17 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param calendar {boolean} if true is a calendar of events, false is an event
  * @param plus {boolean} true, icon = plus, false icon = check
  * @param isSelected {boolean} If it is a calendar, weather or not it is selected
+ * @param isExpanded {boolean} The initial state of the card
  * @param remove {function} a function for deleting this item using its key
  * @param onPress {function} a function for calendars when the icon is pressed
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, longDate, calenderType, userImages, count, description, style, calendar ,plus, isSelected, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, isExpanded, remove, onPress }) => {
     const navigation = useNavigation();
 
-    const [expanded, setExpanded] = useState(false);
-    const [selected, setSelected] = useState(plus ? true : isSelected);
+    const [expanded, setExpanded] = useState(isExpanded);
+    const [selected, setSelected] = useState(isSelected);
 
     const icon = plus ? 'plus' : 'check';
 
@@ -57,7 +58,7 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
         const [ { value: month },,{ value: day },,{value: hour},,{value: minute},,{value: dayPeriod}] = dateTimeFormat .formatToParts(date )
         time = longDate ? `${month} ${day}  ${hour}:${minute}${dayPeriod}` : `${hour}:${minute}${dayPeriod}`;
     } else {
-        time = calenderType;
+        time = calendarType;
     }
 
     return (
@@ -89,8 +90,8 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
                         if (plus) {
                             onPress && onPress();
                         } else {
-                            onPress && onPress();
-                            setSelected(!selected)
+                            onPress && onPress(!selected);
+                            setSelected(!selected);
                         }
                     }}
                     >
@@ -119,19 +120,14 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
               </View>
               {expanded ? (
                 calendar ? (
-                  <View style={{ flexDirection: 'row' }}>
-                    <ButtonColour
-                      label={'Delete'}
-                      containerStyle={{ width: '30%', marginVertical: 10 }}
-                      labelStyle={{ color: ThemeStatic.delete }}
-                      onPress={remove}
-                    />
+                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <ButtonColour
                       label={'Add to phone calendar'}
-                      containerStyle={{ width: '60%', marginVertical: 10 }}
-                      light={true}
-                      colour={colours.accent}
+                      containerStyle={{ width: '70%' }}
+                      labelStyle={{ color: ThemeStatic.accent }}
+                      onPress={remove}
                     />
+
                   </View>
                 ) : (
                   <View>
@@ -142,7 +138,7 @@ export const EventCard = ({ id, image, name, startDate, longDate, calenderType, 
                         style={styles.detailsButton}
                         onPress={() =>
                           navigation.push('EventScreen', {
-                            event: { image: image, name: name, startDate: startDate, id: id  },
+                             eventId: id
                           })
                         }>
                         <Text style={styles.detailsText}>Details</Text>
