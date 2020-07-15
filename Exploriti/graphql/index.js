@@ -63,7 +63,6 @@ export const GET_CURRENT_USER = gql`
         isOwner
         group {
           id
-          
         }
       }
     }
@@ -435,6 +434,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     startDate
     endDate
     isOfficial
+      website
     attendees(where: { didAccept: { _eq: true } }) {
       user {
         image
@@ -574,9 +574,42 @@ export const GET_EVENTS_BY_ID = gql`
           count
         }
       }
+        hosts {
+            groupId
+        }
     }
   }
 `;
+
+export const GET_EVENT = gql`
+    query getEvent($id: uuid!) {
+        event(id: $id) {
+            id
+            name
+            image
+            startDate
+            hosts {
+                groupId
+            }
+        }
+    }
+`
+
+export const UPDATE_EVENT = gql`
+    mutation updateEvent($id: uuid!, $data: event_set_input!) {
+        updateEvent(pk_columns: {id: $id}, _set: $data) {
+            id
+            image
+            name
+            location
+            description
+            startDate
+            endDate
+            website
+        }
+    }
+
+`
 
 export const CHECK_USER_EVENT_ACCEPTED = gql`
   query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
@@ -729,6 +762,7 @@ export const GET_USER_GROUPS = gql`
     user(id: $id) {
         id
       member {
+          isOwner
         group {
           id
             name
@@ -738,6 +772,7 @@ export const GET_USER_GROUPS = gql`
     }
   }
 `;
+
 
 export const GET_GROUP = gql`
     query getGroup($id: uuid!) {
@@ -756,6 +791,16 @@ export const GET_GROUP = gql`
                     image
                 }
             }
+        }
+    }
+`
+
+export const GET_GROUP_IMAGE_NAME = gql`
+    query getGroupImageName($id: uuid!) {
+        group(id: $id) {
+            id
+            name
+            image
         }
     }
 `
@@ -812,6 +857,8 @@ export const UPDATE_GROUP = gql`
     }
   }
 `;
+
+
 
 export const GET_GROUP_EVENTS = gql`
     query getGroupEvents($id: uuid!) {

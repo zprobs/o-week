@@ -333,10 +333,6 @@ const UserInteractions = ({userId, navigation, image}) => {
         variables: {userId: authState.user.uid}
     });
 
-    if (friendsLoading) {
-        console.log('Should not happen');
-    }
-
     let content;
     let friendInteraction = () => {return undefined};
 

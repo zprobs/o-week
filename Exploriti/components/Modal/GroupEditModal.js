@@ -31,8 +31,6 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
       setEditableDescription(data.group.description);
       setEditableImage(data.group.image);
 
-      console.log(data.group.image)
-
     }
   }, [data])
 

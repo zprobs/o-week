@@ -98,7 +98,7 @@ export default function Dashboard() {
 
         if (section.title === "Groups") {
             screen = "GroupScreen"
-            options = {groupId: item.group.id, isOwner: item.isOwner}
+            options = {groupId: item.group.id}
         } else {
             screen = "EventScreen"
             options = {event: item}

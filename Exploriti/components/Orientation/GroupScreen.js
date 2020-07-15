@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -14,8 +14,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_GROUP } from '../../graphql';
+import { CHECK_USER_OWNS_GROUP, GET_GROUP, GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
+import { AuthContext } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -32,10 +33,28 @@ const GroupScreen = ({route}) => {
     const modalRef = useRef();
     const editRef = useRef();
     const creatEventRef = useRef();
-    const {groupId, isOwner} = route.params
-  console.log(groupId)
-  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}, fetchPolicy: 'cache-only'})
-  if (loading) console.log('groupScreen loading (NOT HAPPEN)')
+    const {groupId} = route.params
+  const {authState} = useContext(AuthContext);
+
+  const {data, loading, error} = useQuery(GET_GROUP_IMAGE_NAME, {variables: {id: groupId}})
+  const {data: isOwnerData, error: isOwnerError} = useQuery(GET_USER_GROUPS, {variables: {id: authState.user.uid }, fetchPolicy: 'cache-only'})
+
+  if (loading) {
+    console.log('groupScreen Loading');
+    return null;
+  }
+
+  if (error || isOwnerError) {
+    console.log('isOwnerError', isOwnerError);
+    console.log('error', error);
+    return null;
+  }
+
+  const filteredMemberships = isOwnerData.user.member.filter((membership) => membership.group.id === groupId);
+
+  const isMember =  filteredMemberships.length > 0;
+  const isOwner =  isMember && filteredMemberships[0].isOwner === true;
+
 
   const {group} = data;
 
@@ -73,9 +92,13 @@ const GroupScreen = ({route}) => {
                 </LinearGradient>
             </View>
         </ImageBackground>
-          <GroupInfoModal ref={modalRef} groupId={group.id}/>
-        <GroupEditModal ref={editRef} groupId={group.id} onClose={onCloseEdit}/>
-        <NewEventModal ref={creatEventRef} groupId={group.id} onClose={onCloseEdit} groupName={group.name}/>
+          <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember}/>
+        {isOwner ? (
+          <>
+          <GroupEditModal ref={editRef} groupId={group.id} onClose={onCloseEdit}/>
+          <NewEventModal ref={creatEventRef} groupId={group.id} onClose={onCloseEdit} groupName={group.name}/>
+          </>
+          ) : null}
       </View>
     );
 }

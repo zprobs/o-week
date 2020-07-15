@@ -133,6 +133,7 @@ const Schedule = () => {
               userImages={event.attendees.map((attendee)=>attendee.user.image)}
               count={event.attendees_aggregate.aggregate.count}
               description={event.description}
+              hosts={event.hosts}
             />
           );
         })}

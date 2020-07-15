@@ -42,7 +42,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, isExpanded, remove, onPress}) => {
+export const EventCard = ({ id, image, name, startDate, longDate, calendarType, userImages, count, description, style, calendar ,plus, isSelected, isExpanded, remove, onPress }) => {
     const navigation = useNavigation();
 
     const [expanded, setExpanded] = useState(isExpanded);
@@ -138,7 +138,7 @@ export const EventCard = ({ id, image, name, startDate, longDate, calendarType, 
                         style={styles.detailsButton}
                         onPress={() =>
                           navigation.push('EventScreen', {
-                            event: { image: image, name: name, startDate: startDate, id: id  },
+                             eventId: id
                           })
                         }>
                         <Text style={styles.detailsText}>Details</Text>

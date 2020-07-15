@@ -31,9 +31,10 @@ const WIDTH = Dimensions.get('window').width;
 
 /**
  * @param group {object} An object of a group
+ * @param isMember {boolean} true if the user is a member and can call / message the group
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
  */
-const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
+const GroupInfoModal = React.forwardRef(({groupId, isMember}, ref) => {
 
   const navigation = useNavigation();
   const {loading, data, error} = useQuery(GET_DETAILED_GROUP, {variables: {id: groupId}})
@@ -83,13 +84,11 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
 
 
     const Overview = () => {
-      const {authState} = useContext(AuthContext);
       // temp for the demo
       const chat = groupId==="ce945810-eb4a-47c6-83d4-5e642ac2d6c7" ? 182 : 181
-      const {loading: groupsLoading, error: groupsError, data: groupsData} = useQuery(GET_USER_GROUPS, {variables: {id: authState.user.uid}});
       const {loading: chatLoading, error: chatError, data: chatData} = useQuery(GET_CHAT_BY_ID, {variables: {id: chat}});
-      if (loading || groupsLoading || chatLoading) return null
-      if (error || groupsError || chatError) return <Text>{error ? error.message : chatError ? chatError.message : groupsError.message}</Text>
+      if (loading ||  chatLoading) return null
+      if (error || chatError) return <Text>{error ? error.message : chatError ? chatError.message : groupsError.message}</Text>
 
       const {chatId,
         image,
@@ -101,7 +100,7 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
       return (
         <>
           {
-           groupsData.user.member.map(member=>member.group.id).includes(groupId) ? (
+             isMember ? (
              <View style={styles.contactContainer}>
                <View style={styles.contactView}>
                  <Icon name={'phone'} size={18} style={styles.contactIcon} />
@@ -202,7 +201,7 @@ const GroupInfoModal = React.forwardRef(({groupId}, ref) => {
               <View style={styles.eventContainer}>
                 {
                   eventsData.events.map((event) => {
-                    return <EventCard startDate={event.startDate} name={event.name} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.id} count={event.attendees_aggregate.aggregate.count} description={event.description} userImages={event.attendees.map((attendee)=>attendee.user.image)} id={event.id} longDate={true}/>
+                    return <EventCard startDate={event.startDate} name={event.name} style={{width: '100%', alignItems: 'center'}} image={event.image} key={event.id} count={event.attendees_aggregate.aggregate.count} description={event.description} userImages={event.attendees.map((attendee)=>attendee.user.image)} id={event.id} longDate={true} hosts={event.hosts} />
                   })
                 }
               </View>
