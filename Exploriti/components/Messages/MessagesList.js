@@ -101,7 +101,7 @@ export default function MessagesList() {
       style={styles.messagesList}
       spacing={20}
       renderItem={renderItem}
-      ItemSeparatorComponent={itemSeparatorComponent}
+      // ItemSeparatorComponent={itemSeparatorComponent}
     />
   );
 
