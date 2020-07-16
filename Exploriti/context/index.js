@@ -155,6 +155,13 @@ export const getDefaultImage = () => {
   return defaultImages[Math.floor(Math.random() * defaultImages.length)];
 };
 
+export const NotificationTypes = {
+  system: 'system',
+  confirmFriendRequest: 'confirmFriendRequest',
+  sendFriendRequest: 'sendFriendRequest',
+
+}
+
 export const yearsData = [
   'First Year',
   'Second Year',

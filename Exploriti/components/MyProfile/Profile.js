@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/EvilIcons";
 import EditProfileBottomModal from "./EditProfileBottomModal";
 import UsersBottomModal from "../Modal/UsersBottomModal";
 import GroupBottomModal from "../Modal/GroupBottomModal";
-import {AuthContext, graphqlify } from '../../context';
+import { AuthContext, graphqlify, NotificationTypes } from '../../context';
 import {useApolloClient, useLazyQuery, useMutation, useQuery} from '@apollo/react-hooks';
 import {
   CHECK_FRIEND_REQUESTS,
@@ -24,7 +24,7 @@ import {
   GET_USER_FRIENDS_ID,
   NEW_CHAT,
   REMOVE_FRIEND,
-  SEND_FRIEND_REQUEST,
+  SEND_FRIEND_REQUEST, SEND_NOTIFICATION,
 } from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
@@ -273,6 +273,8 @@ const UserInteractions = ({userId, navigation, image}) => {
     },
   });
 
+    const [sendNotification] = useMutation(SEND_NOTIFICATION);
+
     const [checkFriendRequests, {data: requestsData, loading: requestsLoading, error: requestsError, called}] = useLazyQuery(CHECK_FRIEND_REQUESTS, {
         variables: {currentUser: authState.user.uid, otherUser: userId  },
         fetchPolicy: "no-cache"
@@ -280,7 +282,14 @@ const UserInteractions = ({userId, navigation, image}) => {
 
     const [sendRequest, { error: sendError, loading: sendLoading}] = useMutation(SEND_FRIEND_REQUEST, {
         variables: { sender: authState.user.uid, recipient: userId },
-        onCompleted: checkFriendRequests,
+        onCompleted: ()=>{
+          checkFriendRequests();
+          sendNotification({variables: {
+              type: NotificationTypes.sendFriendRequest,
+              typeId: authState.user.uid,
+              recipient: userId,
+            }}).catch(e=>console.log(e));
+        },
         fetchPolicy: "no-cache"
     });
 
@@ -295,9 +304,6 @@ const UserInteractions = ({userId, navigation, image}) => {
         update: (cache ) => {
             const { friends } = cache.readQuery({ query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid} });
             const newFriends = friends.filter( (element) => element.id !== userId )
-            console.log("DELETING FRIENDS");
-            console.log(friends);
-            console.log(newFriends);
             cache.writeQuery({
                 query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid},
                 data: { friends: newFriends },
@@ -326,7 +332,14 @@ const UserInteractions = ({userId, navigation, image}) => {
         });
       },
       // update friend Requests
-      onCompleted: checkFriendRequests,
+      onCompleted: ()=>{
+        checkFriendRequests();
+        sendNotification({variables: {
+          type: NotificationTypes.confirmFriendRequest,
+            typeId: authState.user.uid,
+            recipient: userId,
+          }}).catch(e=>console.log(e));
+      },
     });
 
     const {data: friendsData, loading: friendsLoading, error: friendsError} = useQuery(GET_USER_FRIENDS_ID, {

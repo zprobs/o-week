@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Animated from 'react-native-reanimated';
-import Svg, { G, Path, Rect, Line} from 'react-native-svg';
+import Svg, { G, Path, Rect, Line, Circle } from 'react-native-svg';
 import Icon from 'react-native-vector-icons/Feather'
 import { useRef } from 'react';
 

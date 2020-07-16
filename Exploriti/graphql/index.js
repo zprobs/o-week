@@ -52,6 +52,18 @@ export const DETAILED_NOTIFICATION_FRAGMENT = gql`
     }
 `;
 
+export const GET_NOTIFICATIONS = gql`
+    query getNotifications($id: String!) {
+        user(id: $id) { 
+            id
+            notifications {
+                ...DetailedNotification
+            }
+        }
+    }
+  ${DETAILED_NOTIFICATION_FRAGMENT}
+`
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
@@ -150,10 +162,9 @@ export const UPDATE_USER_PROGRAMS = gql`
 export const SEND_NOTIFICATION = gql`
     mutation sendNotification($message: String!, $recipient: String!, $title: String!, $type: String!, $typeId: String!) {
         sendNotification(object: {message: $message, recipient: $recipient, title: $title, type: $type, typeId: $typeId}) {
-            ...DetailedNotification
+            id
         }
     }
-    ${DETAILED_NOTIFICATION_FRAGMENT}
 `;
 
 export const SIGN_UP = gql`
