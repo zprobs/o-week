@@ -4455,6 +4455,15 @@ type mutation_root {
     where: userInterest_bool_exp!
   ): userInterest_mutation_response
 
+  # delete data from the table: "userNotification"
+  delete_userNotification(
+    # filter the rows which have to be deleted
+    where: userNotification_bool_exp!
+  ): userNotification_mutation_response
+
+  # delete single row from the table: "userNotification"
+  delete_userNotification_by_pk(notificationId: Int!, userId: String!): userNotification
+
   # delete data from the table: "userProgram"
   delete_userProgram(
     # filter the rows which have to be deleted
@@ -4703,6 +4712,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: userInterest_on_conflict
   ): userInterest_mutation_response
+
+  # insert data into the table: "userNotification"
+  insert_userNotification(
+    # the rows to be inserted
+    objects: [userNotification_insert_input!]!
+
+    # on conflict condition
+    on_conflict: userNotification_on_conflict
+  ): userNotification_mutation_response
+
+  # insert a single row into the table: "userNotification"
+  insert_userNotification_one(
+    # the row to be inserted
+    object: userNotification_insert_input!
+
+    # on conflict condition
+    on_conflict: userNotification_on_conflict
+  ): userNotification
 
   # insert data into the table: "userProgram"
   insert_userProgram(
@@ -5388,6 +5415,28 @@ type mutation_root {
     pk_columns: userInterest_pk_columns_input!
   ): userInterest
 
+  # update data of the table: "userNotification"
+  update_userNotification(
+    # increments the integer columns with given value of the filtered values
+    _inc: userNotification_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: userNotification_set_input
+
+    # filter the rows which have to be updated
+    where: userNotification_bool_exp!
+  ): userNotification_mutation_response
+
+  # update single row of the table: "userNotification"
+  update_userNotification_by_pk(
+    # increments the integer columns with given value of the filtered values
+    _inc: userNotification_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: userNotification_set_input
+    pk_columns: userNotification_pk_columns_input!
+  ): userNotification
+
   # update data of the table: "userProgram"
   update_userProgram(
     # increments the integer columns with given value of the filtered values
@@ -5414,15 +5463,46 @@ type mutation_root {
 # columns and relationships of "notification"
 type notification {
   id: Int!
-  message: String!
-  recipient: String!
+  seen: Boolean!
   timestamp: timestamptz!
-  title: String!
   type: String!
   typeId: String!
 
-  # An object relationship
-  user: user!
+  # An array relationship
+  userNotifications(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): [userNotification!]!
+
+  # An aggregated array relationship
+  userNotifications_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): userNotification_aggregate!
 }
 
 # aggregated selection of "notification"
@@ -5483,13 +5563,11 @@ input notification_bool_exp {
   _not: notification_bool_exp
   _or: [notification_bool_exp]
   id: Int_comparison_exp
-  message: String_comparison_exp
-  recipient: String_comparison_exp
+  seen: Boolean_comparison_exp
   timestamp: timestamptz_comparison_exp
-  title: String_comparison_exp
   type: String_comparison_exp
   typeId: String_comparison_exp
-  user: user_bool_exp
+  userNotifications: userNotification_bool_exp
 }
 
 # unique or primary key constraints on table "notification"
@@ -5506,22 +5584,17 @@ input notification_inc_input {
 # input type for inserting data into table "notification"
 input notification_insert_input {
   id: Int
-  message: String
-  recipient: String
+  seen: Boolean
   timestamp: timestamptz
-  title: String
   type: String
   typeId: String
-  user: user_obj_rel_insert_input
+  userNotifications: userNotification_arr_rel_insert_input
 }
 
 # aggregate max on columns
 type notification_max_fields {
   id: Int
-  message: String
-  recipient: String
   timestamp: timestamptz
-  title: String
   type: String
   typeId: String
 }
@@ -5529,10 +5602,7 @@ type notification_max_fields {
 # order by max() on columns of table "notification"
 input notification_max_order_by {
   id: order_by
-  message: order_by
-  recipient: order_by
   timestamp: order_by
-  title: order_by
   type: order_by
   typeId: order_by
 }
@@ -5540,10 +5610,7 @@ input notification_max_order_by {
 # aggregate min on columns
 type notification_min_fields {
   id: Int
-  message: String
-  recipient: String
   timestamp: timestamptz
-  title: String
   type: String
   typeId: String
 }
@@ -5551,10 +5618,7 @@ type notification_min_fields {
 # order by min() on columns of table "notification"
 input notification_min_order_by {
   id: order_by
-  message: order_by
-  recipient: order_by
   timestamp: order_by
-  title: order_by
   type: order_by
   typeId: order_by
 }
@@ -5584,13 +5648,11 @@ input notification_on_conflict {
 # ordering options when selecting data from "notification"
 input notification_order_by {
   id: order_by
-  message: order_by
-  recipient: order_by
+  seen: order_by
   timestamp: order_by
-  title: order_by
   type: order_by
   typeId: order_by
-  user: user_order_by
+  userNotifications_aggregate: userNotification_aggregate_order_by
 }
 
 # primary key columns input for table: "notification"
@@ -5604,16 +5666,10 @@ enum notification_select_column {
   id
 
   # column name
-  message
-
-  # column name
-  recipient
+  seen
 
   # column name
   timestamp
-
-  # column name
-  title
 
   # column name
   type
@@ -5625,10 +5681,8 @@ enum notification_select_column {
 # input type for updating data in table "notification"
 input notification_set_input {
   id: Int
-  message: String
-  recipient: String
+  seen: Boolean
   timestamp: timestamptz
-  title: String
   type: String
   typeId: String
 }
@@ -5679,16 +5733,10 @@ enum notification_update_column {
   id
 
   # column name
-  message
-
-  # column name
-  recipient
+  seen
 
   # column name
   timestamp
-
-  # column name
-  title
 
   # column name
   type
@@ -6998,6 +7046,81 @@ type query_root {
 
   # fetch data from the table: "userInterest" using primary key columns
   userInterest_by_pk(interestId: Int!, userId: String!): userInterest
+
+  # fetch data from the table: "userNotification"
+  userNotification(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): [userNotification!]!
+
+  # fetch data from the table: "userNotificationView"
+  userNotificationView(
+    # distinct select on columns
+    distinct_on: [userNotificationView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotificationView_order_by!]
+
+    # filter the rows returned
+    where: userNotificationView_bool_exp
+  ): [userNotificationView!]!
+
+  # fetch aggregated fields from the table: "userNotificationView"
+  userNotificationView_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotificationView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotificationView_order_by!]
+
+    # filter the rows returned
+    where: userNotificationView_bool_exp
+  ): userNotificationView_aggregate!
+
+  # fetch aggregated fields from the table: "userNotification"
+  userNotification_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): userNotification_aggregate!
+
+  # fetch data from the table: "userNotification" using primary key columns
+  userNotification_by_pk(notificationId: Int!, userId: String!): userNotification
 
   # fetch data from the table: "userProgram"
   userProgram(
@@ -8726,6 +8849,81 @@ type subscription_root {
   # fetch data from the table: "userInterest" using primary key columns
   userInterest_by_pk(interestId: Int!, userId: String!): userInterest
 
+  # fetch data from the table: "userNotification"
+  userNotification(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): [userNotification!]!
+
+  # fetch data from the table: "userNotificationView"
+  userNotificationView(
+    # distinct select on columns
+    distinct_on: [userNotificationView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotificationView_order_by!]
+
+    # filter the rows returned
+    where: userNotificationView_bool_exp
+  ): [userNotificationView!]!
+
+  # fetch aggregated fields from the table: "userNotificationView"
+  userNotificationView_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotificationView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotificationView_order_by!]
+
+    # filter the rows returned
+    where: userNotificationView_bool_exp
+  ): userNotificationView_aggregate!
+
+  # fetch aggregated fields from the table: "userNotification"
+  userNotification_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): userNotification_aggregate!
+
+  # fetch data from the table: "userNotification" using primary key columns
+  userNotification_by_pk(notificationId: Int!, userId: String!): userNotification
+
   # fetch data from the table: "userProgram"
   userProgram(
     # distinct select on columns
@@ -9698,7 +9896,7 @@ type user {
   # An array relationship
   notifications(
     # distinct select on columns
-    distinct_on: [notification_select_column!]
+    distinct_on: [userNotificationView_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -9707,16 +9905,16 @@ type user {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [notification_order_by!]
+    order_by: [userNotificationView_order_by!]
 
     # filter the rows returned
-    where: notification_bool_exp
-  ): [notification!]!
+    where: userNotificationView_bool_exp
+  ): [userNotificationView!]!
 
   # An aggregated array relationship
   notifications_aggregate(
     # distinct select on columns
-    distinct_on: [notification_select_column!]
+    distinct_on: [userNotificationView_select_column!]
 
     # limit the number of rows returned
     limit: Int
@@ -9725,11 +9923,11 @@ type user {
     offset: Int
 
     # sort the rows by one or more columns
-    order_by: [notification_order_by!]
+    order_by: [userNotificationView_order_by!]
 
     # filter the rows returned
-    where: notification_bool_exp
-  ): notification_aggregate!
+    where: userNotificationView_bool_exp
+  ): userNotificationView_aggregate!
 
   # An array relationship
   programs(
@@ -9875,6 +10073,42 @@ type user {
     # filter the rows returned
     where: userChat_bool_exp
   ): userChat_aggregate!
+
+  # An array relationship
+  userNotifications(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): [userNotification!]!
+
+  # An aggregated array relationship
+  userNotifications_aggregate(
+    # distinct select on columns
+    distinct_on: [userNotification_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [userNotification_order_by!]
+
+    # filter the rows returned
+    where: userNotification_bool_exp
+  ): userNotification_aggregate!
   year: Int!
 }
 
@@ -9959,12 +10193,13 @@ input user_bool_exp {
   messages: message_bool_exp
   name: String_comparison_exp
   notificationToken: String_comparison_exp
-  notifications: notification_bool_exp
+  notifications: userNotificationView_bool_exp
   programs: userProgram_bool_exp
   questions: question_bool_exp
   reviews: review_bool_exp
   timezone: String_comparison_exp
   userChats: userChat_bool_exp
+  userNotifications: userNotification_bool_exp
   year: Int_comparison_exp
 }
 
@@ -10016,12 +10251,12 @@ input user_insert_input {
   messages: message_arr_rel_insert_input
   name: String
   notificationToken: String
-  notifications: notification_arr_rel_insert_input
   programs: userProgram_arr_rel_insert_input
   questions: question_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
   timezone: String
   userChats: userChat_arr_rel_insert_input
+  userNotifications: userNotification_arr_rel_insert_input
   year: Int
 }
 
@@ -10120,12 +10355,13 @@ input user_order_by {
   messages_aggregate: message_aggregate_order_by
   name: order_by
   notificationToken: order_by
-  notifications_aggregate: notification_aggregate_order_by
+  notifications_aggregate: userNotificationView_aggregate_order_by
   programs_aggregate: userProgram_aggregate_order_by
   questions_aggregate: question_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
   timezone: order_by
   userChats_aggregate: userChat_aggregate_order_by
+  userNotifications_aggregate: userNotification_aggregate_order_by
   year: order_by
 }
 
@@ -11114,6 +11350,459 @@ type userInterest_variance_fields {
 # order by variance() on columns of table "userInterest"
 input userInterest_variance_order_by {
   interestId: order_by
+}
+
+# columns and relationships of "userNotification"
+type userNotification {
+  # An object relationship
+  notification: notification!
+  notificationId: Int!
+
+  # An object relationship
+  user: user!
+  userId: String!
+}
+
+# aggregated selection of "userNotification"
+type userNotification_aggregate {
+  aggregate: userNotification_aggregate_fields
+  nodes: [userNotification!]!
+}
+
+# aggregate fields of "userNotification"
+type userNotification_aggregate_fields {
+  avg: userNotification_avg_fields
+  count(columns: [userNotification_select_column!], distinct: Boolean): Int
+  max: userNotification_max_fields
+  min: userNotification_min_fields
+  stddev: userNotification_stddev_fields
+  stddev_pop: userNotification_stddev_pop_fields
+  stddev_samp: userNotification_stddev_samp_fields
+  sum: userNotification_sum_fields
+  var_pop: userNotification_var_pop_fields
+  var_samp: userNotification_var_samp_fields
+  variance: userNotification_variance_fields
+}
+
+# order by aggregate values of table "userNotification"
+input userNotification_aggregate_order_by {
+  avg: userNotification_avg_order_by
+  count: order_by
+  max: userNotification_max_order_by
+  min: userNotification_min_order_by
+  stddev: userNotification_stddev_order_by
+  stddev_pop: userNotification_stddev_pop_order_by
+  stddev_samp: userNotification_stddev_samp_order_by
+  sum: userNotification_sum_order_by
+  var_pop: userNotification_var_pop_order_by
+  var_samp: userNotification_var_samp_order_by
+  variance: userNotification_variance_order_by
+}
+
+# input type for inserting array relation for remote table "userNotification"
+input userNotification_arr_rel_insert_input {
+  data: [userNotification_insert_input!]!
+  on_conflict: userNotification_on_conflict
+}
+
+# aggregate avg on columns
+type userNotification_avg_fields {
+  notificationId: Float
+}
+
+# order by avg() on columns of table "userNotification"
+input userNotification_avg_order_by {
+  notificationId: order_by
+}
+
+# Boolean expression to filter rows from the table "userNotification". All fields are combined with a logical 'AND'.
+input userNotification_bool_exp {
+  _and: [userNotification_bool_exp]
+  _not: userNotification_bool_exp
+  _or: [userNotification_bool_exp]
+  notification: notification_bool_exp
+  notificationId: Int_comparison_exp
+  user: user_bool_exp
+  userId: String_comparison_exp
+}
+
+# unique or primary key constraints on table "userNotification"
+enum userNotification_constraint {
+  # unique or primary key constraint
+  userNotification_pkey
+}
+
+# input type for incrementing integer column in table "userNotification"
+input userNotification_inc_input {
+  notificationId: Int
+}
+
+# input type for inserting data into table "userNotification"
+input userNotification_insert_input {
+  notification: notification_obj_rel_insert_input
+  notificationId: Int
+  user: user_obj_rel_insert_input
+  userId: String
+}
+
+# aggregate max on columns
+type userNotification_max_fields {
+  notificationId: Int
+  userId: String
+}
+
+# order by max() on columns of table "userNotification"
+input userNotification_max_order_by {
+  notificationId: order_by
+  userId: order_by
+}
+
+# aggregate min on columns
+type userNotification_min_fields {
+  notificationId: Int
+  userId: String
+}
+
+# order by min() on columns of table "userNotification"
+input userNotification_min_order_by {
+  notificationId: order_by
+  userId: order_by
+}
+
+# response of any mutation on the table "userNotification"
+type userNotification_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [userNotification!]!
+}
+
+# input type for inserting object relation for remote table "userNotification"
+input userNotification_obj_rel_insert_input {
+  data: userNotification_insert_input!
+  on_conflict: userNotification_on_conflict
+}
+
+# on conflict condition type for table "userNotification"
+input userNotification_on_conflict {
+  constraint: userNotification_constraint!
+  update_columns: [userNotification_update_column!]!
+  where: userNotification_bool_exp
+}
+
+# ordering options when selecting data from "userNotification"
+input userNotification_order_by {
+  notification: notification_order_by
+  notificationId: order_by
+  user: user_order_by
+  userId: order_by
+}
+
+# primary key columns input for table: "userNotification"
+input userNotification_pk_columns_input {
+  notificationId: Int!
+  userId: String!
+}
+
+# select columns of table "userNotification"
+enum userNotification_select_column {
+  # column name
+  notificationId
+
+  # column name
+  userId
+}
+
+# input type for updating data in table "userNotification"
+input userNotification_set_input {
+  notificationId: Int
+  userId: String
+}
+
+# aggregate stddev on columns
+type userNotification_stddev_fields {
+  notificationId: Float
+}
+
+# order by stddev() on columns of table "userNotification"
+input userNotification_stddev_order_by {
+  notificationId: order_by
+}
+
+# aggregate stddev_pop on columns
+type userNotification_stddev_pop_fields {
+  notificationId: Float
+}
+
+# order by stddev_pop() on columns of table "userNotification"
+input userNotification_stddev_pop_order_by {
+  notificationId: order_by
+}
+
+# aggregate stddev_samp on columns
+type userNotification_stddev_samp_fields {
+  notificationId: Float
+}
+
+# order by stddev_samp() on columns of table "userNotification"
+input userNotification_stddev_samp_order_by {
+  notificationId: order_by
+}
+
+# aggregate sum on columns
+type userNotification_sum_fields {
+  notificationId: Int
+}
+
+# order by sum() on columns of table "userNotification"
+input userNotification_sum_order_by {
+  notificationId: order_by
+}
+
+# update columns of table "userNotification"
+enum userNotification_update_column {
+  # column name
+  notificationId
+
+  # column name
+  userId
+}
+
+# aggregate var_pop on columns
+type userNotification_var_pop_fields {
+  notificationId: Float
+}
+
+# order by var_pop() on columns of table "userNotification"
+input userNotification_var_pop_order_by {
+  notificationId: order_by
+}
+
+# aggregate var_samp on columns
+type userNotification_var_samp_fields {
+  notificationId: Float
+}
+
+# order by var_samp() on columns of table "userNotification"
+input userNotification_var_samp_order_by {
+  notificationId: order_by
+}
+
+# aggregate variance on columns
+type userNotification_variance_fields {
+  notificationId: Float
+}
+
+# order by variance() on columns of table "userNotification"
+input userNotification_variance_order_by {
+  notificationId: order_by
+}
+
+# columns and relationships of "userNotificationView"
+type userNotificationView {
+  id: Int
+  seen: Boolean
+  timestamp: timestamptz
+  type: String
+  typeId: String
+  userId: String
+}
+
+# aggregated selection of "userNotificationView"
+type userNotificationView_aggregate {
+  aggregate: userNotificationView_aggregate_fields
+  nodes: [userNotificationView!]!
+}
+
+# aggregate fields of "userNotificationView"
+type userNotificationView_aggregate_fields {
+  avg: userNotificationView_avg_fields
+  count(columns: [userNotificationView_select_column!], distinct: Boolean): Int
+  max: userNotificationView_max_fields
+  min: userNotificationView_min_fields
+  stddev: userNotificationView_stddev_fields
+  stddev_pop: userNotificationView_stddev_pop_fields
+  stddev_samp: userNotificationView_stddev_samp_fields
+  sum: userNotificationView_sum_fields
+  var_pop: userNotificationView_var_pop_fields
+  var_samp: userNotificationView_var_samp_fields
+  variance: userNotificationView_variance_fields
+}
+
+# order by aggregate values of table "userNotificationView"
+input userNotificationView_aggregate_order_by {
+  avg: userNotificationView_avg_order_by
+  count: order_by
+  max: userNotificationView_max_order_by
+  min: userNotificationView_min_order_by
+  stddev: userNotificationView_stddev_order_by
+  stddev_pop: userNotificationView_stddev_pop_order_by
+  stddev_samp: userNotificationView_stddev_samp_order_by
+  sum: userNotificationView_sum_order_by
+  var_pop: userNotificationView_var_pop_order_by
+  var_samp: userNotificationView_var_samp_order_by
+  variance: userNotificationView_variance_order_by
+}
+
+# aggregate avg on columns
+type userNotificationView_avg_fields {
+  id: Float
+}
+
+# order by avg() on columns of table "userNotificationView"
+input userNotificationView_avg_order_by {
+  id: order_by
+}
+
+# Boolean expression to filter rows from the table "userNotificationView". All fields are combined with a logical 'AND'.
+input userNotificationView_bool_exp {
+  _and: [userNotificationView_bool_exp]
+  _not: userNotificationView_bool_exp
+  _or: [userNotificationView_bool_exp]
+  id: Int_comparison_exp
+  seen: Boolean_comparison_exp
+  timestamp: timestamptz_comparison_exp
+  type: String_comparison_exp
+  typeId: String_comparison_exp
+  userId: String_comparison_exp
+}
+
+# aggregate max on columns
+type userNotificationView_max_fields {
+  id: Int
+  timestamp: timestamptz
+  type: String
+  typeId: String
+  userId: String
+}
+
+# order by max() on columns of table "userNotificationView"
+input userNotificationView_max_order_by {
+  id: order_by
+  timestamp: order_by
+  type: order_by
+  typeId: order_by
+  userId: order_by
+}
+
+# aggregate min on columns
+type userNotificationView_min_fields {
+  id: Int
+  timestamp: timestamptz
+  type: String
+  typeId: String
+  userId: String
+}
+
+# order by min() on columns of table "userNotificationView"
+input userNotificationView_min_order_by {
+  id: order_by
+  timestamp: order_by
+  type: order_by
+  typeId: order_by
+  userId: order_by
+}
+
+# ordering options when selecting data from "userNotificationView"
+input userNotificationView_order_by {
+  id: order_by
+  seen: order_by
+  timestamp: order_by
+  type: order_by
+  typeId: order_by
+  userId: order_by
+}
+
+# select columns of table "userNotificationView"
+enum userNotificationView_select_column {
+  # column name
+  id
+
+  # column name
+  seen
+
+  # column name
+  timestamp
+
+  # column name
+  type
+
+  # column name
+  typeId
+
+  # column name
+  userId
+}
+
+# aggregate stddev on columns
+type userNotificationView_stddev_fields {
+  id: Float
+}
+
+# order by stddev() on columns of table "userNotificationView"
+input userNotificationView_stddev_order_by {
+  id: order_by
+}
+
+# aggregate stddev_pop on columns
+type userNotificationView_stddev_pop_fields {
+  id: Float
+}
+
+# order by stddev_pop() on columns of table "userNotificationView"
+input userNotificationView_stddev_pop_order_by {
+  id: order_by
+}
+
+# aggregate stddev_samp on columns
+type userNotificationView_stddev_samp_fields {
+  id: Float
+}
+
+# order by stddev_samp() on columns of table "userNotificationView"
+input userNotificationView_stddev_samp_order_by {
+  id: order_by
+}
+
+# aggregate sum on columns
+type userNotificationView_sum_fields {
+  id: Int
+}
+
+# order by sum() on columns of table "userNotificationView"
+input userNotificationView_sum_order_by {
+  id: order_by
+}
+
+# aggregate var_pop on columns
+type userNotificationView_var_pop_fields {
+  id: Float
+}
+
+# order by var_pop() on columns of table "userNotificationView"
+input userNotificationView_var_pop_order_by {
+  id: order_by
+}
+
+# aggregate var_samp on columns
+type userNotificationView_var_samp_fields {
+  id: Float
+}
+
+# order by var_samp() on columns of table "userNotificationView"
+input userNotificationView_var_samp_order_by {
+  id: order_by
+}
+
+# aggregate variance on columns
+type userNotificationView_variance_fields {
+  id: Float
+}
+
+# order by variance() on columns of table "userNotificationView"
+input userNotificationView_variance_order_by {
+  id: order_by
 }
 
 # columns and relationships of "userProgram"

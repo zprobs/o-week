@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
 import { AuthContext, NotificationTypes } from '../../context';
 import {
+  EventNotificationCard,
   SystemNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
@@ -27,6 +28,8 @@ export default function NotificationsList() {
           return <UserNotificationCard item={item} message={'has accepted your friend request'} />
         case  NotificationTypes.sendFriendRequest:
           return  <UserNotificationCard item={item} message={'sent you a friend request'} />
+        case NotificationTypes.eventInvite:
+          return <EventNotificationCard item={item} message={'You have been invited to '} />
       }
       return <Text>{item.type}</Text>
   }

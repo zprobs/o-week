@@ -3,6 +3,8 @@ import React from 'react';
 import { DrawerIcon } from '../Menu/DrawerIcon';
 import { MessagesIcon } from '../Menu/MessagesIcon';
 import NotificationsList from './NotificationsList';
+import Profile from '../MyProfile/Profile';
+import EventScreen from '../Orientation/EventScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +24,20 @@ export default function Notifications() {
           headerRight: () => <MessagesIcon />,
           headerTitle: '',
           headerStyle: { shadowColor: 'transparent' },
+        }}
+      />
+      <Stack.Screen
+        name={'Profile'}
+        component={Profile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={'EventScreen'}
+        component={EventScreen}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

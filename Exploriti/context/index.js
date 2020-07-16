@@ -159,6 +159,8 @@ export const NotificationTypes = {
   system: 'system',
   confirmFriendRequest: 'confirmFriendRequest',
   sendFriendRequest: 'sendFriendRequest',
+  eventInvite: 'eventInvite',
+  newEvent: 'newEvent',
 
 }
 
