@@ -43,12 +43,10 @@ export const GET_DETAILED_USER = gql`
 export const DETAILED_NOTIFICATION_FRAGMENT = gql`
     fragment DetailedNotification on notification {
         id
-        message
-        recipient
         timestamp
-        title
         type
         typeId
+        seen
     }
 `;
 
