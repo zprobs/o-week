@@ -100,6 +100,7 @@ export default function MessagesList() {
       style={styles.messagesList}
       spacing={20}
       renderItem={renderItem}
+      keyExtractor={item => item.id.toString()}
       // ItemSeparatorComponent={itemSeparatorComponent}
     />
   );

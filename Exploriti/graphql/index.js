@@ -70,6 +70,7 @@ export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
+        isAdmin
       notifications {
         id
         timestamp
@@ -87,6 +88,15 @@ export const GET_CURRENT_USER = gql`
   }
   ${DETAILED_USER_FRAGMENT}
 `;
+
+export const CHECK_USER_ADMIN = gql`
+    query checkUserAdmin($id: String!) {
+        user(id: $id) {
+            id
+            isAdmin
+        }
+    }
+`
 
 export const GET_USER_INTERESTS = gql`
   query getUserInterests($id: String!) {
@@ -944,6 +954,35 @@ export const CREATE_EVENT = gql`
     }
   }
 `;
+/**
+ * Make sure that $query is formatted like: %wordToSearch%
+ */
+export const SEARCH_ALL = gql`
+    query searchAll($query: String!, $limit: Int!) {
+        users(where: {name: {_ilike: $query}}, limit: $limit) {
+            id
+            image
+            name
+        }
+        groups(where: {name: {_ilike: $query}}, limit: $limit) {
+            id
+            name
+            image
+            members_aggregate(where: { isOwner: { _eq: false } }) {
+                aggregate {
+                    count
+                }
+            }
+            members(limit: 3, where: { isOwner: { _eq: false } }) {
+                user {
+                    id
+                    image
+                }
+            }
+        }
+        
+    }
+`
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

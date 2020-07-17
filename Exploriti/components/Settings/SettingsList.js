@@ -9,23 +9,19 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { SettingToggle } from "../ReusableComponents/SettingToggle.js";
 import Fonts from "../../theme/Fonts";
 import Icon from "react-native-vector-icons/EvilIcons";
 import firebase from '@react-native-firebase/app';
-import ButtonColour from '../ReusableComponents/ButtonColour';
-import {AuthContext, UserContext} from '../../context';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from "@react-navigation/native";
+import {AuthContext } from '../../context';
 import About from "./About"
 import Help from "./Help"
-import ReportBug from "./ReportBug"
 import Notifications from "./Notifications"
-import {CloseIcon} from '../Menu/CloseIcon';
 import { BackIcon } from "../Menu/BackIcon";
-import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
-import {Theme} from '../../theme/Colours';
+import { Theme, ThemeStatic } from '../../theme/Colours';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import { useQuery } from '@apollo/react-hooks';
+import { CHECK_USER_ADMIN } from '../../graphql';
 const {FontWeights, FontSizes} = Fonts
 const {colours} = Theme.light;
 
@@ -41,11 +37,13 @@ const {colours} = Theme.light;
 
 export default function SettingsList() {
 
+
     const navigation = useNavigation();
 
-    const {setAuthState} = useContext(AuthContext);
+    const {authState, setAuthState} = useContext(AuthContext);
+  const {loading, data, error} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}})
 
-    const processLogout = async () => {
+  const processLogout = async () => {
         try {
             setAuthState({ status: "loading" });
             await firebase.auth().signOut();
@@ -55,89 +53,53 @@ export default function SettingsList() {
         }
     };
 
+    const ListItem = ({name, icon, destination }) => {
+      return (
+        <TouchableOpacity onPress={()=>{navigation.navigate(destination)}}>
+          <View>
+            <View style={styles.settingItemViewStyle}>
+              <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
+                <Icon name={icon} size={30} />
+                <Text style={styles.settingItemTextStyle}> {name} </Text>
+              </View>
+
+              <View style={{ justifyContent: "flex-start" }}>
+                <Icon
+                  style={styles.settingItemChevronStyle}
+                  name="chevron-right"
+                  size={30}
+                />
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )
+    }
+
   return(
     <View style={{flex:9, backgroundColor: colours.base}}>
       <View>
 
-      <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
-        <View>
-          <View style={styles().settingItemViewStyle}>
-              <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                <Icon name={"bell"} size={30} />
-                <Text style={styles().settingItemTextStyle}> {"Notifications"} </Text>
-              </View>
+     <ListItem icon={'bell'} name={'Notifications'} destination={'Notifications'} />
 
-            <View style={{ justifyContent: "flex-start" }}>
-              <Icon
-              style={styles().settingItemChevronStyle}
-              name="chevron-right"
-              size={30}
-              />
-              </View>
-          </View>
-        </View>
-      </TouchableOpacity>
+     <ListItem icon={'lock'} name={'Privacy'} destination={'Privacy'} />
 
-      <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
-        <View>
-          <View style={styles().settingItemViewStyle}>
-              <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                <Icon name={"lock"} size={30} />
-                <Text style={styles().settingItemTextStyle}> {"Privacy"} </Text>
-              </View>
+     <ListItem icon={'question'} name={'About'} destination={'About'} />
 
-            <View style={{ justifyContent: "flex-start" }}>
-              <Icon
-              style={styles().settingItemChevronStyle}
-              name="chevron-right"
-              size={30}
-              />
-              </View>
-          </View>
-        </View>
-      </TouchableOpacity>
+     <ListItem icon={'exclamation'} destination={'Help'} name={'Help'} />
 
-        <TouchableOpacity onPress={()=>{navigation.navigate('About')}}>
-          <View>
-            <View style={styles().settingItemViewStyle}>
-                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                  <Icon name={"question"} size={30} />
-                  <Text style={styles().settingItemTextStyle}> {"About"} </Text>
-                </View>
+     <View style={{height: 20}} />
 
-              <View style={{ justifyContent: "flex-start" }}>
-                <Icon
-                style={styles().settingItemChevronStyle}
-                name="chevron-right"
-                size={30}
-                />
-                </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+        <ButtonColour label={'Logout'} colour={ThemeStatic.lightBlue} light={true} containerStyle={styles.button} onPress={processLogout} />
 
-        <TouchableOpacity onPress={()=>{navigation.navigate('Help')}}>
-          <View>
-            <View style={styles().settingItemViewStyle}>
-                <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-                  <Icon name={"exclamation"} size={30} />
-                  <Text style={styles().settingItemTextStyle}> {"Help"} </Text>
-                </View>
+        {
+          !loading && !error && data.user && data.user.isAdmin ? (
+            <ButtonColour label={'Admin Console'} colour={ThemeStatic.lightPurple} light={true} containerStyle={styles.button} onPress={processLogout} />
+          ) : null
+        }
 
-              <View style={{ justifyContent: "flex-start" }}>
-                <Icon
-                style={styles().settingItemChevronStyle}
-                name="chevron-right"
-                size={30}
-                />
-                </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <Button title="Logout" onPress={()=>{processLogout()}} />
       </View>
-      <View style={styles().bottomBannerViewStyle}>
+      <View style={styles.bottomBannerViewStyle}>
         <Text style={{...FontWeights.Light, color: 'gray'}}>Powered By</Text>
         <Image style={{}} source={require('../../assets/images/ArravonLogo.png')}/>
       </View>
@@ -146,7 +108,7 @@ export default function SettingsList() {
 }
 
 
-const styles = () =>
+const styles =
   StyleSheet.create({
     settingItemViewStyle: {
       //borderWidth: 1,
@@ -175,4 +137,10 @@ const styles = () =>
       padding:10,
       paddingBottom:20
     },
+
+    button: {
+      marginVertical: 15,
+      width: '70%',
+      alignSelf: 'center'
+    }
   });

@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, SectionList, Button, TouchableOpacity, SafeArea
 import SearchBar from "react-native-search-bar";
 import Fonts from "../../theme/Fonts";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_ALL_EVENTS, GET_PAGINATED_USERS } from '../../graphql';
+import { GET_ALL_EVENTS, GET_PAGINATED_USERS, SEARCH_ALL } from '../../graphql';
 import Error from "../ReusableComponents/Error";
 import { useDebounce } from "../Modal/SearchableFlatList";
 import UserCard from "../ReusableComponents/UserCard";
@@ -12,6 +12,10 @@ import SectionHeader from '../ReusableComponents/SectionHeader';
 import ImageCard from '../ReusableComponents/ImageCard';
 import {useNavigation} from '@react-navigation/native';
 import BackIcon from '../Menu/BackIcon';
+import SearchUsers from '../../assets/svg/search-users.svg'
+import Svg from 'react-native-svg';
+import ImgBanner from '../ReusableComponents/ImgBanner';
+import EmptyMessages from '../../assets/svg/empty-messages.svg';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
@@ -23,48 +27,38 @@ const {FontWeights, FontSizes} = Fonts;
  * @constructor
  */
 export default function Search() {
-   const [query, setQuery] = useState("");
+   const [query, setQuery] = useState(null);
    const debounceQuery = useDebounce(query, 300);
-   const { loading, error, data } = useQuery(GET_PAGINATED_USERS, {variables: {limit: 50}});
-  const { loading: eventsLoading, error: eventsError, data: eventsData } = useQuery(GET_ALL_EVENTS);
-  const [filteredData, setFilteredData] = useState(data);
-   const firstRenderRef = useRef(true);
+  const firstRenderRef = useRef(true);
+  const searchRef = useRef();
+  const { loading, error, data } = useQuery(SEARCH_ALL, {variables: {limit: 15, query: `%${query}%`}, skip: firstRenderRef.current || query === ''});
     const navigation = useNavigation();
 
-    const listData = useMemo(() => [
+    const listData = data && (data.users.length > 0 || data.groups.length > 0) ? [
         {
             title: "Users",
-            data: filteredData ? filteredData.users : []
+            data: data ? data.users : []
         },
         {
             title: "Orientation Groups",
-            data: [{name: "Orientation Crew", image: "https://pbs.twimg.com/media/Cp_8X1nW8AA2nCj.jpg", attendees_aggregate: {aggregate: {count: 13}}, members: [{user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1166.JPG?alt=media&token=e97fc524-8c29-4063-96d6-aa059ae1c153"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1165.JPG?alt=media&token=22568f2b-19fd-4f63-b37d-8e1c3f95977f"}}, {user: {image: "https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/IMG_1170.JPG?alt=media&token=14078fa2-f2e4-4f39-852a-2c3092e29ed5"}} ] }]
+            data: data ? data.groups : []
         },
         // {
-        //     // title: "Other Groups",
-        //     // data: [{title: 'Sports Trivia', image: "https://img.bleacherreport.net/img/slides/photos/004/240/062/hi-res-86cdc18008aa41ad7071eca5bad03f87_crop_exact.jpg?w=2975&h=2048&q=85", count: 9 }]
-        // },
-        {
-            title: "Events",
-            data: eventsData ? eventsData.events : []
-        }
-    ],[filteredData, eventsData]);
+        //     title: "Events",
+        //     data: eventsData ? eventsData.events : []
+        // }
+    ] : null;
 
     useEffect(() => {
         if (firstRenderRef.current) {
             firstRenderRef.current = false;
-        }  else {
-            const lowerCaseQuery = debounceQuery.toLowerCase();
-                const newData = data.users.filter(user => user.name.toLowerCase().includes(lowerCaseQuery));
-                setFilteredData({users: newData});
         }
     }, [debounceQuery]);
 
     useEffect(()=>{
-        setFilteredData(data);
-    }, [data]);
+      searchRef.current.focus();
+    }, []);
 
-    if (loading) return null;
     if (error) return  <Error e={error}/>;
 
     const renderItem = ({item, section}) => {
@@ -79,11 +73,11 @@ export default function Search() {
                 options = {event: item}
             } else {
                 screen = "GroupScreen"
-                options = {group: item}
+                options = {groupId: item.id}
             }
             return (
                 <TouchableOpacity onPress={()=>navigation.navigate(screen, options)}>
-                    <ImageCard item={item}  />
+                    <ImageCard groupId={item.id}  />
                 </TouchableOpacity>
             );
         }
@@ -92,7 +86,7 @@ export default function Search() {
 
 
     return (
-      <SafeAreaView style={{backgroundColor: 'white'}}>
+      <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <BackIcon/>
           <View style={{width: '90%'}}>
@@ -101,6 +95,7 @@ export default function Search() {
               onChangeText={setQuery}
               placeholder="Search for users, groups or events..."
               hideBackground={true}
+              ref={searchRef}
             />
           </View>
         </View>
@@ -110,6 +105,7 @@ export default function Search() {
           renderItem={renderItem}
           renderSectionHeader={SectionHeader}
           style={{backgroundColor: colours.white}}
+          ListEmptyComponent={listEmptyComponent}
         />
         </SafeAreaView>
     );
@@ -119,6 +115,14 @@ const Item = ({ title }) => (
     <View style={styles.item}>
         <Text style={styles.title}>{title}</Text>
     </View>
+);
+
+const listEmptyComponent = () => (
+  <ImgBanner
+    Img={SearchUsers}
+    placeholder=""
+    spacing={0.15}
+  />
 );
 
 
