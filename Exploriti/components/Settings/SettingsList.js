@@ -94,7 +94,7 @@ export default function SettingsList() {
 
         {
           !loading && !error && data.user && data.user.isAdmin ? (
-            <ButtonColour label={'Admin Console'} colour={ThemeStatic.lightPurple} light={true} containerStyle={styles.button} onPress={processLogout} />
+            <ButtonColour label={'Admin Console'} colour={ThemeStatic.lightPurple} light={true} containerStyle={styles.button} onPress={()=>navigation.push('Admin Console')} />
           ) : null
         }
 

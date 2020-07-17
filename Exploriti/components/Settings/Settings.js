@@ -14,6 +14,7 @@ import Notifications from "./Notifications"
 import Privacy from "./Privacy"
 import BlockedUsers from "./BlockedUsers"
 import MessagePrivacy from "./MessagePrivacy"
+import AdminConsole from './AdminConsole';
 /**
  * Orientation is a one of the three primary tab components. It contains all things Orientation.
  * @param props The toggleDrawer is a reference to the navigation.toggleDrawer() method of the Drawer Navigator
@@ -117,7 +118,13 @@ export default function Settings({navigation}) {
         options={{
           headerRight: () => <CloseIcon mainNavigation={navigation} />,
         }}
-      />
+        />
+      <Stack.Screen
+        name="Admin Console"
+        component={AdminConsole}
+        options={{
+          headerRight: () => <CloseIcon mainNavigation={navigation} />,
+        }} />
     </Stack.Navigator>
   );
 }

@@ -72,7 +72,7 @@ export default function Search() {
             } else {
                 screen = "GroupScreen"
                 options = {groupId: item.id}
-                Card = () => <ImageCard groupId={item.id}  />
+                Card = () => <ImageCard groupId={item.id} />
             }
             return (
                 <TouchableOpacity onPress={()=>navigation.navigate(screen, options)}>
