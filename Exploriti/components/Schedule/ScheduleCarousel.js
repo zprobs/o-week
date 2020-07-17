@@ -85,7 +85,7 @@ const ScheduleCarousel = () => {
   }, [data])
 
 
-  if (loading || error) return null
+  if (error) return null
 
 
   const title = () => {

@@ -13,16 +13,13 @@ import ImageCard from '../ReusableComponents/ImageCard';
 import {useNavigation} from '@react-navigation/native';
 import BackIcon from '../Menu/BackIcon';
 import SearchUsers from '../../assets/svg/search-users.svg'
-import Svg from 'react-native-svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import EmptyMessages from '../../assets/svg/empty-messages.svg';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
 
 /**
- * Search displays a SectionList containing recommended data of interest to the current user obtained from an API call. It displays users, groups, events
- * and other groups. Has a search functionality which should be able to reach anything on the app.
+ * Search allows the user to search for anything in the app by name
  * @returns {*}
  * @constructor
  */
@@ -31,10 +28,10 @@ export default function Search() {
    const debounceQuery = useDebounce(query, 300);
   const firstRenderRef = useRef(true);
   const searchRef = useRef();
-  const { loading, error, data } = useQuery(SEARCH_ALL, {variables: {limit: 15, query: `%${query}%`}, skip: firstRenderRef.current || query === ''});
+  const { error, data } = useQuery(SEARCH_ALL, {variables: {limit: 15, query: `%${debounceQuery}%`}, skip: firstRenderRef.current || debounceQuery === ''});
     const navigation = useNavigation();
 
-    const listData = data && (data.users.length > 0 || data.groups.length > 0) ? [
+    const listData = data && (data.users.length > 0 || data.groups.length > 0 || data.events.length > 0) ? [
         {
             title: "Users",
             data: data ? data.users : []
@@ -43,10 +40,10 @@ export default function Search() {
             title: "Orientation Groups",
             data: data ? data.groups : []
         },
-        // {
-        //     title: "Events",
-        //     data: eventsData ? eventsData.events : []
-        // }
+        {
+            title: "Events",
+            data: data ? data.events : []
+        }
     ] : null;
 
     useEffect(() => {
@@ -67,17 +64,19 @@ export default function Search() {
             section.title === 'Orientation Groups' ||
             section.title === 'Events'
         ) {
-            let screen, options;
+            let screen, options, Card;
             if (section.title === "Events") {
                 screen = "EventScreen"
-                options = {event: item}
+                options = {eventId: item.id}
+              Card = () => <ImageCard eventId={item.id} />
             } else {
                 screen = "GroupScreen"
                 options = {groupId: item.id}
+                Card = () => <ImageCard groupId={item.id}  />
             }
             return (
                 <TouchableOpacity onPress={()=>navigation.navigate(screen, options)}>
-                    <ImageCard groupId={item.id}  />
+                  <Card/>
                 </TouchableOpacity>
             );
         }

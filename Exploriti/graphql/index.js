@@ -659,6 +659,8 @@ export const GET_EVENT = gql`
   }
 `;
 
+
+
 export const GET_EVENT_IMAGE_NAME = gql`
     query getEvent($id: uuid!) {
         event(id: $id) {
@@ -753,6 +755,18 @@ export const GET_EVENT_INVITED = gql`
   }
   ${EVENT_INVITED_FRAGMENT}
 `;
+
+export const GET_EVENT_IMAGE_CARD = gql`
+    query getEventImageCard($id: uuid!) {
+        event(id: $id) {
+            id
+            name
+            image
+            ...EventAttendance
+        }
+    }
+    ${EVENT_ATTENDANCE_FRAGMENT}
+`
 
 export const SIGN_UP_USER_FOR_EVENT = gql`
   mutation SignUpUserForEvent($eventId: uuid!, $userId: String!) {
@@ -980,8 +994,16 @@ export const SEARCH_ALL = gql`
                 }
             }
         }
+        events(where: {name: {_ilike: $query}}, limit: $limit) {
+            id
+            name
+            image
+            ...EventAttendance 
+        }
+        
         
     }
+  ${EVENT_ATTENDANCE_FRAGMENT}
 `
 
 /**
