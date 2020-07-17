@@ -14,7 +14,7 @@ export const MessagesIcon = ({white}) => {
       name="message-circle"
       size={32}
       color={ white ? 'white' : "#000"}
-      onPress={() => navigation.navigate("Message")}
+      onPress={() => navigation.navigate("Messages")}
       style={{marginRight: 8}}
     />
   );
