@@ -47,8 +47,8 @@ export default function Dashboard() {
         // }
     ],[data]);
 
-    const Arrow = () => (
-        <Icon name={'arrow-right'} color={ThemeStatic.white} size={26}/>
+    const SearchIcon = () => (
+        <Icon name={'search'} color={ThemeStatic.text01} size={26}/>
     )
 
     const Header = () => {
@@ -78,14 +78,13 @@ export default function Dashboard() {
           </ScrollView>
           <View style={{marginHorizontal: 25}}>
         <ButtonColour
-          colour={ThemeStatic.delete}
-          label={"Check Schedule"}
-          Icon={Arrow}
-          light={true}
+          colour={ThemeStatic.lightgray}
+          label={"Search YorkU Hub"}
+          Icon={SearchIcon}
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
           onPress={()=>{
-              navigation.navigate('Schedule')
+              navigation.navigate('Search')
           }}
         />
           </View>
@@ -150,9 +149,9 @@ const styles = StyleSheet.create({
         paddingTop: 10
     },
     buttonText :{
-       ...FontWeights.Bold,
+       ...FontWeights.Regular,
         ...FontSizes.Body,
-        color: ThemeStatic.white,
+        color: ThemeStatic.text01,
     },
     scheduleButton: {
        marginVertical: 25

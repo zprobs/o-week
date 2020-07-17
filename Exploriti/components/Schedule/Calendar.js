@@ -12,10 +12,9 @@ import {
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
-import Carousel from 'react-native-snap-carousel';
 import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import EventCard from './EventCard';
+import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import {useMutation} from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';

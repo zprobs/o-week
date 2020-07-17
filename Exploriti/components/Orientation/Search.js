@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import {Text, View, StyleSheet, SectionList, Button, TouchableOpacity} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Button, TouchableOpacity, SafeAreaView } from 'react-native';
 import SearchBar from "react-native-search-bar";
 import Fonts from "../../theme/Fonts";
 import { useQuery } from "@apollo/react-hooks";
@@ -11,6 +11,7 @@ import {Theme} from '../../theme/Colours';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import ImageCard from '../ReusableComponents/ImageCard';
 import {useNavigation} from '@react-navigation/native';
+import BackIcon from '../Menu/BackIcon';
 
 const {colours} = Theme.light;
 const {FontWeights, FontSizes} = Fonts;
@@ -88,24 +89,29 @@ export default function Search() {
         }
         return <Item title={item}/>
     };
-    const Search = (
-        <SearchBar
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search for users or groups..."
-            hideBackground={true}
-        />
-    )
+
 
     return (
+      <SafeAreaView style={{backgroundColor: 'white'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <BackIcon/>
+          <View style={{width: '90%'}}>
+            <SearchBar
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search for users, groups or events..."
+              hideBackground={true}
+            />
+          </View>
+        </View>
         <SectionList
           sections={listData}
           keyExtractor={(item, index) => item + index}
           renderItem={renderItem}
           renderSectionHeader={SectionHeader}
           style={{backgroundColor: colours.white}}
-          ListHeaderComponent={Search}
         />
+        </SafeAreaView>
     );
 }
 

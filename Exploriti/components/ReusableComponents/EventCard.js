@@ -10,11 +10,11 @@ import {
     StyleSheet,
     Dimensions,
 } from 'react-native';
-import UserCountPreview from '../ReusableComponents/UserCountPreview';
+import UserCountPreview from './UserCountPreview';
 import Icon from 'react-native-vector-icons/Feather';
 import Fonts from '../../theme/Fonts';
 import {Theme, ThemeStatic} from '../../theme/Colours';
-import ButtonColour from '../ReusableComponents/ButtonColour';
+import ButtonColour from './ButtonColour';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;

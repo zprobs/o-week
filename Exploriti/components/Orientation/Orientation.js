@@ -3,14 +3,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Dashboard from './Dashboard';
 import { DrawerIcon } from '../Menu/DrawerIcon';
 import { MessagesIcon } from '../Menu/MessagesIcon';
-import Schedule from './Schedule';
 import GroupScreen from './GroupScreen';
 import EventScreen from './EventScreen';
 import Profile from '../MyProfile/Profile';
 import LinearGradient from 'react-native-linear-gradient';
 import LeaderBoard from './Leaderboard';
 import Conversation from '../Messages/Conversation';
-import Calendar from './Calendar';
+import Search from './Search';
 
 const Stack = createStackNavigator();
 
@@ -38,8 +37,8 @@ export default function Orientation() {
         }}
       />
       <Stack.Screen
-        name={'Schedule'}
-        component={Schedule}
+        name={'Search'}
+        component={Search}
         options={{
           headerShown: false,
         }}
@@ -75,13 +74,6 @@ export default function Orientation() {
       <Stack.Screen
         name="Conversation"
         component={Conversation}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Calendar"
-        component={Calendar}
         options={{
           headerShown: false,
         }}

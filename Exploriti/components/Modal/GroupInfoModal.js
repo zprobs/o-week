@@ -17,7 +17,7 @@ import {
   GET_USER_GROUPS,
   GET_USERS_BY_ID,
 } from '../../graphql';
-import EventCard from '../Orientation/EventCard';
+import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import { AuthContext } from '../../context';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';

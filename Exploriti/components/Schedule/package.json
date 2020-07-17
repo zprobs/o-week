@@ -1,6 +1,6 @@
 {
-  "name": "Explore",
+  "name": "Schedule",
   "version": "1.0.0",
-  "main": "./Explore.js",
+  "main": "Schedule.js",
   "dependencies": {}
 }

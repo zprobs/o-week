@@ -5,36 +5,37 @@ import {
 import React from 'react';
 import { DrawerIcon } from '../Menu/DrawerIcon';
 import { MessagesIcon } from '../Menu/MessagesIcon';
-import Search from './Search';
 import Profile from '../MyProfile/Profile';
 import GroupScreen from '../Orientation/GroupScreen';
 import EventScreen from '../Orientation/EventScreen';
-import Conversation from '../Messages/Conversation';
+import Calendar from './Calendar';
+import ScheduleCarousel from './ScheduleCarousel';
 
 const Stack = createStackNavigator();
 
 /**
- * One of the four primary tab components. Contains the Explore screen used to browse data
- * @returns Stack Navigator of Explore
+ * One of the four primary tab components. Contains the Schedule used to browse upcoming events
+ * @returns Stack Navigator of Schedule
  * @constructor
  */
-export default function Explore() {
+export default function Schedule() {
   return (
     <Stack.Navigator
-      initialRouteName="Search"
+      initialRouteName="Schedule"
       screenOptions={{
         gestureEnabled: true,
         gestureDirection: 'horizontal',
         ...TransitionPresets.SlideFromRightIOS,
       }}>
       <Stack.Screen
-        name="Search"
-        component={Search}
+        name="ScheduleCarousel"
+        component={ScheduleCarousel}
         options={{
-          headerLeft: () => <DrawerIcon />,
-          headerRight: () => <MessagesIcon />,
+          headerLeft: () => <DrawerIcon white={true} />,
+          headerRight: () => <MessagesIcon white={true} />,
           headerTitle: '',
-          headerStyle: { shadowColor: 'transparent' },
+          headerStyle: { shadowColor: 'transparent'  },
+          headerTransparent: true
         }}
       />
       <Stack.Screen
@@ -58,13 +59,13 @@ export default function Explore() {
           headerShown: false,
         }}
       />
-        <Stack.Screen
-            name="Conversation"
-            component={Conversation}
-            options={{
-                headerShown: false,
-            }}
-        />
+      <Stack.Screen
+        name="Calendar"
+        component={Calendar}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }

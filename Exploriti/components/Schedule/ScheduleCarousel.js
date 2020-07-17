@@ -11,11 +11,10 @@ import {
 } from 'react-native';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
-import CircleBackIcon from '../Menu/CircleBackIcon';
 import Carousel from 'react-native-snap-carousel';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import EventCard from './EventCard';
+import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
@@ -33,7 +32,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @returns {*}
  * @constructor
  */
-const Schedule = () => {
+const ScheduleCarousel = () => {
   const {authState} = useContext(AuthContext);
   const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS, {
     variables: {
@@ -169,19 +168,19 @@ const Schedule = () => {
                 null
           }
           <ScrollView bounces={false}>
-          <View style={styles.header}>
-            <CircleBackIcon />
-            <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
-              navigation.navigate('Calendar', {myCalendars: data.user.member})
-            }} />
-          </View>
-            <View style={styles.date}>
-              <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
-                {title()}
-              </Animated.Text>
+            <View style={styles.header}>
+              <View style={{minWidth: '65%'}}>
+                <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
+                  {title()}
+                </Animated.Text>
+
               <Text style={styles.dateText}>{pageDate()}</Text>
             </View>
-          <Carousel
+              <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
+                navigation.navigate('Calendar', {myCalendars: data.user.member})
+              }} />
+            </View>
+            <Carousel
             ref={carouselRef}
             data={scheduleData}
             renderItem={renderItem}
@@ -202,13 +201,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     marginHorizontal: 25,
-    marginTop: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  date: {
-    marginHorizontal: 40,
-    marginTop: 35,
+    justifyContent: 'space-around',
+    marginTop: 60,
   },
   dayText: {
     ...FontWeights.Bold,
@@ -231,4 +226,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Schedule;
+export default ScheduleCarousel;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 
 /**
@@ -12,7 +12,7 @@ const BackIcon = ({ iconColor }) => {
   return (
     <Icon
       name="chevron-left"
-      size={38}
+      size={32}
       color={iconColor ? iconColor : '#000'}
       onPress={() => goBack()}
     />

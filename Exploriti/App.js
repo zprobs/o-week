@@ -17,7 +17,7 @@ import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloProvider, useQuery } from '@apollo/react-hooks';
-import Explore from './components/Explore';
+import Schedule from './components/Schedule';
 import MyProfile from './components/MyProfile';
 import Orientation from './components/Orientation';
 import Settings from './components/Settings';
@@ -44,7 +44,6 @@ import MyProfileSVG from './assets/svg/MyProfileSVG';
 import SearchSVG from './assets/svg/SearchSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
-import Schedule from './components/Orientation/Schedule';
 
 
 const Tab = createBottomTabNavigator();
@@ -83,9 +82,9 @@ const tabs: TabsConfig<BubbleTabConfig> = {
     ...tabStyles,
   },
 
-  Explore: {
+  Schedule: {
     icon: {
-      component: SearchSVG,
+      component: ScheduleSVG,
       ...iconColor,
     },
     ...tabStyles,
@@ -156,7 +155,7 @@ const HomeScreen = () => {
     <Tab.Navigator
       tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}>
       <Tab.Screen name="Orientation" component={Orientation} />
-      <Tab.Screen name="Explore" component={Explore} />
+      <Tab.Screen name="Schedule" component={Schedule} />
       <Tab.Screen name="Notifications" component={Notifications} />
       <Tab.Screen name="MyProfile" component={MyProfile} />
     </Tab.Navigator>
