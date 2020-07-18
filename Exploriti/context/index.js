@@ -1,5 +1,6 @@
-import React, { createContext } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
+import {Keyboard} from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 
 /**
@@ -153,6 +154,33 @@ export const getDefaultImage = () => {
     'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2'
   ];
   return defaultImages[Math.floor(Math.random() * defaultImages.length)];
+};
+
+/**
+ * Hook for getting the keyboard Height
+ * @returns {[number]}
+ */
+export const useKeyboard = () => {
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  function onKeyboardDidShow(e) {
+    setKeyboardHeight(e.endCoordinates.height);
+  }
+
+  function onKeyboardDidHide() {
+    setKeyboardHeight(0);
+  }
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
+    };
+  }, []);
+
+  return [keyboardHeight];
 };
 
 export const NotificationTypes = {

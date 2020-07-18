@@ -5,18 +5,31 @@ import { ThemeStatic } from '../../theme/Colours';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { GET_ALL_GROUPS, GET_ORIENTATION_GROUPS } from '../../graphql';
 import GiveTrophyModal from '../Modal/GiveTrophyModal';
+import NewEventModal from '../Modal/NewEventModal';
+import GroupEditModal from '../Modal/GroupEditModal';
 const { FontWeights, FontSizes } = Fonts;
 const {width} = Dimensions.get('window');
 
 const AdminConsole = () => {
 
   const groupListRef = useRef();
+  const groupEditRef = useRef();
+  const newEventRef = useRef();
+  const announcementRef = useRef();
   const trophyRef = useRef();
   const [selected, setSelected] = useState();
+  const isAwardTrophies  = useRef(false) // award trophies and edit orientation group share searchable flatlist so this will differentiate which was tapped
+
+
 
   const openTrophyModal = () => {
     groupListRef.current.close();
     trophyRef.current.open();
+  }
+
+  const openGroupEditModal = () => {
+    groupListRef.current.close();
+    groupEditRef.current.open();
   }
 
   return (
@@ -26,9 +39,12 @@ const AdminConsole = () => {
         <View style={[styles.button, {backgroundColor: '#e84f8a'}]}>
           <Text style={styles.buttonText}>Create Global Event</Text>
         </View>
-        <View style={[styles.button, {backgroundColor: '#7d38c4'}]}>
+        <TouchableOpacity style={[styles.button, {backgroundColor: '#7d38c4'}]} onPress={()=>{
+          isAwardTrophies.current = false
+          groupListRef.current.open()
+        }}>
           <Text style={styles.buttonText}>Edit Orientation Group</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
@@ -44,14 +60,19 @@ const AdminConsole = () => {
        <View style={[styles.button, {backgroundColor: '#b040c2'}]}>
          <Text style={styles.buttonText}>Send Announcement</Text>
        </View>
-       <TouchableOpacity style={[styles.button, {backgroundColor: '#4118c4'}]} onPress={()=>groupListRef.current.open()}>
+       <TouchableOpacity style={[styles.button, {backgroundColor: '#4118c4'}]} onPress={()=>{
+         isAwardTrophies.current = true
+         groupListRef.current.open()}
+       }>
          <Text style={styles.buttonText}>Award Trophy</Text>
        </TouchableOpacity>
      </View>
       <View style={{height: 40}} />
     </SafeAreaView>
-      <SearchableFlatList query={GET_ORIENTATION_GROUPS} hasImage={true} ref={groupListRef} title={'groups'} offset={80} setSelection={setSelected} cancelButtonText={'Next'} onPress={openTrophyModal} clearOnClose={true} />
+      <SearchableFlatList query={GET_ORIENTATION_GROUPS} hasImage={true} ref={groupListRef} title={'groups'} offset={80} setSelection={setSelected} floatingButtonText={'Next'} onPress={ isAwardTrophies.current ? openTrophyModal : openGroupEditModal} clearOnClose={true} max={isAwardTrophies.current ? undefined : 1} min={1} />
       <GiveTrophyModal ref={trophyRef} selected={selected} />
+      <NewEventModal ref={newEventRef} />
+      <GroupEditModal ref={groupEditRef} groupId={ selected ? selected[0] : null} />
       </>
   );
 };
