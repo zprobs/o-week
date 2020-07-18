@@ -22,6 +22,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @param aliased Whether to filter with aliases
  * @param offset A top offset for the modal
  * @param initialSelection The initially selected data of the list in the form of a Map(String, Bool). Try to avoid adding it on subsequent renders
+ * @param clearOnClose {boolean} if true, will clear the selected data on close.
  * @returns {*}
  * @constructor
  */
@@ -41,6 +42,7 @@ const SearchableFlatList = React.forwardRef(
       cancelButtonText,
       offset,
       initialSelection,
+      clearOnClose
     },
     ref,
   ) => {
@@ -158,6 +160,7 @@ const SearchableFlatList = React.forwardRef(
           ref.current.close();
           if (onPress) {
             onPress(mapToObjects(selected));
+
           }
         }}
         cancelButtonText={cancelButtonText}
@@ -190,6 +193,7 @@ const SearchableFlatList = React.forwardRef(
           if (setSelection) {
             setSelection(mapToIds(selected, query));
           }
+          if (clearOnClose) setSelected(new Map());
         }}
         modalTopOffset={offset ? offset : 0}
       />

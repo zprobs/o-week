@@ -1,16 +1,27 @@
-import React from 'react';
-import { View, StyleSheet, SafeAreaView, Text, Dimensions } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, StyleSheet, SafeAreaView, Text, Dimensions, TouchableOpacity } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { ThemeStatic } from '../../theme/Colours';
+import SearchableFlatList from '../Modal/SearchableFlatList';
+import { GET_ALL_GROUPS, GET_ORIENTATION_GROUPS } from '../../graphql';
+import GiveTrophyModal from '../Modal/GiveTrophyModal';
 const { FontWeights, FontSizes } = Fonts;
 const {width} = Dimensions.get('window');
 
 const AdminConsole = () => {
 
+  const groupListRef = useRef();
+  const trophyRef = useRef();
+  const [selected, setSelected] = useState();
+
+  const openTrophyModal = () => {
+    groupListRef.current.close();
+    trophyRef.current.open();
+  }
 
   return (
+    <>
     <SafeAreaView style={styles.container}>
-
       <View style={styles.row}>
         <View style={[styles.button, {backgroundColor: '#e84f8a'}]}>
           <Text style={styles.buttonText}>Create Global Event</Text>
@@ -33,12 +44,15 @@ const AdminConsole = () => {
        <View style={[styles.button, {backgroundColor: '#b040c2'}]}>
          <Text style={styles.buttonText}>Send Announcement</Text>
        </View>
-       <View style={[styles.button, {backgroundColor: '#4118c4'}]}>
+       <TouchableOpacity style={[styles.button, {backgroundColor: '#4118c4'}]} onPress={()=>groupListRef.current.open()}>
          <Text style={styles.buttonText}>Award Trophy</Text>
-       </View>
+       </TouchableOpacity>
      </View>
       <View style={{height: 40}} />
     </SafeAreaView>
+      <SearchableFlatList query={GET_ORIENTATION_GROUPS} hasImage={true} ref={groupListRef} title={'groups'} offset={80} setSelection={setSelected} cancelButtonText={'Next'} onPress={openTrophyModal} clearOnClose={true} />
+      <GiveTrophyModal ref={trophyRef} selected={selected} />
+      </>
   );
 };
 

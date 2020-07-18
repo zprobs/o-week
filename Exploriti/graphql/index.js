@@ -49,28 +49,28 @@ export const GET_NOTIFICATIONS = gql`
         timestamp
         type
         typeId
-          seen
+        seen
       }
     }
   }
 `;
 
 export const SEE_NOTIFICATION = gql`
-    mutation seeNotification($id: Int!) {
-        update_notification(where: {id: {_eq: $id}}, _set: {seen: true}) {
-            returning {
-                id
-                seen
-            }
-        }
-    } 
-`
+  mutation seeNotification($id: Int!) {
+    update_notification(where: { id: { _eq: $id } }, _set: { seen: true }) {
+      returning {
+        id
+        seen
+      }
+    }
+  }
+`;
 
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
-        isAdmin
+      isAdmin
       notifications {
         id
         timestamp
@@ -90,13 +90,13 @@ export const GET_CURRENT_USER = gql`
 `;
 
 export const CHECK_USER_ADMIN = gql`
-    query checkUserAdmin($id: String!) {
-        user(id: $id) {
-            id
-            isAdmin
-        }
+  query checkUserAdmin($id: String!) {
+    user(id: $id) {
+      id
+      isAdmin
     }
-`
+  }
+`;
 
 export const GET_USER_INTERESTS = gql`
   query getUserInterests($id: String!) {
@@ -659,16 +659,14 @@ export const GET_EVENT = gql`
   }
 `;
 
-
-
 export const GET_EVENT_IMAGE_NAME = gql`
-    query getEvent($id: uuid!) {
-        event(id: $id) {
-            id
-            name
-            image
-        }
+  query getEvent($id: uuid!) {
+    event(id: $id) {
+      id
+      name
+      image
     }
+  }
 `;
 
 export const UPDATE_EVENT = gql`
@@ -757,16 +755,16 @@ export const GET_EVENT_INVITED = gql`
 `;
 
 export const GET_EVENT_IMAGE_CARD = gql`
-    query getEventImageCard($id: uuid!) {
-        event(id: $id) {
-            id
-            name
-            image
-            ...EventAttendance
-        }
+  query getEventImageCard($id: uuid!) {
+    event(id: $id) {
+      id
+      name
+      image
+      ...EventAttendance
     }
-    ${EVENT_ATTENDANCE_FRAGMENT}
-`
+  }
+  ${EVENT_ATTENDANCE_FRAGMENT}
+`;
 
 export const SIGN_UP_USER_FOR_EVENT = gql`
   mutation SignUpUserForEvent($eventId: uuid!, $userId: String!) {
@@ -891,6 +889,26 @@ export const GET_GROUP_IMAGE_NAME = gql`
   }
 `;
 
+export const GET_ALL_GROUPS = gql`
+  query getAllGroups {
+    groups {
+      id
+      name
+      image
+    }
+  }
+`;
+
+export const GET_ORIENTATION_GROUPS = gql`
+    query getAllGroups {
+        groups(where: {unsubscribable: {_eq: false}}) {
+            id
+            name
+            image
+        }
+    }
+`;
+
 export const GET_DETAILED_GROUP = gql`
   query getDetailedGroup($id: uuid!) {
     group(id: $id) {
@@ -972,39 +990,45 @@ export const CREATE_EVENT = gql`
  * Make sure that $query is formatted like: %wordToSearch%
  */
 export const SEARCH_ALL = gql`
-    query searchAll($query: String!, $limit: Int!) {
-        users(where: {name: {_ilike: $query}}, limit: $limit) {
-            id
-            image
-            name
-        }
-        groups(where: {name: {_ilike: $query}}, limit: $limit) {
-            id
-            name
-            image
-            members_aggregate(where: { isOwner: { _eq: false } }) {
-                aggregate {
-                    count
-                }
-            }
-            members(limit: 3, where: { isOwner: { _eq: false } }) {
-                user {
-                    id
-                    image
-                }
-            }
-        }
-        events(where: {name: {_ilike: $query}}, limit: $limit) {
-            id
-            name
-            image
-            ...EventAttendance 
-        }
-        
-        
+  query searchAll($query: String!, $limit: Int!) {
+    users(where: { name: { _ilike: $query } }, limit: $limit) {
+      id
+      image
+      name
     }
+    groups(where: { name: { _ilike: $query } }, limit: $limit) {
+      id
+      name
+      image
+      members_aggregate(where: { isOwner: { _eq: false } }) {
+        aggregate {
+          count
+        }
+      }
+      members(limit: 3, where: { isOwner: { _eq: false } }) {
+        user {
+          id
+          image
+        }
+      }
+    }
+    events(where: { name: { _ilike: $query } }, limit: $limit) {
+      id
+      name
+      image
+      ...EventAttendance
+    }
+  }
   ${EVENT_ATTENDANCE_FRAGMENT}
-`
+`;
+
+export const AWARD_TROPHIES = gql`
+  mutation awardTrophies($objects: [groupTrophy_insert_input!]!) {
+    awardTrophies(objects: $objects) {
+      affected_rows
+    }
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
