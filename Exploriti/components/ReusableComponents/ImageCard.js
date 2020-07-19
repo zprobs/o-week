@@ -5,42 +5,53 @@ import UserCountPreview from './UserCountPreview';
 import { Theme } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_GROUP } from '../../graphql';
+import { GET_EVENT_IMAGE_CARD, GET_GROUP } from '../../graphql';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
 /**
  * ImageCard for displaying groups and events in a list
  * @param groupId {string} The id of group to be displayed
+ * @param eventId {string} The id of event to be displayed. Exclusive with groupId
  * @returns {*}
  * @constructor
  */
-const ImageCard = ({ groupId }) => {
+const ImageCard = ({ groupId , eventId}) => {
 
 
 
-  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}})
+  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}, skip: !!eventId})
+  const {data: eventData, loading: eventLoading, error :eventError} = useQuery(GET_EVENT_IMAGE_CARD, {variables: {id: eventId}, skip: !!groupId})
 
-  if (loading || error) return null;
-
-  const {group} = data
-
+  if (loading || error || eventLoading || eventError) return null;
+  let item, count;
   const images = [];
-  group.members.map((member) => {
-    images.push(member.user.image);
-  })
-  const count = group.members_aggregate.aggregate.count
+
+  if (groupId) {
+    item = data.group;
+    item.members.map((member) => {
+      images.push(member.user.image);
+    })
+    count = item.members_aggregate.aggregate.count
+  } else {
+    item = eventData.event;
+    item.attendees.map((attendee) => {
+      images.push(attendee.user.image);
+    })
+    count = item.attendees_aggregate.aggregate.count
+
+  }
 
 
   return (
     <View style={styles.imageRow}>
-      <Image source={{ uri: group.image }} style={styles.groupImage}/>
+      <Image source={{ uri: item.image }} style={styles.groupImage}/>
       <LinearGradient
         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
         locations={[0, 0.9]}
         style={styles.imageLabelContainer}>
         <UserCountPreview count={count} images={images}/>
-        <Text style={styles.imageLabelText}>{group.name}</Text>
+        <Text style={styles.imageLabelText}>{item.name}</Text>
       </LinearGradient>
     </View>
   );

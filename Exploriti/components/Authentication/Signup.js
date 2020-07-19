@@ -484,7 +484,8 @@ export default function Signup({ navigation }) {
         setSelection={setProgramsSelection}
         aliased={false}
         max={4}
-        cancelButtonText={"Done"}
+        min={1}
+        floatingButtonText={"Done"}
       />
       <RadioButtonFlatList
         ref={yearRef}
@@ -508,7 +509,8 @@ export default function Signup({ navigation }) {
         setSelection={setInterestsSelection}
         aliased={true}
         max={5}
-        cancelButtonText={"Done"}
+        min={1}
+        floatingButtonText={"Done"}
       />
       <SearchableFlatList
         ref={timeZoneRef}
@@ -518,18 +520,14 @@ export default function Signup({ navigation }) {
         setSelection={() => {}}
         aliased={false}
         max={1}
+        min={1}
         query={undefined}
-        cancelButtonText={"Done"}
+        floatingButtonText={"Done"}
       />
     </View>
   );
 }
 
-const BackButton = () => (
-  <View>
-
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {

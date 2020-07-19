@@ -128,7 +128,8 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       variables={{ userId: authState.user.uid }}
       setSelection={setFriendsSelection}
       aliased={false}
-      cancelButtonText={'Next'}
+      floatingButtonText={"Next"}
+      min={1}
       onPress={newConversation}
       initialSelection={null}
     />

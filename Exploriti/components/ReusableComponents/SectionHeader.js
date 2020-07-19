@@ -14,6 +14,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 const SectionHeader = ({ section: { title, data } }) => {
+  if (data.length === 0) return null
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row' }}>
