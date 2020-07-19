@@ -132,6 +132,7 @@ const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
       min={1}
       onPress={newConversation}
       initialSelection={null}
+      clearOnClose={true}
     />
   );
 });
