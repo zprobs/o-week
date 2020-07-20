@@ -5,15 +5,16 @@ import {
   SafeAreaView,
   Text,
   Dimensions,
-  TouchableOpacity,
+  TouchableOpacity, Alert,
 } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { ThemeStatic } from '../../theme/Colours';
 import SearchableFlatList from '../Modal/SearchableFlatList';
-import { GET_ALL_GROUPS, GET_ORIENTATION_GROUPS } from '../../graphql';
+import { BAN_USER, GET_ALL_GROUPS, GET_ORIENTATION_GROUPS, SEARCH_USERS } from '../../graphql';
 import GiveTrophyModal from '../Modal/GiveTrophyModal';
 import NewEventModal from '../Modal/NewEventModal';
 import GroupEditModal from '../Modal/GroupEditModal';
+import { useMutation } from '@apollo/react-hooks';
 const { FontWeights, FontSizes } = Fonts;
 const { width } = Dimensions.get('window');
 
@@ -22,10 +23,13 @@ const AdminConsole = () => {
   const groupEditRef = useRef();
   const newEventRef = useRef();
   const announcementRef = useRef();
+  const banUserRef = useRef();
   const trophyRef = useRef();
   const [selected, setSelected] = useState();
   const isAwardTrophies = useRef(false); // award trophies and edit orientation group share searchable flatlist so this will differentiate which was tapped
   const isCreateGroup = useRef(false); // similar to trophies one group edit modal for edit orientation group and create orientation group
+
+  const [banUser, {data: banData, error: banError}] = useMutation(BAN_USER);
 
   const openTrophyModal = () => {
     groupListRef.current.close();
@@ -42,6 +46,20 @@ const AdminConsole = () => {
     isCreateGroup.current = true;
     groupEditRef.current.open();
   };
+
+  // todo update cache on delete
+  const openBanUserAlert = () => {
+    Alert.alert(
+      "This ban is irreversible",
+      "If you ban this user, all their data will be deleted and they will not be able to sign up again with their current email address.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Ban", onPress: () => banUser({variables: {id: selected[0]}})},
+      ],
+      { cancelable: false }
+    )
+
+  }
 
   return (
     <>
@@ -61,9 +79,9 @@ const AdminConsole = () => {
         </View>
 
         <View style={styles.row}>
-          <View style={[styles.button, { backgroundColor: '#e31f8a' }]}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#e31f8a' }]} onPress={()=>banUserRef.current.open()}>
             <Text style={styles.buttonText}>Ban User</Text>
-          </View>
+          </TouchableOpacity>
           <View style={[styles.button, { backgroundColor: '#6118c4' }]}>
             <Text style={styles.buttonText}>Create Orientation Group</Text>
           </View>
@@ -103,6 +121,20 @@ const AdminConsole = () => {
         ref={groupEditRef}
         groupId={selected ? selected[0] : null}
         create={isCreateGroup}
+      />
+      <SearchableFlatList
+        query={SEARCH_USERS}
+        hasImage={true}
+        ref={banUserRef}
+        title={'users'}
+        offset={80}
+        setSelection={setSelected}
+        floatingButtonText={'Permanently Ban'}
+        onPress={openBanUserAlert}
+        clearOnClose={true}
+        max={1}
+        min={1}
+        serverSearch={true}
       />
     </>
   );

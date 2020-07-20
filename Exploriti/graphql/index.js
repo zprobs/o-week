@@ -1051,6 +1051,17 @@ export const SEARCH_ALL = gql`
   ${EVENT_ATTENDANCE_FRAGMENT}
 `;
 
+export const SEARCH_USERS = gql`
+    query searchUsers($query: String!, $limit: Int = 25) {
+        users(where: { name: { _ilike: $query } }, limit: $limit) {
+            id
+            image
+            name
+        }
+        
+    }
+`;
+
 export const AWARD_TROPHIES = gql`
   mutation awardTrophies($objects: [groupTrophy_insert_input!]!) {
     awardTrophies(objects: $objects) {
@@ -1058,6 +1069,14 @@ export const AWARD_TROPHIES = gql`
     }
   }
 `;
+
+export const BAN_USER = gql`
+    mutation banUser($id: String!) {
+        deleteUser(id: $id) {
+            id
+        }
+    }
+`
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
