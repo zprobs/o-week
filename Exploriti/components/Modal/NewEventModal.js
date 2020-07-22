@@ -17,7 +17,7 @@ import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CREATE_EVENT,
+  CREATE_EVENT, GET_ALL_GROUP_IDS,
   GET_DETAILED_EVENT,
   GET_DETAILED_GROUP,
   GET_GROUP_EVENTS,
@@ -50,6 +50,7 @@ const NewEventModal = React.forwardRef(
     const [getEvent, { data, error }] = useLazyQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
+    const [getAllHosts, { data : hostsData, error: hostsError }] = useLazyQuery(GET_ALL_GROUP_IDS);
 
     const [name, setName] = useState();
     const [image, setImage] = useState(getDefaultImage());
@@ -94,9 +95,10 @@ const NewEventModal = React.forwardRef(
     });
 
     const heading = editMode ? 'Edit Event' : 'Create Event';
+    const displayName = groupName ? groupName : 'everyone';
     const subHeading = editMode
       ? 'Attendees will be notified if you change the date'
-      : `Create an Event for ${groupName}`;
+      : `Create an Event for ${displayName}`;
 
     const onDone = async () => {
       setIsUploading(true);
@@ -110,12 +112,21 @@ const NewEventModal = React.forwardRef(
       fields.website = website;
       fields.startDate = startDate;
       fields.endDate = endDate;
-      fields.hosts = { data: [{ groupId: groupId }] };
+      if (groupId) {
+        fields.hosts = { data: [{ groupId: groupId }] };
+      } else {
+        console.log(hostsData);
+        if (hostsError) return
+        const IDs = [];
+        hostsData.groups.forEach((group)=>IDs.push({groupId: group.id}));
+        fields.hosts = { data: IDs}
+        console.log(fields.hosts);
+      }
       createEvent({
         variables: { data: fields },
-        refetchQueries: [
+        refetchQueries: groupId ? [
           { query: GET_GROUP_EVENTS, variables: { id: groupId } },
-        ],
+        ] : null,
       })
         .then(() => {
           setIsUploading(false);
@@ -232,7 +243,7 @@ const NewEventModal = React.forwardRef(
         }}
         modalTopOffset={110}
         onClose={onClose}
-        onOpen={editMode ? getEvent : null}
+        onOpen={editMode ? getEvent : getAllHosts}
         tapGestureEnabled={false}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <View style={{ paddingHorizontal: 20 }}>

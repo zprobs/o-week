@@ -9,6 +9,8 @@ import { useQuery } from '@apollo/react-hooks';
 import { NULL } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useKeyboard } from '../../context';
+import ImgBanner from '../ReusableComponents/ImgBanner';
+import SearchUsers from '../../assets/svg/search-users.svg';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -29,6 +31,7 @@ const {height} = Dimensions.get('window')
  * @param offset A top offset for the modal
  * @param initialSelection The initially selected data of the list in the form of a Map(String, Bool). Try to avoid adding it on subsequent renders
  * @param clearOnClose {boolean} if true, will clear the selected data on close.
+ * @param serverSearch {boolean} if true, The query data will be retrieved from the server when the user types.
  * @returns {*}
  * @constructor
  */
@@ -49,14 +52,15 @@ const SearchableFlatList = React.forwardRef(
       floatingButtonText,
       offset,
       initialSelection,
-      clearOnClose
+      clearOnClose,
+      serverSearch
     },
     ref,
   ) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [unfilteredList, setUnfilteredList] = useState(data ? data : []);
     const [filteredList, setFilteredList] = useState(unfilteredList);
-    const debounceQuery = useDebounce(searchQuery, 300);
+    const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 300);
     const [inputRef, setInputFocus] = useFocus();
     const [selected, setSelected] = useState(
       !!initialSelection ? initialSelection : new Map(),
@@ -72,15 +76,18 @@ const SearchableFlatList = React.forwardRef(
 
 
     const result = useQuery(verifiedQuery, {
-      skip: query == undefined,
-      variables: variables,
+      skip: query == undefined || serverSearch && searchQuery === '',
+      variables: serverSearch ? {query: `%${searchQuery}%`} : variables,
     });
 
+    console.log('result', result.data)
+
     if (!result.loading && !didSetFirst.current  && result.data) {
-      didSetFirst.current = true;
+        didSetFirst.current = true;
+        if (!serverSearch) setUnfilteredList(result.data[title]);
       setFilteredList(result.data[title]);
-      setUnfilteredList(result.data[title]);
     }
+    console.log('set list')
 
     const onSelect = React.useCallback(
       (item) => {
@@ -90,7 +97,6 @@ const SearchableFlatList = React.forwardRef(
           if (count >= max) {
             return;
           }
-          console.log('bool', !buttonIsShowing.current && (!min || count + 1 >= min) )
           if ( !buttonIsShowing.current && (!min || count + 1 >= min)) {
             buttonIsShowing.current = true
             Animated.parallel([
@@ -108,7 +114,6 @@ const SearchableFlatList = React.forwardRef(
           }
           setCount(count + 1);
         } else {
-          console.log(count)
           if ( buttonIsShowing.current && (min && count <= min)) {
             buttonIsShowing.current = false
             Animated.parallel([
@@ -133,28 +138,32 @@ const SearchableFlatList = React.forwardRef(
     );
 
     useEffect(() => {
-      const lowerCaseQuery = debounceQuery.toLowerCase();
-      let newData;
-      if (query) {
-        if (aliased) {
-          newData = unfilteredList.filter(
-            (item) =>
-              item.name.toLowerCase().includes(lowerCaseQuery) ||
-              item.aliases.filter((alias) =>
-                alias.toLowerCase().includes(lowerCaseQuery),
-              ).length !== 0,
-          );
+      // only do the local search if not a server search
+      if (!serverSearch) {
+        const lowerCaseQuery = debounceQuery.toLowerCase();
+        let newData;
+        if (query) {
+          if (aliased) {
+            newData = unfilteredList.filter(
+              (item) =>
+                item.name.toLowerCase().includes(lowerCaseQuery) ||
+                item.aliases.filter((alias) =>
+                  alias.toLowerCase().includes(lowerCaseQuery),
+                ).length !== 0,
+            );
+          } else {
+            newData = unfilteredList.filter((item) =>
+              item.name.toLowerCase().includes(lowerCaseQuery),
+            );
+          }
         } else {
           newData = unfilteredList.filter((item) =>
-            item.name.toLowerCase().includes(lowerCaseQuery),
+            item.toLowerCase().includes(lowerCaseQuery),
           );
         }
-      } else {
-        newData = unfilteredList.filter((item) =>
-          item.toLowerCase().includes(lowerCaseQuery),
-        );
+        console.log('setFilteredList(newData)')
+        setFilteredList(newData);
       }
-      setFilteredList(newData);
     }, [debounceQuery]);
 
     const renderItem = ({ item }) => {
@@ -206,7 +215,10 @@ const SearchableFlatList = React.forwardRef(
       <SearchBar
         ref={inputRef}
         placeholder={'Search for ' + title + '...'}
-        onChangeText={(q) => setSearchQuery(q)}
+        onChangeText={(q) => {
+          if (serverSearch) didSetFirst.current = false;
+          setSearchQuery(q)}
+        }
         text={searchQuery}
         hideBackground={true}
         showsCancelButton={false}
@@ -240,11 +252,12 @@ const SearchableFlatList = React.forwardRef(
         ref={ref}
         flatListProps={{
           data: filteredList,
-          keyExtractor: (item) => item,
+          keyExtractor: (item) => item.id,
           renderItem: hasImage ? renderItemWithImage : renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,
           extraData: selected,
+          ListEmptyComponent: listEmptyComponent
         }}
         tapGestureEnabled={false}
         HeaderComponent={search}
@@ -260,6 +273,7 @@ const SearchableFlatList = React.forwardRef(
             setSelected(new Map());
             setCount(0)
             buttonIsShowing.current = false
+            setSearchQuery('');
           }
         }}
         modalTopOffset={offset ? offset : 0}
@@ -267,6 +281,14 @@ const SearchableFlatList = React.forwardRef(
       />
     );
   },
+);
+
+const listEmptyComponent = () => (
+  <ImgBanner
+    Img={SearchUsers}
+    placeholder=""
+    spacing={0.15}
+  />
 );
 
 /**

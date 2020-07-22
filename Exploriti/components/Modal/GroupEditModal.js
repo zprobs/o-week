@@ -8,17 +8,22 @@ import FormInput from '../ReusableComponents/FormInput';
 import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
-import { GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
+import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 import ImagePicker from "react-native-image-crop-picker";
 import { saveImage } from '../../context';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
-
-const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
+/**
+ * @param groupId {string}
+ * @param onClose {function}
+ * @param create {boolean}
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly onClose?: *, readonly create?: *}> & React.RefAttributes<unknown>>}
+ */
+const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
 
   const [getGroup, {loading, data, error, called}] = useLazyQuery(GET_DETAILED_GROUP, {variables: {id: groupId}})
-  const [updateGroup] = useMutation(UPDATE_GROUP)
+  const [updateGroup] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP)
   const [editableName, setEditableName] = useState();
   const [editableImage, setEditableImage] = useState();
   const [imageSelection, setImageSelection] = useState();
@@ -30,7 +35,6 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
       setEditableName(data.group.name);
       setEditableDescription(data.group.description);
       setEditableImage(data.group.image);
-
     }
   }, [data])
 
@@ -132,7 +136,7 @@ const GroupEditModal = React.forwardRef(({groupId, onClose}, ref) => {
       }}
       modalTopOffset={110}
       onClose={onClose}
-      onOpen={getGroup}
+      onOpen={ create ? null : getGroup}
       rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
       {content}
     </Modalize>
