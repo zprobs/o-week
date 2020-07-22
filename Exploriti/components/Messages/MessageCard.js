@@ -25,8 +25,9 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native-gesture-handler';
-import Animated, { Easing, lessOrEq } from 'react-native-reanimated';
+import Animated, { Easing } from 'react-native-reanimated';
 import DeleteCardRightActions from '../ReusableComponents/DeleteCardRightActions';
+import { DELETE_CHAT } from '../../graphql';
 
 const {
   Clock,
@@ -48,7 +49,8 @@ const {
   startClock,
   call,
   lessThan,
-  lessOrEq: lessEq,
+  lessOrEq,
+  greaterOrEq,
   and,
   divide,
   interpolate,
@@ -72,11 +74,31 @@ const MessageCard = ({
   isOnline,
   onSwipe,
 }) => {
+  const HEIGHT = 65;
   const { authState } = useContext(AuthContext);
   const { readableTime } = parseTimeElapsed(time);
   const navigation = useNavigation();
-  // const [messageSeen] = useMutation(MUTATION_SEEN_MESSAGE);
-  //  const [deleteChat, { loading: deleteChatLoading, called: deleteChatCalled }] = useMutation(MUTATION_DELETE_CHAT);
+  const [
+    deleteChat,
+    { loading: deleteChatLoading, error: deleteChatError },
+  ] = useMutation(DELETE_CHAT, { variables: { id: chatId } });
+
+  const useValue = (value) => useConst(() => new Value(value));
+  const useClock = () => useConst(() => new Clock());
+
+  const useConst = (initialValue) => {
+    const ref = useRef();
+    if (ref.current === undefined) {
+      // Box the value in an object so we can tell if it's initialized even if the initializer
+      // returns/is undefined
+      ref.current = {
+        value:
+          typeof initialValue === 'function' ? initialValue() : initialValue,
+      };
+    }
+    return ref.current.value;
+  };
+
 
   const setSeenAndNavigate = () => {
     navigation.navigate('Conversation', {
@@ -99,35 +121,17 @@ const MessageCard = ({
     : null;
 
   const onlineDotColor = ThemeStatic.onlineDotColor[isOnline];
-  const swipeableRef = useRef();
-
-  const useConst = (initialValue) => {
-    const ref = useRef();
-    if (ref.current === undefined) {
-      // Box the value in an object so we can tell if it's initialized even if the initializer
-      // returns/is undefined
-      ref.current = {
-        value:
-          typeof initialValue === 'function' ? initialValue() : initialValue,
-      };
-    }
-    return ref.current.value;
-  };
-
-  const useValue = (value) => useConst(() => new Value(value));
-  const useClock = () => useConst(() => new Clock());
-
-  const HEIGHT = 65;
 
   const onGestureEvent = (nativeEvent) => {
-    const gestureEvent = Animated.event([{ nativeEvent }]);
+    const gestureEvent = Animated.event([{ nativeEvent }], {
+      listener: ({ event }) => console.log(event),
+    });
 
     return {
       onHandlerStateChange: gestureEvent,
       onGestureEvent: gestureEvent,
     };
   };
-
 
   const onPanGesture = () => {
     const positionX = useValue(0);
@@ -159,7 +163,7 @@ const MessageCard = ({
       state,
     };
   };
-
+  
   const snapPoint = (value, velocity, points) => {
     const point = add(value, multiply(0.2, velocity));
     const diffPoint = (p) => abs(sub(point, p));
@@ -219,7 +223,7 @@ const MessageCard = ({
     ]);
   };
 
-  const DeleteAnimation = ({ x, deleteOpacity }) => {
+  const DeleteAction = ({ x, deleteOpacity }) => {
     const size = cond(lessThan(x, HEIGHT), x, add(x, sub(x, HEIGHT)));
     const translateX = cond(lessThan(x, HEIGHT), 0, divide(sub(x, HEIGHT), 2));
     const borderRadius = divide(size, 2);
@@ -268,18 +272,19 @@ const MessageCard = ({
 
   const min = (...args) => args.reduce((acc, arg) => min2(acc, arg));
 
-  const { gestureHandler, translationX, velocityX, state } = onPanGesture();
 
+  const { gestureHandler, translationX, velocityX, state } = onPanGesture();
   const dragX = useValue(0);
   const offsetX = useValue(0);
   const clock = useClock();
   const height = useValue(HEIGHT);
   const deleteOpacity = useValue(1);
+  // const isSwiped = useValue(0);
 
   const { width } = Dimensions.get('window');
-  const snapPoints = [-width, -100, 0];
+  const snapPoints = [-100, 0];
   const to = snapPoint(dragX, velocityX, snapPoints);
-  console.log('snapPoint: ', to.__getValue());
+
   const shouldRemove = useValue(0);
 
   useCode(
@@ -288,30 +293,37 @@ const MessageCard = ({
         eq(state, State.ACTIVE),
         set(dragX, add(offsetX, min(translationX, 0))),
       ),
-
       cond(eq(state, State.END), [
-        set(dragX, timing({ clock, from: dragX, to })),
-        set(offsetX, dragX),
-        cond(eq(to, -width), set(shouldRemove, 1)),
+        [
+          set(dragX, timing({ clock, from: dragX, to })),
+          set(offsetX, dragX),
+          cond(eq(to, -width), set(shouldRemove, 1)),
+        ],
       ]),
       cond(shouldRemove, [
         set(height, timing({ from: HEIGHT, to: 0 })),
         set(deleteOpacity, 0),
-        // cond(not(clockRunning(clock)), call([], onSwipe)),
+        cond(
+          not(clockRunning(clock)),
+          call([], () => deleteChat()),
+        ),
       ]),
     ],
     [],
   );
 
+  
+
   return (
     <Animated.View>
       <View style={styles.background}>
         <TouchableWithoutFeedback onPress={() => shouldRemove.setValue(1)}>
-          <DeleteAnimation x={abs(dragX)} {...{ deleteOpacity }} />
+          <DeleteAction x={abs(dragX)} {...{ deleteOpacity }} />
         </TouchableWithoutFeedback>
       </View>
-      <PanGestureHandler {...gestureHandler} activeOffsetX={-5}>
-        <Animated.View style={{ height, transform: [{ translateX: dragX }] }}>
+      <PanGestureHandler {...gestureHandler} activeOffsetX={[-5, 5]}>
+        <Animated.View
+          style={{ height, transform: [{ translateX: dragXBlock }] }}>
           <View style={styles.container}>
             <TouchableOpacity
               activeOpacity={0.9}
@@ -412,7 +424,7 @@ const styles = StyleSheet.create({
   },
   background: {
     ...StyleSheet.absoluteFillObject,
-    // backgroundColor: '#E1E2E3',
+    backgroundColor: '#E1E2E3',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
