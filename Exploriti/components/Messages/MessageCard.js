@@ -99,7 +99,6 @@ const MessageCard = ({
     return ref.current.value;
   };
 
-
   const setSeenAndNavigate = () => {
     navigation.navigate('Conversation', {
       chatId,
@@ -163,7 +162,7 @@ const MessageCard = ({
       state,
     };
   };
-  
+
   const snapPoint = (value, velocity, points) => {
     const point = add(value, multiply(0.2, velocity));
     const diffPoint = (p) => abs(sub(point, p));
@@ -272,7 +271,6 @@ const MessageCard = ({
 
   const min = (...args) => args.reduce((acc, arg) => min2(acc, arg));
 
-
   const { gestureHandler, translationX, velocityX, state } = onPanGesture();
   const dragX = useValue(0);
   const offsetX = useValue(0);
@@ -282,7 +280,7 @@ const MessageCard = ({
   // const isSwiped = useValue(0);
 
   const { width } = Dimensions.get('window');
-  const snapPoints = [-100, 0];
+  const snapPoints = [-width, -100, 0];
   const to = snapPoint(dragX, velocityX, snapPoints);
 
   const shouldRemove = useValue(0);
@@ -312,8 +310,6 @@ const MessageCard = ({
     [],
   );
 
-  
-
   return (
     <Animated.View>
       <View style={styles.background}>
@@ -322,8 +318,7 @@ const MessageCard = ({
         </TouchableWithoutFeedback>
       </View>
       <PanGestureHandler {...gestureHandler} activeOffsetX={[-5, 5]}>
-        <Animated.View
-          style={{ height, transform: [{ translateX: dragX }] }}>
+        <Animated.View style={{ height, transform: [{ translateX: dragX }] }}>
           <View style={styles.container}>
             <TouchableOpacity
               activeOpacity={0.9}
