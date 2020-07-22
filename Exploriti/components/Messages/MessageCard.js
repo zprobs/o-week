@@ -323,7 +323,7 @@ const MessageCard = ({
       </View>
       <PanGestureHandler {...gestureHandler} activeOffsetX={[-5, 5]}>
         <Animated.View
-          style={{ height, transform: [{ translateX: dragXBlock }] }}>
+          style={{ height, transform: [{ translateX: dragX }] }}>
           <View style={styles.container}>
             <TouchableOpacity
               activeOpacity={0.9}
