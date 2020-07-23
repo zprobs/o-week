@@ -75,13 +75,11 @@ export default function Login({ navigation }) {
         />
       </Svg>
       <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
-        <TouchableOpacity
+        <TouchableOpacity style={styles.backArrow}
           onPress={() => {
             navigation.navigate("Landing");
           }}>
-          <View style={styles.backArrow}>
             <FeatherIcon name={'arrow-left'} size={32} color={ThemeStatic.white}/>
-          </View>
         </TouchableOpacity>
         <View style={styles.logo}>
           <Image
