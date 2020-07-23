@@ -43,6 +43,7 @@ import Svg, { Path } from 'react-native-svg';
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get("window").height;
 const width = Dimensions.get("window").width;
+const circleSize = width * 0.38;
 
 /**
  * The Signup component for new users. Found in the AuthStack.
@@ -156,8 +157,6 @@ export default function Signup({ navigation }) {
           return "Select interest three";
         case 3:
           return "Select interest four";
-        case 4:
-          return "Select interest five";
         default:
           return "Select interest";
       }
@@ -452,7 +451,6 @@ export default function Signup({ navigation }) {
               <Selection title={interestsTitle(1)} onPress={onInterestRef} />
               <Selection title={interestsTitle(2)} onPress={onInterestRef} />
               <Selection title={interestsTitle(3)} onPress={onInterestRef} />
-              <Selection title={interestsTitle(4)} onPress={onInterestRef} />
             </View>
           </View>
           <View style={styles.page}>
@@ -516,7 +514,7 @@ export default function Signup({ navigation }) {
         setData={setInterests}
         setSelection={setInterestsSelection}
         aliased={true}
-        max={5}
+        max={4}
         min={1}
         floatingButtonText={"Done"}
       />
@@ -550,8 +548,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   page: {
-    height: height - 100,
-    width: width,
+   flex: 1
   },
   backArrow: {
     width: 50,
@@ -579,10 +576,10 @@ const styles = StyleSheet.create({
     backgroundColor: ThemeStatic.white,
     alignSelf: "center",
     justifyContent: "center",
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    top: height * 0.04,
+    width: circleSize,
+    height: circleSize,
+    borderRadius: circleSize / 2,
+    top: height * 0.028,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -603,9 +600,9 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 20,
-    top: height * 0.14 + 160,
+    top: height * 0.092 + circleSize,
     justifyContent: "space-around",
-    height: height - (height * 0.14 + 190 + 70),
+    height: height - (height * 0.1 + circleSize + 80),
   },
   title: {
     ...FontWeights.Bold,
@@ -628,7 +625,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   button: {
-    marginBottom: 40,
+    marginBottom: height*0.03,
   },
   caption: {
     ...FontWeights.Regular,
