@@ -23,9 +23,11 @@ import {
   PanGestureHandler,
   State,
   TouchableWithoutFeedback,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import DeleteCardRightActions from '../ReusableComponents/DeleteCardRightActions';
+import { DELETE_CHAT } from '../../graphql';
 
 const {
   Clock,
@@ -37,7 +39,7 @@ const {
   multiply,
   abs,
   sub,
-  min,
+  min: min2,
   Value,
   block,
   timing: reTiming,
@@ -47,6 +49,9 @@ const {
   startClock,
   call,
   lessThan,
+  lessOrEq,
+  greaterOrEq,
+  and,
   divide,
   interpolate,
   Extrapolate,
@@ -69,11 +74,30 @@ const MessageCard = ({
   isOnline,
   onSwipe,
 }) => {
+  const HEIGHT = 65;
   const { authState } = useContext(AuthContext);
   const { readableTime } = parseTimeElapsed(time);
   const navigation = useNavigation();
-  // const [messageSeen] = useMutation(MUTATION_SEEN_MESSAGE);
-  //  const [deleteChat, { loading: deleteChatLoading, called: deleteChatCalled }] = useMutation(MUTATION_DELETE_CHAT);
+  const [
+    deleteChat,
+    { loading: deleteChatLoading, error: deleteChatError },
+  ] = useMutation(DELETE_CHAT, { variables: { id: chatId } });
+
+  const useValue = (value) => useConst(() => new Value(value));
+  const useClock = () => useConst(() => new Clock());
+
+  const useConst = (initialValue) => {
+    const ref = useRef();
+    if (ref.current === undefined) {
+      // Box the value in an object so we can tell if it's initialized even if the initializer
+      // returns/is undefined
+      ref.current = {
+        value:
+          typeof initialValue === 'function' ? initialValue() : initialValue,
+      };
+    }
+    return ref.current.value;
+  };
 
   const setSeenAndNavigate = () => {
     navigation.navigate('Conversation', {
@@ -96,27 +120,11 @@ const MessageCard = ({
     : null;
 
   const onlineDotColor = ThemeStatic.onlineDotColor[isOnline];
-  const swipeableRef = useRef();
-
-  const onDelete = () => {
-    // if (!deleteChatLoading && !deleteChatCalled) {
-    //     longPressDeleteNotification(() => {
-    //         swipeableRef.current.close();
-    //         deleteChat({ variables: { chatId } });
-    //     });
-    // }
-  };
-
-  const renderRightActions = (progress, dragX) => (
-    <DeleteCardRightActions
-      progress={progress}
-      dragX={dragX}
-      onDelete={onDelete}
-    />
-  );
 
   const onGestureEvent = (nativeEvent) => {
-    const gestureEvent = Animated.event([{ nativeEvent }]);
+    const gestureEvent = Animated.event([{ nativeEvent }], {
+      listener: ({ event }) => console.log(event),
+    });
 
     return {
       onHandlerStateChange: gestureEvent,
@@ -124,22 +132,22 @@ const MessageCard = ({
     };
   };
 
-  /// make a useValue function
-
   const onPanGesture = () => {
-    const positionXRef = useRef(new Value(0));
-    const translationXRef = useRef(new Value(0));
-    const velocityXRef = useRef(new Value(0));
-    const stateRef = useRef(new Value(State.UNDETERMINED));
+    const positionX = useValue(0);
+    const translationX = useValue(0);
+    const velocityX = useValue(0);
+    const positionY = useValue(0);
+    const translationY = useValue(0);
+    const velocityY = useValue(0);
+    const state = useValue(State.UNDETERMINED);
 
-    const positionX = positionXRef.current;
-    const translationX = translationXRef.current;
-    const velocityX = velocityXRef.current;
-    const state = stateRef.current;
     const gestureHandler = onGestureEvent({
       x: positionX,
       translationX: translationX,
       velocityX: velocityX,
+      y: positionY,
+      translationY: translationY,
+      velocityY: velocityY,
       state,
     });
 
@@ -148,6 +156,9 @@ const MessageCard = ({
       positionX,
       translationX,
       velocityX,
+      positionY,
+      translationY,
+      velocityY,
       state,
     };
   };
@@ -211,7 +222,7 @@ const MessageCard = ({
     ]);
   };
 
-  const Action = ({ x, deleteOpacity }) => {
+  const DeleteAction = ({ x, deleteOpacity }) => {
     const size = cond(lessThan(x, HEIGHT), x, add(x, sub(x, HEIGHT)));
     const translateX = cond(lessThan(x, HEIGHT), 0, divide(sub(x, HEIGHT), 2));
     const borderRadius = divide(size, 2);
@@ -229,10 +240,10 @@ const MessageCard = ({
       <Animated.View
         style={{
           backgroundColor: '#D93F12',
-          // borderRadius,
+          borderRadius,
           justifyContent: 'center',
           alignItems: 'center',
-          height: HEIGHT,
+          height: size,
           width: size,
           transform: [{ translateX }],
         }}>
@@ -258,21 +269,21 @@ const MessageCard = ({
     );
   };
 
-  const HEIGHT = 65;
+  const min = (...args) => args.reduce((acc, arg) => min2(acc, arg));
 
   const { gestureHandler, translationX, velocityX, state } = onPanGesture();
-  //  In order to get rid of the red things being there at the start of render
-  // the variables should be referenced lazily
-  const dragX = useRef(new Value(0)).current;
-  const offsetX = useRef(new Value(0)).current;
-  const clock = useRef(new Clock()).current;
-  const height = useRef(new Value(HEIGHT)).current;
-  const deleteOpacity = useRef(new Value(1)).current;
+  const dragX = useValue(0);
+  const offsetX = useValue(0);
+  const clock = useClock();
+  const height = useValue(HEIGHT);
+  const deleteOpacity = useValue(1);
+  // const isSwiped = useValue(0);
 
   const { width } = Dimensions.get('window');
-  const snapPoints = [-width, -70, 0];
+  const snapPoints = [-width, -100, 0];
   const to = snapPoint(dragX, velocityX, snapPoints);
-  const shouldRemove = useRef(new Value(0)).current;
+
+  const shouldRemove = useValue(0);
 
   useCode(
     () => [
@@ -280,73 +291,80 @@ const MessageCard = ({
         eq(state, State.ACTIVE),
         set(dragX, add(offsetX, min(translationX, 0))),
       ),
-
       cond(eq(state, State.END), [
-        set(dragX, timing({ clock, from: dragX, to })),
-        set(offsetX, dragX),
-        cond(eq(to, -width), set(shouldRemove, 1)),
+        [
+          set(dragX, timing({ clock, from: dragX, to })),
+          set(offsetX, dragX),
+          cond(eq(to, -width), set(shouldRemove, 1)),
+        ],
       ]),
       cond(shouldRemove, [
         set(height, timing({ from: HEIGHT, to: 0 })),
         set(deleteOpacity, 0),
-        // cond(not(clockRunning(clock)), call([], onSwipe)),
+        cond(
+          not(clockRunning(clock)),
+          call([], () => deleteChat()),
+        ),
       ]),
     ],
     [],
   );
 
   return (
-    // <Swipeable
-    //   ref={swipeableRef}
-    //   useNativeAnimations
-    //   rightThreshold={-80}
-    //   renderRightActions={renderRightActions}>
-
     <Animated.View>
       <View style={styles.background}>
         <TouchableWithoutFeedback onPress={() => shouldRemove.setValue(1)}>
-          <Action x={abs(dragX)} {...{ deleteOpacity }} />
+          <DeleteAction x={abs(dragX)} {...{ deleteOpacity }} />
         </TouchableWithoutFeedback>
       </View>
-      <PanGestureHandler {...gestureHandler}>
+      <PanGestureHandler {...gestureHandler} activeOffsetX={[-5, 5]}>
         <Animated.View style={{ height, transform: [{ translateX: dragX }] }}>
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={setSeenAndNavigate}
-            style={styles.container}>
-            <View style={styles.avatar}>
-              <Image source={{ uri: image }} style={styles.avatarImage} />
-              <View
-                style={[styles.onlineDot, { backgroundColor: onlineDotColor }]}
-              />
-            </View>
-            <View style={styles.info}>
-              <Text style={styles.nameText}>{name} </Text>
-              <View style={styles.content}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[styles.messageText, highlightStyle]}>
-                  {messageBody}
-                </Text>
-                <Text style={[styles.timeText, highlightStyle]}>
-                  {` · ${readableTime}`}
-                </Text>
+          <View style={styles.container}>
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={setSeenAndNavigate}
+              style={styles.touchable}>
+              <View style={styles.avatar}>
+                <Image source={{ uri: image }} style={styles.avatarImage} />
+                <View
+                  style={[
+                    styles.onlineDot,
+                    { backgroundColor: onlineDotColor },
+                  ]}
+                />
               </View>
-            </View>
-          </TouchableOpacity>
+              <View style={styles.info}>
+                <Text style={styles.nameText}>{name} </Text>
+                <View style={styles.content}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[styles.messageText, highlightStyle]}>
+                    {messageBody}
+                  </Text>
+                  <Text style={[styles.timeText, highlightStyle]}>
+                    {` · ${readableTime}`}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </PanGestureHandler>
     </Animated.View>
-    // </Swipeable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#FFFFFFFF',
+    paddingBottom: 50,
+  },
+  touchable: {
     flexDirection: 'row',
     borderRadius: 5,
     paddingLeft: 5,
+    backgroundColor: '#FFFFFF',
     // height: 65,
   },
   avatar: {
@@ -379,6 +397,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     paddingTop: 5,
+    backgroundColor: '#FFFFFF',
   },
   messageText: {
     ...FontWeights.Light,
@@ -395,10 +414,12 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.Body,
     color: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
-    // backgroundColor: '#E1E2E3',
+    backgroundColor: '#E1E2E3',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',

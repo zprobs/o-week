@@ -435,6 +435,14 @@ export const NEW_CHAT = gql`
   ${DETAILED_CHAT}
 `;
 
+export const DELETE_CHAT = gql`
+  mutation deleteChat($id: Int!) {
+    deleteChat(id: $id) {
+      id
+    }
+  }
+`;
+
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {
     messages(
@@ -914,7 +922,7 @@ export const GET_ORIENTATION_GROUPS = gql`
             name
             image
         }
-    }
+  }
 `;
 
 export const GET_DETAILED_GROUP = gql`
