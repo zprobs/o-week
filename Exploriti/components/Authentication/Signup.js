@@ -39,6 +39,7 @@ import {
 } from '../../context';
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import LinearGradient from 'react-native-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get("window").height;
@@ -317,6 +318,7 @@ export default function Signup({ navigation }) {
 
   return (
     <View style={styles.container}>
+
       <Animated.View
         style={{
           ...styles.header,
@@ -353,6 +355,15 @@ export default function Signup({ navigation }) {
         pagingEnabled={true}
         bouncesZoom={false}
         ref={scrollViewRef}>
+        <Svg height={300} width={width*4} style={styles.mask} viewBox={`0 0 ${width*1.9} 300`} preserveAspectRatio="none" >
+          <Path
+            d="M 0 175 Q 50 25 150 125 Q 250 225 300 125 Q 350 25 399 125 Q 431 180 500 125 Q 550 75 600 125 L 600 125 Q 640 171 675 125 Q 725 50 750 125 Q 771 177 800 150 L 800 0 L 0 0 L 0 175 "
+            fill="white"
+            stroke="white"
+            fillRule='evenodd'
+          />
+        </Svg>
+
         <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={colourArray} style={styles.background}>
           <KeyboardAvoidingView style={styles.page} behavior={"position"}>
             <View style={styles.form}>
@@ -636,5 +647,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: "center",
   },
+  mask: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 5
+  }
 
 });

@@ -20,6 +20,7 @@ import "@react-native-firebase/auth";
 import firebase from "@react-native-firebase/app";
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -65,6 +66,14 @@ export default function Login({ navigation }) {
 
   return (
     <LinearGradient start={{x: 1, y: 1}} end={{x:0, y: 0}} colors={[ThemeStatic.darkPurple, ThemeStatic.pink]} style={styles.backgroundImage}>
+      <Svg height={200} width={width} style={styles.mask} viewBox={`0 0 ${width/2} 200`} preserveAspectRatio="none" >
+        <Path
+          d="M 0 150 Q 50 50 200 200 L 200 0 L 0 0 L 0 150 "
+          fill="white"
+          stroke="white"
+          fillRule='evenodd'
+        />
+      </Svg>
       <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
         <TouchableOpacity
           onPress={() => {
@@ -123,6 +132,7 @@ const styles = StyleSheet.create({
   bg: {
     width: "100%",
     marginTop: yMargin,
+    zIndex: 5
   },
   backgroundImage: {
     height: "100%",
@@ -189,4 +199,11 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center'
   },
+  mask: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2
+  }
 });
