@@ -4,7 +4,6 @@ import {
   StyleSheet,
   ScrollView,
   Text,
-  ImageBackground,
   Dimensions,
   Image,
   TouchableOpacity,
@@ -325,10 +324,8 @@ export default function Signup({ navigation }) {
           opacity,
           transform: [{ translateY: page === 1 ? headerYOffset : 0 }],
         }}>
-        <TouchableOpacity onPress={backButton}>
-          <View style={styles.backArrow}>
+        <TouchableOpacity onPress={backButton} style={styles.backArrow}>
             <FeatherIcon name={'arrow-left'} size={32} color={ThemeStatic.white}/>
-          </View>
         </TouchableOpacity>
         <View style={styles.countCircle}>
           <Animated.Text
@@ -357,7 +354,7 @@ export default function Signup({ navigation }) {
         ref={scrollViewRef}>
         <Svg height={300} width={width*4} style={styles.mask} viewBox={`0 0 ${width*1.9} 300`} preserveAspectRatio="none" >
           <Path
-            d="M 0 175 Q 50 25 150 125 Q 250 225 300 125 Q 350 25 399 125 Q 431 180 500 125 Q 550 75 600 125 L 600 125 Q 640 171 675 125 Q 725 50 750 125 Q 771 177 800 150 L 800 0 L 0 0 L 0 175 "
+            d="M 0 175 Q 50 25 150 125 Q 250 225 300 125 Q 350 25 399 125 Q 430 190 500 125 Q 550 75 600 125 L 600 125 Q 640 171 675 125 Q 725 50 750 125 Q 771 177 800 150 L 800 0 L 0 0 L 0 175 "
             fill="white"
             stroke="white"
             fillRule='evenodd'
