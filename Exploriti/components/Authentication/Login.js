@@ -19,6 +19,7 @@ import ButtonColour from "../ReusableComponents/ButtonColour";
 import "@react-native-firebase/auth";
 import firebase from "@react-native-firebase/app";
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -63,7 +64,7 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <ImageBackground source={images.login} style={styles.backgroundImage}>
+    <LinearGradient start={{x: 1, y: 1}} end={{x:0, y: 0}} colors={[ThemeStatic.darkPurple, ThemeStatic.pink]} style={styles.backgroundImage}>
       <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
         <TouchableOpacity
           onPress={() => {
@@ -114,7 +115,7 @@ export default function Login({ navigation }) {
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

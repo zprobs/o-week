@@ -38,6 +38,7 @@ import {
   getDefaultImage
 } from '../../context';
 import FeatherIcon from 'react-native-vector-icons/Feather'
+import LinearGradient from 'react-native-linear-gradient';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get("window").height;
@@ -196,33 +197,31 @@ export default function Signup({ navigation }) {
     outputRange: ["0deg", "360deg"],
   });
 
+  const colourArray = [ThemeStatic.lightBlue, ThemeStatic.darkPurple, ThemeStatic.lightPurple, ThemeStatic.pink]
+
   const BottomButton = () => {
-    let title, colour;
+    let title;
 
     if (page === 1) {
       title =
         index == 0 ? "Continue as Student (1/4)" : "Continue as Leader (1/4)";
-      colour = ThemeStatic.lightBlue;
     } else if (page === 2) {
       title = "Continue (2/4)";
-      colour = ThemeStatic.darkPurple;
     } else if (page === 3) {
       title = "Continue (3/4)";
-      colour = ThemeStatic.lightPurple;
     } else {
       title = "Create Account";
-      colour = ThemeStatic.pink;
     }
 
     return (
       <ButtonColour
         label={title}
         colour={ThemeStatic.white}
-        labelStyle={{ ...FontWeights.Regular, color: colour }}
+        labelStyle={{ ...FontWeights.Regular, color: colourArray[page-1] }}
         containerStyle={styles.button}
         onPress={nextPage}
         loading={isLoading}
-        loadColour={colour}
+        loadColour={colourArray[page-1]}
       />
     );
   };
@@ -336,6 +335,7 @@ export default function Signup({ navigation }) {
               {
                 transform: [{ rotateY: setInterpolate }, { perspective: 1000 }],
               },
+              {color: colourArray[page-1]}
             ]}>
             {page}
           </Animated.Text>
@@ -353,7 +353,7 @@ export default function Signup({ navigation }) {
         pagingEnabled={true}
         bouncesZoom={false}
         ref={scrollViewRef}>
-        <ImageBackground source={images.bg} style={styles.background}>
+        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={colourArray} style={styles.background}>
           <KeyboardAvoidingView style={styles.page} behavior={"position"}>
             <View style={styles.form}>
               <Animated.Text style={{ ...styles.title, opacity }}>
@@ -474,7 +474,7 @@ export default function Signup({ navigation }) {
               </View>
             </View>
           </View>
-        </ImageBackground>
+        </LinearGradient>
       </ScrollView>
       <SearchableFlatList
         ref={programRef}
