@@ -909,7 +909,7 @@ export const GET_ALL_GROUP_IDS = gql`
 
 export const GET_ORIENTATION_GROUPS = gql`
     query getAllGroups {
-        groups(where: {unsubscribable: {_eq: false}}) {
+        groups(where: {unsubscribable: {_eq: true}}) {
             id
             name
             image

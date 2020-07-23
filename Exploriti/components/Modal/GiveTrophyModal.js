@@ -53,7 +53,6 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
     }).catch(e=>console.log(e))
   };
 
-  console.log('selected', selected)
 
   return (
     <Modalize

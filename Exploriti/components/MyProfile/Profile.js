@@ -351,14 +351,9 @@ const UserInteractions = ({userId, navigation, image}) => {
 
 
     if (friendsData) {
-        console.log('FriendsData: ')
-        console.log(friendsData);
         const isFriend = friendsData.friends.some((user)=> {
-            console.log(user);
-            console.log(userId);
             return user.id === userId;
         });
-        console.log('isFriend', isFriend)
         if (isFriend) {
             content = (<Text style={styles.followInteractionText}>REMOVE FRIEND</Text>);
             friendInteraction = () => removeFriend();

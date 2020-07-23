@@ -80,14 +80,12 @@ const SearchableFlatList = React.forwardRef(
       variables: serverSearch ? {query: `%${searchQuery}%`} : variables,
     });
 
-    console.log('result', result.data)
 
     if (!result.loading && !didSetFirst.current  && result.data) {
         didSetFirst.current = true;
         if (!serverSearch) setUnfilteredList(result.data[title]);
       setFilteredList(result.data[title]);
     }
-    console.log('set list')
 
     const onSelect = React.useCallback(
       (item) => {
@@ -206,6 +204,7 @@ const SearchableFlatList = React.forwardRef(
     const onFloatingButtonPress = () => {
       ref.current.close();
       if (onPress) {
+        console.log('map2obj',mapToObjects(selected))
         onPress(mapToObjects(selected));
       }
     }

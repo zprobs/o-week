@@ -51,6 +51,10 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
       .catch(result => console.log(result));
   }
 
+  console.log('data,', data)
+  console.log('groupId,', groupId)
+  console.log(error)
+
   const onDone = async () => {
     setIsUploading(true)
     const fields = {};
