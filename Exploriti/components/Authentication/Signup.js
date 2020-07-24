@@ -90,17 +90,27 @@ export default function Signup({ navigation }) {
   const onInterestRef = () => interestRef.current.open();
 
   useEffect(() => {
-    Keyboard.addListener('keyboardWillShow', _keyboardWillShow);
-    Keyboard.addListener('keyboardWillHide', _keyboardWillHide);
+    if (Platform.OS === 'ios') {
+      Keyboard.addListener('keyboardWillShow', _keyboardWillShow);
+      Keyboard.addListener('keyboardWillHide', _keyboardWillHide);
+    } else {
+      Keyboard.addListener('keyboardDidShow', _keyboardWillShow);
+      Keyboard.addListener('keyboardDidHide', _keyboardWillHide);
+    }
 
     // cleanup function
     return () => {
-      Keyboard.removeListener('keyboardWillShow', _keyboardWillShow);
-      Keyboard.removeListener('keyboardWillHide', _keyboardWillHide);
-    };
+      if (Platform.OS === 'ios') {
+        Keyboard.removeListener('keyboardWillShow', _keyboardWillShow);
+        Keyboard.removeListener('keyboardWillHide', _keyboardWillHide);
+      } else {
+        Keyboard.removeListener('keyboardDidShow', _keyboardWillShow);
+        Keyboard.removeListener('keyboardDidHide', _keyboardWillHide);
+      }    };
   }, []);
 
   const _keyboardWillShow = () => {
+    console.log('keyboard showing');
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 0,
@@ -512,6 +522,7 @@ export default function Signup({ navigation }) {
         max={4}
         min={1}
         floatingButtonText={'Done'}
+        offset={40}
       />
       <RadioButtonFlatList
         ref={yearRef}
@@ -537,6 +548,7 @@ export default function Signup({ navigation }) {
         max={4}
         min={1}
         floatingButtonText={'Done'}
+        offset={40}
       />
       <SearchableFlatList
         ref={timeZoneRef}
@@ -549,6 +561,7 @@ export default function Signup({ navigation }) {
         min={1}
         query={undefined}
         floatingButtonText={'Done'}
+        offset={40}
       />
     </View>
   );

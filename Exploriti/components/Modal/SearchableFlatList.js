@@ -202,9 +202,13 @@ const SearchableFlatList = React.forwardRef(
     };
 
     const onFloatingButtonPress = () => {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
       ref.current.close();
       if (onPress) {
-        console.log('map2obj',mapToObjects(selected))
         onPress(mapToObjects(selected));
       }
     }
@@ -251,7 +255,7 @@ const SearchableFlatList = React.forwardRef(
         ref={ref}
         flatListProps={{
           data: filteredList,
-          keyExtractor: (item) => item.id,
+          keyExtractor: query ? item => item.id : item => item,
           renderItem: hasImage ? renderItemWithImage : renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,
@@ -262,6 +266,7 @@ const SearchableFlatList = React.forwardRef(
         HeaderComponent={search}
         onOpened={setInputFocus}
         onClose={() => {
+          inputRef.current.blur();
           if (setData) {
             setData(mapToString(selected, query));
           }

@@ -23,17 +23,15 @@ export default function Selection({title, onPress, accent}) {
             borderWidth: 3,
             color: accent ? ThemeStatic.accent : ThemeStatic.white,
             borderColor: accent ? ThemeStatic.accent : ThemeStatic.white,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
         },
         title: {
             ...FontWeights.Bold,
             ...FontSizes.Caption,
             color: accent ? ThemeStatic.accent : ThemeStatic.white,
             padding: 15,
-        },
-        content: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
         },
         icon: {
             color: accent ? ThemeStatic.accent : ThemeStatic.white,
@@ -43,13 +41,9 @@ export default function Selection({title, onPress, accent}) {
     });
 
     return (
-        <TouchableOpacity onPress={onPress}>
-            <View style={styles.container}>
-                <View style={styles.content}>
+        <TouchableOpacity onPress={onPress} style={styles.container}>
                     <Text style={styles.title}>{title}</Text>
                     <Icon name={'chevron-down'} size={30} style={styles.icon}/>
-                </View>
-            </View>
         </TouchableOpacity>
     );
 }
