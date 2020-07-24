@@ -31,7 +31,7 @@ const TextLine = React.forwardRef(({
       case 'emailAddress':
         return "email-address";
       case 'password':
-        return Platform.OS == "ios" ? "ascii-capable" : "visible-password";
+        return Platform.OS == "ios" ? "ascii-capable" : "default";
       default:
         return "default";
     }
@@ -51,6 +51,7 @@ const TextLine = React.forwardRef(({
     },
     input: {
       flexDirection: "row",
+      alignItems: 'center',
       zIndex: 1,
     },
     label: {
@@ -62,6 +63,7 @@ const TextLine = React.forwardRef(({
       ...FontWeights.Bold,
       color: color,
       flex: 1,
+      padding: 0
     },
     icon: {
       padding: 5,

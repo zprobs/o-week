@@ -6,6 +6,8 @@
  * @format
  * @flow strict-local
  */
+import 'intl';
+import 'intl/locale-data/jsonp/en';
 import React, { useState, useEffect, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

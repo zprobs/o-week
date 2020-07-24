@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -10,22 +10,22 @@ import {
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
-} from "react-native";
-import images from "../../assets/images";
-import Fonts from "../../theme/Fonts";
-import {Theme, ThemeStatic} from '../../theme/Colours';
-import TextLine from "../ReusableComponents/TextLine";
-import ButtonColour from "../ReusableComponents/ButtonColour";
-import "@react-native-firebase/auth";
-import firebase from "@react-native-firebase/app";
+} from 'react-native';
+import images from '../../assets/images';
+import Fonts from '../../theme/Fonts';
+import { Theme, ThemeStatic } from '../../theme/Colours';
+import TextLine from '../ReusableComponents/TextLine';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
-const height = Dimensions.get("window").height;
-const width = Dimensions.get("window").width;
+const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 const yMargin = height * 0.08;
 const xMargin = width * 0.15;
 
@@ -36,8 +36,8 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const passwordRef = useRef();
 
@@ -46,40 +46,54 @@ export default function Login({ navigation }) {
       await firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
-        .then(res => {
+        .then((res) => {
           console.log(res.user.uid);
         });
     } catch (error) {
       console.log(error);
       Alert.alert(
-        "Login Unsuccessful",
+        'Login Unsuccessful',
         error.toString(),
 
         {
-          text: "Ok",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "default",
+          text: 'Ok',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'default',
         },
       );
     }
   };
 
   return (
-    <LinearGradient start={{x: 1, y: 1}} end={{x:0, y: 0}} colors={[ThemeStatic.darkPurple, ThemeStatic.pink]} style={styles.backgroundImage}>
-      <Svg height={200} width={width} style={styles.mask} viewBox={`0 0 ${width/2} 200`} preserveAspectRatio="none" >
+    <LinearGradient
+      start={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 0 }}
+      colors={[ThemeStatic.darkPurple, ThemeStatic.pink]}
+      style={styles.backgroundImage}>
+      <Svg
+        height={200}
+        width={width}
+        style={styles.mask}
+        viewBox={`0 0 ${width / 2.1} 200`}
+        preserveAspectRatio="none">
         <Path
           d="M 0 150 Q 50 50 200 200 L 200 0 L 0 0 L 0 150 "
           fill="white"
           stroke="white"
-          fillRule='evenodd'
+          fillRule="evenodd"
         />
       </Svg>
-      <KeyboardAvoidingView style={styles.bg} behavior={"position"}>
-        <TouchableOpacity style={styles.backArrow}
+      <KeyboardAvoidingView style={styles.bg} behavior={'position'}>
+        <TouchableOpacity
+          style={styles.backArrow}
           onPress={() => {
-            navigation.navigate("Landing");
+            navigation.navigate('Landing');
           }}>
-            <FeatherIcon name={'arrow-left'} size={32} color={ThemeStatic.white}/>
+          <FeatherIcon
+            name={'arrow-left'}
+            size={32}
+            color={ThemeStatic.white}
+          />
         </TouchableOpacity>
         <View style={styles.logo}>
           <Image
@@ -89,11 +103,11 @@ export default function Login({ navigation }) {
         </View>
         <TextLine
           style={styles.textLine}
-          label={"Email"}
+          label={'Email'}
           color={colours.white}
-          icon={"envelope"}
-          placeholder={"first.last@my.yorku.ca"}
-          type={"emailAddress"}
+          icon={'envelope'}
+          placeholder={'first.last@my.yorku.ca'}
+          type={'emailAddress'}
           value={email}
           onChangeText={setEmail}
           next={true}
@@ -101,18 +115,18 @@ export default function Login({ navigation }) {
         />
         <TextLine
           style={styles.textLine}
-          label={"Password"}
+          label={'Password'}
           color={colours.white}
-          icon={"lock"}
-          placeholder={"(8+ characters)"}
-          type={"password"}
+          icon={'lock'}
+          placeholder={'(8+ characters)'}
+          type={'password'}
           value={password}
           onChangeText={setPassword}
           ref={passwordRef}
         />
         <ButtonColour
           colour={colours.white}
-          label={"Log in"}
+          label={'Log in'}
           containerStyle={styles.login}
           labelStyle={styles.loginText}
           onPress={processLogin}
@@ -128,16 +142,16 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
   bg: {
-    width: "100%",
+    width: '100%',
     marginTop: yMargin,
-    zIndex: 5
+    zIndex: 5,
   },
   backgroundImage: {
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
   logo: {
-    alignSelf: "center",
+    alignSelf: 'center',
     height: 160,
     width: 160,
     borderRadius: 80,
@@ -145,7 +159,7 @@ const styles = StyleSheet.create({
 
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
@@ -156,7 +170,7 @@ const styles = StyleSheet.create({
     }),
   },
   textLine: {
-    alignSelf: "center",
+    alignSelf: 'center',
     marginTop: 40,
     width: width - xMargin,
     borderBottomColor: colours.white,
@@ -165,7 +179,7 @@ const styles = StyleSheet.create({
   },
   login: {
     width: width - xMargin,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginTop: 30,
   },
   loginText: {
@@ -174,13 +188,13 @@ const styles = StyleSheet.create({
     color: colours.accent,
   },
   touchable: {
-    alignSelf: "center",
+    alignSelf: 'center',
     marginTop: 20,
     width: width - xMargin,
   },
 
   forgot: {
-    alignSelf: "center",
+    alignSelf: 'center',
     ...FontWeights.Regular,
     ...FontSizes.Label,
     color: colours.white,
@@ -189,19 +203,19 @@ const styles = StyleSheet.create({
     left: width * 0.07,
     top: height * 0.02,
     zIndex: 2,
-    position: "absolute",
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      backgroundColor: ThemeStatic.delete,
-      alignItems: 'center',
-      justifyContent: 'center'
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: ThemeStatic.delete,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   mask: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 2
-  }
+    zIndex: 2,
+  },
 });

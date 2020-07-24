@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     maxWidth: "100%",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
   },
   slideText: {
     width: "80%",
