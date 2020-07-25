@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions, Animated, Platform } from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -50,6 +50,7 @@ const SearchableFlatList = React.forwardRef(
       aliased,
       onPress,
       floatingButtonText,
+      floatingButtonOffset,
       offset,
       initialSelection,
       clearOnClose,
@@ -60,7 +61,7 @@ const SearchableFlatList = React.forwardRef(
     const [searchQuery, setSearchQuery] = useState('');
     const [unfilteredList, setUnfilteredList] = useState(data ? data : []);
     const [filteredList, setFilteredList] = useState(unfilteredList);
-    const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 10);
+    const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 300);
     const [inputRef, setInputFocus] = useFocus();
     const [selected, setSelected] = useState(
       !!initialSelection ? initialSelection : new Map(),
@@ -91,6 +92,7 @@ const SearchableFlatList = React.forwardRef(
 
     const onSelect = React.useCallback(
       (item) => {
+        console.log('onSelectStart');
 
         const newSelected = new Map(selected);
         if (selected.get(item) === false || selected.get(item) == undefined) {
@@ -99,6 +101,7 @@ const SearchableFlatList = React.forwardRef(
           }
           if ( !buttonIsShowing.current && (!min || count + 1 >= min)) {
             buttonIsShowing.current = true
+            console.log('animationStart')
             Animated.parallel([
               Animated.timing(opacity, {
                 toValue: 1,
@@ -167,44 +170,9 @@ const SearchableFlatList = React.forwardRef(
       }
     }, [debounceQuery]);
 
-    // const renderItem = ({ item }) => {
-    //   const isSelected = !!selected.get(item);
-    //   return (
-    //     <TouchableOpacity
-    //       key={item}
-    //       onPress={() => onSelect(item)}
-    //       style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-    //       <Text style={styles.item}>{query ? item.name : item} </Text>
-    //       {isSelected ? (
-    //         <Icon name={'check'} style={styles.icon} size={28} />
-    //       ) : null}
-    //     </TouchableOpacity>
-    //   );
-    // };
 
-    const renderItem = ({item}) => <Item item={item} />
+    const renderItem = ({item, index}) => <Item item={item} index={index} hasImage={hasImage} onSelect={onSelect} isSelected={!!selected.get(item)} />
 
-    const renderItemWithImage = ({ item, index }) => {
-      const { image } = item;
-      const isSelected = !!selected.get(item);
-      return (
-        <View style={{ backgroundColor: index % 2 ? '#f2f2f2' : '#FFFFFF' }}>
-          <TouchableOpacity
-            onPress={() => onSelect(item)}
-            style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-            <Image source={{ uri: image }} style={styles.image}></Image>
-            <Text style={styles.itemWithImage}>
-              {query ? item.name : item}{' '}
-            </Text>
-            <View style={styles.imageContainer}>
-              {isSelected ? (
-                <Icon name={'check'} style={styles.icon} size={28} />
-              ) : null}
-            </View>
-          </TouchableOpacity>
-        </View>
-      );
-    };
 
     const onFloatingButtonPress = () => {
       Animated.timing(opacity, {
@@ -236,18 +204,16 @@ const SearchableFlatList = React.forwardRef(
     }, [title, setSearchQuery]);
 
 
-    const ItemSeparator = () => {
-      return <View style={styles.separator} />;
-    };
+
 
     const renderFloatingComponent = () => {
        return (
          <Animated.View
            style={[styles.floating, {
              opacity,
-             transform: [{ translateY: floatingOffset}],
-             bottom: keyboardHeight + 10
+              transform: [{ translateY: floatingOffset}],
 
+               bottom: floatingButtonOffset ?  keyboardHeight + 10 - floatingButtonOffset : keyboardHeight + 10,
            }]}
          >
            {
@@ -258,7 +224,7 @@ const SearchableFlatList = React.forwardRef(
     };
 
     const onClose = () => {
-      inputRef && inputRef.current.blur();
+      inputRef &&  inputRef.current && inputRef.current.blur();
       if (setData) {
         setData(mapToString(selected, query));
       }
@@ -273,20 +239,19 @@ const SearchableFlatList = React.forwardRef(
       }
     }
 
-
-    return (
-      <Modalize
+    const Modal = React.useMemo(()=> {
+      console.log('modalize render')
+      return <Modalize
         ref={ref}
         flatListProps={{
           data: filteredList,
           keyExtractor: keyExtractor,
-          // renderItem: hasImage ? renderItemWithImage : renderItem,
           renderItem: renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,
           extraData: selected,
           ListEmptyComponent: listEmptyComponent,
-          ListHeaderComponent: search
+          ListHeaderComponent: search,
         }}
         tapGestureEnabled={false}
         onOpened={setInputFocus}
@@ -294,7 +259,10 @@ const SearchableFlatList = React.forwardRef(
         modalTopOffset={offset}
         FloatingComponent={renderFloatingComponent}
       />
-    );
+    }, [ref, offset, filteredList, selected])
+
+
+    return Modal
   },
 );
 
@@ -306,19 +274,49 @@ const listEmptyComponent = () => (
   />
 );
 
-const keyExtractor = item => item.id ? item.id : item
 
-const Item = ({item, hasImage, onSelect}) => (
-    <TouchableOpacity
-      key={item}
-      //onPress={() => onSelect(item)}
-      style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <Text style={styles.item}>{item.name ? item.name : item} </Text>
-      {/*{isSelected ? (*/}
-      {/*  <Icon name={'check'} style={styles.icon} size={28} />*/}
-      {/*) : null}*/}
-    </TouchableOpacity>
-)
+const keyExtractor = item => item.id ? item.id.toString() : item
+
+const ItemSeparator = () => {
+  return <View style={styles.separator} />;
+};
+
+const Item = React.memo(({item, index, hasImage, onSelect, isSelected}) => {
+  if (hasImage) {
+    const { image } = item;
+    return (
+      <View style={{ backgroundColor: index % 2 ? '#f2f2f2' : '#FFFFFF' }}>
+        <TouchableOpacity
+          onPress={() => onSelect(item)}
+          style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+          <Image source={{ uri: image }} style={styles.image}></Image>
+          <Text style={styles.itemWithImage}>
+            {item.name ? item.name : item}{' '}
+          </Text>
+          <View style={styles.imageContainer}>
+            {isSelected ? (
+              <Icon name={'check'} style={styles.icon} size={28} />
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  } else {
+    return (
+      <TouchableOpacity
+        key={item}
+        onPress={() => onSelect(item)}
+        style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={styles.item}>{item.name ? item.name : item} </Text>
+        {isSelected ? (
+          <Icon name={'check'} style={styles.icon} size={28} />
+        ) : null}
+      </TouchableOpacity>
+    )
+  }
+
+});
+
 
 /**
  * A custom hook used to delay showing search results in the search bar

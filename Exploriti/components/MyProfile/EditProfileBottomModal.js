@@ -27,6 +27,8 @@ import {
 } from '../../graphql';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ImagePicker from "react-native-image-crop-picker";
+import {useHeaderHeight} from '@react-navigation/stack';
+
 
 /**
  * Modal for editing the logged in users data
@@ -43,6 +45,7 @@ const EditProfileBottomModal = React.forwardRef(
     const [updateUser] = useMutation(UPDATE_USER);
     const [updateInterests] = useMutation(UPDATE_USER_INTERESTS);
     const [updatePrograms] = useMutation(UPDATE_USER_PROGRAMS);
+    const headerHeight = useHeaderHeight()
     // only call query when modal has been opened
     const [
       getInterests,
@@ -278,8 +281,8 @@ const EditProfileBottomModal = React.forwardRef(
                 aliased={false}
                 max={4}
                 min={1}
-                offset={Dimensions.get('window').height * 0.3}
                 floatingButtonText={"Done"}
+                floatingButtonOffset={headerHeight}
               />
               <SearchableFlatList
                 ref={interestRef}
