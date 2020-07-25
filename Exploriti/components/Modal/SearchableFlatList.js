@@ -60,7 +60,7 @@ const SearchableFlatList = React.forwardRef(
     const [searchQuery, setSearchQuery] = useState('');
     const [unfilteredList, setUnfilteredList] = useState(data ? data : []);
     const [filteredList, setFilteredList] = useState(unfilteredList);
-    const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 300);
+    const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 10);
     const [inputRef, setInputFocus] = useFocus();
     const [selected, setSelected] = useState(
       !!initialSelection ? initialSelection : new Map(),
@@ -73,6 +73,8 @@ const SearchableFlatList = React.forwardRef(
     const floatingOffset = useState(new Animated.Value(min ? 0 : -40))[0];
     const buttonIsShowing = useRef(min ? false : true)
     const [keyboardHeight] = useKeyboard();
+
+    console.log('searchQuery', searchQuery);
 
 
     const result = useQuery(verifiedQuery, {
@@ -137,6 +139,7 @@ const SearchableFlatList = React.forwardRef(
 
     useEffect(() => {
       // only do the local search if not a server search
+      console.log('searchStart')
       if (!serverSearch) {
         const lowerCaseQuery = debounceQuery.toLowerCase();
         let newData;
@@ -159,25 +162,27 @@ const SearchableFlatList = React.forwardRef(
             item.toLowerCase().includes(lowerCaseQuery),
           );
         }
-        console.log('setFilteredList(newData)')
+        console.log('searchEnd')
         setFilteredList(newData);
       }
     }, [debounceQuery]);
 
-    const renderItem = ({ item }) => {
-      const isSelected = !!selected.get(item);
-      return (
-        <TouchableOpacity
-          key={item}
-          onPress={() => onSelect(item)}
-          style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.item}>{query ? item.name : item} </Text>
-          {isSelected ? (
-            <Icon name={'check'} style={styles.icon} size={28} />
-          ) : null}
-        </TouchableOpacity>
-      );
-    };
+    // const renderItem = ({ item }) => {
+    //   const isSelected = !!selected.get(item);
+    //   return (
+    //     <TouchableOpacity
+    //       key={item}
+    //       onPress={() => onSelect(item)}
+    //       style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+    //       <Text style={styles.item}>{query ? item.name : item} </Text>
+    //       {isSelected ? (
+    //         <Icon name={'check'} style={styles.icon} size={28} />
+    //       ) : null}
+    //     </TouchableOpacity>
+    //   );
+    // };
+
+    const renderItem = ({item}) => <Item item={item} />
 
     const renderItemWithImage = ({ item, index }) => {
       const { image } = item;
@@ -214,20 +219,22 @@ const SearchableFlatList = React.forwardRef(
     }
 
 
-    const search = (
-      <SearchBar
+    const search = React.useMemo( () => {
+      console.log('search render')
+      return <SearchBar
         ref={inputRef}
         placeholder={'Search for ' + title + '...'}
         onChangeText={(q) => {
           if (serverSearch) didSetFirst.current = false;
-          setSearchQuery(q)}
+          setSearchQuery(q)
         }
-        text={searchQuery}
+        }
         hideBackground={true}
         showsCancelButton={false}
         showsCancelButtonWhileEditing={false}
       />
-    );
+    }, [title, setSearchQuery]);
+
 
     const ItemSeparator = () => {
       return <View style={styles.separator} />;
@@ -250,37 +257,41 @@ const SearchableFlatList = React.forwardRef(
        )
     };
 
+    const onClose = () => {
+      inputRef && inputRef.current.blur();
+      if (setData) {
+        setData(mapToString(selected, query));
+      }
+      if (setSelection) {
+        setSelection(mapToIds(selected, query));
+      }
+      if (clearOnClose) {
+        setSelected(new Map());
+        setCount(0)
+        buttonIsShowing.current = false
+        setSearchQuery('');
+      }
+    }
+
+
     return (
       <Modalize
         ref={ref}
         flatListProps={{
           data: filteredList,
-          keyExtractor: query ? item => item.id : item => item,
-          renderItem: hasImage ? renderItemWithImage : renderItem,
+          keyExtractor: keyExtractor,
+          // renderItem: hasImage ? renderItemWithImage : renderItem,
+          renderItem: renderItem,
           marginTop: 10,
           ItemSeparatorComponent: ItemSeparator,
           extraData: selected,
-          ListEmptyComponent: listEmptyComponent
+          ListEmptyComponent: listEmptyComponent,
+          ListHeaderComponent: search
         }}
         tapGestureEnabled={false}
-        HeaderComponent={search}
         onOpened={setInputFocus}
-        onClose={() => {
-          inputRef.current.blur();
-          if (setData) {
-            setData(mapToString(selected, query));
-          }
-          if (setSelection) {
-            setSelection(mapToIds(selected, query));
-          }
-          if (clearOnClose) {
-            setSelected(new Map());
-            setCount(0)
-            buttonIsShowing.current = false
-            setSearchQuery('');
-          }
-        }}
-        modalTopOffset={offset ? offset : 0}
+        onClose={onClose}
+        modalTopOffset={offset}
         FloatingComponent={renderFloatingComponent}
       />
     );
@@ -294,6 +305,20 @@ const listEmptyComponent = () => (
     spacing={0.15}
   />
 );
+
+const keyExtractor = item => item.id ? item.id : item
+
+const Item = ({item, hasImage, onSelect}) => (
+    <TouchableOpacity
+      key={item}
+      //onPress={() => onSelect(item)}
+      style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <Text style={styles.item}>{item.name ? item.name : item} </Text>
+      {/*{isSelected ? (*/}
+      {/*  <Icon name={'check'} style={styles.icon} size={28} />*/}
+      {/*) : null}*/}
+    </TouchableOpacity>
+)
 
 /**
  * A custom hook used to delay showing search results in the search bar
