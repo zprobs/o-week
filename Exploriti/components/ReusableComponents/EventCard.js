@@ -164,7 +164,8 @@ const styles = StyleSheet.create({
         marginVertical: 12,
         maxWidth: ITEM_WIDTH,
         paddingVertical: 5,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        elevation: 4
     },
     eventShadow: {
         shadowRadius: 8,
@@ -219,6 +220,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor: colours.base,
         justifyContent: 'center',
+        elevation: 3
     },
     detailsText: {
         ...FontSizes.SubText,

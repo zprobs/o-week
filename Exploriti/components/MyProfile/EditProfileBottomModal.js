@@ -179,13 +179,14 @@ const EditProfileBottomModal = React.forwardRef(
       }
     };
 
+
     return (
       <>
         <Modalize
           ref={ref}
           scrollViewProps={{ showsVerticalScrollIndicator: false }}
           modalStyle={styles.container}
-          modalTopOffset={129}
+          modalTopOffset={headerHeight + 100}
           adjustToContentHeight
           tapGestureEnabled={false}
           onOpen={getInterests}>

@@ -33,7 +33,7 @@ export default function Orientation() {
           //
           // />),
           headerTitle: '',
-          headerStyle: { shadowColor: 'transparent' },
+          headerStyle: { shadowColor: 'transparent', elevation: 0 },
         }}
       />
       <Stack.Screen

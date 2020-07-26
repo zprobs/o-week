@@ -23,7 +23,7 @@ export default function Notifications() {
           headerLeft: () => <DrawerIcon />,
           headerRight: () => <MessagesIcon />,
           headerTitle: '',
-          headerStyle: { shadowColor: 'transparent' },
+          headerStyle: { shadowColor: 'transparent', elevation: 0 },
         }}
       />
       <Stack.Screen

@@ -35,7 +35,6 @@ import {
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
 import { AuthContext } from '../../context';
-import gql from 'graphql-tag';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -510,6 +509,7 @@ const styles = StyleSheet.create({
     shadowColor: 'transparent',
     shadowOpacity: 0,
     elevation: 0,
+    marginHorizontal: 10
   },
   tabItem: {
     flex: 1,

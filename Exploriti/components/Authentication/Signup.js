@@ -167,10 +167,10 @@ export default function Signup({ navigation }) {
     ThemeStatic.pink,
   ];
 
-  const BottomButton = ({handleSubmit, values}) => {
+  const BottomButton = ({ handleSubmit, values }) => {
     let title;
 
-    console.log('bottomBValues', values)
+    console.log('bottomBValues', values);
 
     if (page === 1) {
       title =
@@ -189,7 +189,7 @@ export default function Signup({ navigation }) {
         colour={ThemeStatic.white}
         labelStyle={{ ...FontWeights.Regular, color: colourArray[page - 1] }}
         containerStyle={styles.button}
-        onPress={page === 1 ? handleSubmit : ()=>nextPage(values)}
+        onPress={page === 1 ? handleSubmit : () => nextPage(values)}
         loading={isLoading}
         loadColour={colourArray[page - 1]}
       />
@@ -232,7 +232,7 @@ export default function Signup({ navigation }) {
   }
 
   function nextPage(values) {
-    console.log('nextPAgeValues', values)
+    console.log('nextPAgeValues', values);
     if (page === 4) {
       submit(values);
     } else {
@@ -243,15 +243,15 @@ export default function Signup({ navigation }) {
   }
 
   async function submit(values) {
-    console.log('submitValues', values)
+    console.log('submitValues', values);
     setIsLoading(true);
     const userData = {};
 
     const imageURL = imageSelection ? await saveImage(imageSelection) : image;
 
-    const {email, password, name} = values;
+    const { email, password, name } = values;
 
-    console.log('e, p, n', email, password, name)
+    console.log('e, p, n', email, password, name);
 
     firebase
       .auth()
@@ -296,266 +296,282 @@ export default function Signup({ navigation }) {
   }
 
   return (
-
-
-
     <View style={styles.container}>
       <Formik
         initialValues={{ email: '', password: '', name: '' }}
         validationSchema={SignupSchema}
         onSubmit={(values) => nextPage(values)}>
         {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <>
-      <View style={styles.footer}>
-        <BottomButton handleSubmit={handleSubmit} values={values} />
-      </View>
-      <KeyboardAwareScrollView
-      scrollEnabled={false}
-      bounces={false}
-      enableOnAndroid={true}
-    >
-      <View style={styles.header}>
-        <TouchableOpacity onPress={backButton} style={styles.backArrow}>
-          <FeatherIcon
-            name={'arrow-left'}
-            size={32}
-            color={ThemeStatic.white}
-          />
-        </TouchableOpacity>
-        <View style={styles.countCircle}>
-          <Animated.Text
-            style={[
-              styles.count,
-              {
-                transform: [{ rotateY: setInterpolate }, { perspective: 1000 }],
-              },
-              { color: colourArray[page - 1] },
-            ]}>
-            {page}
-          </Animated.Text>
-        </View>
-      </View>
-
-      <ScrollView
-        style={styles.scroll}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-        scrollEnabled={false}
-        pagingEnabled={true}
-        bouncesZoom={false}
-        ref={scrollViewRef}>
-        <Svg
-          height={300}
-          width={width * 4}
-          style={styles.mask}
-          viewBox={`0 0 ${width * 1.9} 300`}
-          preserveAspectRatio="none">
-          <Path
-            d="M 0 175 Q 50 25 150 125 Q 250 225 300 125 Q 350 25 399 125 Q 430 190 500 125 Q 550 75 600 125 L 600 125 Q 640 171 675 125 Q 725 50 750 125 Q 771 177 800 150 L 800 0 L 0 0 L 0 175 "
-            fill="white"
-            stroke="white"
-            fillRule="evenodd"
-          />
-        </Svg>
-
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={colourArray}
-          style={styles.background}>
-          <View
-            style={styles.page}
-            >
-
-                <View style={styles.form}>
-                  <Text style={styles.title}>Create an Account</Text>
-                  <View>
-                    <Text style={styles.label}>I am a...</Text>
-                    <SegmentedControl
-                      values={['Student', 'Leader']}
-                      selectedIndex={index}
-                      onChange={(event) => {
-                        setIndex(event.nativeEvent.selectedSegmentIndex);
-                      }}
-                      style={styles.selector}
-                    />
-                  </View>
-
-                  <TextLine
-                    style={styles.textLine}
-                    label={'Full Name'}
-                    icon={'user'}
-                    type={'name'}
-                    value={values.name}
-                    onChangeText={handleChange('name')}
-                    next={true}
-                    onSubmit={() => emailRef.current.focus()}
-                    onBlur={handleBlur('name')}
-                    blurOnSubmit={false}
-                    error={errors.name}
-                    touched={touched.name}
-                  />
-                  <TextLine
-                    style={styles.textLine}
-                    label={'Email'}
-                    icon={'envelope'}
-                    placeholder={'*****@my.yorku.ca'}
-                    type={'email'}
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    ref={emailRef}
-                    next={true}
-                    onSubmit={() => passwordRef.current.focus()}
-                    onBlur={handleBlur('email')}
-                    blurOnSubmit={false}
-                    error={errors.email}
-                    touched={touched.email}
-                  />
-                  <TextLine
-                    style={styles.textLine}
-                    label={'Password'}
-                    icon={'lock'}
-                    placeholder={'(6+ Characters)'}
-                    type={'password'}
-                    value={values.password}
-                    onChangeText={handleChange('password')}
-                    ref={passwordRef}
-                    onBlur={handleBlur('password')}
-                    error={errors.password}
-                    touched={touched.password}
-                  />
-                </View>
-
-          </View>
-          <View style={styles.page}>
-            <View style={styles.form}>
-              <View>
-                <Text style={styles.title}>Tell us about yourself</Text>
-                <Text style={styles.caption}>
-                  This information helps us better filter relevant content for
-                  you.
-                </Text>
-              </View>
-              <Selection title={programTitle()} onPress={onProgramRef} />
-              <Selection
-                title={year || 'Select your year'}
-                onPress={onYearRef}
-              />
-              <Selection
-                title={faculty || 'Select your college'}
-                onPress={onFacultyRef}
-              />
-              <Selection title={timeZoneTitle()} onPress={onTimeZoneRef} />
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <>
+            <View style={styles.footer}>
+              <BottomButton handleSubmit={handleSubmit} values={values} />
             </View>
-          </View>
-          <View style={styles.page}>
-            <View style={styles.form}>
-              <View>
-                <Text style={styles.title}>Select your interests</Text>
-                <Text style={styles.caption}>
-                  This will help us get to know you outside of just your major.
-                </Text>
-              </View>
-              <Selection title={interestsTitle(0)} onPress={onInterestRef} />
-              <Selection title={interestsTitle(1)} onPress={onInterestRef} />
-              <Selection title={interestsTitle(2)} onPress={onInterestRef} />
-              <Selection title={interestsTitle(3)} onPress={onInterestRef} />
-            </View>
-          </View>
-          <View style={styles.page}>
-            <View style={styles.form}>
-              <View>
-                <Text style={styles.title}>Finish Signing Up</Text>
-                <Text style={styles.caption}>
-                  Your YorkU Hub account is ready to be created. Just add a
-                  profile picture and get started.
-                </Text>
-              </View>
-              <View>
-                <Image style={styles.profilePic} source={{ uri: image }} />
-                <TouchableOpacity onPress={pickImage}>
-                  <Text
-                    style={[
-                      styles.caption,
-                      {
-                        paddingTop: 10,
-                        ...FontWeights.Bold,
-                        color: ThemeStatic.white,
-                      },
-                    ]}>
-                    Change Picture
-                  </Text>
+            <KeyboardAwareScrollView
+              scrollEnabled={false}
+              bounces={false}
+              enableOnAndroid={true}>
+              <View style={styles.header}>
+                <TouchableOpacity onPress={backButton} style={styles.backArrow}>
+                  <FeatherIcon
+                    name={'arrow-left'}
+                    size={32}
+                    color={ThemeStatic.white}
+                  />
                 </TouchableOpacity>
+                <View style={styles.countCircle}>
+                  <Animated.Text
+                    style={[
+                      styles.count,
+                      {
+                        transform: [
+                          { rotateY: setInterpolate },
+                          { perspective: 1000 },
+                        ],
+                      },
+                      { color: colourArray[page - 1] },
+                    ]}>
+                    {page}
+                  </Animated.Text>
+                </View>
               </View>
-            </View>
-          </View>
-        </LinearGradient>
-      </ScrollView>
-    </KeyboardAwareScrollView>
-      <SearchableFlatList
-        ref={programRef}
-        title={'programs'}
-        query={GET_PROGRAMS}
-        setData={setPrograms}
-        setSelection={setProgramsSelection}
-        aliased={false}
-        max={4}
-        min={1}
-        floatingButtonText={'Done'}
-        offset={40}
-      />
-      <RadioButtonFlatList
-        ref={yearRef}
-        title={'year'}
-        data={yearsData}
-        selectedData={year}
-        setData={setYear}
-      />
-      <RadioButtonFlatList
-        ref={facultyRef}
-        title={'college'}
-        data={facultiesData}
-        selectedData={faculty}
-        setData={setFaculty}
-      />
-      <SearchableFlatList
-        ref={interestRef}
-        title={'interests'}
-        query={GET_INTERESTS}
-        setData={setInterests}
-        setSelection={setInterestsSelection}
-        aliased={true}
-        max={4}
-        min={1}
-        floatingButtonText={'Done'}
-        offset={40}
-      />
-      <SearchableFlatList
-        ref={timeZoneRef}
-        title={'time zone'}
-        data={timeZoneData}
-        setData={setTimezone}
-        setSelection={() => {}}
-        aliased={false}
-        max={1}
-        min={1}
-        query={undefined}
-        floatingButtonText={'Done'}
-        offset={40}
-      />
-      </>
-          )}
+
+              <ScrollView
+                style={styles.scroll}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                bounces={false}
+                scrollEnabled={false}
+                pagingEnabled={true}
+                bouncesZoom={false}
+                ref={scrollViewRef}>
+                <Svg
+                  height={300}
+                  width={width * 4}
+                  style={styles.mask}
+                  viewBox={`0 0 ${width * 1.9} 300`}
+                  preserveAspectRatio="none">
+                  <Path
+                    d="M 0 175 Q 50 25 150 125 Q 250 225 300 125 Q 350 25 399 125 Q 430 190 500 125 Q 550 75 600 125 L 600 125 Q 640 171 675 125 Q 725 50 750 125 Q 771 177 800 150 L 800 0 L 0 0 L 0 175 "
+                    fill="white"
+                    stroke="white"
+                    fillRule="evenodd"
+                  />
+                </Svg>
+
+                <LinearGradient
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  colors={colourArray}
+                  style={styles.background}>
+                  <View style={styles.page}>
+                    <View style={styles.form}>
+                      <Text style={styles.title}>Create an Account</Text>
+                      <View>
+                        <Text style={styles.label}>I am a...</Text>
+                        <SegmentedControl
+                          values={['Student', 'Leader']}
+                          selectedIndex={index}
+                          onChange={(event) => {
+                            setIndex(event.nativeEvent.selectedSegmentIndex);
+                          }}
+                          style={styles.selector}
+                        />
+                      </View>
+
+                      <TextLine
+                        style={styles.textLine}
+                        label={'Full Name'}
+                        icon={'user'}
+                        type={'name'}
+                        value={values.name}
+                        onChangeText={handleChange('name')}
+                        next={true}
+                        onSubmit={() => emailRef.current.focus()}
+                        onBlur={handleBlur('name')}
+                        blurOnSubmit={false}
+                        error={errors.name}
+                        touched={touched.name}
+                      />
+                      <TextLine
+                        style={styles.textLine}
+                        label={'Email'}
+                        icon={'envelope'}
+                        placeholder={'*****@my.yorku.ca'}
+                        type={'email'}
+                        value={values.email}
+                        onChangeText={handleChange('email')}
+                        ref={emailRef}
+                        next={true}
+                        onSubmit={() => passwordRef.current.focus()}
+                        onBlur={handleBlur('email')}
+                        blurOnSubmit={false}
+                        error={errors.email}
+                        touched={touched.email}
+                      />
+                      <TextLine
+                        style={styles.textLine}
+                        label={'Password'}
+                        icon={'lock'}
+                        placeholder={'(6+ Characters)'}
+                        type={'password'}
+                        value={values.password}
+                        onChangeText={handleChange('password')}
+                        ref={passwordRef}
+                        onBlur={handleBlur('password')}
+                        error={errors.password}
+                        touched={touched.password}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.page}>
+                    <View style={styles.form}>
+                      <View>
+                        <Text style={styles.title}>Tell us about yourself</Text>
+                        <Text style={styles.caption}>
+                          This information helps us better filter relevant
+                          content for you.
+                        </Text>
+                      </View>
+                      <Selection
+                        title={programTitle()}
+                        onPress={onProgramRef}
+                      />
+                      <Selection
+                        title={year || 'Select your year'}
+                        onPress={onYearRef}
+                      />
+                      <Selection
+                        title={faculty || 'Select your college'}
+                        onPress={onFacultyRef}
+                      />
+                      <Selection
+                        title={timeZoneTitle()}
+                        onPress={onTimeZoneRef}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.page}>
+                    <View style={styles.form}>
+                      <View>
+                        <Text style={styles.title}>Select your interests</Text>
+                        <Text style={styles.caption}>
+                          This will help us get to know you outside of just your
+                          major.
+                        </Text>
+                      </View>
+                      <Selection
+                        title={interestsTitle(0)}
+                        onPress={onInterestRef}
+                      />
+                      <Selection
+                        title={interestsTitle(1)}
+                        onPress={onInterestRef}
+                      />
+                      <Selection
+                        title={interestsTitle(2)}
+                        onPress={onInterestRef}
+                      />
+                      <Selection
+                        title={interestsTitle(3)}
+                        onPress={onInterestRef}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.page}>
+                    <View style={styles.form}>
+                      <View>
+                        <Text style={styles.title}>Finish Signing Up</Text>
+                        <Text style={styles.caption}>
+                          Your YorkU Hub account is ready to be created. Just
+                          add a profile picture and get started.
+                        </Text>
+                      </View>
+                      <View>
+                        <Image
+                          style={styles.profilePic}
+                          source={{ uri: image }}
+                        />
+                        <TouchableOpacity onPress={pickImage}>
+                          <Text
+                            style={[
+                              styles.caption,
+                              {
+                                paddingTop: 10,
+                                ...FontWeights.Bold,
+                                color: ThemeStatic.white,
+                              },
+                            ]}>
+                            Change Picture
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </LinearGradient>
+              </ScrollView>
+            </KeyboardAwareScrollView>
+            <SearchableFlatList
+              ref={programRef}
+              title={'programs'}
+              query={GET_PROGRAMS}
+              setData={setPrograms}
+              setSelection={setProgramsSelection}
+              aliased={false}
+              max={4}
+              min={1}
+              floatingButtonText={'Done'}
+              offset={40}
+            />
+            <RadioButtonFlatList
+              ref={yearRef}
+              title={'year'}
+              data={yearsData}
+              selectedData={year}
+              setData={setYear}
+            />
+            <RadioButtonFlatList
+              ref={facultyRef}
+              title={'college'}
+              data={facultiesData}
+              selectedData={faculty}
+              setData={setFaculty}
+            />
+            <SearchableFlatList
+              ref={interestRef}
+              title={'interests'}
+              query={GET_INTERESTS}
+              setData={setInterests}
+              setSelection={setInterestsSelection}
+              aliased={true}
+              max={4}
+              min={1}
+              floatingButtonText={'Done'}
+              offset={40}
+            />
+            <SearchableFlatList
+              ref={timeZoneRef}
+              title={'time zone'}
+              data={timeZoneData}
+              setData={setTimezone}
+              setSelection={() => {}}
+              aliased={false}
+              max={1}
+              min={1}
+              query={undefined}
+              floatingButtonText={'Done'}
+              offset={40}
+            />
+          </>
+        )}
       </Formik>
     </View>
-
   );
 }
 
@@ -564,9 +580,20 @@ const SignupSchema = Yup.object().shape({
     .email('Invalid email')
     .required('Required')
     .min(5)
-    .max(50).matches(/(my.yorku.ca|exploriti.com|arravon.com)$/, 'Must be a YorkU email'),
+    .max(50)
+    .matches(
+      /(my.yorku.ca|exploriti.com|arravon.com)$/,
+      'Must be a YorkU email',
+    ),
   password: Yup.string().required('Required').min(6).max(40),
-  name: Yup.string().required('Required').min(2).max(50).matches(/^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/, 'Invalid Characters')
+  name: Yup.string()
+    .required('Required')
+    .min(2)
+    .max(50)
+    .matches(
+      /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/,
+      'Invalid Characters',
+    ),
 });
 
 const styles = StyleSheet.create({
@@ -575,12 +602,12 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
-    height: height,
   },
   background: {
     width: 4 * width,
     resizeMode: 'contain',
     flexDirection: 'row',
+    height: height,
   },
   page: {
     flex: 1,
