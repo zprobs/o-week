@@ -39,6 +39,9 @@ import {
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
+import { Formik } from 'formik';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as Yup from 'yup';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get('window').height;
@@ -54,14 +57,11 @@ const circleSize = width * 0.38;
 export default function Signup({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [index, setIndex] = useState(0);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [programs, setPrograms] = useState([]);
   const [programsSelection, setProgramsSelection] = useState([]);
   const [year, setYear] = useState();
   const [faculty, setFaculty] = useState();
-  const [timeZone, setTimezone] = useState();
+  const [timeZone, setTimezone] = useState([]);
   const [interests, setInterests] = useState([]);
   const [interestsSelection, setInterestsSelection] = useState([]);
   const [image, setImage] = useState(getDefaultImage());
@@ -69,8 +69,6 @@ export default function Signup({ navigation }) {
   const [page, setPage] = useState(1);
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [animatedNumber, setAnimatedNumber] = useState(0);
-  const opacity = useState(new Animated.Value(1))[0];
-  const headerYOffset = useState(new Animated.Value(0))[0];
 
   const programRef = useRef();
   const yearRef = useRef();
@@ -89,57 +87,6 @@ export default function Signup({ navigation }) {
   const onTimeZoneRef = () => timeZoneRef.current.open();
   const onInterestRef = () => interestRef.current.open();
 
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      Keyboard.addListener('keyboardWillShow', _keyboardWillShow);
-      Keyboard.addListener('keyboardWillHide', _keyboardWillHide);
-    } else {
-      Keyboard.addListener('keyboardDidShow', _keyboardWillShow);
-      Keyboard.addListener('keyboardDidHide', _keyboardWillHide);
-    }
-
-    // cleanup function
-    return () => {
-      if (Platform.OS === 'ios') {
-        Keyboard.removeListener('keyboardWillShow', _keyboardWillShow);
-        Keyboard.removeListener('keyboardWillHide', _keyboardWillHide);
-      } else {
-        Keyboard.removeListener('keyboardDidShow', _keyboardWillShow);
-        Keyboard.removeListener('keyboardDidHide', _keyboardWillHide);
-      }    };
-  }, []);
-
-  const _keyboardWillShow = () => {
-    console.log('keyboard showing');
-    Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(headerYOffset, {
-        toValue: -150,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const _keyboardWillHide = () => {
-    Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(headerYOffset, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
   const programTitle = () => {
     const size = programs.length;
     if (size === 0) {
@@ -153,6 +100,14 @@ export default function Signup({ navigation }) {
       }
     }
     return string;
+  };
+
+  const timeZoneTitle = () => {
+    const size = timeZone.length;
+    if (size === 0) {
+      return 'Select your time zone';
+    }
+    return timeZone[0];
   };
 
   const interestsTitle = (interestIndex) => {
@@ -212,8 +167,10 @@ export default function Signup({ navigation }) {
     ThemeStatic.pink,
   ];
 
-  const BottomButton = () => {
+  const BottomButton = ({handleSubmit, values}) => {
     let title;
+
+    console.log('bottomBValues', values)
 
     if (page === 1) {
       title =
@@ -232,7 +189,7 @@ export default function Signup({ navigation }) {
         colour={ThemeStatic.white}
         labelStyle={{ ...FontWeights.Regular, color: colourArray[page - 1] }}
         containerStyle={styles.button}
-        onPress={nextPage}
+        onPress={page === 1 ? handleSubmit : ()=>nextPage(values)}
         loading={isLoading}
         loadColour={colourArray[page - 1]}
       />
@@ -274,9 +231,10 @@ export default function Signup({ navigation }) {
     }
   }
 
-  function nextPage() {
+  function nextPage(values) {
+    console.log('nextPAgeValues', values)
     if (page === 4) {
-      submit();
+      submit(values);
     } else {
       setPage(page + 1);
       flip_Animation(true);
@@ -284,11 +242,16 @@ export default function Signup({ navigation }) {
     }
   }
 
-  async function submit() {
+  async function submit(values) {
+    console.log('submitValues', values)
     setIsLoading(true);
     const userData = {};
 
     const imageURL = imageSelection ? await saveImage(imageSelection) : image;
+
+    const {email, password, name} = values;
+
+    console.log('e, p, n', email, password, name)
 
     firebase
       .auth()
@@ -333,13 +296,32 @@ export default function Signup({ navigation }) {
   }
 
   return (
+
+
+
     <View style={styles.container}>
-      <Animated.View
-        style={{
-          ...styles.header,
-          opacity,
-          transform: [{ translateY: page === 1 ? headerYOffset : 0 }],
-        }}>
+      <Formik
+        initialValues={{ email: '', password: '', name: '' }}
+        validationSchema={SignupSchema}
+        onSubmit={(values) => nextPage(values)}>
+        {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <>
+      <View style={styles.footer}>
+        <BottomButton handleSubmit={handleSubmit} values={values} />
+      </View>
+      <KeyboardAwareScrollView
+      scrollEnabled={false}
+      bounces={false}
+      enableOnAndroid={true}
+    >
+      <View style={styles.header}>
         <TouchableOpacity onPress={backButton} style={styles.backArrow}>
           <FeatherIcon
             name={'arrow-left'}
@@ -359,10 +341,8 @@ export default function Signup({ navigation }) {
             {page}
           </Animated.Text>
         </View>
-      </Animated.View>
-      <View style={styles.footer}>
-        <BottomButton />
       </View>
+
       <ScrollView
         style={styles.scroll}
         horizontal={true}
@@ -391,60 +371,70 @@ export default function Signup({ navigation }) {
           end={{ x: 1, y: 0 }}
           colors={colourArray}
           style={styles.background}>
-          <KeyboardAvoidingView style={styles.page} behavior={'position'}>
-            <View style={styles.form}>
-              <Animated.Text style={{ ...styles.title, opacity }}>
-                Create an Account
-              </Animated.Text>
-              <View>
-                <Text style={styles.label}>I am a...</Text>
-                <SegmentedControl
-                  values={['Student', 'Leader']}
-                  selectedIndex={index}
-                  onChange={(event) => {
-                    setIndex(event.nativeEvent.selectedSegmentIndex);
-                  }}
-                  style={styles.selector}
-                />
-              </View>
+          <View
+            style={styles.page}
+            >
 
-              <TextLine
-                style={styles.textLine}
-                label={'Full Name'}
-                color={ThemeStatic.white}
-                icon={'user'}
-                type={'name'}
-                value={name}
-                onChangeText={setName}
-                next={true}
-                onSubmit={() => emailRef.current.focus()}
-              />
-              <TextLine
-                style={styles.textLine}
-                label={'Email'}
-                color={ThemeStatic.white}
-                icon={'envelope'}
-                placeholder={'*****@my.yorku.ca'}
-                type={'emailAddress'}
-                value={email}
-                onChangeText={setEmail}
-                ref={emailRef}
-                next={true}
-                onSubmit={() => passwordRef.current.focus()}
-              />
-              <TextLine
-                style={styles.textLine}
-                label={'Password'}
-                color={ThemeStatic.white}
-                icon={'lock'}
-                placeholder={'(6+ Characters)'}
-                type={'password'}
-                value={password}
-                onChangeText={setPassword}
-                ref={passwordRef}
-              />
-            </View>
-          </KeyboardAvoidingView>
+                <View style={styles.form}>
+                  <Text style={styles.title}>Create an Account</Text>
+                  <View>
+                    <Text style={styles.label}>I am a...</Text>
+                    <SegmentedControl
+                      values={['Student', 'Leader']}
+                      selectedIndex={index}
+                      onChange={(event) => {
+                        setIndex(event.nativeEvent.selectedSegmentIndex);
+                      }}
+                      style={styles.selector}
+                    />
+                  </View>
+
+                  <TextLine
+                    style={styles.textLine}
+                    label={'Full Name'}
+                    icon={'user'}
+                    type={'name'}
+                    value={values.name}
+                    onChangeText={handleChange('name')}
+                    next={true}
+                    onSubmit={() => emailRef.current.focus()}
+                    onBlur={handleBlur('name')}
+                    blurOnSubmit={false}
+                    error={errors.name}
+                    touched={touched.name}
+                  />
+                  <TextLine
+                    style={styles.textLine}
+                    label={'Email'}
+                    icon={'envelope'}
+                    placeholder={'*****@my.yorku.ca'}
+                    type={'email'}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    ref={emailRef}
+                    next={true}
+                    onSubmit={() => passwordRef.current.focus()}
+                    onBlur={handleBlur('email')}
+                    blurOnSubmit={false}
+                    error={errors.email}
+                    touched={touched.email}
+                  />
+                  <TextLine
+                    style={styles.textLine}
+                    label={'Password'}
+                    icon={'lock'}
+                    placeholder={'(6+ Characters)'}
+                    type={'password'}
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                    ref={passwordRef}
+                    onBlur={handleBlur('password')}
+                    error={errors.password}
+                    touched={touched.password}
+                  />
+                </View>
+
+          </View>
           <View style={styles.page}>
             <View style={styles.form}>
               <View>
@@ -463,10 +453,7 @@ export default function Signup({ navigation }) {
                 title={faculty || 'Select your college'}
                 onPress={onFacultyRef}
               />
-              <Selection
-                title={timeZone || 'Select your time zone'}
-                onPress={onTimeZoneRef}
-              />
+              <Selection title={timeZoneTitle()} onPress={onTimeZoneRef} />
             </View>
           </View>
           <View style={styles.page}>
@@ -512,6 +499,7 @@ export default function Signup({ navigation }) {
           </View>
         </LinearGradient>
       </ScrollView>
+    </KeyboardAwareScrollView>
       <SearchableFlatList
         ref={programRef}
         title={'programs'}
@@ -563,10 +551,23 @@ export default function Signup({ navigation }) {
         floatingButtonText={'Done'}
         offset={40}
       />
+      </>
+          )}
+      </Formik>
     </View>
+
   );
 }
 
+const SignupSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Required')
+    .min(5)
+    .max(50).matches(/(my.yorku.ca|exploriti.com|arravon.com)$/, 'Must be a YorkU email'),
+  password: Yup.string().required('Required').min(6).max(40),
+  name: Yup.string().required('Required').min(2).max(50).matches(/^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/, 'Invalid Characters')
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -574,6 +575,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
+    height: height,
   },
   background: {
     width: 4 * width,
@@ -633,7 +635,7 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 20,
-    top: height * 0.092 + circleSize,
+    marginTop: height * 0.092 + circleSize,
     justifyContent: 'space-around',
     height: height - (height * 0.1 + circleSize + 80),
   },
@@ -653,9 +655,7 @@ const styles = StyleSheet.create({
   },
   textLine: {
     alignSelf: 'center',
-    width: '97%',
-    borderBottomColor: ThemeStatic.white,
-    borderBottomWidth: 1,
+    width: '100%',
   },
   button: {
     marginBottom: height * 0.03,

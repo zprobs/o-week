@@ -21,6 +21,9 @@ import firebase from '@react-native-firebase/app';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -36,12 +39,18 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
   const passwordRef = useRef();
 
-  const processLogin = async () => {
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Required'),
+    password: Yup.string()
+      .required('Required'),
+  });
+
+  const processLogin = async ({ email, password }) => {
+    console.log('processLogin', email, password)
     try {
       await firebase
         .auth()
@@ -53,13 +62,13 @@ export default function Login({ navigation }) {
       console.log(error);
       Alert.alert(
         'Login Unsuccessful',
-        error.toString(),
+        `${error.message}`,
 
-        {
+        [{
           text: 'Ok',
           onPress: () => console.log('Cancel Pressed'),
           style: 'default',
-        },
+        }],
       );
     }
   };
@@ -68,7 +77,7 @@ export default function Login({ navigation }) {
     <LinearGradient
       start={{ x: 1, y: 1 }}
       end={{ x: 0, y: 0 }}
-      colors={[ThemeStatic.darkPurple, ThemeStatic.pink]}
+      colors={[ThemeStatic.darkPurple, ThemeStatic.lightBlue]}
       style={styles.backgroundImage}>
       <Svg
         height={200}
@@ -83,7 +92,12 @@ export default function Login({ navigation }) {
           fillRule="evenodd"
         />
       </Svg>
-      <KeyboardAvoidingView style={styles.bg} behavior={'position'}>
+      <KeyboardAwareScrollView
+        style={styles.bg}
+        scrollEnabled={false}
+        bounces={false}
+        enableOnAndroid={true}
+      >
         <TouchableOpacity
           style={styles.backArrow}
           onPress={() => {
@@ -101,41 +115,56 @@ export default function Login({ navigation }) {
             source={images.logo}
           />
         </View>
-        <TextLine
-          style={styles.textLine}
-          label={'Email'}
-          color={colours.white}
-          icon={'envelope'}
-          placeholder={'first.last@my.yorku.ca'}
-          type={'emailAddress'}
-          value={email}
-          onChangeText={setEmail}
-          next={true}
-          onSubmit={() => passwordRef.current.focus()}
-        />
-        <TextLine
-          style={styles.textLine}
-          label={'Password'}
-          color={colours.white}
-          icon={'lock'}
-          placeholder={'(8+ characters)'}
-          type={'password'}
-          value={password}
-          onChangeText={setPassword}
-          ref={passwordRef}
-        />
-        <ButtonColour
-          colour={colours.white}
-          label={'Log in'}
-          containerStyle={styles.login}
-          labelStyle={styles.loginText}
-          onPress={processLogin}
-        />
+
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          validationSchema={LoginSchema}
+          onSubmit={(values) => processLogin(values)}>
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <>
+              <TextLine
+                style={styles.textLine}
+                label={'Email'}
+                icon={'envelope'}
+                placeholder={'*****@my.yorku.ca'}
+                type={'email'}
+                value={values.email}
+                onChangeText={handleChange('email')}
+                next={true}
+                onBlur={handleBlur('email')}
+                error={errors.email}
+                touched={touched.email}
+                onSubmit={()=>passwordRef.current.focus()}
+                blurOnSubmit={false}
+              />
+              <TextLine
+                style={styles.textLine}
+                label={'Password'}
+                icon={'lock'}
+                type={'password'}
+                value={values.password}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                ref={passwordRef}
+                error={errors.password}
+                touched={touched.password}
+              />
+
+              <ButtonColour
+                colour={colours.white}
+                label={'Log in'}
+                containerStyle={styles.login}
+                labelStyle={styles.loginText}
+                onPress={handleSubmit}
+              />
+            </>
+          )}
+        </Formik>
 
         <TouchableOpacity style={styles.touchable}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </LinearGradient>
   );
 }
@@ -143,12 +172,11 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   bg: {
     width: '100%',
-    marginTop: yMargin,
+    paddingTop: yMargin,
     zIndex: 5,
   },
   backgroundImage: {
-    height: '100%',
-    width: '100%',
+   flex: 1
   },
   logo: {
     alignSelf: 'center',
@@ -173,8 +201,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 40,
     width: width - xMargin,
-    borderBottomColor: colours.white,
-    borderBottomWidth: 1,
+
     paddingBottom: 5,
   },
   login: {
