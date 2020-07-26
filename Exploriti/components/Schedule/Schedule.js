@@ -34,8 +34,8 @@ export default function Schedule() {
           headerLeft: () => <DrawerIcon white={true} />,
           headerRight: () => <MessagesIcon white={true} />,
           headerTitle: '',
-          headerStyle: { shadowColor: 'transparent'  },
-          headerTransparent: true
+          headerStyle: { shadowColor: 'transparent' },
+          headerTransparent: true,
         }}
       />
       <Stack.Screen

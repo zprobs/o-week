@@ -1,27 +1,21 @@
 import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
-  View,
-  Text,
   Dimensions,
-  TouchableOpacity,
+
 } from 'react-native';
-import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
 import { Theme } from '../../theme/Colours';
 import EmptyMessages from '../../assets/svg/empty-messages.svg'
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import {AuthContext, parseChats, graphqlify, getDefaultImage} from '../../context';
-import { useLazyQuery, useQuery, useMutation } from '@apollo/react-hooks';
+import {AuthContext, graphqlify, getDefaultImage} from '../../context';
+import { useMutation } from '@apollo/react-hooks';
 import { GET_USER_FRIENDS, NEW_CHAT } from '../../graphql';
 import SearchableFlatList from './SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 
 
 const { colours } = Theme.light;
-const window = Dimensions.get('window').height;
-const window05 = window * 0.05;
-
 const NewMessageBottomModal = React.forwardRef(({ friends, setData }, ref) => {
   const { authState } = useContext(AuthContext);
   const [friendsSelection, setFriendsSelection] = useState([]);

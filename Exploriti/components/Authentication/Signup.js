@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,11 +10,8 @@ import {
   Platform,
   Alert,
   Animated,
-  KeyboardAvoidingView,
-  Keyboard,
 } from 'react-native';
 import SegmentedControl from '@react-native-community/segmented-control';
-import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
 import { ThemeStatic } from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
@@ -67,7 +64,7 @@ export default function Signup({ navigation }) {
   const [image, setImage] = useState(getDefaultImage());
   const [imageSelection, setImageSelection] = useState(null);
   const [page, setPage] = useState(1);
-  const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
+  const [animatedValue] = useState(new Animated.Value(0));
   const [animatedNumber, setAnimatedNumber] = useState(0);
 
   const programRef = useRef();
@@ -174,7 +171,7 @@ export default function Signup({ navigation }) {
 
     if (page === 1) {
       title =
-        index == 0 ? 'Continue as Student (1/4)' : 'Continue as Leader (1/4)';
+        index === 0 ? 'Continue as Student (1/4)' : 'Continue as Leader (1/4)';
     } else if (page === 2) {
       title = 'Continue (2/4)';
     } else if (page === 3) {

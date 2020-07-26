@@ -1,6 +1,5 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
-  ImageBackground,
   StyleSheet,
   View,
   Dimensions,
@@ -9,7 +8,6 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
 } from 'react-native';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -42,15 +40,12 @@ export default function Login({ navigation }) {
   const passwordRef = useRef();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string()
-      .email('Invalid email')
-      .required('Required'),
-    password: Yup.string()
-      .required('Required'),
+    email: Yup.string().email('Invalid email').required('Required'),
+    password: Yup.string().required('Required'),
   });
 
   const processLogin = async ({ email, password }) => {
-    console.log('processLogin', email, password)
+    console.log('processLogin', email, password);
     try {
       await firebase
         .auth()
@@ -64,11 +59,13 @@ export default function Login({ navigation }) {
         'Login Unsuccessful',
         `${error.message}`,
 
-        [{
-          text: 'Ok',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'default',
-        }],
+        [
+          {
+            text: 'Ok',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'default',
+          },
+        ],
       );
     }
   };
@@ -96,8 +93,7 @@ export default function Login({ navigation }) {
         style={styles.bg}
         scrollEnabled={false}
         bounces={false}
-        enableOnAndroid={true}
-      >
+        enableOnAndroid={true}>
         <TouchableOpacity
           style={styles.backArrow}
           onPress={() => {
@@ -120,7 +116,14 @@ export default function Login({ navigation }) {
           initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
           onSubmit={(values) => processLogin(values)}>
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
             <>
               <TextLine
                 style={styles.textLine}
@@ -134,7 +137,7 @@ export default function Login({ navigation }) {
                 onBlur={handleBlur('email')}
                 error={errors.email}
                 touched={touched.email}
-                onSubmit={()=>passwordRef.current.focus()}
+                onSubmit={() => passwordRef.current.focus()}
                 blurOnSubmit={false}
               />
               <TextLine
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   backgroundImage: {
-   flex: 1
+    flex: 1,
   },
   logo: {
     alignSelf: 'center',

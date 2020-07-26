@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { ScrollView, Text, View, StyleSheet, Image } from "react-native";
-import ButtonColour from "../ReusableComponents/ButtonColour";
-import { Theme } from "../../theme/Colours";
-import Fonts from "../../theme/Fonts";
-import images from "../../assets/images";
+import React, { useState } from 'react';
+import { ScrollView, Text, View, StyleSheet, Image } from 'react-native';
+import ButtonColour from '../ReusableComponents/ButtonColour';
+import { Theme } from '../../theme/Colours';
+import Fonts from '../../theme/Fonts';
+import images from '../../assets/images';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -18,12 +18,12 @@ export default function Landing({ navigation }) {
   const [interval, setInterval] = useState(1);
   const [width, setWidth] = useState(0);
 
-  const getInterval = offset => {
+  const getInterval = (offset) => {
     for (let i = 1; i <= 4; i++) {
       if (offset < (width / 4) * i) {
         return i;
       }
-      if (i == 4) {
+      if (i === 4) {
         return i;
       }
     }
@@ -43,8 +43,6 @@ export default function Landing({ navigation }) {
     );
   }
 
-
-
   return (
     <>
       <View style={styles.container}>
@@ -52,8 +50,8 @@ export default function Landing({ navigation }) {
           horizontal={true}
           contentContainerStyle={{ ...styles.scrollView, width: `${100 * 4}%` }}
           showsHorizontalScrollIndicator={false}
-          onContentSizeChange={(w, h) => setWidth(w)}
-          onScroll={data => {
+          onContentSizeChange={(w) => setWidth(w)}
+          onScroll={(data) => {
             setInterval(getInterval(data.nativeEvent.contentOffset.x));
           }}
           scrollEventThrottle={200}
@@ -61,7 +59,7 @@ export default function Landing({ navigation }) {
           pagingEnabled>
           <Slide
             key={1}
-            title={"Welcome to YorkU Hub!"}
+            title={'Welcome to YorkU Hub!'}
             content={
               "Find out what's going on around you, and make the most out of your orientation experience, the simple way."
             }
@@ -69,15 +67,15 @@ export default function Landing({ navigation }) {
           />
           <Slide
             key={2}
-            title={"Get Involved, Easily"}
+            title={'Get Involved, Easily'}
             content={
-              "YorkU Hub is your orientation concierge. Frosh, events, groups... Discover them all!"
+              'YorkU Hub is your orientation concierge. Frosh, events, groups... Discover them all!'
             }
             img={images.landing2}
           />
           <Slide
             key={3}
-            title={"Relevant Results"}
+            title={'Relevant Results'}
             content={
               "YorkU Hub uses a custom algorithm to filter results based on what we think you'll be the most interested in. Cool right?"
             }
@@ -85,9 +83,9 @@ export default function Landing({ navigation }) {
           />
           <Slide
             key={4}
-            title={"Get Social"}
+            title={'Get Social'}
             content={
-              "See what events and clubs all of your friends are involved in. Everything is more fun with friends, even YorkU Hub."
+              'See what events and clubs all of your friends are involved in. Everything is more fun with friends, even YorkU Hub.'
             }
             img={images.landing4}
           />
@@ -97,20 +95,20 @@ export default function Landing({ navigation }) {
       <View style={styles.buttons}>
         <View style={styles.bullets}>{bullets}</View>
         <ButtonColour
-          label={"Sign Up"}
+          label={'Sign Up'}
           containerStyle={styles.signUp}
           onPress={() => {
-            navigation.navigate("Signup");
+            navigation.navigate('Signup');
           }}
           colour={colours.accent}
           light={true}
         />
         <ButtonColour
-          label={"Log In"}
+          label={'Log In'}
           containerStyle={styles.logIn}
           labelStyle={{ color: colours.accent }}
           onPress={() => {
-            navigation.navigate("Login");
+            navigation.navigate('Login');
           }}
         />
       </View>
@@ -118,14 +116,13 @@ export default function Landing({ navigation }) {
   );
 }
 
-
 const Slide = ({ title, content, img }) => {
   return (
-      <View style={styles.slide}>
-        <Image source={img} style={styles.image} />
-        <Text style={styles.slideHeading}>{title}</Text>
-        <Text style={{ ...styles.slideText }}>{content}</Text>
-      </View>
+    <View style={styles.slide}>
+      <Image source={img} style={styles.image} />
+      <Text style={styles.slideHeading}>{title}</Text>
+      <Text style={{ ...styles.slideText }}>{content}</Text>
+    </View>
   );
 };
 
@@ -136,18 +133,18 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 3,
-    backgroundColor: colours.base
+    backgroundColor: colours.base,
   },
   scrollView: {
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   bullets: {
-    position: "absolute",
-    alignSelf: "center",
+    position: 'absolute',
+    alignSelf: 'center',
     top: 0,
-    display: "flex",
-    justifyContent: "flex-start",
-    flexDirection: "row",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
     paddingHorizontal: 10,
     paddingTop: 5,
     zIndex: 2,
@@ -160,19 +157,19 @@ const styles = StyleSheet.create({
   slide: {
     paddingHorizontal: 20,
     paddingTop: 30,
-    maxWidth: "100%",
-    alignItems: "center",
-    justifyContent: "flex-end",
+    maxWidth: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   slideText: {
-    width: "80%",
-    textAlign: "center",
+    width: '80%',
+    textAlign: 'center',
     ...FontSizes.Caption,
     ...FontWeights.Regular,
     color: colours.text02,
   },
   slideHeading: {
-    textAlign: "center",
+    textAlign: 'center',
     ...FontSizes.SubHeading,
     ...FontWeights.Bold,
     paddingVertical: 10,
@@ -180,18 +177,18 @@ const styles = StyleSheet.create({
   buttons: {
     flex: 1,
     paddingHorizontal: 20,
-    justifyContent: "center",
-    backgroundColor: colours.base
+    justifyContent: 'center',
+    backgroundColor: colours.base,
   },
   signUp: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   logIn: {
-    backgroundColor: "rgba(0, 0, 0, 0)",
+    backgroundColor: 'rgba(0, 0, 0, 0)',
     marginTop: 10,
   },
   image: {
     height: 400,
-    width: "100%",
+    width: '100%',
   },
 });

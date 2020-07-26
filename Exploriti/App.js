@@ -31,22 +31,16 @@ import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
 import { AuthContext } from './context';
-import Icon from 'react-native-vector-icons/EvilIcons';
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER } from './graphql';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
-import AnimatedTabBar, {
-  TabsConfig,
-  BubbleTabConfig,
-} from '@gorhom/animated-tabbar';
+import AnimatedTabBar from '@gorhom/animated-tabbar';
 import OrientationSVG from './assets/svg/OrientationSVG';
 import NotificationsSVG from './assets/svg/NotificationsSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
-import SearchSVG from './assets/svg/SearchSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -75,7 +69,7 @@ const iconColor = {
   inactiveColor: 'rgba(0,0,0,1)',
 };
 
-const tabs: TabsConfig<BubbleTabConfig> = {
+const tabs = {
   Orientation: {
     icon: {
       component: OrientationSVG,
@@ -125,7 +119,7 @@ const MainStack = () => {
     variables: { id: authState.user.uid },
   });
 
-  if (loading){
+  if (loading) {
     return <Loading />;
   }
   if (error) return <Error e={error} />;
@@ -236,7 +230,6 @@ export default function App() {
     link,
     cache: new InMemoryCache(),
   });
-
 
   return (
     <ApolloProvider client={client}>

@@ -9,13 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import Fonts from '../../theme/Fonts';
-import { ThemeStatic } from '../../theme/Colours';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   BAN_USER,
-  GET_ALL_GROUPS, GET_ALL_USERS,
+  GET_ALL_USERS,
   GET_ORIENTATION_GROUPS,
-  GET_USER_FRIENDS_ID,
   SEARCH_USERS,
 } from '../../graphql';
 import GiveTrophyModal from '../Modal/GiveTrophyModal';

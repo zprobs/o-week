@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
-import { CHECK_USER_OWNS_GROUP, GET_GROUP, GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
+import { GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
 import { AuthContext } from '../../context';
 
@@ -28,16 +28,20 @@ const HEIGHT = Dimensions.get('window').height;
  * @returns {*}
  * @constructor
  */
-const GroupScreen = ({route}) => {
+const GroupScreen = ({ route }) => {
+  const modalRef = useRef();
+  const editRef = useRef();
+  const creatEventRef = useRef();
+  const { groupId } = route.params;
+  const { authState } = useContext(AuthContext);
 
-    const modalRef = useRef();
-    const editRef = useRef();
-    const creatEventRef = useRef();
-    const {groupId} = route.params
-  const {authState} = useContext(AuthContext);
-
-  const {data, loading, error} = useQuery(GET_GROUP_IMAGE_NAME, {variables: {id: groupId}})
-  const {data: isOwnerData, error: isOwnerError} = useQuery(GET_USER_GROUPS, {variables: {id: authState.user.uid }, fetchPolicy: 'cache-only'})
+  const { data, loading, error } = useQuery(GET_GROUP_IMAGE_NAME, {
+    variables: { id: groupId },
+  });
+  const { data: isOwnerData, error: isOwnerError } = useQuery(GET_USER_GROUPS, {
+    variables: { id: authState.user.uid },
+    fetchPolicy: 'cache-only',
+  });
 
   if (loading) {
     console.log('groupScreen Loading');
@@ -50,101 +54,113 @@ const GroupScreen = ({route}) => {
     return null;
   }
 
-  const filteredMemberships = isOwnerData.user.member.filter((membership) => membership.group.id === groupId);
+  const filteredMemberships = isOwnerData.user.member.filter(
+    (membership) => membership.group.id === groupId,
+  );
 
-  const isMember =  filteredMemberships.length > 0;
-  const isOwner =  isMember && filteredMemberships[0].isOwner === true;
+  const isMember = filteredMemberships.length > 0;
+  const isOwner = isMember && filteredMemberships[0].isOwner === true;
 
-
-  const {group} = data;
+  const { group } = data;
 
   const edit = () => {
-      modalRef.current.close();
-      editRef.current.open();
-  }
+    modalRef.current.close();
+    editRef.current.open();
+  };
 
   const createEvent = () => {
     modalRef.current.close();
     creatEventRef.current.open();
-  }
+  };
 
   const onCloseEdit = () => {
-      modalRef.current.open();
-  }
+    modalRef.current.open();
+  };
 
-    return (
-      <View style={styles.container}>
-        <ImageBackground source={{uri: group.image}} style={styles.backgroundImage}>
-            <View style={styles.header}>
-              <View style={styles.icons}>
-                <CircleBackIcon style={styles.circleBackIcon}/>
-                {
-                  isOwner ? (
-                    <View>
-                    <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
-                    <CircleEditIcon style={styles.circleEditIcon} onPress={createEvent} icon={'calendar'} />
-                    </View>
-                  ) : null
-                }
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        source={{ uri: group.image }}
+        style={styles.backgroundImage}>
+        <View style={styles.header}>
+          <View style={styles.icons}>
+            <CircleBackIcon style={styles.circleBackIcon} />
+            {isOwner ? (
+              <View>
+                <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
+                <CircleEditIcon
+                  style={styles.circleEditIcon}
+                  onPress={createEvent}
+                  icon={'calendar'}
+                />
               </View>
-                <LinearGradient colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}  style={styles.titleContainer}>
-                    <Text style={styles.title}>{group.name}</Text>
-                </LinearGradient>
-            </View>
-        </ImageBackground>
-          <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember}/>
-        {isOwner ? (
-          <>
-          <GroupEditModal ref={editRef} groupId={group.id} onClose={onCloseEdit}/>
-          <NewEventModal ref={creatEventRef} groupId={group.id} onClose={onCloseEdit} groupName={group.name}/>
-          </>
-          ) : null}
-      </View>
-    );
-}
+            ) : null}
+          </View>
+          <LinearGradient
+            colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
+            style={styles.titleContainer}>
+            <Text style={styles.title}>{group.name}</Text>
+          </LinearGradient>
+        </View>
+      </ImageBackground>
+      <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember} />
+      {isOwner ? (
+        <>
+          <GroupEditModal
+            ref={editRef}
+            groupId={group.id}
+            onClose={onCloseEdit}
+          />
+          <NewEventModal
+            ref={creatEventRef}
+            groupId={group.id}
+            onClose={onCloseEdit}
+            groupName={group.name}
+          />
+        </>
+      ) : null}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-   container: {
-       flex: 1,
-       backgroundColor: colours.base
-   },
-    backgroundImage: {
-       width: '100%',
-        height: HEIGHT*0.44
-    },
-    header: {
-        justifyContent: 'space-between',
-        height: HEIGHT*0.44,
-        alignItems: 'flex-start',
-    },
-  icons: {
-     flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: colours.base,
+  },
+  backgroundImage: {
+    width: '100%',
+    height: HEIGHT * 0.44,
+  },
+  header: {
     justifyContent: 'space-between',
-    width: '100%'
+    height: HEIGHT * 0.44,
+    alignItems: 'flex-start',
   },
-    circleBackIcon: {
-      marginTop: 45,
-        marginLeft: 20,
-    },
+  icons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  circleBackIcon: {
+    marginTop: 45,
+    marginLeft: 20,
+  },
   circleEditIcon: {
-     marginTop: 45,
-    marginRight: 20
+    marginTop: 45,
+    marginRight: 20,
   },
-    titleContainer: {
-        paddingBottom: 48,
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        width: '100%',
-
-
-    },
-    title: {
-        ...FontWeights.Bold,
-        ...FontSizes.Heading,
-        color: colours.white
-    }
-
-
+  titleContainer: {
+    paddingBottom: 48,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    width: '100%',
+  },
+  title: {
+    ...FontWeights.Bold,
+    ...FontSizes.Heading,
+    color: colours.white,
+  },
 });
 
 export default GroupScreen;

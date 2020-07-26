@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Text, TextInput, View, StyleSheet, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import Fonts from '../../theme/Fonts';
-import { Theme, ThemeStatic } from '../../theme/Colours';
+import { ThemeStatic } from '../../theme/Colours';
 
 const { FontWeights, FontSizes } = Fonts;
-const { colours } = Theme.light;
 
 /**
  * A custom Text Input with three possible states: 'emailAddress', 'name', and 'password'
@@ -33,11 +32,10 @@ const TextLine = React.forwardRef(
       blurOnSubmit,
       onBlur,
       error,
-      touched
+      touched,
     },
     ref,
   ) => {
-
     const keyboardType = () => {
       switch (type) {
         case 'email':
@@ -49,17 +47,18 @@ const TextLine = React.forwardRef(
       }
     };
 
-    const textContentType = type === 'email' ? 'emailAddress' : type
+    const textContentType = type === 'email' ? 'emailAddress' : type;
 
     const secureTextEntry = type === 'password';
 
     const capitalize = type === 'name' ? 'words' : 'none';
 
-
-    const isValid = !touched ||  !error
+    const isValid = !touched || !error;
 
     const color = isValid ? ThemeStatic.white : ThemeStatic.red;
-    const placeholderColor = isValid ? ThemeStatic.placeholder : ThemeStatic.red;
+    const placeholderColor = isValid
+      ? ThemeStatic.placeholder
+      : ThemeStatic.red;
 
     if (blurOnSubmit === undefined) blurOnSubmit = true;
 
@@ -96,21 +95,29 @@ const TextLine = React.forwardRef(
         ...FontSizes.Caption,
         ...FontWeights.Bold,
         color: color,
-      }
+      },
     });
 
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}} >
-        <Text style={styles.label} numberOfLines={1} flexWrap={'nowrap'}>
-          {label}
-        </Text>
-          {
-            !isValid && <Text style={styles.error}>{error}</Text>
-          }
-      </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Text style={styles.label} numberOfLines={1} flexWrap={'nowrap'}>
+            {label}
+          </Text>
+          {!isValid && <Text style={styles.error}>{error}</Text>}
+        </View>
         <View style={styles.input}>
-          <Icon size={28} name={isValid ? icon : 'close-o' } color={color} style={styles.icon} />
+          <Icon
+            size={28}
+            name={isValid ? icon : 'close-o'}
+            color={color}
+            style={styles.icon}
+          />
           <TextInput
             placeholder={placeholder}
             placeholderTextColor={placeholderColor}

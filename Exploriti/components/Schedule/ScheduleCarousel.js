@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   Animated,
   StatusBar,
 } from 'react-native';
-import { Theme, ThemeStatic } from '../../theme/Colours';
+import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import Carousel from 'react-native-snap-carousel';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -18,14 +18,12 @@ import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-import {AuthContext} from '../../context';
+import { AuthContext } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = 0.75 * WIDTH;
-
-
 
 /**
  * Schedule to display events in a carousel
@@ -33,42 +31,45 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const ScheduleCarousel = () => {
-  const {authState} = useContext(AuthContext);
-  const {data, loading, error} = useQuery(GET_SCHEDULED_EVENTS, {
+  const { authState } = useContext(AuthContext);
+  const { data, loading, error } = useQuery(GET_SCHEDULED_EVENTS, {
     variables: {
-      userId: authState.user.uid
-    }
+      userId: authState.user.uid,
+    },
   });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
-  const [titleOpacity, setTitleOpacity] = useState(new Animated.Value(1));
-  const [scheduleData, setScheduleData] = useState([]);
+  const [titleOpacity] = useState(new Animated.Value(1));
+  const [scheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  useEffect(()=> {
+  useEffect(() => {
     // separating all the events into pages based on which day they occur on.
-    if (!data || data.events.length===0) return;
+    if (!data || data.events.length === 0) return;
 
     // reset schedule data (Kind of a weird solution and I honestly dont fully understand so may not be efficient or stable)
-    scheduleData.forEach((item)=>item=null);
+    scheduleData.forEach((item) => (item = null));
     scheduleData.length = 0;
 
     // keep track of all groupIds that are not on user's calendar and then don't render event if that group made it
     const notOnCalendar = [];
-    data.user.member.forEach((member)=>{
+    data.user.member.forEach((member) => {
       if (!member.onCalendar) notOnCalendar.push(member.groupId);
-    })
-
+    });
 
     let i = 0;
     let array = [];
     let date = undefined;
-    data.events.forEach((event)=>{
-      if (notOnCalendar.includes(event.hosts[0].groupId)) return
+    data.events.forEach((event) => {
+      if (notOnCalendar.includes(event.hosts[0].groupId)) return;
       const thisDate = new Date(event.startDate);
       if (date === undefined) date = thisDate;
-      if (thisDate.getFullYear() === date.getFullYear() && thisDate.getMonth() === date.getMonth() && thisDate.getDate() === date.getDate()) {
-        array.push(event)
+      if (
+        thisDate.getFullYear() === date.getFullYear() &&
+        thisDate.getMonth() === date.getMonth() &&
+        thisDate.getDate() === date.getDate()
+      ) {
+        array.push(event);
       } else {
         scheduleData[i] = array;
         i++;
@@ -76,21 +77,18 @@ const ScheduleCarousel = () => {
         array.push(event);
         date = new Date(event.startDate);
       }
-    })
+    });
     // one more time to catch the last day which isn't handeled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
     // to trigger a rerender to display the title date
     setIndex(0);
+  }, [data]);
 
-  }, [data])
-
-
-  if (error) return null
-
+  if (error) return null;
 
   const title = () => {
-    if (!scheduleData[index] || scheduleData[index].length <= 0) return null
-    const day = new Date(scheduleData[index][0].startDate).getDay()
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return null;
+    const day = new Date(scheduleData[index][0].startDate).getDay();
     switch (day) {
       case 0:
         return 'Sunday';
@@ -109,12 +107,23 @@ const ScheduleCarousel = () => {
     }
   };
 
-
-  const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' })
+  const dateTimeFormat = new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const pageDate = () => {
     if (!scheduleData[index] || scheduleData[index].length <= 0) return null;
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat .formatToParts(new Date(scheduleData[index][0].startDate))
+    const [
+      { value: month },
+      ,
+      { value: day },
+      ,
+      { value: year },
+    ] = dateTimeFormat.formatToParts(
+      new Date(scheduleData[index][0].startDate),
+    );
     return `${month} ${day} ${year}`;
   };
 
@@ -129,7 +138,9 @@ const ScheduleCarousel = () => {
               image={event.image}
               startDate={event.startDate}
               key={event.id}
-              userImages={event.attendees.map((attendee)=>attendee.user.image)}
+              userImages={event.attendees.map(
+                (attendee) => attendee.user.image,
+              )}
               count={event.attendees_aggregate.aggregate.count}
               description={event.description}
               hosts={event.hosts}
@@ -155,32 +166,32 @@ const ScheduleCarousel = () => {
     });
   };
 
-
   return (
-      <LinearGradient
-        colors={['#ed1b2f', '#fc8c62']}
-        style={{ height: HEIGHT }}>
-        <SafeAreaView>
-          {
-            isFocused ?
-                <StatusBar barStyle="light-content"/>
-                :
-                null
-          }
-          <ScrollView bounces={false}>
-            <View style={styles.header}>
-              <View style={{minWidth: '65%'}}>
-                <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
-                  {title()}
-                </Animated.Text>
+    <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
+      <SafeAreaView>
+        {isFocused ? <StatusBar barStyle="light-content" /> : null}
+        <ScrollView bounces={false}>
+          <View style={styles.header}>
+            <View style={{ minWidth: '65%' }}>
+              <Animated.Text
+                style={{ ...styles.dayText, opacity: titleOpacity }}>
+                {title()}
+              </Animated.Text>
 
               <Text style={styles.dateText}>{pageDate()}</Text>
             </View>
-              <Icon size={32} name={'calendar'} color={'white'} onPress={()=>{
-                navigation.navigate('Calendar', {myCalendars: data.user.member})
-              }} />
-            </View>
-            <Carousel
+            <Icon
+              size={32}
+              name={'calendar'}
+              color={'white'}
+              onPress={() => {
+                navigation.navigate('Calendar', {
+                  myCalendars: data.user.member,
+                });
+              }}
+            />
+          </View>
+          <Carousel
             ref={carouselRef}
             data={scheduleData}
             renderItem={renderItem}
@@ -190,14 +201,13 @@ const ScheduleCarousel = () => {
             removeClippedSubviews={false}
             onBeforeSnapToItem={onSwipe}
           />
-          </ScrollView>
-        </SafeAreaView>
-      </LinearGradient>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-
   header: {
     flexDirection: 'row',
     marginHorizontal: 25,
@@ -217,13 +227,11 @@ const styles = StyleSheet.create({
     color: ThemeStatic.placeholder,
     opacity: 0.8,
   },
-  slide: {
-  },
+  slide: {},
   carousel: {
     marginTop: 30,
-    height: HEIGHT
+    height: HEIGHT,
   },
-
 });
 
 export default ScheduleCarousel;

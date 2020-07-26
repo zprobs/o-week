@@ -20,9 +20,9 @@ const { colours } = Theme.light;
 const UserCard = ({ userId, groupId, image, name, onPress, style }) => {
   const navigation = useNavigation();
 
-  const id = userId ? userId : groupId
+  const id = userId ? userId : groupId;
   const destination = userId ? 'Profile' : 'GroupScreen';
-  const options = userId ? {userId: userId} : {groupId: groupId}
+  const options = userId ? { userId: userId } : { groupId: groupId };
 
   const navigateToProfile = () => {
     navigation.push(destination, options);
@@ -31,7 +31,7 @@ const UserCard = ({ userId, groupId, image, name, onPress, style }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.95}
-      onPress={onPress ? ()=>onPress(id) : navigateToProfile}
+      onPress={onPress ? () => onPress(id) : navigateToProfile}
       style={[styles.container, style]}>
       <Image source={{ uri: image }} style={styles.avatarImage} />
       <View style={styles.info}>

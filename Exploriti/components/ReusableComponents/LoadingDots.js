@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 
 const SIZE = 7;
 const MARGIN = 5;

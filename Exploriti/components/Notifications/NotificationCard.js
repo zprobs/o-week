@@ -1,51 +1,78 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import { parseTimeElapsed } from '../../context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GET_EVENT, GET_EVENT_IMAGE_NAME, GET_USER_BY_ID, GET_USERS_BY_ID, SEE_NOTIFICATION } from '../../graphql';
-import {useNavigation} from '@react-navigation/native';
+import {
+  GET_EVENT_IMAGE_NAME,
+  GET_USER_BY_ID,
+  SEE_NOTIFICATION,
+} from '../../graphql';
+import { useNavigation } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
-const WIDTH = Dimensions.get('window').width;
 
-const NotificationCard = ({ image, title, message, timestamp, id, seen, nav }) => {
+const NotificationCard = ({
+  image,
+  title,
+  message,
+  timestamp,
+  id,
+  seen,
+  nav,
+}) => {
+  const [seeNotification] = useMutation(SEE_NOTIFICATION, {
+    variables: { id: id },
+  });
+  const [isSeen, setIsSeen] = useState(seen);
 
-const [seeNotification] = useMutation(SEE_NOTIFICATION, {variables: {id: id }})
-  const [isSeen, setIsSeen] = useState(seen)
-
-  console.log('seen', seen)
+  console.log('seen', seen);
 
   const onPress = () => {
-  if (!isSeen) {
-    setIsSeen(true)
-    seeNotification();
-  }
-  nav && nav();
-  }
+    if (!isSeen) {
+      setIsSeen(true);
+      seeNotification();
+    }
+    nav && nav();
+  };
 
   return (
-    <TouchableOpacity style={[styles.container, {backgroundColor: isSeen ? colours.placeholder : colours.base}]} onPress={onPress}>
+    <TouchableOpacity
+      style={[
+        styles.container,
+        { backgroundColor: isSeen ? colours.placeholder : colours.base },
+      ]}
+      onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: image }} style={styles.image}/>
+        <Image source={{ uri: image }} style={styles.image} />
         <View style={styles.textContainer}>
-          <Text style={styles.message}><Text style={{ ...FontWeights.Bold }}>{title}</Text>{` ${message}`}</Text>
+          <Text style={styles.message}>
+            <Text style={{ ...FontWeights.Bold }}>{title}</Text>
+            {` ${message}`}
+          </Text>
         </View>
       </View>
-      <Text style={styles.timeStamp}>{parseTimeElapsed(timestamp).readableTime}</Text>
+      <Text style={styles.timeStamp}>
+        {parseTimeElapsed(timestamp).readableTime}
+      </Text>
     </TouchableOpacity>
   );
-}
+};
 
-const LoadingNotificationCard = () => (
-  <Text>Loading...</Text>
-)
+const LoadingNotificationCard = () => <Text>Loading...</Text>;
 
-const ErrorNotificationsCard = ({error}) => (
+const ErrorNotificationsCard = ({ error }) => (
   <Text>{`Error: ${error.message}`}</Text>
-)
+);
 
 export const SystemNotificationCard = ({ item }) => {
   return (
@@ -63,25 +90,59 @@ export const SystemNotificationCard = ({ item }) => {
 };
 
 export const UserNotificationCard = ({ item, message }) => {
-  const {loading, data, error} = useQuery(GET_USER_BY_ID, {variables: {id: item.typeId}})
-  const navigation = useNavigation()
-  if (loading) return <LoadingNotificationCard/>
-  if (error || !data.user) return <ErrorNotificationsCard error={error ? error : {message: 'no users found'}} />
+  const { loading, data, error } = useQuery(GET_USER_BY_ID, {
+    variables: { id: item.typeId },
+  });
+  const navigation = useNavigation();
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.user)
+    return (
+      <ErrorNotificationsCard
+        error={error ? error : { message: 'no users found' }}
+      />
+    );
   const nav = () => {
-    navigation.push('Profile', {userId: item.typeId})
-  }
-  return <NotificationCard timestamp={item.timestamp} title={data.user.name} message={message} image={data.user.image} id={item.id} seen={item.seen} nav={nav} />
+    navigation.push('Profile', { userId: item.typeId });
+  };
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={data.user.name}
+      message={message}
+      image={data.user.image}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+    />
+  );
 };
 
 export const EventNotificationCard = ({ item, message }) => {
-  const {loading, data, error} = useQuery(GET_EVENT_IMAGE_NAME, {variables: {id: item.typeId}})
-  const navigation = useNavigation()
-  if (loading) return <LoadingNotificationCard/>
-  if (error || !data.event) return <ErrorNotificationsCard error={error ? error : {message: 'Could not find event'}} />
+  const { loading, data, error } = useQuery(GET_EVENT_IMAGE_NAME, {
+    variables: { id: item.typeId },
+  });
+  const navigation = useNavigation();
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.event)
+    return (
+      <ErrorNotificationsCard
+        error={error ? error : { message: 'Could not find event' }}
+      />
+    );
   const nav = () => {
-    navigation.push('EventScreen', {eventId: item.typeId})
-  }
-  return <NotificationCard timestamp={item.timestamp} title={data.event.name} message={message} image={data.event.image} id={item.id} seen={item.seen} nav={nav} />
+    navigation.push('EventScreen', { eventId: item.typeId });
+  };
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={data.event.name}
+      message={message}
+      image={data.event.image}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -102,7 +163,6 @@ const styles = StyleSheet.create({
   textContainer: {
     width: '70%',
     justifyContent: 'center',
-
   },
   message: {
     ...FontSizes.Body,
@@ -115,8 +175,8 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.SubText,
     color: colours.text02,
-    marginRight: 8
-  }
+    marginRight: 8,
+  },
 });
 
 export default NotificationCard;

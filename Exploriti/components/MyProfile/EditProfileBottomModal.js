@@ -1,10 +1,10 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
   Dimensions,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -15,20 +15,19 @@ import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import { yearsData, AuthContext, yearToInt, saveImage } from '../../context';
+import { AuthContext, saveImage, yearsData, yearToInt } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
   GET_PROGRAMS,
-  UPDATE_USER,
   GET_USER_INTERESTS,
+  UPDATE_USER,
   UPDATE_USER_INTERESTS,
   UPDATE_USER_PROGRAMS,
 } from '../../graphql';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import ImagePicker from "react-native-image-crop-picker";
-import {useHeaderHeight} from '@react-navigation/stack';
-
+import ImagePicker from 'react-native-image-crop-picker';
+import { useHeaderHeight } from '@react-navigation/stack';
 
 /**
  * Modal for editing the logged in users data
@@ -45,14 +44,14 @@ const EditProfileBottomModal = React.forwardRef(
     const [updateUser] = useMutation(UPDATE_USER);
     const [updateInterests] = useMutation(UPDATE_USER_INTERESTS);
     const [updatePrograms] = useMutation(UPDATE_USER_PROGRAMS);
-    const headerHeight = useHeaderHeight()
+    const headerHeight = useHeaderHeight();
     // only call query when modal has been opened
-    const [
-      getInterests,
-      { called, loading, data, error },
-    ] = useLazyQuery(GET_USER_INTERESTS, {
-      variables: { id: authState.user.uid },
-    });
+    const [getInterests, { called, loading, data, error }] = useLazyQuery(
+      GET_USER_INTERESTS,
+      {
+        variables: { id: authState.user.uid },
+      },
+    );
     const [editableImage, setEditableImage] = useState(image);
     const [imageSelection, setImageSelection] = useState();
     const [editableName, setEditableName] = useState(name);
@@ -74,8 +73,8 @@ const EditProfileBottomModal = React.forwardRef(
 
     const programTitle = () => {
       if (programsSelection) {
-          if (editablePrograms[0] == undefined) editablePrograms.shift()
-          return editablePrograms.join(', ');
+        if (editablePrograms[0] == undefined) editablePrograms.shift();
+        return editablePrograms.join(', ');
       }
       return 'Change program';
     };
@@ -118,12 +117,12 @@ const EditProfileBottomModal = React.forwardRef(
         height: 400,
         cropping: true,
       })
-        .then(selectedImage => {
+        .then((selectedImage) => {
           setEditableImage(selectedImage.path);
           setImageSelection(selectedImage);
         })
-        .catch(result => console.log(result));
-    }
+        .catch((result) => console.log(result));
+    };
 
     const onDone = async () => {
       setIsUploading(true);
@@ -160,8 +159,7 @@ const EditProfileBottomModal = React.forwardRef(
       }
 
       if (imageSelection) {
-        const imageURL = await saveImage(imageSelection, image);
-        fields.image = imageURL
+        fields.image = await saveImage(imageSelection, image);
       }
 
       if (Object.keys(fields).length !== 0) {
@@ -178,7 +176,6 @@ const EditProfileBottomModal = React.forwardRef(
         ref.current.close();
       }
     };
-
 
     return (
       <>
@@ -282,7 +279,7 @@ const EditProfileBottomModal = React.forwardRef(
                 aliased={false}
                 max={4}
                 min={1}
-                floatingButtonText={"Done"}
+                floatingButtonText={'Done'}
                 floatingButtonOffset={headerHeight}
               />
               <SearchableFlatList
@@ -297,7 +294,7 @@ const EditProfileBottomModal = React.forwardRef(
                 max={5}
                 min={1}
                 offset={Dimensions.get('window').height * 0.3}
-                floatingButtonText={"Done"}
+                floatingButtonText={'Done'}
               />
             </>
           ) : null

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Image, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { Theme } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 const { colours } = Theme.light;
@@ -20,7 +20,7 @@ const ImgBanner = ({ Img, placeholder, spacing, textStyle }) => {
 
   return (
     <View style={[styles.container, { marginTop: space || undefined }]}>
-      <Img height={window*0.3} width={window*0.3} />
+      <Img height={window * 0.3} width={window * 0.3} />
       <Text style={[styles.placeholderText, textStyle]}>{placeholder}</Text>
     </View>
   );

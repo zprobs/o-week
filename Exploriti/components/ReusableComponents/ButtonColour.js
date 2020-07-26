@@ -27,7 +27,7 @@ const ButtonColour = ({
   labelStyle,
   colour,
   light,
-    loadColour
+  loadColour,
 }) => {
   const styles = StyleSheet.create({
     container: {
@@ -53,7 +53,10 @@ const ButtonColour = ({
   });
 
   let content = (
-    <LoadingDots background={loadColour ? loadColour : '#fafafa'} activeBackground={loadColour ? loadColour : ThemeStatic.white} />
+    <LoadingDots
+      background={loadColour ? loadColour : '#fafafa'}
+      activeBackground={loadColour ? loadColour : ThemeStatic.white}
+    />
   );
   if (!loading)
     content = (

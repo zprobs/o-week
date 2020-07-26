@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native'
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { StyleSheet, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Fonts from '../../theme/Fonts';
-import {ThemeStatic} from '../../theme/Colours';
+import { ThemeStatic } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -15,37 +15,34 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-export default function Selection({title, onPress, accent}) {
+export default function Selection({ title, onPress, accent }) {
+  const styles = StyleSheet.create({
+    container: {
+      borderRadius: 8,
+      borderWidth: 3,
+      color: accent ? ThemeStatic.accent : ThemeStatic.white,
+      borderColor: accent ? ThemeStatic.accent : ThemeStatic.white,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    title: {
+      ...FontWeights.Bold,
+      ...FontSizes.Caption,
+      color: accent ? ThemeStatic.accent : ThemeStatic.white,
+      padding: 15,
+    },
+    icon: {
+      color: accent ? ThemeStatic.accent : ThemeStatic.white,
+      paddingRight: 15,
+      alignContent: 'center',
+    },
+  });
 
-    const styles = StyleSheet.create({
-        container: {
-            borderRadius: 8,
-            borderWidth: 3,
-            color: accent ? ThemeStatic.accent : ThemeStatic.white,
-            borderColor: accent ? ThemeStatic.accent : ThemeStatic.white,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-        },
-        title: {
-            ...FontWeights.Bold,
-            ...FontSizes.Caption,
-            color: accent ? ThemeStatic.accent : ThemeStatic.white,
-            padding: 15,
-        },
-        icon: {
-            color: accent ? ThemeStatic.accent : ThemeStatic.white,
-            paddingRight: 15,
-            alignContent: 'center'
-        }
-    });
-
-    return (
-        <TouchableOpacity onPress={onPress} style={styles.container}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Icon name={'chevron-down'} size={30} style={styles.icon}/>
-        </TouchableOpacity>
-    );
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      <Icon name={'chevron-down'} size={30} style={styles.icon} />
+    </TouchableOpacity>
+  );
 }
-
-

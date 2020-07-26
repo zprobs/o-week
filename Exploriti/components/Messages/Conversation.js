@@ -1,12 +1,12 @@
 import React, { useContext, useRef, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import {AuthContext, saveImage} from '../../context';
+import {AuthContext} from '../../context';
 import {
   useMutation,
   useSubscription,
   useLazyQuery,
 } from "@apollo/react-hooks";
-import { Text, StyleSheet, View, SafeAreaView } from "react-native";
+import { Text, StyleSheet, SafeAreaView } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import GoBackHeader from "../Menu/GoBackHeader";
 import { Theme } from "../../theme/Colours";
