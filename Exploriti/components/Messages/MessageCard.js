@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     color: colours.text02,
   },
   remove: {
-    ...FontWeights.Regular,
+    ...FontWeights.Bold,
     ...FontSizes.Body,
     color: 'white',
     alignItems: 'center',
