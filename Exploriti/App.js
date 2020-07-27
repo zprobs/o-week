@@ -6,6 +6,8 @@
  * @format
  * @flow strict-local
  */
+import 'intl';
+import 'intl/locale-data/jsonp/en';
 import React, { useState, useEffect, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -28,23 +30,17 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { AuthContext } from './context';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import { AuthContext, ReloadContext } from './context';
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER } from './graphql';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
-import AnimatedTabBar, {
-  TabsConfig,
-  BubbleTabConfig,
-} from '@gorhom/animated-tabbar';
+import AnimatedTabBar from '@gorhom/animated-tabbar';
 import OrientationSVG from './assets/svg/OrientationSVG';
 import NotificationsSVG from './assets/svg/NotificationsSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
-import SearchSVG from './assets/svg/SearchSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -73,7 +69,7 @@ const iconColor = {
   inactiveColor: 'rgba(0,0,0,1)',
 };
 
-const tabs: TabsConfig<BubbleTabConfig> = {
+const tabs = {
   Orientation: {
     icon: {
       component: OrientationSVG,
@@ -123,7 +119,7 @@ const MainStack = () => {
     variables: { id: authState.user.uid },
   });
 
-  if (loading){
+  if (loading) {
     return <Loading />;
   }
   if (error) return <Error e={error} />;
@@ -164,6 +160,7 @@ const HomeScreen = () => {
 
 export default function App() {
   const [authState, setAuthState] = useState({ status: 'loading' });
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
@@ -235,20 +232,21 @@ export default function App() {
     cache: new InMemoryCache(),
   });
 
-
   return (
     <ApolloProvider client={client}>
-      <AuthContext.Provider value={{ authState, setAuthState }}>
-        <NavigationContainer>
-          {authState.status === 'loading' ? (
-            <Loading />
-          ) : authState.status === 'in' ? (
-            <MainStack />
-          ) : (
-            <AuthStack />
-          )}
-        </NavigationContainer>
-      </AuthContext.Provider>
+      <ReloadContext.Provider value={{ reload, setReload }}>
+        <AuthContext.Provider value={{ authState, setAuthState }}>
+          <NavigationContainer>
+            {authState.status === 'loading' ? (
+              <Loading />
+            ) : authState.status === 'in' ? (
+              <MainStack />
+            ) : (
+              <AuthStack />
+            )}
+          </NavigationContainer>
+        </AuthContext.Provider>
+      </ReloadContext.Provider>
     </ApolloProvider>
   );
 }

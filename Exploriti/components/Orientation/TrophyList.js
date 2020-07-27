@@ -9,19 +9,23 @@ import TrophyCard from './TrophyCard';
  * @returns {*}
  * @constructor
  */
-const TrophyList = ({data, style}) => {
+const TrophyList = ({ data, style }) => {
+  const renderItem = ({ item }) => {
+    const { id, name } = item;
+    return <TrophyCard name={name} id={id} key={id} />;
+  };
 
-    const renderItem = ({item}) => {
-        const {id, name} = item;
-        return <TrophyCard  name={name} id={id} key={id} />
-    }
+  const Header = () => <View style={{ width: 20 }} />;
 
-    const Header = () => <View style={{width: 20}} />
-
-
-    return (
-        <FlatList data={data} renderItem={renderItem} horizontal={true} style={{...style, flexGrow: 0}} ListHeaderComponent={Header}/>
-    );
-}
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      horizontal={true}
+      style={{ ...style, flexGrow: 0 }}
+      ListHeaderComponent={Header}
+    />
+  );
+};
 
 export default TrophyList;

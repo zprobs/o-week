@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import { Text, View, Button, TouchableOpacity, StyleSheet, Switch } from "react-native";
-import Icon from "react-native-vector-icons/EvilIcons";
-import GoBackHeader from '../Menu/GoBackHeader';
-import { useNavigation } from '@react-navigation/native';
+import { Text, View, StyleSheet, Switch } from "react-native";
 import Fonts from '../../theme/Fonts';
 
 
-const {FontWeights, FontSizes} = Fonts
+const {FontSizes} = Fonts
 
 
 function SettingsSwitch( {title} ) {

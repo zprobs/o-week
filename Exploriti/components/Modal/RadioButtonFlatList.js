@@ -1,9 +1,9 @@
-import React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
-import { Modalize } from "react-native-modalize";
-import Fonts from "../../theme/Fonts";
-import { ThemeStatic } from "../../theme/Colours";
-import RadioButton from "../ReusableComponents/RadioButton";
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Modalize } from 'react-native-modalize';
+import Fonts from '../../theme/Fonts';
+import { ThemeStatic } from '../../theme/Colours';
+import RadioButton from '../ReusableComponents/RadioButton';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -17,14 +17,14 @@ const { FontWeights, FontSizes } = Fonts;
 const RadioButtonFlatList = React.forwardRef(
   ({ data, title, selectedData, setData }, ref) => {
     const renderItem = ({ item }) => {
-      const isSelected = selectedData == item;
+      const isSelected = selectedData === item;
       return (
         <TouchableOpacity
           onPress={() => {
             setData(item);
             setTimeout(() => ref.current.close(), 300);
           }}
-          style={{ flexDirection: "row" }}>
+          style={{ flexDirection: 'row' }}>
           <RadioButton selected={isSelected} />
           <Text style={styles.text}>{item}</Text>
         </TouchableOpacity>
@@ -48,7 +48,7 @@ const RadioButtonFlatList = React.forwardRef(
         ref={ref}
         flatListProps={{
           data: data,
-          keyExtractor: item => item,
+          keyExtractor: (item) => item,
           renderItem: renderItem,
           ItemSeparatorComponent: ItemSeparator,
           scrollEnabled: false,
@@ -58,7 +58,7 @@ const RadioButtonFlatList = React.forwardRef(
         FooterComponent={Footer}
         closeAnimationConfig={{
           spring: { speed: 1, bounciness: 1 },
-          timing: { duration: 300, easing: "ease" },
+          timing: { duration: 300, easing: 'ease' },
         }}
       />
     );
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.Label,
     marginLeft: 10,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   separator: {
     height: 0.5,
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   header: {
     ...FontWeights.Bold,
     ...FontSizes.SubHeading,
-    alignSelf: "center",
+    alignSelf: 'center',
     paddingVertical: 10,
   },
 });

@@ -14,14 +14,14 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 const SectionHeader = ({ section: { title, data } }) => {
-  if (data.length === 0) return null
+  if (data.length === 0) return null;
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row' }}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.number}>{data.length}</Text>
       </View>
-      <View style={{width: 10}} />
+      <View style={{ width: 10 }} />
     </View>
   );
 };
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     ...FontWeights.Bold,
     color: ThemeStatic.delete,
   },
-
 });
 
 export default SectionHeader;

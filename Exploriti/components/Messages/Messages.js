@@ -1,4 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import MessagesList from './MessagesList';
 import Conversation from './Conversation';
@@ -12,30 +12,29 @@ const Stack = createStackNavigator();
  * @constructor
  */
 export default function Messages() {
-
-    return (
-        <Stack.Navigator initialRouteName="MessagesList">
-            <Stack.Screen
-                name="MessagesList"
-                component={MessagesList}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
-                name="Conversation"
-                component={Conversation}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
-                name="Profile"
-                component={Profile}
-                options={{
-                    headerShown: false,
-                }}
-            />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator initialRouteName="MessagesList">
+      <Stack.Screen
+        name="MessagesList"
+        component={MessagesList}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Conversation"
+        component={Conversation}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
 }

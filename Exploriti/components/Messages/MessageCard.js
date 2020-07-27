@@ -2,9 +2,7 @@ import { useMutation } from '@apollo/react-hooks';
 import React, {
   useContext,
   useRef,
-  useCallback,
-  useEffect,
-  useState,
+
 } from 'react';
 import {
   TouchableOpacity,
@@ -18,15 +16,13 @@ import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import { AuthContext, parseTimeElapsed } from '../../context';
 import { useNavigation } from '@react-navigation/native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {
   PanGestureHandler,
   State,
   TouchableWithoutFeedback,
-  ScrollView,
+
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import DeleteCardRightActions from '../ReusableComponents/DeleteCardRightActions';
 import { DELETE_CHAT } from '../../graphql';
 
 const {

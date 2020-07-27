@@ -6,7 +6,6 @@ import { MessagesIcon } from '../Menu/MessagesIcon';
 import GroupScreen from './GroupScreen';
 import EventScreen from './EventScreen';
 import Profile from '../MyProfile/Profile';
-import LinearGradient from 'react-native-linear-gradient';
 import LeaderBoard from './Leaderboard';
 import Conversation from '../Messages/Conversation';
 import Search from './Search';
@@ -33,7 +32,7 @@ export default function Orientation() {
           //
           // />),
           headerTitle: '',
-          headerStyle: { shadowColor: 'transparent' },
+          headerStyle: { shadowColor: 'transparent', elevation: 0 },
         }}
       />
       <Stack.Screen

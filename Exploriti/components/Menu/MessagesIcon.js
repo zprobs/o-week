@@ -10,7 +10,6 @@ export const MessagesIcon = ({white}) => {
   const navigation = useNavigation();
   return (
     <Icon
-      style={{ marginRight: 5 }}
       name="message-circle"
       size={32}
       color={ white ? 'white' : "#000"}

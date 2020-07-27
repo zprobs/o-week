@@ -71,7 +71,8 @@ function imgSource(type) {
 
 /**
  * @Todo Use an API to get userID from the profile link that users enter so I can open facebook app directly
- * @param type The type of social media. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snapchat, 5: Twitter, 6: TikTok
+ * @param type {string} The type of social media. 1 : FB, 2: Insta, 3: LinkedIn, 4: Snapchat, 5: Twitter, 6: TikTok
+ * @param value {string}
  */
 function toLink(type, value) {
   const url = 'https://www.';

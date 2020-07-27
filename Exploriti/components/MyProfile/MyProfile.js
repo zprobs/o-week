@@ -21,7 +21,7 @@ export default function MyProfile() {
         options={{
           headerLeft: () => <DrawerIcon />,
           headerRight: () => <MessagesIcon />,
-          headerStyle: { shadowColor: 'transparent' },
+          headerStyle: { shadowColor: 'transparent', elevation: 0 },
           headerTitle: '',
         }}
       />

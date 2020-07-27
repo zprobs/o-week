@@ -27,7 +27,8 @@ export const ThemeStatic = {
         true: '#4caf50',
         false: '#BBBBBB'
     },
-    gold: 'rgba(244,192,4,1)'
+    gold: 'rgba(244,192,4,1)',
+    red: '#ff5050'
 };
 
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Fonts from '../../theme/Fonts';
-import { Theme, ThemeStatic } from '../../theme/Colours';
+import { Theme } from '../../theme/Colours';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import RankCard from './RankCard';
 

@@ -1,18 +1,17 @@
-import React, { useContext, useRef, useState } from "react";
-import { Text, View, StyleSheet, SafeAreaView, FlatList } from "react-native";
-import SearchBar from "react-native-search-bar";
-import { GiftedChat } from "react-native-gifted-chat";
-import { Theme } from "../../theme/Colours";
-import Fonts from "../../theme/Fonts";
-import NewMessageBottomModal from "../Modal/NewMessageBottomModal";
-import Icon from "react-native-vector-icons/EvilIcons";
-import GoBackHeader from "../Menu/GoBackHeader";
-import MessageCard from "./MessageCard";
-import ImgBanner from "../ReusableComponents/ImgBanner";
-import {useSubscription} from '@apollo/react-hooks';
-import { GET_CHATS } from "../../graphql";
-import EmptyMessages from "../../assets/svg/empty-messages.svg";
-import {AuthContext, parseChats, saveImage} from '../../context';
+import React, { useContext, useRef, useState } from 'react';
+import { View, StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import SearchBar from 'react-native-search-bar';
+import { Theme } from '../../theme/Colours';
+import Fonts from '../../theme/Fonts';
+import NewMessageBottomModal from '../Modal/NewMessageBottomModal';
+import Icon from 'react-native-vector-icons/EvilIcons';
+import GoBackHeader from '../Menu/GoBackHeader';
+import MessageCard from './MessageCard';
+import ImgBanner from '../ReusableComponents/ImgBanner';
+import { useSubscription } from '@apollo/react-hooks';
+import { GET_CHATS } from '../../graphql';
+import EmptyMessages from '../../assets/svg/empty-messages.svg';
+import { AuthContext } from '../../context';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -42,12 +41,15 @@ export default function MessagesList() {
       messages,
       image,
       name: chatName,
-      messagesAggregate
+      messagesAggregate,
     } = item;
 
-    const name = chatName || participants
-            .filter((participant) => participant._id !== authState.user.uid)
-            .map((participant) => participant.name).join(', ');
+    const name =
+      chatName ||
+      participants
+        .filter((participant) => participant._id !== authState.user.uid)
+        .map((participant) => participant.name)
+        .join(', ');
 
     return (
       <MessageCard
@@ -89,18 +91,12 @@ export default function MessagesList() {
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={
-        chatsLoading
-          ? []
-          : chatsError
-          ? []
-          : chatsData.chats
-      }
+      data={chatsLoading ? [] : chatsError ? [] : chatsData.chats}
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
       spacing={20}
       renderItem={renderItem}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={(item) => item.id.toString()}
       // ItemSeparatorComponent={itemSeparatorComponent}
     />
   );
@@ -109,7 +105,7 @@ export default function MessagesList() {
     <>
       <SafeAreaView style={styles.container}>
         <GoBackHeader
-          title={"Messages"}
+          title={'Messages'}
           titleStyle={styles.title}
           IconRight={IconRight}
         />
@@ -121,9 +117,7 @@ export default function MessagesList() {
         />
         {content}
       </SafeAreaView>
-      <NewMessageBottomModal
-        ref={newMessageBottomModalRef}
-      />
+      <NewMessageBottomModal ref={newMessageBottomModalRef} />
     </>
   );
 }
@@ -135,9 +129,9 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
@@ -152,50 +146,3 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
 });
-
-const dummyMSGS = [
-  {
-    id: "434",
-    participants: [
-      {
-        id: "1e847288-bd60-4135-9127-75b01f1b8f3f",
-        image: "https://reactjs.org/logo-og.png",
-        name: "Kid Cudi",
-        lastSeen: new Date(90),
-      },
-    ],
-    messages: [
-      {
-        id: 8,
-        body: "Crystal raindrops",
-        seen: true,
-        author: {
-          id: 1,
-        },
-        createdAt: new Date(),
-      },
-    ],
-  },
-
-  {
-    id: "444",
-    participants: [
-      {
-        id: 1,
-        name: "Pusha T",
-        lastSeen: new Date(),
-      },
-    ],
-    messages: [
-      {
-        id: 2,
-        body: "hey wassup",
-        seen: false,
-        author: {
-          id: 999,
-        },
-        createdAt: new Date(2020, 4, 17),
-      },
-    ],
-  },
-];

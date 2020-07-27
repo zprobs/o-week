@@ -908,16 +908,16 @@ export const GET_ALL_GROUPS = gql`
 `;
 
 export const GET_ALL_GROUP_IDS = gql`
-    query getAllGroupIds {
-        groups {
-            id
-        }
+  query getAllGroupIds {
+    groups {
+      id
     }
-`
+  }
+`;
 
 export const GET_ORIENTATION_GROUPS = gql`
   query getAllGroups {
-    groups(where: { unsubscribable: { _eq: false } }) {
+    groups(where: { unsubscribable: { _eq: true } }) {
       id
       name
       image
@@ -992,25 +992,25 @@ export const GET_GROUP_EVENTS = gql`
 `;
 
 export const CREATE_GROUP = gql`
-    mutation createGroup($object: group_insert_input!) {
-        createGroup(object: $object) {
-            id
-            image
-            name
-            members_aggregate {
-                aggregate {
-                    count
-                }
-            }
-            members(limit: 3, where: { isOwner: { _eq: false } }) {
-                user {
-                    id
-                    image
-                }
-            }
+  mutation createGroup($object: group_insert_input!) {
+    createGroup(object: $object) {
+      id
+      image
+      name
+      members_aggregate {
+        aggregate {
+          count
         }
+      }
+      members(limit: 3, where: { isOwner: { _eq: false } }) {
+        user {
+          id
+          image
+        }
+      }
     }
-`
+  }
+`;
 
 export const CREATE_EVENT = gql`
   mutation createEvent($data: event_insert_input!) {
@@ -1060,14 +1060,13 @@ export const SEARCH_ALL = gql`
 `;
 
 export const SEARCH_USERS = gql`
-    query searchUsers($query: String!, $limit: Int = 25) {
-        users(where: { name: { _ilike: $query } }, limit: $limit) {
-            id
-            image
-            name
-        }
-        
+  query searchUsers($query: String!, $limit: Int = 25) {
+    users(where: { name: { _ilike: $query } }, limit: $limit) {
+      id
+      image
+      name
     }
+  }
 `;
 
 export const AWARD_TROPHIES = gql`
@@ -1079,12 +1078,12 @@ export const AWARD_TROPHIES = gql`
 `;
 
 export const BAN_USER = gql`
-    mutation banUser($id: String!) {
-        deleteUser(id: $id) {
-            id
-        }
+  mutation banUser($id: String!) {
+    deleteUser(id: $id) {
+      id
     }
-`
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

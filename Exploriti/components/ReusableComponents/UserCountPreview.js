@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
       height: 1.5,
     },
     shadowOpacity: 0.6,
+    elevation: 3,
   },
   numberText: {
     ...FontWeights.Regular,

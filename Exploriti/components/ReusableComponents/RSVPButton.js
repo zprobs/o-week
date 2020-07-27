@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -27,12 +27,11 @@ const RSVPButton = ({
   isSelected,
   selectedOnPress,
   unSelectedOnPress,
-  loading
+  loading,
 }) => {
-
   const buttonPress = () => {
     if (isSelected) {
-      selectedOnPress()
+      selectedOnPress();
     } else {
       if (unSelectedOnPress) unSelectedOnPress();
     }
@@ -52,15 +51,13 @@ const RSVPButton = ({
         style={{ padding: 4 }}
         color={isSelected ? 'white' : 'black'}
       />
-      {
-        loading ? (
-          <LoadingDots background={'#fafafa'} activeBackground={'#ffffff'} />
-        ) : (
-          <Text style={styles.title}>
-            {isSelected ? selectedTitle : unSelectedTitle}
-          </Text>
-        )
-      }
+      {loading ? (
+        <LoadingDots background={'#fafafa'} activeBackground={'#ffffff'} />
+      ) : (
+        <Text style={styles.title}>
+          {isSelected ? selectedTitle : unSelectedTitle}
+        </Text>
+      )}
 
       <View style={{ width: 32 }} />
     </TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,29 +13,21 @@ import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import HorizontalUserList from '../ReusableComponents/HorizontalUserList';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
-import Animated from 'react-native-reanimated';
 import RSVPButton from '../ReusableComponents/RSVPButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import EvilIcon from 'react-native-vector-icons/EvilIcons';
-import HorizontalUserCard from '../ReusableComponents/HorizontalUserCard';
 import { linkError } from '../ReusableComponents/SocialMediaIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import UserCountPreview from '../ReusableComponents/UserCountPreview';
-import UsersBottomModal from './UsersBottomModal';
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_EVENT_ACCEPTED,
   CONFIRM_EVENT_INVITE,
   GET_DETAILED_EVENT,
   GET_EVENT_ATTENDANCE,
   GET_EVENT_INVITED,
-  GET_USER_FRIENDS,
-  GET_USERS_BY_ID,
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
 import { AuthContext } from '../../context';
-import gql from 'graphql-tag';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -80,7 +72,7 @@ const EventInfoModal = React.forwardRef(
               marginLeft: WIDTH * 0.083,
             }}
             style={styles.tabBar}
-            renderLabel={({ route, focused, color }) => (
+            renderLabel={({ route, color }) => (
               <Text style={{ ...styles.tabText, color: color }}>
                 {route.title}
               </Text>
@@ -116,12 +108,12 @@ const EventInfoModal = React.forwardRef(
       } = useQuery(CHECK_USER_EVENT_ACCEPTED, {
         variables: { eventId: eventId, userId: authState.user.uid },
       });
-      const [
-        signUp,
-        { loading: signUpLoading },
-      ] = useMutation(SIGN_UP_USER_FOR_EVENT, {
-        variables: { eventId: eventId, userId: authState.user.uid },
-      });
+      const [signUp, { loading: signUpLoading }] = useMutation(
+        SIGN_UP_USER_FOR_EVENT,
+        {
+          variables: { eventId: eventId, userId: authState.user.uid },
+        },
+      );
       const [
         confirm,
         { loading: confirmLoading, error: confirmError },
@@ -191,28 +183,14 @@ const EventInfoModal = React.forwardRef(
       });
       const [
         { value: month },
-        ,
         { value: day },
-        ,
         { value: year },
-        ,
         { value: hour },
-        ,
         { value: minute },
-        ,
-        { value: dayPeriod },
       ] = dateTimeFormat.formatToParts(date);
       const [
-        { value: endMonth },
-        ,
-        { value: endDay },
-        ,
-        { value: endYear },
-        ,
         { value: endHour },
-        ,
         { value: endMinute },
-        ,
         { value: endDayPeriod },
       ] = dateTimeFormat.formatToParts(end);
       const parsedYear = year === '2020' ? '' : year;
@@ -510,6 +488,7 @@ const styles = StyleSheet.create({
     shadowColor: 'transparent',
     shadowOpacity: 0,
     elevation: 0,
+    marginHorizontal: 10,
   },
   tabItem: {
     flex: 1,
@@ -591,13 +570,3 @@ const styles = StyleSheet.create({
 });
 
 export default EventInfoModal;
-
-const goingData = [
-  'SgckB0cHQgPiHqXOY8ZUWF7mtk22',
-  'g77kAqY0pDP0QFusPYO0EuWuBPw1',
-  'MeacvK7z4gWhfkCC6jTNAfEKgXJ3',
-  'VfBJazsBbEhpdmJL3G4fmGyTyh93',
-  'jSqUoMtjOIStGOBLPhxG11nNglE3',
-  'Fvy98EKaKXRfMP7YSX96M272pHC3',
-  '2ts5t6mW3EWtqYJXduIxhUwaoKa2',
-];

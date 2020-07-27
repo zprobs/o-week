@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import UserCountPreview from './UserCountPreview';
 import { Theme } from '../../theme/Colours';
@@ -16,12 +16,19 @@ const { FontWeights, FontSizes } = Fonts;
  * @returns {*}
  * @constructor
  */
-const ImageCard = ({ groupId , eventId}) => {
-
-
-
-  const {data, loading, error} = useQuery(GET_GROUP, {variables: {id: groupId}, skip: !!eventId})
-  const {data: eventData, loading: eventLoading, error :eventError} = useQuery(GET_EVENT_IMAGE_CARD, {variables: {id: eventId}, skip: !!groupId})
+const ImageCard = ({ groupId, eventId }) => {
+  const { data, loading, error } = useQuery(GET_GROUP, {
+    variables: { id: groupId },
+    skip: !!eventId,
+  });
+  const {
+    data: eventData,
+    loading: eventLoading,
+    error: eventError,
+  } = useQuery(GET_EVENT_IMAGE_CARD, {
+    variables: { id: eventId },
+    skip: !!groupId,
+  });
 
   if (loading || error || eventLoading || eventError) return null;
   let item, count;
@@ -31,31 +38,29 @@ const ImageCard = ({ groupId , eventId}) => {
     item = data.group;
     item.members.map((member) => {
       images.push(member.user.image);
-    })
-    count = item.members_aggregate.aggregate.count
+    });
+    count = item.members_aggregate.aggregate.count;
   } else {
     item = eventData.event;
     item.attendees.map((attendee) => {
       images.push(attendee.user.image);
-    })
-    count = item.attendees_aggregate.aggregate.count
-
+    });
+    count = item.attendees_aggregate.aggregate.count;
   }
-
 
   return (
     <View style={styles.imageRow}>
-      <Image source={{ uri: item.image }} style={styles.groupImage}/>
+      <Image source={{ uri: item.image }} style={styles.groupImage} />
       <LinearGradient
         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
         locations={[0, 0.9]}
         style={styles.imageLabelContainer}>
-        <UserCountPreview count={count} images={images}/>
+        <UserCountPreview count={count} images={images} />
         <Text style={styles.imageLabelText}>{item.name}</Text>
       </LinearGradient>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   imageRow: {

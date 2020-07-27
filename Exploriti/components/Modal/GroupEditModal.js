@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import FormInput from '../ReusableComponents/FormInput';
-import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
-import ImagePicker from "react-native-image-crop-picker";
+import ImagePicker from 'react-native-image-crop-picker';
 import { saveImage } from '../../context';
 
 const HEIGHT = Dimensions.get('window').height;
@@ -20,23 +25,25 @@ const { colours } = Theme.light;
  * @param create {boolean}
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly onClose?: *, readonly create?: *}> & React.RefAttributes<unknown>>}
  */
-const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
-
-  const [getGroup, {loading, data, error, called}] = useLazyQuery(GET_DETAILED_GROUP, {variables: {id: groupId}})
-  const [updateGroup] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP)
+const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
+  const [
+    getGroup,
+    { loading, data, error, called },
+  ] = useLazyQuery(GET_DETAILED_GROUP, { variables: { id: groupId } });
+  const [updateGroup] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP);
   const [editableName, setEditableName] = useState();
   const [editableImage, setEditableImage] = useState();
   const [imageSelection, setImageSelection] = useState();
   const [editableDescription, setEditableDescription] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(()=> {
+  useEffect(() => {
     if (data) {
       setEditableName(data.group.name);
       setEditableDescription(data.group.description);
       setEditableImage(data.group.image);
     }
-  }, [data])
+  }, [data]);
 
   const changeImage = () => {
     ImagePicker.openPicker({
@@ -44,33 +51,36 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
       height: 400,
       cropping: true,
     })
-      .then(selectedImage => {
+      .then((selectedImage) => {
         setEditableImage(selectedImage.path);
         setImageSelection(selectedImage);
       })
-      .catch(result => console.log(result));
-  }
-
-  const onDone = async () => {
-    setIsUploading(true)
-    const fields = {};
-    if (editableName !== data.group.name) fields.name = editableName;
-    if (editableDescription !== data.group.description) fields.description = editableDescription;
-    if (imageSelection) {
-      const imageURL = await saveImage(imageSelection, data.group.image);
-      fields.image = imageURL
-    }
-    console.log(fields);
-    updateGroup({ variables: { id: groupId, data: fields } }).then(
-      () => {
-        setIsUploading(false);
-        ref.current.close();
-      }
-    ).catch(e => console.log(e.message));
+      .catch((result) => console.log(result));
   };
 
+  console.log('data,', data);
+  console.log('groupId,', groupId);
+  console.log(error);
 
-  if (loading) console.log('should not see loading group')
+  const onDone = async () => {
+    setIsUploading(true);
+    const fields = {};
+    if (editableName !== data.group.name) fields.name = editableName;
+    if (editableDescription !== data.group.description)
+      fields.description = editableDescription;
+    if (imageSelection) {
+      fields.image = await saveImage(imageSelection, data.group.image);
+    }
+    console.log(fields);
+    updateGroup({ variables: { id: groupId, data: fields } })
+      .then(() => {
+        setIsUploading(false);
+        ref.current.close();
+      })
+      .catch((e) => console.log(e.message));
+  };
+
+  if (loading) console.log('should not see loading group');
 
   let content;
 
@@ -84,7 +94,7 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
         <View style={styles.content}>
           <ImageBackground
             source={{
-              uri: editableImage ,
+              uri: editableImage,
             }}
             style={styles.image}
             imageStyle={styles.avatarImage}>
@@ -112,7 +122,6 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
             characterRestriction={200}
           />
 
-
           <ButtonColour
             label="Done"
             title="done"
@@ -124,7 +133,7 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
           />
         </View>
       </View>
-    )
+    );
   }
 
   return (
@@ -136,12 +145,11 @@ const GroupEditModal = React.forwardRef(({groupId, onClose, create}, ref) => {
       }}
       modalTopOffset={110}
       onClose={onClose}
-      onOpen={ create ? null : getGroup}
+      onOpen={create ? null : getGroup}
       rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
       {content}
     </Modalize>
-  )
-
+  );
 });
 
 const styles = StyleSheet.create({

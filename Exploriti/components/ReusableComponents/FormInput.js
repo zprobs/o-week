@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
-import { StyleSheet, TextInput, Text } from "react-native";
-import Fonts from "../../theme/Fonts";
-import { Theme } from "../../theme/Colours";
+import React from 'react';
+import { StyleSheet, TextInput, Text } from 'react-native';
+import Fonts from '../../theme/Fonts';
+import { Theme } from '../../theme/Colours';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -17,7 +17,18 @@ const { colours } = Theme.light;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly label?: *, readonly onChangeText?: *, readonly multiline?: *, readonly error?: *, readonly placeholder?: *, readonly value?: *}> & React.RefAttributes<unknown>>}
  */
 const FormInput = React.forwardRef(
-  ({ placeholder, value, onChangeText, multiline, label, error, characterRestriction }, ref) => {
+  (
+    {
+      placeholder,
+      value,
+      onChangeText,
+      multiline,
+      label,
+      error,
+      characterRestriction,
+    },
+    ref,
+  ) => {
     return (
       <>
         <Text style={styles().labelTextStyle}>{label}</Text>
@@ -31,7 +42,7 @@ const FormInput = React.forwardRef(
           onChangeText={onChangeText}
           value={value}
           multiline={multiline || false}
-          returnKeyType={multiline ? "default" : "done"}
+          returnKeyType={multiline ? 'default' : 'done'}
           maxLength={characterRestriction}
         />
       </>

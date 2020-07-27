@@ -1,8 +1,8 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Theme } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -19,7 +19,9 @@ const { FontWeights, FontSizes } = Fonts;
 const HorizontalUserCard = ({ id, name, image, isLeader }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userId: id})} style={styles.container}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Profile', { userId: id })}
+      style={styles.container}>
       <Image source={{ uri: image }} style={styles.image} />
       <Text style={styles.name}>{name}</Text>
     </TouchableOpacity>

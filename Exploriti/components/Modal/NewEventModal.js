@@ -15,20 +15,18 @@ import { Theme, ThemeStatic } from '../../theme/Colours';
 import FormInput from '../ReusableComponents/FormInput';
 import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
-  CREATE_EVENT, GET_ALL_GROUP_IDS,
+  CREATE_EVENT,
+  GET_ALL_GROUP_IDS,
   GET_DETAILED_EVENT,
-  GET_DETAILED_GROUP,
   GET_GROUP_EVENTS,
   UPDATE_EVENT,
-  UPDATE_GROUP,
 } from '../../graphql';
 import DatePicker from 'react-native-date-picker';
 import { AuthContext, getDefaultImage, saveImage } from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
-import Error from '../ReusableComponents/Error';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -50,7 +48,9 @@ const NewEventModal = React.forwardRef(
     const [getEvent, { data, error }] = useLazyQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
-    const [getAllHosts, { data : hostsData, error: hostsError }] = useLazyQuery(GET_ALL_GROUP_IDS);
+    const [getAllHosts, { data: hostsData, error: hostsError }] = useLazyQuery(
+      GET_ALL_GROUP_IDS,
+    );
 
     const [name, setName] = useState();
     const [image, setImage] = useState(getDefaultImage());
@@ -116,17 +116,17 @@ const NewEventModal = React.forwardRef(
         fields.hosts = { data: [{ groupId: groupId }] };
       } else {
         console.log(hostsData);
-        if (hostsError) return
+        if (hostsError) return;
         const IDs = [];
-        hostsData.groups.forEach((group)=>IDs.push({groupId: group.id}));
-        fields.hosts = { data: IDs}
+        hostsData.groups.forEach((group) => IDs.push({ groupId: group.id }));
+        fields.hosts = { data: IDs };
         console.log(fields.hosts);
       }
       createEvent({
         variables: { data: fields },
-        refetchQueries: groupId ? [
-          { query: GET_GROUP_EVENTS, variables: { id: groupId } },
-        ] : null,
+        refetchQueries: groupId
+          ? [{ query: GET_GROUP_EVENTS, variables: { id: groupId } }]
+          : null,
       })
         .then(() => {
           setIsUploading(false);
@@ -137,7 +137,7 @@ const NewEventModal = React.forwardRef(
 
     const onUpdate = async () => {
       setIsUploading(true);
-      const {event} = data
+      const { event } = data;
       const imageURL = imageSelection
         ? await saveImage(imageSelection, data.event.image)
         : null;
