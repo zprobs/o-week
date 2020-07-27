@@ -37,6 +37,7 @@ import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
 import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
 import { useNavigation } from '@react-navigation/native';
+import ProfilePlaceholder from '../Placeholders/ProfilePlaceholder';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -61,7 +62,13 @@ export default function Profile({ route }) {
   const groupBottomModalRef = useRef();
   const newSocialMediaLinkBottomModalRef = useRef();
 
-  const isMyProfilePage = route.params == undefined;
+  const onEdit = () => editProfileBottomModalRef.current.open();
+  const onOptions = () => optionsBottomModalRef.current.open();
+  const onFriendsOpen = () => usersBottomModalRef.current.open();
+  const onGroupsOpen = () => groupBottomModalRef.current.open();
+  const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
+
+  const isMyProfilePage = !route.params;
   const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
   const isCurrentUser = !(!isMyProfilePage && userId !== authState.user.uid);
 
@@ -69,10 +76,20 @@ export default function Profile({ route }) {
     variables: { id: userId },
   });
 
-  if (loading) {
-    console.log('Profile Loading Detailed User');
-    return null;
-  }
+  if (loading)
+    return (
+      <View style={{ backgroundColor: colours.base, flex: 1 }}>
+        <SafeAreaView>
+          {isMyProfilePage ? null : (
+            <GoBackHeader
+              IconRight={OptionsIcon}
+              IconRightOnPress={onOptions}
+            />
+          )}
+          <ProfilePlaceholder hasInteractions={!isCurrentUser} />
+        </SafeAreaView>
+      </View>
+    );
   if (error) return <Error e={error} />;
   const description = data.user.description;
   const name = data.user.name;
@@ -86,12 +103,6 @@ export default function Profile({ route }) {
   const year = data.user.year;
   const friendCount = data.user.friends_aggregate.aggregate.count;
   const groupCount = data.user.member_aggregate.aggregate.count;
-
-  const onEdit = () => editProfileBottomModalRef.current.open();
-  const onOptions = () => optionsBottomModalRef.current.open();
-  const onFriendsOpen = () => usersBottomModalRef.current.open();
-  const onGroupsOpen = () => groupBottomModalRef.current.open();
-  const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
   const renderInteractions = () => {
     return (
