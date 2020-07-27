@@ -10,6 +10,7 @@ import { Keyboard } from 'react-native';
  * @type {React.Context<null>}
  */
 export const AuthContext = createContext(null);
+export const ReloadContext = createContext(null);
 
 /**
  * A Method to prepare a list of interests or programs for the GraphQL server

@@ -30,7 +30,7 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { AuthContext } from './context';
+import { AuthContext, ReloadContext } from './context';
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER } from './graphql';
 import Messages from './components/Messages';
@@ -160,6 +160,7 @@ const HomeScreen = () => {
 
 export default function App() {
   const [authState, setAuthState] = useState({ status: 'loading' });
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
@@ -233,17 +234,19 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
-      <AuthContext.Provider value={{ authState, setAuthState }}>
-        <NavigationContainer>
-          {authState.status === 'loading' ? (
-            <Loading />
-          ) : authState.status === 'in' ? (
-            <MainStack />
-          ) : (
-            <AuthStack />
-          )}
-        </NavigationContainer>
-      </AuthContext.Provider>
+      <ReloadContext.Provider value={{ reload, setReload }}>
+        <AuthContext.Provider value={{ authState, setAuthState }}>
+          <NavigationContainer>
+            {authState.status === 'loading' ? (
+              <Loading />
+            ) : authState.status === 'in' ? (
+              <MainStack />
+            ) : (
+              <AuthStack />
+            )}
+          </NavigationContainer>
+        </AuthContext.Provider>
+      </ReloadContext.Provider>
     </ApolloProvider>
   );
 }

@@ -90,7 +90,7 @@ export default function Profile({ route }) {
         </SafeAreaView>
       </View>
     );
-  if (error) return <Error e={error} />;
+  if (error) return <Error e={{ message: 'no' }} />;
   const description = data.user.description;
   const name = data.user.name;
   const image =
