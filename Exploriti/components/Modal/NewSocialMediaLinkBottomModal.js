@@ -17,6 +17,7 @@ const { colours } = Theme.light;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly type?: *}> & React.RefAttributes<unknown>>}
  */
 const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
+  console.log('type', type, typeof type);
   const [value, setValue] = useState('');
   const { authState } = useContext(AuthContext);
   const { data } = useQuery(GET_USER_LINKS, {
@@ -25,6 +26,8 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   let prevLinks = data ? data.user.links : {};
   const [updateLinks] = useMutation(UPDATE_USER);
   const [isUploading, setIsUploading] = useState(false);
+
+  console.log('prevLinks', prevLinks, data);
 
   const onOpen = () => {
     if (prevLinks[type.toString()]) {

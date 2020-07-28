@@ -6,11 +6,16 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
+  Platform,
 } from 'react-native';
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 import { Theme } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import Fonts from '../../theme/Fonts';
+import images from '../../assets/images';
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
@@ -24,6 +29,8 @@ export default class SocialMediaAnimation extends Component {
 
     // method to open modal and enter information
     const { openModal } = props;
+
+    console.log('openModal', openModal);
 
     // Slow down speed animation here (1 = default)
     this.timeDilation = 1;
@@ -135,6 +142,7 @@ export default class SocialMediaAnimation extends Component {
         this.isDraggingOutside = false;
         this.isJustDragInside = true;
         this.previousIconFocus = 0;
+        console.log('cif', this.currentIconFocus);
         if (this.currentIconFocus !== 0) this.goToModal(this.currentIconFocus);
         this.currentIconFocus = 0;
         this.setState({});
@@ -660,6 +668,165 @@ export default class SocialMediaAnimation extends Component {
     ]).start();
   };
 
+  /**
+   * Social Media Icon. Used for iOS only
+   **/
+  renderSMIcon(id, image, name, key) {
+    let pushIcon, zoomIcon;
+    switch (id) {
+      case 1:
+        pushIcon = this.pushIconFacebookUp;
+        zoomIcon = this.zoomIconFacebook;
+        break;
+      case 2:
+        pushIcon = this.pushIconInstagramUp;
+        zoomIcon = this.zoomIconInstagram;
+        break;
+      case 3:
+        pushIcon = this.pushIconLinkedInUp;
+        zoomIcon = this.zoomIconLinkedIn;
+        break;
+      case 4:
+        pushIcon = this.pushIconSnapchatUp;
+        zoomIcon = this.zoomIconSnapchat;
+        break;
+      case 5:
+        pushIcon = this.pushIconTwitterUp;
+        zoomIcon = this.zoomIconTwitter;
+        break;
+      case 6:
+        pushIcon = this.pushIconTikTokUp;
+        zoomIcon = this.zoomIconTikTok;
+        break;
+      default:
+        pushIcon = this.pushIconTikTokUp;
+        zoomIcon = this.zoomIconTikTok;
+    }
+    return (
+      <View style={styles.viewWrapIcon} key={key}>
+        {this.currentIconFocus === id ? (
+          <Animated.View
+            style={[
+              styles.viewWrapTextDescription,
+              {
+                bottom: this.pushTextDescriptionUp,
+                transform: [{ scale: this.zoomTextDescription }],
+                width: 55,
+              },
+            ]}>
+            <Text style={styles.textDescription}>{name}</Text>
+          </Animated.View>
+        ) : null}
+        <Animated.View
+          style={{
+            marginBottom: pushIcon,
+            transform: [
+              {
+                scale: this.isDragging
+                  ? this.currentIconFocus === id
+                    ? this.zoomIconChosen
+                    : this.previousIconFocus === id
+                    ? this.zoomIconNotChosen
+                    : this.isJustDragInside
+                    ? this.zoomIconWhenDragInside
+                    : 0.8
+                  : this.isDraggingOutside
+                  ? this.zoomIconWhenDragOutside
+                  : zoomIcon,
+              },
+            ],
+          }}>
+          <Image style={styles.imgIcon} source={images[image]} />
+        </Animated.View>
+      </View>
+    );
+  }
+  /**
+   * Social Media Icon. Used for Android only because Pan Responder does not work on Android so we just do a touch.
+   * @param id {int} 1-6 rep each social media type
+   * @param image {string} image for the icon
+   * @param name {string} name of the icon
+   * @param key {string}
+   **/
+  renderSMIconAndroid( id, image, name, key ) {
+    let pushIcon, zoomIcon;
+    switch (id) {
+      case 1:
+        pushIcon = this.pushIconFacebookUp;
+        zoomIcon = this.zoomIconFacebook;
+        break;
+      case 2:
+        pushIcon = this.pushIconInstagramUp;
+        zoomIcon = this.zoomIconInstagram;
+        break;
+      case 3:
+        pushIcon = this.pushIconLinkedInUp;
+        zoomIcon = this.zoomIconLinkedIn;
+        break;
+      case 4:
+        pushIcon = this.pushIconSnapchatUp;
+        zoomIcon = this.zoomIconSnapchat;
+        break;
+      case 5:
+        pushIcon = this.pushIconTwitterUp;
+        zoomIcon = this.zoomIconTwitter;
+        break;
+      case 6:
+        pushIcon = this.pushIconTikTokUp;
+        zoomIcon = this.zoomIconTikTok;
+        break;
+      default:
+        pushIcon = this.pushIconTikTokUp;
+        zoomIcon = this.zoomIconTikTok;
+    }
+    return (
+      <View style={styles.viewWrapIcon} key={key}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            this.goToModal(id);
+            this.currentIconFocus = 0;
+            this.setState({});
+            this.onDragRelease();
+          }}>
+          {this.currentIconFocus === id ? (
+            <Animated.View
+              style={[
+                styles.viewWrapTextDescription,
+                {
+                  bottom: this.pushTextDescriptionUp,
+                  transform: [{ scale: this.zoomTextDescription }],
+                  width: 55,
+                },
+              ]}>
+              <Text style={styles.textDescription}>{name}</Text>
+            </Animated.View>
+          ) : null}
+          <Animated.View
+            style={{
+              marginBottom: pushIcon,
+              transform: [
+                {
+                  scale: this.isDragging
+                    ? this.currentIconFocus === id
+                      ? this.zoomIconChosen
+                      : this.previousIconFocus === id
+                      ? this.zoomIconNotChosen
+                      : this.isJustDragInside
+                      ? this.zoomIconWhenDragInside
+                      : 0.8
+                    : this.isDraggingOutside
+                    ? this.zoomIconWhenDragOutside
+                    : zoomIcon,
+                },
+              ],
+            }}>
+            <Image style={styles.imgIcon} source={images[image]} />
+          </Animated.View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+
   render() {
     return (
       <View style={styles.viewBody} {...this.rootPanResponder.panHandlers}>
@@ -723,269 +890,25 @@ export default class SocialMediaAnimation extends Component {
           styles.viewWrapGroupIcon,
           { marginLeft: this.moveRightGroupIcon },
         ]}>
-        {/* Icon FaceBook */}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 1 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 55,
-                },
-              ]}>
-              <Text style={styles.textDescription}>FaceBook</Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconFacebookUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 1
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 1
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconFacebook,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri: 'https://img.icons8.com/fluent/48/000000/facebook-new.png',
-              }}
-            />
-          </Animated.View>
-        </View>
+        {Platform.OS === 'ios'
+          ? [
+              this.renderSMIcon(1, 'facebook', 'Facebook', '1'),
+              this.renderSMIcon(2, 'instagram', 'Instagram', '2'),
+              this.renderSMIcon(3, 'linkedin', 'LinkedIn', '3'),
+              this.renderSMIcon(4, 'snapchat', 'Snapchat', '4'),
+              this.renderSMIcon(5, 'twitter', 'Twitter', '5'),
+              this.renderSMIcon(6, 'tiktok', 'TikTok', '6'),
+            ]
+          : [
+            this.renderSMIconAndroid(1, 'facebook', 'Facebook', '7'),
+            this.renderSMIconAndroid(2, 'instagram', 'Instagram', '8'),
+            this.renderSMIconAndroid(3, 'linkedin', 'LinkedIn', '9'),
+            this.renderSMIconAndroid(4, 'snapchat', 'Snapchat', '10'),
+            this.renderSMIconAndroid(5, 'twitter', 'Twitter', '11'),
+            this.renderSMIconAndroid(6, 'tiktok', 'TikTok', '12'),
+          ]
 
-        {/* Icon Instagram*/}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 2 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 60,
-                },
-              ]}>
-              <Text style={styles.textDescription}>Instagram</Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconInstagramUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 2
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 2
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconInstagram,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/fluent/48/000000/instagram-new.png',
-              }}
-            />
-          </Animated.View>
-        </View>
-
-        {/* Icon LinkedIn */}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 3 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 55,
-                },
-              ]}>
-              <Text style={styles.textDescription} numberOfLines={1}>
-                LinkedIn
-              </Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconLinkedInUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 3
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 3
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconLinkedIn,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/linkedin-circled.png',
-              }}
-            />
-          </Animated.View>
-        </View>
-
-        {/* Icon SnapChat*/}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 4 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 55,
-                },
-              ]}>
-              <Text style={styles.textDescription}>SnapChat</Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconSnapchatUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 4
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 4
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconSnapchat,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/snapchat-circled-logo.png',
-              }}
-            />
-          </Animated.View>
-        </View>
-
-        {/* Icon Twitter */}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 5 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 45,
-                },
-              ]}>
-              <Text style={styles.textDescription}>Twitter</Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconTwitterUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 5
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 5
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconTwitter,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/twitter-circled.png',
-              }}
-            />
-          </Animated.View>
-        </View>
-
-        {/* Icon TikTok*/}
-        <View style={styles.viewWrapIcon}>
-          {this.currentIconFocus === 6 ? (
-            <Animated.View
-              style={[
-                styles.viewWrapTextDescription,
-                {
-                  bottom: this.pushTextDescriptionUp,
-                  transform: [{ scale: this.zoomTextDescription }],
-                  width: 50,
-                },
-              ]}>
-              <Text style={styles.textDescription}>TikTok</Text>
-            </Animated.View>
-          ) : null}
-          <Animated.View
-            style={{
-              marginBottom: this.pushIconTikTokUp,
-              transform: [
-                {
-                  scale: this.isDragging
-                    ? this.currentIconFocus === 6
-                      ? this.zoomIconChosen
-                      : this.previousIconFocus === 6
-                      ? this.zoomIconNotChosen
-                      : this.isJustDragInside
-                      ? this.zoomIconWhenDragInside
-                      : 0.8
-                    : this.isDraggingOutside
-                    ? this.zoomIconWhenDragOutside
-                    : this.zoomIconTikTok,
-                },
-              ],
-            }}>
-            <Image
-              style={styles.imgIcon}
-              source={{
-                uri: 'https://cdn141.picsart.com/305061469080211.png',
-              }}
-            />
-          </Animated.View>
-        </View>
+        }
       </Animated.View>
     );
   }
@@ -1011,9 +934,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri: 'https://img.icons8.com/fluent/48/000000/facebook-new.png',
-              }}
+              source={images.facebook}
             />
           </Animated.View>
         ) : null}
@@ -1031,10 +952,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/fluent/48/000000/instagram-new.png',
-              }}
+              source={images.instagram}
             />
           </Animated.View>
         ) : null}
@@ -1052,10 +970,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/linkedin-circled.png',
-              }}
+              source={images.linkedin}
             />
           </Animated.View>
         ) : null}
@@ -1073,10 +988,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/snapchat-circled-logo.png',
-              }}
+              source={images.snapchat}
             />
           </Animated.View>
         ) : null}
@@ -1094,10 +1006,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri:
-                  'https://img.icons8.com/color/48/000000/twitter-circled.png',
-              }}
+              source={images.twitter}
             />
           </Animated.View>
         ) : null}
@@ -1115,9 +1024,7 @@ export default class SocialMediaAnimation extends Component {
             }}>
             <Image
               style={styles.imgIcon}
-              source={{
-                uri: 'https://cdn141.picsart.com/305061469080211.png',
-              }}
+              source={images.tiktok}
             />
           </Animated.View>
         ) : null}
@@ -1186,6 +1093,7 @@ const styles = StyleSheet.create({
   viewWrapIcon: {
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 8,
   },
   imgIcon: {
     width: 36,

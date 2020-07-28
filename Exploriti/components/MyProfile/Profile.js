@@ -54,6 +54,8 @@ export default function Profile({ route }) {
   // used to determine which social media is to be added
   const [socialIndex, setSocialIndex] = useState(0);
 
+  console.log('socialIndex', socialIndex)
+
   const { authState } = useContext(AuthContext);
 
   const editProfileBottomModalRef = useRef();
@@ -62,11 +64,7 @@ export default function Profile({ route }) {
   const groupBottomModalRef = useRef();
   const newSocialMediaLinkBottomModalRef = useRef();
 
-  const onEdit = () => editProfileBottomModalRef.current.open();
-  const onOptions = () => optionsBottomModalRef.current.open();
-  const onFriendsOpen = () => usersBottomModalRef.current.open();
-  const onGroupsOpen = () => groupBottomModalRef.current.open();
-  const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
+
 
   const isMyProfilePage = !route.params;
   const userId = isMyProfilePage ? authState.user.uid : route.params.userId;
@@ -81,16 +79,13 @@ export default function Profile({ route }) {
       <View style={{ backgroundColor: colours.base, flex: 1 }}>
         <SafeAreaView>
           {isMyProfilePage ? null : (
-            <GoBackHeader
-              IconRight={OptionsIcon}
-              IconRightOnPress={onOptions}
-            />
+            <GoBackHeader/>
           )}
           <ProfilePlaceholder hasInteractions={!isCurrentUser} />
         </SafeAreaView>
       </View>
     );
-  if (error) return <Error e={{ message: 'no' }} />;
+  if (error) return <Error e={error} />;
   const description = data.user.description;
   const name = data.user.name;
   const image =
@@ -103,6 +98,12 @@ export default function Profile({ route }) {
   const year = data.user.year;
   const friendCount = data.user.friends_aggregate.aggregate.count;
   const groupCount = data.user.member_aggregate.aggregate.count;
+
+  const onEdit = () => editProfileBottomModalRef.current.open();
+  const onOptions = () => optionsBottomModalRef.current.open();
+  const onFriendsOpen = () => usersBottomModalRef.current.open();
+  const onGroupsOpen = () => groupBottomModalRef.current.open();
+  const onAddSocial = () => newSocialMediaLinkBottomModalRef.current.open();
 
   const renderInteractions = () => {
     return (
