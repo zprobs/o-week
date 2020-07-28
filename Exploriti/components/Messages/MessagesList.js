@@ -12,6 +12,7 @@ import { useSubscription } from '@apollo/react-hooks';
 import { GET_CHATS } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
 import { AuthContext } from '../../context';
+import MessagesListPlaceholder from '../Placeholders/MessagesListPlaceholder';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -33,6 +34,24 @@ export default function MessagesList() {
       onPress={() => newMessageBottomModalRef.current.open()}
     />
   );
+
+  const Header = () => {
+    return (
+      <>
+        <GoBackHeader
+          title={'Messages'}
+          titleStyle={styles.title}
+          IconRight={IconRight}
+        />
+        <SearchBar
+          value={chatSearch}
+          onChangeText={setChatSearch}
+          placeholder="Search for chats..."
+          hideBackground={true}
+        />
+      </>
+    );
+  };
 
   const renderItem = ({ item }) => {
     const {
@@ -88,6 +107,17 @@ export default function MessagesList() {
     },
   });
 
+  if (chatsLoading) {
+    return (
+      <View style={{ backgroundColor: colours.base, flex: 1 }}>
+        <SafeAreaView style={styles.container}>
+          <Header />
+          <MessagesListPlaceholder />
+        </SafeAreaView>
+      </View>
+    );
+  }
+
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
@@ -104,17 +134,7 @@ export default function MessagesList() {
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <GoBackHeader
-          title={'Messages'}
-          titleStyle={styles.title}
-          IconRight={IconRight}
-        />
-        <SearchBar
-          value={chatSearch}
-          onChangeText={setChatSearch}
-          placeholder="Search for chats..."
-          hideBackground={true}
-        />
+        <Header />
         {content}
       </SafeAreaView>
       <NewMessageBottomModal ref={newMessageBottomModalRef} />
