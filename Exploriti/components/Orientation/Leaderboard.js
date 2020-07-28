@@ -23,7 +23,7 @@ const LeaderBoard = () => {
           <Text style={styles.title}>Leaderboard</Text>
           <View style={{ width: 44 }} />
         </View>
-        <FlatList data={places} renderItem={renderItem} style={styles.list} />
+        <FlatList data={places} renderItem={renderItem} style={styles.list} keyExtractor={item=>item} />
       </SafeAreaView>
     </View>
   );
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.6,
+    elevation: 3
   },
   list: {
     marginTop: 25,

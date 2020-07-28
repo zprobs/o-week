@@ -6,7 +6,7 @@ import {
   SectionList,
   Image,
   TouchableOpacity,
-  ScrollView,
+  ScrollView, SafeAreaView,
 } from 'react-native';
 import { AuthContext } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -70,7 +70,7 @@ export default function Dashboard() {
     let count = 0;
 
     return (
-      <>
+      <SafeAreaView>
         <View style={{ marginHorizontal: 25 }}>
           <Text style={styles.welcomeTitle}>Hi, {data.user.name}!</Text>
           <Text style={styles.welcomeSubTitle}>Say hi to someone new:</Text>
@@ -113,7 +113,7 @@ export default function Dashboard() {
             }}
           />
         </View>
-      </>
+      </SafeAreaView>
     );
   };
 

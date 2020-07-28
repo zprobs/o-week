@@ -37,7 +37,7 @@ import Messages from './components/Messages';
 import Notifications from './components/Notifications';
 import AnimatedTabBar from '@gorhom/animated-tabbar';
 import OrientationSVG from './assets/svg/OrientationSVG';
-import NotificationsSVG from './assets/svg/NotificationsSVG';
+import MessagesSVG from './assets/svg/MessagesSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
@@ -85,9 +85,9 @@ const tabs = {
     },
     ...tabStyles,
   },
-  Notifications: {
+  Messages: {
     icon: {
-      component: NotificationsSVG,
+      component: MessagesSVG,
       ...iconColor,
     },
     ...tabStyles,
@@ -141,7 +141,6 @@ const MainStack = () => {
         component={Settings}
         options={{ gestureDirection: 'horizontal-inverted' }}
       />
-      <Stack.Screen name="Messages" component={Messages} />
     </Stack.Navigator>
   );
 };
@@ -152,7 +151,7 @@ const HomeScreen = () => {
       tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}>
       <Tab.Screen name="Orientation" component={Orientation} />
       <Tab.Screen name="Schedule" component={Schedule} />
-      <Tab.Screen name="Notifications" component={Notifications} />
+      <Tab.Screen name="Messages" component={Messages} />
       <Tab.Screen name="MyProfile" component={MyProfile} />
     </Tab.Navigator>
   );

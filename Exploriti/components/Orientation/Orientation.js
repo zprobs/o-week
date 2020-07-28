@@ -24,15 +24,16 @@ export default function Orientation() {
         name="Orientation"
         component={Dashboard}
         options={{
-          headerLeft: () => <DrawerIcon />,
-          headerRight: () => <MessagesIcon />,
+          // headerLeft: () => <DrawerIcon />,
+          // headerRight: () => <MessagesIcon />,
           // headerBackground: () =>  (<LinearGradient
           //     colors={['rgba(69,117, 191, 1)', 'rgba(0, 61, 122, 1)']}
           //     style={{ flex: 1 }}
           //
           // />),
-          headerTitle: '',
-          headerStyle: { shadowColor: 'transparent', elevation: 0 },
+          // headerTitle: '',
+          // headerStyle: { shadowColor: 'transparent', elevation: 0 },
+          headerShown: false
         }}
       />
       <Stack.Screen

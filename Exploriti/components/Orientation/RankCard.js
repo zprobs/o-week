@@ -78,6 +78,7 @@ const styles = (gold) =>
       borderRadius: 15,
       overflow: 'hidden',
       height: HEIGHT * 0.2,
+      elevation: 4
     },
     ring: {
       position: 'absolute',
