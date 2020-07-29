@@ -78,7 +78,7 @@ const ScheduleCarousel = () => {
         date = new Date(event.startDate);
       }
     });
-    // one more time to catch the last day which isn't handeled in the for each loop
+    // one more time to catch the last day which isn't handled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
     // to trigger a rerender to display the title date
     setIndex(0);

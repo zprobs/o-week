@@ -135,6 +135,7 @@ const TextLine = React.forwardRef(
             blurOnSubmit={blurOnSubmit}
             onBlur={onBlur}
             ref={ref}
+            selectionColor={ThemeStatic.placeholder}
           />
         </View>
       </View>

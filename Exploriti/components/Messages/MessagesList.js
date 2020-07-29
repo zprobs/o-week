@@ -166,12 +166,35 @@ export default function MessagesList() {
       });
     }
   };
+
+  const newMessageModal = (
+    <SearchableFlatList
+      ref={newMessageBottomModalRef}
+      title={'friends'}
+      query={GET_USER_FRIENDS}
+      hasImage={true}
+      variables={{ userId: authState.user.uid }}
+      setSelection={setFriendsSelection}
+      aliased={false}
+      floatingButtonText={"Next"}
+      min={1}
+      onPress={newConversation}
+      initialSelection={null}
+      clearOnClose={true}
+      offset={70 + headerHeight}
+      floatingButtonOffset={70 + insets.bottom}
+    />
+  )
+
+  console.log('loading', chatsLoading, chatsData, chatsError)
+
   if (chatsLoading) {
     return (
       <View style={{ backgroundColor: colours.base, flex: 1 }}>
         <SafeAreaView style={styles.container}>
           <Header />
           <MessagesListPlaceholder />
+          {newMessageModal}
         </SafeAreaView>
       </View>
     );
@@ -189,26 +212,13 @@ export default function MessagesList() {
     />
   );
 
+
+
   return (
       <SafeAreaView style={styles.container}>
         <Header />
         {content}
-        <SearchableFlatList
-          ref={newMessageBottomModalRef}
-          title={'friends'}
-          query={GET_USER_FRIENDS}
-          hasImage={true}
-          variables={{ userId: authState.user.uid }}
-          setSelection={setFriendsSelection}
-          aliased={false}
-          floatingButtonText={"Next"}
-          min={1}
-          onPress={newConversation}
-          initialSelection={null}
-          clearOnClose={true}
-          offset={70 + headerHeight}
-          floatingButtonOffset={70 + insets.bottom}
-        />
+        {newMessageModal}
       </SafeAreaView>
   );
 }
