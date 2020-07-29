@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
 import {useSafeArea} from 'react-native-safe-area-context';
 
+import MessagesListPlaceholder from '../Placeholders/MessagesListPlaceholder';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -40,6 +41,24 @@ export default function MessagesList() {
       onPress={() => newMessageBottomModalRef.current.open()}
     />
   );
+
+  const Header = () => {
+    return (
+      <>
+        <View style={styles.headerContainer}>
+          <Text  style={styles.title}>Messages</Text>
+          <IconRight />
+        </View>
+        <SearchBar
+          value={chatSearch}
+          onChangeText={setChatSearch}
+          placeholder="Search for chats..."
+          hideBackground={true}
+        />
+        <View style={{height: 10}} />
+      </>
+    );
+  };
 
   const renderItem = ({ item }) => {
     const {
@@ -147,6 +166,16 @@ export default function MessagesList() {
       });
     }
   };
+  if (chatsLoading) {
+    return (
+      <View style={{ backgroundColor: colours.base, flex: 1 }}>
+        <SafeAreaView style={styles.container}>
+          <Header />
+          <MessagesListPlaceholder />
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   const content = (
     <FlatList
@@ -162,17 +191,7 @@ export default function MessagesList() {
 
   return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.headerContainer}>
-        <Text  style={styles.title}>Messages</Text>
-          <IconRight />
-        </View>
-        <SearchBar
-          value={chatSearch}
-          onChangeText={setChatSearch}
-          placeholder="Search for chats..."
-          hideBackground={true}
-        />
-        <View style={{height: 10}} />
+        <Header />
         {content}
         <SearchableFlatList
           ref={newMessageBottomModalRef}
