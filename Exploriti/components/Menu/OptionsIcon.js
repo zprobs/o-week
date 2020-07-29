@@ -13,7 +13,7 @@ const { FontWeights } = Fonts;
 const OptionsIcon = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-     <Icon name={'more-vertical'} size={32} />
+     <Icon name={'more-vertical'} size={26} />
     </TouchableOpacity>
   );
 };

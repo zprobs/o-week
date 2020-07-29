@@ -87,7 +87,7 @@ const ScheduleCarousel = () => {
   if (error) return null;
 
   const title = () => {
-    if (!scheduleData[index] || scheduleData[index].length <= 0) return null;
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return 'No Events';
     const day = new Date(scheduleData[index][0].startDate).getDay();
     switch (day) {
       case 0:
@@ -154,13 +154,13 @@ const ScheduleCarousel = () => {
   const onSwipe = (slideIndex) => {
     Animated.timing(titleOpacity, {
       toValue: 0,
-      duration: 120,
+      duration: 70,
       useNativeDriver: true,
     }).start(() => {
       setIndex(slideIndex);
       Animated.timing(titleOpacity, {
         toValue: 1,
-        duration: 120,
+        duration: 70,
         useNativeDriver: true,
       }).start();
     });
