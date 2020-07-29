@@ -10,6 +10,8 @@ import {
   SystemNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
+import NotificationsPlaceholder from '../Placeholders/NotificationsPlaceholder';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NotificationsList() {
   const { authState } = useContext(AuthContext);
@@ -18,6 +20,16 @@ export default function NotificationsList() {
   });
 
   if (error) console.log(error.message);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView>
+          <NotificationsPlaceholder/>
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   const renderItem = ({ item }) => {
     switch (item.type) {
