@@ -78,7 +78,7 @@ const ScheduleCarousel = () => {
         date = new Date(event.startDate);
       }
     });
-    // one more time to catch the last day which isn't handeled in the for each loop
+    // one more time to catch the last day which isn't handled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
     // to trigger a rerender to display the title date
     setIndex(0);
@@ -87,7 +87,7 @@ const ScheduleCarousel = () => {
   if (error) return null;
 
   const title = () => {
-    if (!scheduleData[index] || scheduleData[index].length <= 0) return null;
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return data && data.events.length === 0 ? 'No Events' : null;
     const day = new Date(scheduleData[index][0].startDate).getDay();
     switch (day) {
       case 0:
@@ -154,13 +154,13 @@ const ScheduleCarousel = () => {
   const onSwipe = (slideIndex) => {
     Animated.timing(titleOpacity, {
       toValue: 0,
-      duration: 120,
+      duration: 70,
       useNativeDriver: true,
     }).start(() => {
       setIndex(slideIndex);
       Animated.timing(titleOpacity, {
         toValue: 1,
-        duration: 120,
+        duration: 70,
         useNativeDriver: true,
       }).start();
     });
@@ -168,7 +168,6 @@ const ScheduleCarousel = () => {
 
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
-      <SafeAreaView>
         {isFocused ? <StatusBar barStyle="light-content" /> : null}
         <ScrollView bounces={false}>
           <View style={styles.header}>
@@ -202,7 +201,6 @@ const ScheduleCarousel = () => {
             onBeforeSnapToItem={onSwipe}
           />
         </ScrollView>
-      </SafeAreaView>
     </LinearGradient>
   );
 };

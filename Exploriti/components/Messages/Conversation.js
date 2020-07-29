@@ -141,7 +141,7 @@ const Conversation = () => {
       onPressAvatar={handlePressAvatar}
       onSend={onSend}
       user={{ _id: authState.user.uid }}
-      bottomOffset={ifIphoneX(20, -10)}
+      bottomOffset={ifIphoneX(90, 60)}
       keyboardShouldPersistTaps={null}
       listViewProps={{
         showsVerticalScrollIndicator: false,

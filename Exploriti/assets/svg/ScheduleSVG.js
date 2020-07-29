@@ -23,23 +23,21 @@ const ScheduleSVG = ({ color, size }) => {
           x="1"
           fill="none"
         />
-        <AnimatedRect
-          rx="1"
-          height="6"
-          width="1"
-          y="1"
-          x="6"
+        <AnimatedLine
+          y1="0"
+          y2="8"
+          x1="6"
+          x2="6"
           stroke={color}
-          fill={color}
+          fill='none'
         />
-        <AnimatedRect
-          rx="1"
-          height="6"
-          width="1"
-          y="1"
-          x="17"
+        <AnimatedLine
+          y1="0"
+          y2='8'
+          x1="18"
+          x2='18'
           stroke={color}
-          fill={color}
+          fill='none'
         />
         <AnimatedLine
           stroke-linecap="null"

@@ -3,7 +3,7 @@ const images = {
   landing2: require('./LANDING2.png'),
   landing3: require('./LANDING3.png'),
   landing4: require('./LANDING4.png'),
-  logo: require('./LOGOFINALWHITE.png'),
+  logo: require('./Logo.png'),
   facebook: require('./facebook.png'),
   instagram: require('./instagram.png'),
   linkedin: require('./linkedin.png'),

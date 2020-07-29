@@ -2,9 +2,10 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { DrawerIcon } from '../Menu/DrawerIcon';
 import Profile from './Profile';
-import { MessagesIcon } from '../Menu/MessagesIcon';
 import Conversation from '../Messages/Conversation';
 import GroupScreen from '../Orientation/GroupScreen';
+import { NotificationsIcon } from '../Menu/NotificationsIcon';
+import Notifications from '../Notifications';
 const Stack = createStackNavigator();
 
 /**
@@ -20,7 +21,7 @@ export default function MyProfile() {
         component={Profile}
         options={{
           headerLeft: () => <DrawerIcon />,
-          headerRight: () => <MessagesIcon />,
+          headerRight: () => <NotificationsIcon />,
           headerStyle: { shadowColor: 'transparent', elevation: 0 },
           headerTitle: '',
         }}
@@ -33,18 +34,18 @@ export default function MyProfile() {
         }}
       />
       <Stack.Screen
-        name="Conversation"
-        component={Conversation}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name={'GroupScreen'}
         component={GroupScreen}
         options={{
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name={'Notifications'}
+        component={Notifications}
+        // options={{
+        //   headerShown: false,
+        // }}
       />
     </Stack.Navigator>
   );

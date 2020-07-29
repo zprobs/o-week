@@ -107,6 +107,7 @@ export const GET_USER_INTERESTS = gql`
         interest {
           id
           name
+            aliases
         }
       }
     }

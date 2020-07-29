@@ -3,6 +3,8 @@ import React from 'react';
 import MessagesList from './MessagesList';
 import Conversation from './Conversation';
 import Profile from '../MyProfile/Profile';
+import GroupScreen from '../Orientation/GroupScreen';
+import EventScreen from '../Orientation/EventScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +33,20 @@ export default function Messages() {
       <Stack.Screen
         name="Profile"
         component={Profile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Group"
+        component={GroupScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Event"
+        component={EventScreen}
         options={{
           headerShown: false,
         }}

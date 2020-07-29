@@ -144,6 +144,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       HeaderComponent={header}
       adjustToContentHeight={false}
       onClose={() => setValue('')}
+      panGestureComponentEnabled={true}
       onOpen={onOpen}>
       <View style={styles.inputBox}>
         <Text style={styles.url}>

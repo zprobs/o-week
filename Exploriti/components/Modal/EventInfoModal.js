@@ -183,14 +183,28 @@ const EventInfoModal = React.forwardRef(
       });
       const [
         { value: month },
+        ,
         { value: day },
+        ,
         { value: year },
+        ,
         { value: hour },
+        ,
         { value: minute },
+        ,
+        { value: dayPeriod },
       ] = dateTimeFormat.formatToParts(date);
       const [
+        { value: endMonth },
+        ,
+        { value: endDay },
+        ,
+        { value: endYear },
+        ,
         { value: endHour },
+        ,
         { value: endMinute },
+        ,
         { value: endDayPeriod },
       ] = dateTimeFormat.formatToParts(end);
       const parsedYear = year === '2020' ? '' : year;

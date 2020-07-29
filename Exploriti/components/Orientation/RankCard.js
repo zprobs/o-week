@@ -23,11 +23,12 @@ const HEIGHT = Dimensions.get('window').height;
  * @param rank {string} the rank, ex: "1st" or "3rd"
  * @param gold {boolean} background color. true = gold, false  = white
  * @param points {int}
+ * @param teamTag {string}
  * @returns {*}
  * @constructor
  */
 
-const RankCard = ({ style, onPress, rank, gold, points }) => {
+const RankCard = ({ style, onPress, rank, gold, points, teamTag }) => {
   const Content = () => (
     <>
       <View style={styles(gold).ring} />
@@ -36,7 +37,7 @@ const RankCard = ({ style, onPress, rank, gold, points }) => {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ marginRight: 22 }}>
             <Text style={styles(gold).label}>Team Tag</Text>
-            <Text style={styles(gold).text}>Broncos</Text>
+            <Text style={styles(gold).text}>{teamTag}</Text>
           </View>
           <View>
             <Text style={styles(gold).label}>Points</Text>
@@ -77,11 +78,12 @@ const styles = (gold) =>
     container: {
       borderRadius: 15,
       overflow: 'hidden',
-      height: HEIGHT * 0.2,
+      height: 150,
+      elevation: 4
     },
     ring: {
       position: 'absolute',
-      top: -30,
+      top: -20,
       left: -100,
       height: '130%',
       width: '70%',

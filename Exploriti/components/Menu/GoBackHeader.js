@@ -16,6 +16,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @param IconRightOnPress
  * @param titleStyle
  * @param iconColor {string} Left icon color
+ * @param destination {string} name of Screen to Go Back to. Optional. Without will just go to previous
  * @returns {*}
  * @constructor
  */
@@ -27,11 +28,12 @@ const GoBackHeader = ({
   IconRightOnPress,
   titleStyle,
   iconColor,
+  destination
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>
-        <BackIcon iconColor={iconColor} />
+        <BackIcon iconColor={iconColor} destination={destination} />
         {ContentLeft && <ContentLeft />}
         {title && (
           <Text onPress={onTitlePress} style={[styles.title, titleStyle]}>

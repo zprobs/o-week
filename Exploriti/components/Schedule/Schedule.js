@@ -31,11 +31,11 @@ export default function Schedule() {
         name="ScheduleCarousel"
         component={ScheduleCarousel}
         options={{
-          headerLeft: () => <DrawerIcon white={true} />,
-          headerRight: () => <MessagesIcon white={true} />,
-          headerTitle: '',
-          headerStyle: { shadowColor: 'transparent' },
-          headerTransparent: true,
+          // headerRight: () => <MessagesIcon white={true} />,
+          // headerTitle: '',
+          // headerStyle: { shadowColor: 'transparent' },
+          // headerTransparent: true,
+          headerShown: false
         }}
       />
       <Stack.Screen

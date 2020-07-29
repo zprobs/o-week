@@ -102,7 +102,7 @@ const NewEventModal = React.forwardRef(
 
     const onDone = async () => {
       setIsUploading(true);
-      const imageURL = imageSelection ? await saveImage(imageSelection) : image;
+      const imageURL = imageSelection ? await saveImage(imageSelection, null, 'event', eventId) : image;
       const fields = {};
       fields.image = imageURL;
       fields.email = authState.user.email;
@@ -139,7 +139,7 @@ const NewEventModal = React.forwardRef(
       setIsUploading(true);
       const { event } = data;
       const imageURL = imageSelection
-        ? await saveImage(imageSelection, data.event.image)
+        ? await saveImage(imageSelection, data.event.image, 'event', eventId)
         : null;
       const fields = {};
       if (imageURL) fields.image = imageURL;

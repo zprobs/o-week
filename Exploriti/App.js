@@ -37,10 +37,11 @@ import Messages from './components/Messages';
 import Notifications from './components/Notifications';
 import AnimatedTabBar from '@gorhom/animated-tabbar';
 import OrientationSVG from './assets/svg/OrientationSVG';
-import NotificationsSVG from './assets/svg/NotificationsSVG';
+import MessagesSVG from './assets/svg/MessagesSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -56,16 +57,16 @@ if (
 
 const tabStyles = {
   labelStyle: {
-    color: '#5B37B7',
+    color: '#bf1330',
   },
   background: {
-    activeColor: 'rgba(223,215,243,1)',
-    inactiveColor: 'rgba(223,215,243,0)',
+    activeColor: 'rgba(191, 19, 48, 0.35)',
+    inactiveColor: 'rgba(191, 19, 48, 0)',
   },
 };
 
 const iconColor = {
-  activeColor: 'rgba(91,55,183,1)',
+  activeColor: '#bf1330',
   inactiveColor: 'rgba(0,0,0,1)',
 };
 
@@ -85,9 +86,9 @@ const tabs = {
     },
     ...tabStyles,
   },
-  Notifications: {
+  Messages: {
     icon: {
-      component: NotificationsSVG,
+      component: MessagesSVG,
       ...iconColor,
     },
     ...tabStyles,
@@ -141,7 +142,6 @@ const MainStack = () => {
         component={Settings}
         options={{ gestureDirection: 'horizontal-inverted' }}
       />
-      <Stack.Screen name="Messages" component={Messages} />
     </Stack.Navigator>
   );
 };
@@ -152,7 +152,7 @@ const HomeScreen = () => {
       tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}>
       <Tab.Screen name="Orientation" component={Orientation} />
       <Tab.Screen name="Schedule" component={Schedule} />
-      <Tab.Screen name="Notifications" component={Notifications} />
+      <Tab.Screen name="Messages" component={Messages} />
       <Tab.Screen name="MyProfile" component={MyProfile} />
     </Tab.Navigator>
   );
@@ -234,19 +234,21 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
-      <ReloadContext.Provider value={{ reload, setReload }}>
-        <AuthContext.Provider value={{ authState, setAuthState }}>
-          <NavigationContainer>
-            {authState.status === 'loading' ? (
-              <Loading />
-            ) : authState.status === 'in' ? (
-              <MainStack />
-            ) : (
-              <AuthStack />
-            )}
-          </NavigationContainer>
-        </AuthContext.Provider>
-      </ReloadContext.Provider>
+      <SafeAreaProvider>
+        <ReloadContext.Provider value={{ reload, setReload }}>
+          <AuthContext.Provider value={{ authState, setAuthState }}>
+            <NavigationContainer>
+              {authState.status === 'loading' ? (
+                <Loading />
+              ) : authState.status === 'in' ? (
+                <MainStack />
+              ) : (
+                <AuthStack />
+              )}
+            </NavigationContainer>
+          </AuthContext.Provider>
+        </ReloadContext.Provider>
+      </SafeAreaProvider>
     </ApolloProvider>
   );
 }

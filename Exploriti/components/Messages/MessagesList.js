@@ -1,17 +1,20 @@
 import React, { useContext, useRef, useState } from 'react';
-import { View, StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import { View, StyleSheet, SafeAreaView, FlatList, Text } from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import { Theme } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
-import NewMessageBottomModal from '../Modal/NewMessageBottomModal';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import GoBackHeader from '../Menu/GoBackHeader';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { useSubscription } from '@apollo/react-hooks';
-import { GET_CHATS } from '../../graphql';
+import { useMutation, useSubscription } from '@apollo/react-hooks';
+import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
-import { AuthContext } from '../../context';
+import { AuthContext, getDefaultImage, graphqlify } from '../../context';
+import SearchableFlatList from '../Modal/SearchableFlatList';
+import { useNavigation } from '@react-navigation/native';
+import { useHeaderHeight } from '@react-navigation/stack';
+import {useSafeArea} from 'react-native-safe-area-context';
+
 import MessagesListPlaceholder from '../Placeholders/MessagesListPlaceholder';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -23,8 +26,12 @@ const { FontWeights, FontSizes } = Fonts;
  */
 export default function MessagesList() {
   const [chatSearch, setChatSearch] = useState();
-
+  const [friendsSelection, setFriendsSelection] = useState([]);
+  const navigation = useNavigation();
   const newMessageBottomModalRef = useRef();
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeArea()
+
 
   const IconRight = () => (
     <Icon
@@ -38,17 +45,17 @@ export default function MessagesList() {
   const Header = () => {
     return (
       <>
-        <GoBackHeader
-          title={'Messages'}
-          titleStyle={styles.title}
-          IconRight={IconRight}
-        />
+        <View style={styles.headerContainer}>
+          <Text  style={styles.title}>Messages</Text>
+          <IconRight />
+        </View>
         <SearchBar
           value={chatSearch}
           onChangeText={setChatSearch}
           placeholder="Search for chats..."
           hideBackground={true}
         />
+        <View style={{height: 10}} />
       </>
     );
   };
@@ -107,16 +114,91 @@ export default function MessagesList() {
     },
   });
 
-  if (chatsLoading) {
-    return (
-      <View style={{ backgroundColor: colours.base, flex: 1 }}>
-        <SafeAreaView style={styles.container}>
-          <Header />
-          <MessagesListPlaceholder />
-        </SafeAreaView>
-      </View>
-    );
-  }
+
+
+  //  Selection needs to reset if  one makes a chat and then decides to back
+  // out of it
+
+  const [newChat] = useMutation(NEW_CHAT, {
+    onCompleted: ({ createChat }) => {
+      const {
+        _id: chatId,
+        participants,
+        messages,
+        image,
+        name: chatName,
+        messagesAggregate
+      } = createChat;
+
+      const name = chatName || participants
+        .filter((participant) => participant._id !== authState.user.uid)
+        .map((participant) => participant.name).join(', ');
+
+      const numMessages = messagesAggregate.aggregate.count;
+
+      navigation.navigate("Conversation", {
+        chatId,
+        image,
+        name,
+        participants,
+        numMessages,
+        messages,
+      });
+    },
+  });
+
+  const newConversation = (participants) => {
+    if (participants.length !== 0) {
+      newChat({
+        variables: {
+          participants: graphqlify(
+            [
+              ...participants.map((participant) => participant.id),
+              authState.user.uid,
+            ],
+            'user',
+          ),
+          image:
+            participants.length === 1
+              ? participants[0].image
+              : getDefaultImage()
+        },
+      });
+    }
+  };
+
+  const newMessageModal = (
+    <SearchableFlatList
+      ref={newMessageBottomModalRef}
+      title={'friends'}
+      query={GET_USER_FRIENDS}
+      hasImage={true}
+      variables={{ userId: authState.user.uid }}
+      setSelection={setFriendsSelection}
+      aliased={false}
+      floatingButtonText={"Next"}
+      min={1}
+      onPress={newConversation}
+      initialSelection={null}
+      clearOnClose={true}
+      offset={70 + headerHeight}
+      floatingButtonOffset={70 + insets.bottom}
+    />
+  )
+
+  console.log('loading', chatsLoading, chatsData, chatsError)
+
+  // if (chatsLoading) {
+  //   return (
+  //     <View style={{ backgroundColor: colours.base, flex: 1 }}>
+  //       <SafeAreaView style={styles.container}>
+  //         <Header />
+  //         <MessagesListPlaceholder />
+  //         {newMessageModal}
+  //       </SafeAreaView>
+  //     </View>
+  //   );
+  // }
 
   const content = (
     <FlatList
@@ -127,18 +209,20 @@ export default function MessagesList() {
       spacing={20}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
-      // ItemSeparatorComponent={itemSeparatorComponent}
     />
   );
 
+
+
   return (
-    <>
       <SafeAreaView style={styles.container}>
         <Header />
-        {content}
+        {
+          chatsLoading ? (<MessagesListPlaceholder/>)
+            : content
+        }
+        {newMessageModal}
       </SafeAreaView>
-      <NewMessageBottomModal ref={newMessageBottomModalRef} />
-    </>
   );
 }
 

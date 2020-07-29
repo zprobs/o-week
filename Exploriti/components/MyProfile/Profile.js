@@ -30,7 +30,7 @@ import {
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
 import LoadingDots from '../ReusableComponents/LoadingDots';
 import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
@@ -57,6 +57,7 @@ export default function Profile({ route }) {
   console.log('socialIndex', socialIndex)
 
   const { authState } = useContext(AuthContext);
+  const insets = useSafeArea()
 
   const editProfileBottomModalRef = useRef();
   const optionsBottomModalRef = useRef();
@@ -76,13 +77,11 @@ export default function Profile({ route }) {
 
   if (loading)
     return (
-      <View style={{ backgroundColor: colours.base, flex: 1 }}>
-        <SafeAreaView>
+      <View style={{ backgroundColor: colours.base, flex: 1, paddingTop: insets.top }}>
           {isMyProfilePage ? null : (
             <GoBackHeader/>
           )}
           <ProfilePlaceholder hasInteractions={!isCurrentUser} />
-        </SafeAreaView>
       </View>
     );
   if (error) return <Error e={error} />;
@@ -307,6 +306,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
           numMessages,
           messages,
         },
+        initial: false
       });
     },
   });

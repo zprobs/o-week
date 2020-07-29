@@ -69,7 +69,7 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
     if (editableDescription !== data.group.description)
       fields.description = editableDescription;
     if (imageSelection) {
-      fields.image = await saveImage(imageSelection, data.group.image);
+      fields.image = await saveImage(imageSelection, data.group.image, 'group', groupId);
     }
     console.log(fields);
     updateGroup({ variables: { id: groupId, data: fields } })
