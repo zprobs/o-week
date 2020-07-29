@@ -69,80 +69,104 @@ const SearchableFlatList = React.forwardRef(
     const [filteredList, setFilteredList] = useState(unfilteredList);
     const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 300);
     const [inputRef, setInputFocus] = useFocus();
-    const [selected, setSelected] = useState(
-      !!initialSelection ? initialSelection : new Map(),
-    );
+    const [selected, setSelected] = useState(new Map());
     const [count, setCount] = useState(0);
     // used to prevent the interests from being queried right away when visiting MyProfile
     const verifiedQuery = query ? query : NULL;
     const didSetFirst = useRef(false);
-    const opacity = useState(new Animated.Value(min ? 0 : 1))[0];
-    const floatingOffset = useState(new Animated.Value(min ? 0 : -40))[0];
-    const buttonIsShowing = useRef(!min);
+    const opacity = useState(new Animated.Value(0))[0];
+    const floatingOffset = useState(new Animated.Value(0))[0];
+    const [buttonIsShowing, setButtonIsShowing] = useState(false);
     const [keyboardHeight] = useKeyboard();
 
-    console.log('searchQuery', searchQuery);
 
-    const result = useQuery(verifiedQuery, {
+
+    console.log('selected', selected)
+    console.log('initialSelection', initialSelection)
+    const {data: QueryData, loading, error} = useQuery(verifiedQuery, {
       skip: query == undefined || (serverSearch && searchQuery === ''),
       variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
     });
 
-    if (!result.loading && !didSetFirst.current && result.data) {
+    if (!loading && !didSetFirst.current && QueryData && !error) {
       didSetFirst.current = true;
-      if (!serverSearch) setUnfilteredList(result.data[title]);
-      setFilteredList(result.data[title]);
+      if (!serverSearch) setUnfilteredList(QueryData[title]);
+      setFilteredList(QueryData[title]);
     }
 
-    const onSelect = React.useCallback(
-      (item) => {
-        console.log('onSelectStart');
+    useEffect(()=>{
+      if (initialSelection) {
+        const newSelected = new Map();
+        for (const entry of initialSelection.entries()) {
+          console.log(entry);
+          if (entry[1]) {
+            const item = unfilteredList.filter((interest)=>interest.id===entry[0].id)
+            console.log('item', item)
+            if (item.length > 0) {
+              newSelected.set(item[0], true)
+              setCount(count+1);
+            }
+          }
+        }
+        setSelected(newSelected);
+      }
+    }, [initialSelection, QueryData])
+
+
+
+    function showButton() {
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatingOffset, {
+          toValue: -20,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      setButtonIsShowing(true);
+    }
+
+    function hideButton() {
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatingOffset, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      setButtonIsShowing(false)
+    }
+
+    const onSelect = (item) => {
+        console.log('selected', selected)
 
         const newSelected = new Map(selected);
         if (!!selected.get(item) === false) {
           if (count >= max) {
             return;
           }
-          if (!buttonIsShowing.current && (!min || count + 1 >= min)) {
-            buttonIsShowing.current = true;
-            console.log('animationStart');
-            Animated.parallel([
-              Animated.timing(opacity, {
-                toValue: 1,
-                duration: 200,
-                useNativeDriver: true,
-              }),
-              Animated.timing(floatingOffset, {
-                toValue: -20,
-                duration: 200,
-                useNativeDriver: true,
-              }),
-            ]).start();
+          if (!buttonIsShowing && (!min || count + 1 >= min)) {
+            showButton();
           }
           setCount(count + 1);
         } else {
-          if (buttonIsShowing.current && min && count <= min) {
-            buttonIsShowing.current = false;
-            Animated.parallel([
-              Animated.timing(opacity, {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: true,
-              }),
-              Animated.timing(floatingOffset, {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: true,
-              }),
-            ]).start();
+          if (buttonIsShowing && min && count <= min) {
+            hideButton()
           }
           setCount(count - 1);
         }
-        newSelected.set(item, !selected.get(item));
+      newSelected.set(item, !selected.get(item));
         setSelected(newSelected);
-      },
-      [selected],
-    );
+    }
 
     useEffect(() => {
       // only do the local search if not a server search
@@ -223,25 +247,25 @@ const SearchableFlatList = React.forwardRef(
               transform: [{ translateY: floatingOffset }],
 
               bottom: floatingButtonOffset
-                ? keyboardHeight + 10 - floatingButtonOffset
-                : keyboardHeight + 10,
+                ? keyboardHeight - floatingButtonOffset
+                : keyboardHeight,
             },
           ]}>
-          {buttonIsShowing ? (
             <ButtonColour
               colour={ThemeStatic.accent}
               light={true}
               label={floatingButtonText}
               containerStyle={styles.button}
               onPress={onFloatingButtonPress}
+              disabled={!buttonIsShowing}
             />
-          ) : null}
         </Animated.View>
       );
     };
 
     const onClose = () => {
       inputRef && inputRef.current && inputRef.current.blur();
+      hideButton()
       if (setData) {
         setData(mapToString(selected, query));
       }
@@ -251,7 +275,6 @@ const SearchableFlatList = React.forwardRef(
       if (clearOnClose) {
         setSelected(new Map());
         setCount(0);
-        buttonIsShowing.current = false;
         setSearchQuery('');
       }
     };
@@ -278,7 +301,7 @@ const SearchableFlatList = React.forwardRef(
           FloatingComponent={renderFloatingComponent}
         />
       );
-    }, [ref, offset, filteredList, selected]);
+    }, [ref, offset, filteredList, selected, buttonIsShowing]);
 
     return Modal;
   },

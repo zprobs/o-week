@@ -28,6 +28,7 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useHeaderHeight } from '@react-navigation/stack';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 /**
  * Modal for editing the logged in users data
@@ -62,6 +63,7 @@ const EditProfileBottomModal = React.forwardRef(
     const [interestsSelection, setInterestsSelection] = useState(); // A string array of numbers which are interest IDs
     const [editableDescription, setEditableDescription] = useState(description);
     const [isUploading, setIsUploading] = useState(false);
+    const insets = useSafeArea()
 
     const yearRef = useRef();
     const programRef = useRef();
@@ -97,8 +99,9 @@ const EditProfileBottomModal = React.forwardRef(
     const initialInterestSelection = () => {
       const map = new Map();
       if (data && !error && data.user && data.user.interests)
+        console.log('user interests', data.user.interests)
         data.user.interests.map((item) =>
-          map.set(item.interest.id.toString(), true),
+          map.set(item.interest, true),
         );
       return map;
     };
@@ -280,7 +283,8 @@ const EditProfileBottomModal = React.forwardRef(
                 max={4}
                 min={1}
                 floatingButtonText={'Done'}
-                floatingButtonOffset={headerHeight}
+                floatingButtonOffset={70 + insets.bottom}
+                offset={headerHeight + 70}
               />
               <SearchableFlatList
                 ref={interestRef}
@@ -290,11 +294,12 @@ const EditProfileBottomModal = React.forwardRef(
                 setData={setEditableInterests}
                 setSelection={setInterestsSelection}
                 initialSelection={initialInterestSelection()}
-                aliased={true}
+                aliased={false}
                 max={5}
                 min={1}
-                offset={Dimensions.get('window').height * 0.3}
+                offset={headerHeight + 70}
                 floatingButtonText={'Done'}
+                floatingButtonOffset={70 + insets.bottom}
               />
             </>
           ) : null

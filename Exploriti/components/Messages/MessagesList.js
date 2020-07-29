@@ -12,6 +12,9 @@ import EmptyMessages from '../../assets/svg/empty-messages.svg';
 import { AuthContext, getDefaultImage, graphqlify } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
+import { useHeaderHeight } from '@react-navigation/stack';
+import {useSafeArea} from 'react-native-safe-area-context';
+
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -25,6 +28,9 @@ export default function MessagesList() {
   const [friendsSelection, setFriendsSelection] = useState([]);
   const navigation = useNavigation();
   const newMessageBottomModalRef = useRef();
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeArea()
+
 
   const IconRight = () => (
     <Icon
@@ -181,6 +187,8 @@ export default function MessagesList() {
           onPress={newConversation}
           initialSelection={null}
           clearOnClose={true}
+          offset={70 + headerHeight}
+          floatingButtonOffset={70 + insets.bottom}
         />
       </SafeAreaView>
   );

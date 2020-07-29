@@ -14,7 +14,7 @@ export const NotificationsIcon = ({white}) => {
       size={32}
       color={ white ? 'white' : "#000"}
       onPress={() => navigation.push("Notifications")}
-      style={{padding: 12}}
+      style={{paddingRight: 12}}
     />
   );
 };

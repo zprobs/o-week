@@ -41,6 +41,7 @@ import MessagesSVG from './assets/svg/MessagesSVG';
 import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -233,19 +234,21 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
-      <ReloadContext.Provider value={{ reload, setReload }}>
-        <AuthContext.Provider value={{ authState, setAuthState }}>
-          <NavigationContainer>
-            {authState.status === 'loading' ? (
-              <Loading />
-            ) : authState.status === 'in' ? (
-              <MainStack />
-            ) : (
-              <AuthStack />
-            )}
-          </NavigationContainer>
-        </AuthContext.Provider>
-      </ReloadContext.Provider>
+      <SafeAreaProvider>
+        <ReloadContext.Provider value={{ reload, setReload }}>
+          <AuthContext.Provider value={{ authState, setAuthState }}>
+            <NavigationContainer>
+              {authState.status === 'loading' ? (
+                <Loading />
+              ) : authState.status === 'in' ? (
+                <MainStack />
+              ) : (
+                <AuthStack />
+              )}
+            </NavigationContainer>
+          </AuthContext.Provider>
+        </ReloadContext.Provider>
+      </SafeAreaProvider>
     </ApolloProvider>
   );
 }

@@ -16,6 +16,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @param color {string} The background color of the button
  * @param light {boolean} Weather or not the label text is light or dark
  * @param loadColour {string} Optional string for the loading dots colour
+ * @param disabled {boolean}
  * @constructor
  */
 const ButtonColour = ({
@@ -28,6 +29,7 @@ const ButtonColour = ({
   colour,
   light,
   loadColour,
+  disabled
 }) => {
   const styles = StyleSheet.create({
     container: {
@@ -75,7 +77,7 @@ const ButtonColour = ({
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      disabled={loading}
+      disabled={disabled || loading}
       style={[styles.container, containerStyle]}>
       {content}
     </TouchableOpacity>
