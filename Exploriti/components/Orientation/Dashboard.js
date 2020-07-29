@@ -107,7 +107,7 @@ export default function Dashboard() {
         <View style={{ marginHorizontal: 25 }}>
           <ButtonColour
             colour={ThemeStatic.lightgray}
-            label={'Search YorkU Hub'}
+            label={'Search The App'}
             Icon={SearchIcon}
             labelStyle={styles.buttonText}
             containerStyle={styles.scheduleButton}

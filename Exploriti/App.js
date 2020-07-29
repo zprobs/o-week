@@ -57,16 +57,16 @@ if (
 
 const tabStyles = {
   labelStyle: {
-    color: '#5B37B7',
+    color: '#bf1330',
   },
   background: {
-    activeColor: 'rgba(223,215,243,1)',
-    inactiveColor: 'rgba(223,215,243,0)',
+    activeColor: 'rgba(191, 19, 48, 0.35)',
+    inactiveColor: 'rgba(191, 19, 48, 0)',
   },
 };
 
 const iconColor = {
-  activeColor: 'rgba(91,55,183,1)',
+  activeColor: '#bf1330',
   inactiveColor: 'rgba(0,0,0,1)',
 };
 

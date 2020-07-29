@@ -188,17 +188,17 @@ export default function MessagesList() {
 
   console.log('loading', chatsLoading, chatsData, chatsError)
 
-  if (chatsLoading) {
-    return (
-      <View style={{ backgroundColor: colours.base, flex: 1 }}>
-        <SafeAreaView style={styles.container}>
-          <Header />
-          <MessagesListPlaceholder />
-          {newMessageModal}
-        </SafeAreaView>
-      </View>
-    );
-  }
+  // if (chatsLoading) {
+  //   return (
+  //     <View style={{ backgroundColor: colours.base, flex: 1 }}>
+  //       <SafeAreaView style={styles.container}>
+  //         <Header />
+  //         <MessagesListPlaceholder />
+  //         {newMessageModal}
+  //       </SafeAreaView>
+  //     </View>
+  //   );
+  // }
 
   const content = (
     <FlatList
@@ -217,7 +217,10 @@ export default function MessagesList() {
   return (
       <SafeAreaView style={styles.container}>
         <Header />
-        {content}
+        {
+          chatsLoading ? (<MessagesListPlaceholder/>)
+            : content
+        }
         {newMessageModal}
       </SafeAreaView>
   );

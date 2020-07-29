@@ -87,7 +87,7 @@ const ScheduleCarousel = () => {
   if (error) return null;
 
   const title = () => {
-    if (!scheduleData[index] || scheduleData[index].length <= 0) return 'No Events';
+    if (!scheduleData[index] || scheduleData[index].length <= 0) return data && data.events.length === 0 ? 'No Events' : null;
     const day = new Date(scheduleData[index][0].startDate).getDay();
     switch (day) {
       case 0:

@@ -306,6 +306,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
           numMessages,
           messages,
         },
+        initial: false
       });
     },
   });
