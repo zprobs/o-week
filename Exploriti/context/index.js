@@ -110,6 +110,13 @@ export const parseTimeElapsed = (utcTime: string) => {
   };
 };
 
+const defaultImages = [
+  'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
+  'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
+  'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
+  'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2',
+];
+
 /**
  * Uploads the given image data to Google Firebase Storage and returns a promise
  * representing the URL of the uploaded image
@@ -127,7 +134,7 @@ export const saveImage = (image, previous = null, type, id) => {
   console.log('filename', filename)
   const storageReference = storage().ref(filename);
 
-  if (previous) {
+  if (previous && !defaultImages.includes(previous)) {
     storage()
       .ref(storage().refFromURL(previous).fullPath)
       .delete()
@@ -152,12 +159,6 @@ export const saveImage = (image, previous = null, type, id) => {
 };
 
 export const getDefaultImage = () => {
-  const defaultImages = [
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default1.png?alt=media&token=5a9700a9-d2f4-4ff2-9e2e-b053c884f4fd',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default2.png?alt=media&token=9560020e-ca06-47b6-a11c-e26787a3e90d',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default3.png?alt=media&token=cfe35641-c453-4859-8dc1-1804554f4111',
-    'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/default4.png?alt=media&token=91af31aa-2b62-4835-a631-7550dd2c05a2',
-  ];
   return defaultImages[Math.floor(Math.random() * defaultImages.length)];
 };
 
