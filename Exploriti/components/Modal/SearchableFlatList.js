@@ -81,8 +81,6 @@ const SearchableFlatList = React.forwardRef(
 
 
 
-    console.log('selected', selected)
-    console.log('initialSelection', initialSelection)
     const {data: QueryData, loading, error} = useQuery(verifiedQuery, {
       skip: query == undefined || (serverSearch && searchQuery === ''),
       variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
@@ -98,10 +96,8 @@ const SearchableFlatList = React.forwardRef(
       if (initialSelection) {
         const newSelected = new Map();
         for (const entry of initialSelection.entries()) {
-          console.log(entry);
           if (entry[1]) {
             const item = unfilteredList.filter((interest)=>interest.id===entry[0].id)
-            console.log('item', item)
             if (item.length > 0) {
               newSelected.set(item[0], true)
               setCount(count+1);
@@ -147,7 +143,6 @@ const SearchableFlatList = React.forwardRef(
     }
 
     const onSelect = (item) => {
-        console.log('selected', selected)
 
         const newSelected = new Map(selected);
         if (!!selected.get(item) === false) {
@@ -170,7 +165,6 @@ const SearchableFlatList = React.forwardRef(
 
     useEffect(() => {
       // only do the local search if not a server search
-      console.log('searchStart');
       if (!serverSearch) {
         const lowerCaseQuery = debounceQuery.toLowerCase();
         let newData;
@@ -193,7 +187,6 @@ const SearchableFlatList = React.forwardRef(
             item.toLowerCase().includes(lowerCaseQuery),
           );
         }
-        console.log('searchEnd');
         setFilteredList(newData);
       }
     }, [debounceQuery]);
@@ -221,7 +214,6 @@ const SearchableFlatList = React.forwardRef(
     };
 
     const search = React.useMemo(() => {
-      console.log('search render');
       return (
         <SearchBar
           ref={inputRef}
@@ -280,7 +272,6 @@ const SearchableFlatList = React.forwardRef(
     };
 
     const Modal = React.useMemo(() => {
-      console.log('modalize render');
       return (
         <Modalize
           ref={ref}

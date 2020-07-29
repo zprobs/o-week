@@ -116,10 +116,15 @@ export const parseTimeElapsed = (utcTime: string) => {
  *
  * @param image: image data to upload
  * @param previous: url of previous image to delete (optional)
+ * @param type {string} the type of image. Ex profile , event. Used for filename
+ * @param id {id} the id of who owns image. Used for filename
  * @returns {Promise<R>}
  */
-export const saveImage = (image, previous = null) => {
-  const { path, filename } = image;
+export const saveImage = (image, previous = null, type, id) => {
+  console.log(image, previous)
+  const { path } = image;
+  const filename = `${type}/${id}`
+  console.log('filename', filename)
   const storageReference = storage().ref(filename);
 
   if (previous) {

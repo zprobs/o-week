@@ -34,13 +34,6 @@ export default function MyProfile() {
         }}
       />
       <Stack.Screen
-        name="Conversation"
-        component={Conversation}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name={'GroupScreen'}
         component={GroupScreen}
         options={{

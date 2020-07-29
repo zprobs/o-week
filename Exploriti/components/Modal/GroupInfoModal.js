@@ -111,7 +111,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       );
 
     const {
-      chatId,
+      _id: chatId,
       image,
       name,
       participants,

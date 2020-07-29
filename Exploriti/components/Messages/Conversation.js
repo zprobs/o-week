@@ -155,6 +155,7 @@ const Conversation = () => {
       <GoBackHeader
         title={name}
         titleStyle={styles.headerTitleStyle}
+        destination={'MessagesList'}
       />
       {content}
     </SafeAreaView>

@@ -198,6 +198,7 @@ export default function Signup({ navigation }) {
       width: 300,
       height: 400,
       cropping: true,
+      cropperCircleOverlay: true
     })
       .then((selectedImage) => {
         setImage(selectedImage.path);
@@ -244,7 +245,6 @@ export default function Signup({ navigation }) {
     setIsLoading(true);
     const userData = {};
 
-    const imageURL = imageSelection ? await saveImage(imageSelection) : image;
 
     const { email, password, name } = values;
 
@@ -253,8 +253,9 @@ export default function Signup({ navigation }) {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
+      .then( async (userCredential) => {
         console.log(userCredential.user.uid);
+        const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', userCredential.user.uid ) : image;
         userData.name = name;
         userData.email = email;
         userData.id = userCredential.user.uid;

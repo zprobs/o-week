@@ -1,6 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
 import {
-  Dimensions,
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
@@ -99,7 +98,6 @@ const EditProfileBottomModal = React.forwardRef(
     const initialInterestSelection = () => {
       const map = new Map();
       if (data && !error && data.user && data.user.interests)
-        console.log('user interests', data.user.interests)
         data.user.interests.map((item) =>
           map.set(item.interest, true),
         );
@@ -119,6 +117,7 @@ const EditProfileBottomModal = React.forwardRef(
         width: 300,
         height: 400,
         cropping: true,
+        cropperCircleOverlay: true
       })
         .then((selectedImage) => {
           setEditableImage(selectedImage.path);
@@ -162,7 +161,7 @@ const EditProfileBottomModal = React.forwardRef(
       }
 
       if (imageSelection) {
-        fields.image = await saveImage(imageSelection, image);
+        fields.image = await saveImage(imageSelection, image, 'profile', authState.user.uid);
       }
 
       if (Object.keys(fields).length !== 0) {
