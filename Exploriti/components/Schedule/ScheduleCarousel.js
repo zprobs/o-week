@@ -168,7 +168,6 @@ const ScheduleCarousel = () => {
 
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
-      <SafeAreaView>
         {isFocused ? <StatusBar barStyle="light-content" /> : null}
         <ScrollView bounces={false}>
           <View style={styles.header}>
@@ -202,7 +201,6 @@ const ScheduleCarousel = () => {
             onBeforeSnapToItem={onSwipe}
           />
         </ScrollView>
-      </SafeAreaView>
     </LinearGradient>
   );
 };

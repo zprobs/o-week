@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from '@react-navigation/native';
 import ImageCard from '../ReusableComponents/ImageCard';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -30,6 +31,7 @@ const { FontWeights, FontSizes } = Fonts;
 export default function Dashboard() {
   const { authState } = useContext(AuthContext);
   const navigation = useNavigation();
+  const insets = useSafeArea()
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
@@ -64,14 +66,15 @@ export default function Dashboard() {
   );
 
   const Header = () => {
-    const { data: sayHiData } = useQuery(GET_USERS_WHERE, {
+    const { data: sayHiData, loading: sayHiLoading } = useQuery(GET_USERS_WHERE, {
       variables: { _nin: authState.user.uid },
     });
     let count = 0;
+    console.log('sayHiLoading', sayHiLoading)
 
     return (
-      <SafeAreaView>
-        <View style={{ marginHorizontal: 25 }}>
+      <>
+        <View style={{ marginHorizontal: 25, paddingTop: insets.top }}>
           <Text style={styles.welcomeTitle}>Hi, {data.user.name}!</Text>
           <Text style={styles.welcomeSubTitle}>Say hi to someone new:</Text>
         </View>
@@ -113,7 +116,7 @@ export default function Dashboard() {
             }}
           />
         </View>
-      </SafeAreaView>
+        </>
     );
   };
 
@@ -146,6 +149,7 @@ export default function Dashboard() {
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
+        bounces={false}
       />
     </View>
   );
