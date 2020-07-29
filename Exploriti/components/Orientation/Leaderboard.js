@@ -16,8 +16,7 @@ const { colours } = Theme.light;
  */
 const LeaderBoard = () => {
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <CircleBackIcon />
           <Text style={styles.title}>Leaderboard</Text>
@@ -25,7 +24,6 @@ const LeaderBoard = () => {
         </View>
         <FlatList data={places} renderItem={renderItem} style={styles.list} keyExtractor={item=>item} />
       </SafeAreaView>
-    </View>
   );
 };
 
@@ -36,11 +34,12 @@ const renderItem = ({ item }) => (
     key={item}
     gold={item === '3rd'}
     points={110}
+    teamTag={tags[places.indexOf(item)]}
   />
 );
 
 const places = ['1st', '2nd', '3rd', '4th', '5th'];
-
+const tags = ['Group B', 'Group C', 'Group A', 'Group D', 'Group E']
 const styles = StyleSheet.create({
   container: {
     flex: 1,

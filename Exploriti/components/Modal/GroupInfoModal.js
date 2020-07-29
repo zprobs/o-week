@@ -164,6 +164,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
               onPress={() => navigation.navigate('Leaderboard')}
               rank={'3rd'}
               gold={true}
+              teamTag={'Group A'}
               points={data.group.trophies_aggregate.aggregate.sum.score}
             />
             <Text style={styles.sectionText}>Trophies</Text>
