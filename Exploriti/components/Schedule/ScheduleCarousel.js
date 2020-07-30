@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
 import { AuthContext } from '../../context';
+import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder'
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -87,7 +88,8 @@ const ScheduleCarousel = () => {
   if (error) return null;
 
   const title = () => {
-    if (!scheduleData[index] || scheduleData[index].length <= 0) return data && data.events.length === 0 ? 'No Events' : null;
+    if (!scheduleData[index] || scheduleData[index].length <= 0)
+      return data && data.events.length === 0 ? 'No Events' : null;
     const day = new Date(scheduleData[index][0].startDate).getDay();
     switch (day) {
       case 0:
@@ -165,31 +167,34 @@ const ScheduleCarousel = () => {
       }).start();
     });
   };
+  
 
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
-        {isFocused ? <StatusBar barStyle="light-content" /> : null}
-        <ScrollView bounces={false}>
-          <View style={styles.header}>
-            <View style={{ minWidth: '65%' }}>
-              <Animated.Text
-                style={{ ...styles.dayText, opacity: titleOpacity }}>
-                {title()}
-              </Animated.Text>
+      {isFocused ? <StatusBar barStyle="light-content" /> : null}
+      <ScrollView bounces={false}>
+        <View style={styles.header}>
+          <View style={{ minWidth: '65%' }}>
+            <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
+              {title()}
+            </Animated.Text>
 
-              <Text style={styles.dateText}>{pageDate()}</Text>
-            </View>
-            <Icon
-              size={32}
-              name={'calendar'}
-              color={'white'}
-              onPress={() => {
-                navigation.navigate('Calendar', {
-                  myCalendars: data.user.member,
-                });
-              }}
-            />
+            <Text style={styles.dateText}>{pageDate()}</Text>
           </View>
+          <Icon
+            size={32}
+            name={'calendar'}
+            color={'white'}
+            onPress={() => {
+              navigation.navigate('Calendar', {
+                myCalendars: data.user.member,
+              });
+            }}
+          />
+        </View>
+        {loading ? (
+          <SchedulePlaceholder />
+        ) : (
           <Carousel
             ref={carouselRef}
             data={scheduleData}
@@ -200,7 +205,8 @@ const ScheduleCarousel = () => {
             removeClippedSubviews={false}
             onBeforeSnapToItem={onSwipe}
           />
-        </ScrollView>
+        )}
+      </ScrollView>
     </LinearGradient>
   );
 };

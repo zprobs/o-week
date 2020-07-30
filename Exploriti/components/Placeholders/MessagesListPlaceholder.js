@@ -41,17 +41,6 @@ const MessagesListPlaceholder = () => {
 
         <MessagesCardPlaceholder />
 
-        <MessagesCardPlaceholder />
-
-        <MessagesCardPlaceholder />
-
-        <MessagesCardPlaceholder />
-
-        <MessagesCardPlaceholder />
-
-        <MessagesCardPlaceholder />
-
-        <MessagesCardPlaceholder />
       </Placeholder>
     </View>
   );
