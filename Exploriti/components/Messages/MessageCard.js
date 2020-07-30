@@ -1,9 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import React, {
-  useContext,
-  useRef,
-
-} from 'react';
+import React, { useContext, useRef } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -20,7 +16,6 @@ import {
   PanGestureHandler,
   State,
   TouchableWithoutFeedback,
-
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import { DELETE_CHAT } from '../../graphql';

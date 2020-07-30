@@ -30,7 +30,7 @@ const SchedulePlaceholder = () => {
 
           <View style={styles.infoPlaceholder}>
             <PlaceholderLine
-              width={65}
+              width={75}
               height={15}
               color={colours.placeholder}
               style={{
