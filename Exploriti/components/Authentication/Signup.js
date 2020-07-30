@@ -39,6 +39,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Formik } from 'formik';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Yup from 'yup';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get('window').height;
@@ -83,6 +84,7 @@ export default function Signup({ navigation }) {
   const onFacultyRef = () => facultyRef.current.open();
   const onTimeZoneRef = () => timeZoneRef.current.open();
   const onInterestRef = () => interestRef.current.open();
+
 
   const programTitle = () => {
     const size = programs.length;
@@ -249,13 +251,13 @@ export default function Signup({ navigation }) {
     const { email, password, name } = values;
 
     console.log('e, p, n', email, password, name);
+    const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', email ) : image;
 
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then( async (userCredential) => {
         console.log(userCredential.user.uid);
-        const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', userCredential.user.uid ) : image;
         userData.name = name;
         userData.email = email;
         userData.id = userCredential.user.uid;
