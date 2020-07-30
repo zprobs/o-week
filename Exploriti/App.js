@@ -42,6 +42,8 @@ import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import FlashMessage from "react-native-flash-message";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -245,6 +247,7 @@ export default function App() {
               ) : (
                 <AuthStack />
               )}
+              <FlashMessage position="top" />
             </NavigationContainer>
           </AuthContext.Provider>
         </ReloadContext.Provider>

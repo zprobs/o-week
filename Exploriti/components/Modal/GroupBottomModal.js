@@ -8,6 +8,7 @@ import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_GROUPS } from '../../graphql';
 import UserCard from '../ReusableComponents/UserCard';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -28,10 +29,14 @@ const GroupBottomModal = React.forwardRef(
       { data, called, loading, error },
     ] = useLazyQuery(GET_USER_GROUPS, { variables: { id: userId } });
 
-    console.log('userID', userId);
-    console.log('loading', loading);
-    console.log('error', error);
-    console.log('data', data);
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
 
     let heading;
     let subHeading;

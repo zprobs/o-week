@@ -19,6 +19,7 @@ import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from '@react-navigation/native';
 import ImageCard from '../ReusableComponents/ImageCard';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -42,7 +43,13 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return <Text>{error.message}</Text>;
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+    return null
   }
 
   console.log(data);
@@ -66,11 +73,19 @@ export default function Dashboard() {
   );
 
   const Header = () => {
-    const { data: sayHiData, loading: sayHiLoading } = useQuery(GET_USERS_WHERE, {
+    const { data: sayHiData, loading: sayHiLoading, error: sayHiError } = useQuery(GET_USERS_WHERE, {
       variables: { _nin: authState.user.uid },
     });
     let count = 0;
-    console.log('sayHiLoading', sayHiLoading)
+
+    if (sayHiError) {
+      showMessage({
+        message: "Server Error",
+        description: sayHiError.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
 
     return (
       <>

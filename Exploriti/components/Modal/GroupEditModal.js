@@ -16,6 +16,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 import ImagePicker from 'react-native-image-crop-picker';
 import { saveImage } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -30,7 +31,7 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
     getGroup,
     { loading, data, error, called },
   ] = useLazyQuery(GET_DETAILED_GROUP, { variables: { id: groupId } });
-  const [updateGroup] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP);
+  const [updateGroup, {error: updateError}] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP);
   const [editableName, setEditableName] = useState();
   const [editableImage, setEditableImage] = useState();
   const [imageSelection, setImageSelection] = useState();
@@ -58,9 +59,23 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
       .catch((result) => console.log(result));
   };
 
-  console.log('data,', data);
-  console.log('groupId,', groupId);
-  console.log(error);
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'warning'
+    });
+  }
+
+  if (updateError) {
+    showMessage({
+      message: "Cannot Update Group",
+      description: updateError.message,
+      type: 'danger',
+      icon: 'danger'
+    });
+  }
 
   const onDone = async () => {
     setIsUploading(true);

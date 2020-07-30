@@ -21,6 +21,7 @@ import { useNavigation } from '@react-navigation/native';
 import BackIcon from '../Menu/BackIcon';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -40,6 +41,15 @@ export default function Search() {
     skip: firstRenderRef.current || debounceQuery === '',
   });
   const navigation = useNavigation();
+
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
 
   const listData =
     data &&

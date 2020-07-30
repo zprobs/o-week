@@ -27,6 +27,7 @@ import DatePicker from 'react-native-date-picker';
 import { AuthContext, getDefaultImage, saveImage } from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
+import { showMessage } from 'react-native-flash-message';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -43,8 +44,8 @@ const { FontWeights, FontSizes } = Fonts;
  */
 const NewEventModal = React.forwardRef(
   ({ groupId, onClose, groupName, editMode, eventId }, ref) => {
-    const [createEvent] = useMutation(CREATE_EVENT);
-    const [updateEvent] = useMutation(UPDATE_EVENT);
+    const [createEvent, {error: createEventError}] = useMutation(CREATE_EVENT);
+    const [updateEvent, {error: updateEventError}] = useMutation(UPDATE_EVENT);
     const [getEvent, { data, error }] = useLazyQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
@@ -70,6 +71,42 @@ const NewEventModal = React.forwardRef(
     const startDateHasShown = useRef(!!editMode);
     const endDateHasShown = useRef(!!editMode);
 
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+
+    if (createEventError) {
+      showMessage({
+        message: "Could not Create Event",
+        description: createEventError.message,
+        type: 'danger',
+        icon: 'auto'
+      });
+    }
+
+    if (updateEventError) {
+      showMessage({
+        message: "Could not Update Event",
+        description: updateEventError.message,
+        type: 'danger',
+        icon: 'auto'
+      });
+    }
+
+    if (hostsError) {
+      showMessage({
+        message: "Server Error",
+        description: hostsError.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+
     useEffect(() => {
       if (data) {
         const { event } = data;
@@ -82,8 +119,6 @@ const NewEventModal = React.forwardRef(
         setEndDate(new Date(event.endDate));
       }
     }, [data]);
-
-    if (error) console.log(error.message);
 
     const dateTimeFormat = new Intl.DateTimeFormat('en', {
       month: 'short',
@@ -115,7 +150,6 @@ const NewEventModal = React.forwardRef(
       if (groupId) {
         fields.hosts = { data: [{ groupId: groupId }] };
       } else {
-        console.log(hostsData);
         if (hostsError) return;
         const IDs = [];
         hostsData.groups.forEach((group) => IDs.push({ groupId: group.id }));
@@ -345,6 +379,7 @@ const NewEventModal = React.forwardRef(
               containerStyle={styles.doneButton}
               colour={ThemeStatic.accent}
               light={true}
+              disabled={!hostsData || !data}
             />
           </View>
         </View>

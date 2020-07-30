@@ -10,7 +10,7 @@ import {
   SystemNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
-import GoBackHeader from '../Menu/GoBackHeader';
+import { showMessage } from 'react-native-flash-message';
 
 export default function Notifications() {
   const { authState } = useContext(AuthContext);
@@ -18,7 +18,14 @@ export default function Notifications() {
     variables: { id: authState.user.uid },
   });
 
-  if (error) console.log(error.message);
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
 
   const renderItem = ({ item }) => {
     switch (item.type) {

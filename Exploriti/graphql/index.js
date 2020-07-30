@@ -415,6 +415,21 @@ export const GET_CHATS = gql`
   ${DETAILED_CHAT}
 `;
 
+export const SEARCH_CHATS = gql`
+    query searchChats($user: String!, $query: String!) {
+        chats(
+            limit: 15
+            order_by: { messages_aggregate: { max: { date: desc } } }
+            where: {
+                _and: [{ participants: { id: { _eq: $user } } }, { name: { _ilike: $query} }]
+            }
+        ) {
+            ...DetailedChat
+        }
+    }
+    ${DETAILED_CHAT}
+`
+
 export const GET_CHAT_BY_ID = gql`
   query getChatById($id: Int!) {
     chat(id: $id) {

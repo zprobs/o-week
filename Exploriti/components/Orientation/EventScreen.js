@@ -22,6 +22,7 @@ import {
 import { AuthContext } from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -44,7 +45,7 @@ const EventScreen = ({ route }) => {
   const { data, loading, error } = useQuery(GET_EVENT, {
     variables: { id: eventId },
   });
-  const { data: isOwnerData, error: isOwnerError } = useQuery(GET_USER_GROUPS, {
+  const { data: isOwnerData } = useQuery(GET_USER_GROUPS, {
     variables: { id: authState.user.uid },
     fetchPolicy: 'cache-only',
   });
@@ -55,18 +56,24 @@ const EventScreen = ({ route }) => {
 
   if (loading) return null;
   if (error) {
-    console.log(error.message);
-    return null;
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+    return null
   }
+
 
   const friendsIds = [];
   if (friendsData) friendsData.friends.map((item) => friendsIds.push(item.id));
 
   console.log('hosts', data.event.hosts);
 
-  const filteredMemberships = isOwnerData.user.member.filter((membership) =>
+  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter((membership) =>
     data.event.hosts.map((host) => host.groupId).includes(membership.group.id),
-  );
+  ) : [];
 
   console.log('filteredMemberships', filteredMemberships);
 

@@ -22,6 +22,7 @@ import {
   GET_NEW_MESSAGES,
   SEND_MESSAGE,
 } from "../../graphql";
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 
@@ -42,7 +43,7 @@ const Conversation = () => {
   const { navigate } = useNavigation();
   const { authState } = useContext(AuthContext);
   const [sendMessage] = useMutation(SEND_MESSAGE);
-  const [getEarlierMessages] = useLazyQuery(GET_EARLIER_MESSAGES, {
+  const [getEarlierMessages, {error: earlierError}] = useLazyQuery(GET_EARLIER_MESSAGES, {
     onCompleted: ({ messages: oldMessages }) => {
       setMessages(GiftedChat.prepend(messages, oldMessages));
       setLoadEarlier(numMessages - messageOffset > numToLoad);
@@ -75,6 +76,15 @@ const Conversation = () => {
       }
     },
   });
+
+  if (earlierError) {
+    showMessage({
+      message: "Cannot load Messages",
+      description: earlierError.message,
+      type: "warning",
+      icon: 'warning'
+    });
+  }
 
   const onSend = updatedMessages => {
     const [updatedMessage] = updatedMessages;

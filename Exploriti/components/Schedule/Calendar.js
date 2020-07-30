@@ -17,6 +17,7 @@ import EventCard from '../ReusableComponents/EventCard';
 import { useMutation } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
 import { AuthContext } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const HEIGHT = Dimensions.get('window').height;
@@ -31,7 +32,7 @@ const Calendar = () => {
   const route = useRoute();
   const { myCalendars } = route.params;
   const isFocused = useIsFocused();
-  const [updateCalendars] = useMutation(UPDATE_CALENDARS);
+  const [updateCalendars, {error}] = useMutation(UPDATE_CALENDARS);
 
   const updateOnCalendar = (calendar, selected) => {
     updateCalendars({
@@ -46,8 +47,17 @@ const Calendar = () => {
           variables: { userId: authState.user.uid },
         },
       ],
-    });
+    }).catch(e=>console.log(e));
   };
+
+  if (error) {
+    showMessage({
+      message: "Could not update Calendars",
+      description: error.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
 
   return (
     <ScrollView style={styles.container} bounces={false}>

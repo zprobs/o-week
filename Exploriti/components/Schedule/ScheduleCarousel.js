@@ -20,6 +20,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
 import { AuthContext } from '../../context';
 import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder'
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -44,6 +45,8 @@ const ScheduleCarousel = () => {
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+
+
   useEffect(() => {
     // separating all the events into pages based on which day they occur on.
     if (!data || data.events.length === 0) return;
@@ -85,7 +88,14 @@ const ScheduleCarousel = () => {
     setIndex(0);
   }, [data]);
 
-  if (error) return null;
+  if (error)  {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'warning'
+    });
+  }
 
   const title = () => {
     if (!scheduleData[index] || scheduleData[index].length <= 0)
@@ -167,7 +177,7 @@ const ScheduleCarousel = () => {
       }).start();
     });
   };
-  
+
 
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
@@ -186,9 +196,11 @@ const ScheduleCarousel = () => {
             name={'calendar'}
             color={'white'}
             onPress={() => {
-              navigation.navigate('Calendar', {
-                myCalendars: data.user.member,
-              });
+              if (data) {
+                navigation.navigate('Calendar', {
+                  myCalendars: data.user.member,
+                });
+              }
             }}
           />
         </View>

@@ -38,6 +38,7 @@ import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
 import { useNavigation } from '@react-navigation/native';
 import ProfilePlaceholder from '../Placeholders/ProfilePlaceholder';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -54,7 +55,6 @@ export default function Profile({ route }) {
   // used to determine which social media is to be added
   const [socialIndex, setSocialIndex] = useState(0);
 
-  console.log('socialIndex', socialIndex)
 
   const { authState } = useContext(AuthContext);
   const insets = useSafeArea()
@@ -74,6 +74,15 @@ export default function Profile({ route }) {
   const { loading, error, data } = useQuery(GET_DETAILED_USER, {
     variables: { id: userId },
   });
+
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
 
   if (loading)
     return (
@@ -277,7 +286,7 @@ const ProfileCard = ({
 const UserInteractions = ({ userId, navigation, image }) => {
   const { authState } = useContext(AuthContext);
 
-  const [newChat] = useMutation(NEW_CHAT, {
+  const [newChat, {error: newChatError}] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
       const {
         _id: chatId,
@@ -416,6 +425,51 @@ const UserInteractions = ({ userId, navigation, image }) => {
     variables: { userId: authState.user.uid },
   });
 
+  if (newChatError) {
+    showMessage({
+      message: "Cannot Create Chat",
+      description: newChatError.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
+
+  if (confirmError) {
+    showMessage({
+      message: "Cannot Confirm Request",
+      description: confirmError.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
+
+  if (removeError) {
+    showMessage({
+      message: "Cannot Remove Friend",
+      description: removeError.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
+
+  if (deleteError) {
+    showMessage({
+      message: "Cannot Delete Request",
+      description: deleteError.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
+
+  if (friendsError) {
+    showMessage({
+      message: "Server Error",
+      description: friendsError.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
+
   let content;
   let friendInteraction = () => {
     return undefined;
@@ -453,19 +507,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
       removeError
     ) {
       content = (
-        <Text style={styles.followInteractionText}>
-          {requestsError
-            ? requestsError.message
-            : sendError
-            ? sendError.message
-            : deleteError
-            ? deleteError.message
-            : confirmError
-            ? confirmError.message
-            : friendsError
-            ? friendsError.message
-            : removeError.message}
-        </Text>
+        <Text style={styles.followInteractionText}>Error</Text>
       );
     } else if (
       requestsData &&

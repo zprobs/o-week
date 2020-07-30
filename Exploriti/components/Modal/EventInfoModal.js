@@ -28,6 +28,7 @@ import {
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
 import { AuthContext } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -47,6 +48,15 @@ const EventInfoModal = React.forwardRef(
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
+
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
 
     const Tabs = () => {
       const [index, setIndex] = useState(initialIndex);
@@ -108,7 +118,7 @@ const EventInfoModal = React.forwardRef(
       } = useQuery(CHECK_USER_EVENT_ACCEPTED, {
         variables: { eventId: eventId, userId: authState.user.uid },
       });
-      const [signUp, { loading: signUpLoading }] = useMutation(
+      const [signUp, { loading: signUpLoading, error: signUpError }] = useMutation(
         SIGN_UP_USER_FOR_EVENT,
         {
           variables: { eventId: eventId, userId: authState.user.uid },
@@ -151,6 +161,41 @@ const EventInfoModal = React.forwardRef(
         ],
       });
 
+      if (acceptError) {
+        showMessage({
+          message: "Server Error",
+          description: acceptError.message,
+          type: 'warning',
+          icon: 'warning'
+        });
+      }
+
+      if (signUpError) {
+        showMessage({
+          message: "Cannot RSVP",
+          description: signUpError.message,
+          type: 'danger',
+          icon: 'danger'
+        });
+      }
+
+      if (confirmError) {
+        showMessage({
+          message: "Cannot Confirm Invite",
+          description: confirmError.message,
+          type: 'danger',
+          icon: 'danger'
+        });
+      }
+
+      if (removeError) {
+        showMessage({
+          message: "Cannot Cancel RSVP",
+          description: removeError.message,
+          type: 'danger',
+          icon: 'danger'
+        });
+      }
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
       const isAccepted = acceptData
         ? isInvited && acceptData.user.events[0].didAccept
@@ -160,15 +205,11 @@ const EventInfoModal = React.forwardRef(
         setIsSelected(isAccepted);
       }, [acceptData]);
 
-      if (removeError) console.log(removeError.message);
-      if (confirmError) console.log('confirmError', confirmError.message);
-
       const mutationLoading =
         signUpLoading || confirmLoading || acceptLoading || removeLoading;
 
       if (loading || acceptLoading) return null;
-      if (error || acceptError)
-        return <Text>{acceptError ? acceptError.message : error.message}</Text>;
+      if (error || acceptError) return null;
 
       const date = new Date(data.event.startDate);
       const end = new Date(data.event.endDate);

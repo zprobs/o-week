@@ -17,6 +17,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
 import { AuthContext } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -48,15 +49,20 @@ const GroupScreen = ({ route }) => {
     return null;
   }
 
-  if (error || isOwnerError) {
-    console.log('isOwnerError', isOwnerError);
-    console.log('error', error);
-    return null;
+
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+    return null
   }
 
-  const filteredMemberships = isOwnerData.user.member.filter(
+  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter(
     (membership) => membership.group.id === groupId,
-  );
+  ) : [];
 
   const isMember = filteredMemberships.length > 0;
   const isOwner = isMember && filteredMemberships[0].isOwner === true;

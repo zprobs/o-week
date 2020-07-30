@@ -6,16 +6,17 @@ import Fonts from '../../theme/Fonts';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { useMutation, useSubscription } from '@apollo/react-hooks';
-import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT } from '../../graphql';
+import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
+import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
 import { AuthContext, getDefaultImage, graphqlify } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
-import {useSafeArea} from 'react-native-safe-area-context';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import MessagesListPlaceholder from '../Placeholders/MessagesListPlaceholder';
+import { showMessage } from 'react-native-flash-message';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
@@ -25,12 +26,12 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 export default function MessagesList() {
-  const [chatSearch, setChatSearch] = useState();
+  const [chatSearch, setChatSearch] = useState('');
   const [friendsSelection, setFriendsSelection] = useState([]);
   const navigation = useNavigation();
   const newMessageBottomModalRef = useRef();
   const headerHeight = useHeaderHeight();
-  const insets = useSafeArea()
+  const insets = useSafeArea();
 
 
   const IconRight = () => (
@@ -41,24 +42,6 @@ export default function MessagesList() {
       onPress={() => newMessageBottomModalRef.current.open()}
     />
   );
-
-  const Header = () => {
-    return (
-      <>
-        <View style={styles.headerContainer}>
-          <Text  style={styles.title}>Messages</Text>
-          <IconRight />
-        </View>
-        <SearchBar
-          value={chatSearch}
-          onChangeText={setChatSearch}
-          placeholder="Search for chats..."
-          hideBackground={true}
-        />
-        <View style={{height: 10}} />
-      </>
-    );
-  };
 
   const renderItem = ({ item }) => {
     const {
@@ -92,15 +75,7 @@ export default function MessagesList() {
     );
   };
 
-  const listEmptyComponent = () => (
-    <ImgBanner
-      Img={EmptyMessages}
-      placeholder="No messages yet"
-      spacing={0.15}
-    />
-  );
 
-  const itemSeparatorComponent = () => <View style={{ height: 15 }} />;
 
   const { authState } = useContext(AuthContext);
 
@@ -114,12 +89,32 @@ export default function MessagesList() {
     },
   });
 
+  if (chatsError) {
+    showMessage({
+      message: "Server Error",
+      description: chatsError.message,
+      type: 'warning',
+      icon: 'warning'
+    });
+  }
 
+  const {data: searchData, loading: searchLoading, error: searchError} = useQuery(SEARCH_CHATS, {variables: {user: authState.user.uid, query: `%${chatSearch}%`}, skip: chatSearch === ''})
+
+  if (searchError) {
+    showMessage({
+      message: "Server Error",
+      description: searchError.message,
+      type: 'warning',
+      icon: 'warning'
+    });
+  }
+
+  console.log('searchData', searchData)
 
   //  Selection needs to reset if  one makes a chat and then decides to back
   // out of it
 
-  const [newChat] = useMutation(NEW_CHAT, {
+  const [newChat, {error: newChatError}] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
       const {
         _id: chatId,
@@ -127,16 +122,19 @@ export default function MessagesList() {
         messages,
         image,
         name: chatName,
-        messagesAggregate
+        messagesAggregate,
       } = createChat;
 
-      const name = chatName || participants
-        .filter((participant) => participant._id !== authState.user.uid)
-        .map((participant) => participant.name).join(', ');
+      const name =
+        chatName ||
+        participants
+          .filter((participant) => participant._id !== authState.user.uid)
+          .map((participant) => participant.name)
+          .join(', ');
 
       const numMessages = messagesAggregate.aggregate.count;
 
-      navigation.navigate("Conversation", {
+      navigation.navigate('Conversation', {
         chatId,
         image,
         name,
@@ -146,6 +144,15 @@ export default function MessagesList() {
       });
     },
   });
+
+  if (newChatError) {
+    showMessage({
+      message: "Cannot Create Chat",
+      description: newChatError.message,
+      type: 'danger',
+      icon: 'danger'
+    });
+  }
 
   const newConversation = (participants) => {
     if (participants.length !== 0) {
@@ -161,44 +168,11 @@ export default function MessagesList() {
           image:
             participants.length === 1
               ? participants[0].image
-              : getDefaultImage()
+              : getDefaultImage(),
         },
       });
     }
   };
-
-  const newMessageModal = (
-    <SearchableFlatList
-      ref={newMessageBottomModalRef}
-      title={'friends'}
-      query={GET_USER_FRIENDS}
-      hasImage={true}
-      variables={{ userId: authState.user.uid }}
-      setSelection={setFriendsSelection}
-      aliased={false}
-      floatingButtonText={"Next"}
-      min={1}
-      onPress={newConversation}
-      initialSelection={null}
-      clearOnClose={true}
-      offset={70 + headerHeight}
-      floatingButtonOffset={70 + insets.bottom}
-    />
-  )
-
-  console.log('loading', chatsLoading, chatsData, chatsError)
-
-  // if (chatsLoading) {
-  //   return (
-  //     <View style={{ backgroundColor: colours.base, flex: 1 }}>
-  //       <SafeAreaView style={styles.container}>
-  //         <Header />
-  //         <MessagesListPlaceholder />
-  //         {newMessageModal}
-  //       </SafeAreaView>
-  //     </View>
-  //   );
-  // }
 
   const content = (
     <FlatList
@@ -206,25 +180,51 @@ export default function MessagesList() {
       data={chatsLoading ? [] : chatsError ? [] : chatsData.chats}
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
-      spacing={20}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
     />
   );
 
-
-
   return (
-      <SafeAreaView style={styles.container}>
-        <Header />
-        {
-          chatsLoading ? (<MessagesListPlaceholder/>)
-            : content
-        }
-        {newMessageModal}
-      </SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Messages</Text>
+        <IconRight />
+      </View>
+      <SearchBar
+        onChangeText={setChatSearch}
+        placeholder="Search for chats..."
+        hideBackground={true}
+      />
+      <View style={{ height: 10 }} />
+      {chatsLoading ? <MessagesListPlaceholder /> : content}
+      <SearchableFlatList
+        ref={newMessageBottomModalRef}
+        title={'friends'}
+        query={GET_USER_FRIENDS}
+        hasImage={true}
+        variables={{ userId: authState.user.uid }}
+        setSelection={setFriendsSelection}
+        aliased={false}
+        floatingButtonText={'Next'}
+        min={1}
+        onPress={newConversation}
+        initialSelection={null}
+        clearOnClose={true}
+        offset={70 + headerHeight}
+        floatingButtonOffset={70 + insets.bottom}
+      />
+    </SafeAreaView>
   );
 }
+
+const listEmptyComponent = () => (
+  <ImgBanner
+    Img={EmptyMessages}
+    placeholder="No messages yet"
+    spacing={0.15}
+  />
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
     color: colours.text01,
   },
   messagesList: {
-    flex: 1,
     paddingHorizontal: 4,
     paddingTop: 5,
   },

@@ -8,6 +8,7 @@ import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_FRIENDS } from '../../graphql';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -29,6 +30,16 @@ const UsersBottomModal = React.forwardRef(
       getUsers,
       { data: userData, loading, error, called },
     ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId } });
+
+    if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: "warning",
+      duration: 5000,
+      icon: 'auto'
+    });
+     }
 
     let heading;
     let subHeading;

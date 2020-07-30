@@ -25,6 +25,7 @@ import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -42,6 +43,15 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
   const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
     variables: { id: groupId },
   });
+
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
 
   const Tabs = () => {
     const [index, setIndex] = useState(0);
@@ -99,16 +109,17 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       data: chatData,
     } = useQuery(GET_CHAT_BY_ID, { variables: { id: chat } });
     if (loading || chatLoading) return null;
-    if (error || chatError)
-      return (
-        <Text>
-          {error
-            ? error.message
-            : chatError
-            ? chatError.message
-            : groupsError.message}
-        </Text>
-      );
+
+    if (chatError) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+      return null
+    }
+
 
     const {
       _id: chatId,
@@ -117,7 +128,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       participants,
       numMessages,
       messages,
-    } = chatData.chat;
+    } =  chatData.chat;
 
     return (
       <>
@@ -197,6 +208,24 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       variables: { _in: data.group.owners.map((owner) => owner.user.id) },
     });
 
+    if (errorMembers) {
+      showMessage({
+        message: "Server Error",
+        description: errorMembers.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+
+    if (errorLeaders) {
+      showMessage({
+        message: "Server Error",
+        description: errorLeaders.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+
     if (loadingMembers || errorMembers || loadingLeaders || errorLeaders)
       return null;
     return (
@@ -233,8 +262,15 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       variables: { _in: data.group.events.map((event) => event.event.id) },
     });
 
-    if (eventsLoading) return null;
-    if (eventsError) return <Text>{eventsError.message}</Text>;
+    if (eventsLoading || eventsError) return null;
+    if (eventsError) {
+      showMessage({
+        message: "Server Error",
+        description: eventsError.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
 
     if (eventsData.events.length > 0) {
       return (

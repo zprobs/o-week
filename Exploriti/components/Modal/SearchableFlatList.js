@@ -18,6 +18,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useKeyboard } from '../../context';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import SearchUsers from '../../assets/svg/search-users.svg';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -85,6 +86,15 @@ const SearchableFlatList = React.forwardRef(
       skip: query == undefined || (serverSearch && searchQuery === ''),
       variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
     });
+
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
 
     if (!loading && !didSetFirst.current && QueryData && !error) {
       didSetFirst.current = true;

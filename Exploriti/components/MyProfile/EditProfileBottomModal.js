@@ -28,6 +28,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
 /**
  * Modal for editing the logged in users data
@@ -41,9 +42,9 @@ import { useSafeArea } from 'react-native-safe-area-context';
 const EditProfileBottomModal = React.forwardRef(
   ({ image, name, programs, description, year }, ref) => {
     const { authState } = useContext(AuthContext);
-    const [updateUser] = useMutation(UPDATE_USER);
-    const [updateInterests] = useMutation(UPDATE_USER_INTERESTS);
-    const [updatePrograms] = useMutation(UPDATE_USER_PROGRAMS);
+    const [updateUser, {error: updateError}] = useMutation(UPDATE_USER);
+    const [updateInterests, {interestError}] = useMutation(UPDATE_USER_INTERESTS);
+    const [updatePrograms, {programError}] = useMutation(UPDATE_USER_PROGRAMS);
     const headerHeight = useHeaderHeight();
     // only call query when modal has been opened
     const [getInterests, { called, loading, data, error }] = useLazyQuery(
@@ -71,6 +72,42 @@ const EditProfileBottomModal = React.forwardRef(
     const onYearRef = () => yearRef.current.open();
     const onProgramRef = () => programRef.current.open();
     const onInterestRef = () => interestRef.current.open();
+
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+
+    if (updateError) {
+      showMessage({
+        message: "Failed To Update",
+        description: updateError.message,
+        type: 'danger',
+        icon: 'auto'
+      });
+    }
+
+    if (interestError) {
+      showMessage({
+        message: "Failed To Update",
+        description: interestError.message,
+        type: 'danger',
+        icon: 'auto'
+      });
+    }
+
+    if (programError) {
+      showMessage({
+        message: "Failed To Update",
+        description: programError.message,
+        type: 'danger',
+        icon: 'auto'
+      });
+    }
 
     const programTitle = () => {
       if (programsSelection) {

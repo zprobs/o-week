@@ -8,6 +8,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS, UPDATE_USER } from '../../graphql';
 import { AuthContext } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -20,11 +21,11 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   console.log('type', type, typeof type);
   const [value, setValue] = useState('');
   const { authState } = useContext(AuthContext);
-  const { data } = useQuery(GET_USER_LINKS, {
+  const { data, error } = useQuery(GET_USER_LINKS, {
     variables: { user: authState.user.uid },
   });
   let prevLinks = data ? data.user.links : {};
-  const [updateLinks] = useMutation(UPDATE_USER);
+  const [updateLinks, {error: updateError}] = useMutation(UPDATE_USER);
   const [isUploading, setIsUploading] = useState(false);
 
   console.log('prevLinks', prevLinks, data);
@@ -34,6 +35,24 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       setValue(prevLinks[type.toString()]);
     }
   };
+
+  if (error) {
+    showMessage({
+      message: "Server Error",
+      description: error.message,
+      type: 'warning',
+      icon: 'auto'
+    });
+  }
+
+  if (updateError) {
+    showMessage({
+      message: "Cannot update Links",
+      description: updateError.message,
+      type: 'danger',
+      icon: 'auto'
+    });
+  }
 
   const title = () => {
     switch (type) {
