@@ -114,6 +114,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       showMessage({
         message: "Server Error",
         description: error.message,
+        autoHide: false,
         type: 'warning',
         icon: 'auto'
       });
@@ -211,6 +212,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
     if (errorMembers) {
       showMessage({
         message: "Server Error",
+        autoHide: false,
         description: errorMembers.message,
         type: 'warning',
         icon: 'auto'
@@ -220,6 +222,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
     if (errorLeaders) {
       showMessage({
         message: "Server Error",
+        autoHide: false,
         description: errorLeaders.message,
         type: 'warning',
         icon: 'auto'
@@ -266,6 +269,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
     if (eventsError) {
       showMessage({
         message: "Server Error",
+        autoHide: false,
         description: eventsError.message,
         type: 'warning',
         icon: 'auto'

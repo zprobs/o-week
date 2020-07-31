@@ -54,6 +54,7 @@ const Calendar = () => {
     showMessage({
       message: "Could not update Calendars",
       description: error.message,
+      autoHide: false,
       type: 'danger',
       icon: 'auto'
     });

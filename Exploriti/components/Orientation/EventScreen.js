@@ -59,6 +59,7 @@ const EventScreen = ({ route }) => {
     showMessage({
       message: "Server Error",
       description: error.message,
+      autoHide: false,
       type: 'warning',
       icon: 'auto'
     });

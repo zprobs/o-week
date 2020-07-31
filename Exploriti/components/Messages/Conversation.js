@@ -82,7 +82,8 @@ const Conversation = () => {
       message: "Cannot load Messages",
       description: earlierError.message,
       type: "warning",
-      icon: 'warning'
+      icon: 'warning',
+      autoHide: false
     });
   }
 

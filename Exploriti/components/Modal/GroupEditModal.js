@@ -63,6 +63,7 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
     showMessage({
       message: "Server Error",
       description: error.message,
+      autoHide: false,
       type: 'warning',
       icon: 'warning'
     });
@@ -72,6 +73,7 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
     showMessage({
       message: "Cannot Update Group",
       description: updateError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'danger'
     });

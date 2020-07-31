@@ -77,6 +77,7 @@ const EditProfileBottomModal = React.forwardRef(
       showMessage({
         message: "Server Error",
         description: error.message,
+        autoHide: false,
         type: 'warning',
         icon: 'auto'
       });
@@ -86,6 +87,7 @@ const EditProfileBottomModal = React.forwardRef(
       showMessage({
         message: "Failed To Update",
         description: updateError.message,
+        autoHide: false,
         type: 'danger',
         icon: 'auto'
       });
@@ -95,6 +97,7 @@ const EditProfileBottomModal = React.forwardRef(
       showMessage({
         message: "Failed To Update",
         description: interestError.message,
+        autoHide: false,
         type: 'danger',
         icon: 'auto'
       });
@@ -104,6 +107,7 @@ const EditProfileBottomModal = React.forwardRef(
       showMessage({
         message: "Failed To Update",
         description: programError.message,
+        autoHide: false,
         type: 'danger',
         icon: 'auto'
       });

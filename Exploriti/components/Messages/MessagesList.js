@@ -93,6 +93,7 @@ export default function MessagesList() {
     showMessage({
       message: "Server Error",
       description: chatsError.message,
+      autoHide: false,
       type: 'warning',
       icon: 'warning'
     });
@@ -105,6 +106,7 @@ export default function MessagesList() {
       message: "Server Error",
       description: searchError.message,
       type: 'warning',
+      autoHide: false,
       icon: 'warning'
     });
   }
@@ -149,6 +151,7 @@ export default function MessagesList() {
     showMessage({
       message: "Cannot Create Chat",
       description: newChatError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'danger'
     });

@@ -53,6 +53,7 @@ const EventInfoModal = React.forwardRef(
       showMessage({
         message: "Server Error",
         description: error.message,
+        autoHide: false,
         type: 'warning',
         icon: 'warning'
       });
@@ -165,6 +166,7 @@ const EventInfoModal = React.forwardRef(
         showMessage({
           message: "Server Error",
           description: acceptError.message,
+          autoHide: false,
           type: 'warning',
           icon: 'warning'
         });
@@ -175,7 +177,8 @@ const EventInfoModal = React.forwardRef(
           message: "Cannot RSVP",
           description: signUpError.message,
           type: 'danger',
-          icon: 'danger'
+          icon: 'danger',
+          autoHide: false
         });
       }
 
@@ -183,6 +186,7 @@ const EventInfoModal = React.forwardRef(
         showMessage({
           message: "Cannot Confirm Invite",
           description: confirmError.message,
+          autoHide: false,
           type: 'danger',
           icon: 'danger'
         });
@@ -202,6 +206,7 @@ const EventInfoModal = React.forwardRef(
         : false;
 
       useEffect(() => {
+        console.log('setIsSelected UE')
         setIsSelected(isAccepted);
       }, [acceptData]);
 

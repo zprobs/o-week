@@ -79,6 +79,7 @@ export default function Profile({ route }) {
     showMessage({
       message: "Server Error",
       description: error.message,
+      autoHide: false,
       type: 'warning',
       icon: 'auto'
     });
@@ -429,6 +430,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
     showMessage({
       message: "Cannot Create Chat",
       description: newChatError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'auto'
     });
@@ -438,6 +440,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
     showMessage({
       message: "Cannot Confirm Request",
       description: confirmError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'auto'
     });
@@ -447,6 +450,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
     showMessage({
       message: "Cannot Remove Friend",
       description: removeError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'auto'
     });
@@ -455,6 +459,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
   if (deleteError) {
     showMessage({
       message: "Cannot Delete Request",
+      autoHide: false,
       description: deleteError.message,
       type: 'danger',
       icon: 'auto'
@@ -465,6 +470,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
     showMessage({
       message: "Server Error",
       description: friendsError.message,
+      autoHide: false,
       type: 'warning',
       icon: 'auto'
     });

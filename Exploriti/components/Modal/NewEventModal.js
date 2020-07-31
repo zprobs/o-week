@@ -75,6 +75,7 @@ const NewEventModal = React.forwardRef(
       showMessage({
         message: "Server Error",
         description: error.message,
+        autoHide: false,
         type: 'warning',
         icon: 'auto'
       });

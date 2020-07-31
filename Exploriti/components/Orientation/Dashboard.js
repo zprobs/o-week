@@ -45,6 +45,7 @@ export default function Dashboard() {
   if (error) {
     showMessage({
       message: "Server Error",
+      autoHide: false,
       description: error.message,
       type: 'warning',
       icon: 'auto'
@@ -82,6 +83,7 @@ export default function Dashboard() {
       showMessage({
         message: "Server Error",
         description: sayHiError.message,
+        autoHide: false,
         type: 'warning',
         icon: 'auto'
       });

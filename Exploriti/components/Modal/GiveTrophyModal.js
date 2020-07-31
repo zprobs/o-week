@@ -27,6 +27,7 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
     showMessage({
       message: "Cannot Award Trophy",
       description: error.message,
+      autoHide: false,
       type: 'danger',
       icon: 'danger'
     });

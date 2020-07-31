@@ -92,6 +92,7 @@ const SearchableFlatList = React.forwardRef(
         message: "Server Error",
         description: error.message,
         type: 'warning',
+        autoHide: false,
         icon: 'auto'
       });
     }

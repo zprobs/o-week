@@ -41,6 +41,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       message: "Server Error",
       description: error.message,
       type: 'warning',
+      autoHide: false,
       icon: 'auto'
     });
   }
@@ -49,6 +50,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
     showMessage({
       message: "Cannot update Links",
       description: updateError.message,
+      autoHide: false,
       type: 'danger',
       icon: 'auto'
     });
