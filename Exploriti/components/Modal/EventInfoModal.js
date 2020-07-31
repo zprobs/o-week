@@ -160,6 +160,7 @@ const EventInfoModal = React.forwardRef(
             variables: { eventId: eventId, userId: authState.user.uid },
           },
         ],
+        awaitRefetchQueries: true
       });
 
       if (acceptError) {
@@ -206,8 +207,9 @@ const EventInfoModal = React.forwardRef(
         : false;
 
       useEffect(() => {
-        console.log('setIsSelected UE')
-        setIsSelected(isAccepted);
+        if (acceptData) {
+          setIsSelected(isAccepted);
+        }
       }, [acceptData]);
 
       const mutationLoading =
