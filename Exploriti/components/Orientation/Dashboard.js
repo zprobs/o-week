@@ -53,7 +53,6 @@ export default function Dashboard() {
     return null
   }
 
-  console.log(data);
 
   const listData = useMemo(
     () => [

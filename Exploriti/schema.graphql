@@ -4214,6 +4214,15 @@ type mutation_root {
     on_conflict: groupInterest_on_conflict
   ): groupInterest
 
+  # insert data into the table: "groupTrophy"
+  awardTrophies(
+    # the rows to be inserted
+    objects: [groupTrophy_insert_input!]!
+
+    # on conflict condition
+    on_conflict: groupTrophy_on_conflict
+  ): groupTrophy_mutation_response
+
   # insert a single row into the table: "groupTrophy"
   awardTrophy(
     # the row to be inserted
@@ -4560,15 +4569,6 @@ type mutation_root {
     on_conflict: groupQuestion_on_conflict
   ): groupQuestion_mutation_response
 
-  # insert data into the table: "groupTrophy"
-  insert_groupTrophy(
-    # the rows to be inserted
-    objects: [groupTrophy_insert_input!]!
-
-    # on conflict condition
-    on_conflict: groupTrophy_on_conflict
-  ): groupTrophy_mutation_response
-
   # insert data into the table: "interest"
   insert_interest(
     # the rows to be inserted
@@ -4685,15 +4685,6 @@ type mutation_root {
     # on conflict condition
     on_conflict: userChat_on_conflict
   ): userChat_mutation_response
-
-  # insert data into the table: "userEvent"
-  insert_userEvent(
-    # the rows to be inserted
-    objects: [userEvent_insert_input!]!
-
-    # on conflict condition
-    on_conflict: userEvent_on_conflict
-  ): userEvent_mutation_response
 
   # insert data into the table: "userGroup"
   insert_userGroup(
@@ -4823,6 +4814,15 @@ type mutation_root {
     # on conflict condition
     on_conflict: userEvent_on_conflict
   ): userEvent
+
+  # insert data into the table: "userEvent"
+  signUpUsersForEvent(
+    # the rows to be inserted
+    objects: [userEvent_insert_input!]!
+
+    # on conflict condition
+    on_conflict: userEvent_on_conflict
+  ): userEvent_mutation_response
 
   # insert a single row into the table: "userChat"
   subscribeToChat(

@@ -29,6 +29,25 @@ export const graphqlify = (list, idType) => {
   return dict;
 };
 
+/**
+ * Used to convert something like a list of users to invite to event into mutation ready object
+ * @param constant {string} the eventId or term you want present in every element
+ * @param list {[string]} the list of userId or the term which is unique in every element
+ * @param constantTerm {string} name of the constant Ex: event
+ * @param listTerm {string} name of the list type Ex: user
+ * @returns {[]}
+ */
+export const graphqlify_relationship = (constant, list, constantTerm, listTerm) => {
+  const data = [];
+  for (const index in list) {
+    const inner = {};
+    inner[constantTerm + "Id"] = constant;
+    inner[listTerm + "Id"] = list[index];
+    data.push(inner);
+  }
+  return data;
+}
+
 export function yearToInt(year: String) {
   switch (year) {
     case 'First Year':

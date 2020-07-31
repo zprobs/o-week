@@ -36,7 +36,7 @@ const UsersBottomModal = React.forwardRef(
       message: "Server Error",
       description: error.message,
       type: "warning",
-      duration: 5000,
+      autoHide: false,
       icon: 'auto'
     });
      }

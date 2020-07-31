@@ -857,6 +857,33 @@ export const INVITE_USER_TO_EVENT = gql`
   }
 `;
 
+export const INVITE_USERS_TO_EVENT = gql`
+    mutation inviteUsersToEvent($objects: [userEvent_insert_input!]!) {
+        signUpUsersForEvent(objects: $objects) {
+            returning {
+                eventId
+                userId
+                event {
+                    id
+                    invited: attendees(where: {didAccept: {_eq: false}}) {
+                        user {
+                            image
+                            id
+                            name
+                        }
+                        didAccept
+                    }
+                    invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
+                        aggregate {
+                            count
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
 export const REMOVE_USER_FROM_EVENT = gql`
   mutation removeUserFromEvent($eventId: uuid!, $userId: String!) {
     removeUserFromEvent(eventId: $eventId, userId: $userId) {

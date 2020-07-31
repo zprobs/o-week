@@ -211,6 +211,7 @@ export default function MessagesList() {
         aliased={false}
         floatingButtonText={'Next'}
         min={1}
+        max={100}
         onPress={newConversation}
         initialSelection={null}
         clearOnClose={true}
