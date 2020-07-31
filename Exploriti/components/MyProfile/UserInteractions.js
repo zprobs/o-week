@@ -147,6 +147,31 @@ const UserInteractions = ({ userId, navigation, image }) => {
         variables: { userId: authState.user.uid },
         data: { friends: newFriends },
       });
+
+      // update Aggregate counts
+
+      let myFriendsAggregate = cache.readFragment({
+        id: `user:${authState.user.uid}`,
+        fragment: aggFriendsFragment,
+      });
+      let newCount = myFriendsAggregate.friends_aggregate.aggregate.count -1;
+      cache.writeFragment({
+        id: `user:${authState.user.uid}`,
+        fragment: aggFriendsFragment,
+        data: aggFriendsData(newCount),
+      });
+
+      myFriendsAggregate = cache.readFragment({
+        id: `user:${userId}`,
+        fragment: aggFriendsFragment,
+      });
+      newCount = myFriendsAggregate.friends_aggregate.aggregate.count - 1;
+      cache.writeFragment({
+        id: `user:${userId}`,
+        fragment: aggFriendsFragment,
+        data: aggFriendsData(newCount),
+      });
+
     },
     onCompleted: checkFriendRequests,
   });
@@ -172,6 +197,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
         variables: { userId: authState.user.uid },
         data: { friends: friends.concat([newFriend]) },
       });
+
       // update friend Counts
 
       let myFriendsAggregate = cache.readFragment({
