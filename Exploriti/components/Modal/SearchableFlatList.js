@@ -303,7 +303,7 @@ const SearchableFlatList = React.forwardRef(
           FloatingComponent={renderFloatingComponent}
         />
       );
-    }, [ref, offset, filteredList, selected, buttonIsShowing]);
+    }, [ref, offset, filteredList, selected, buttonIsShowing, keyboardHeight]);
 
     return Modal;
   },
