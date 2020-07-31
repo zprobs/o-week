@@ -60,9 +60,7 @@ export default function MessagesList() {
       image = item.image
     }
 
-    console.log('image', image)
 
-    console.log('participants', participants)
 
     const name =
       chatName ||

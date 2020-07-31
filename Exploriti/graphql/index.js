@@ -291,6 +291,19 @@ export const GET_USER_FRIENDS_ID = gql`
   }
 `;
 
+export const GET_USER_FRIENDS_AGGREGATE = gql`
+    query getUserFriendsAggregate($id: String!) {
+        user(id: $id) {
+            id
+            friends_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
+`;
+
 export const REMOVE_FRIEND = gql`
   mutation removeFriend($friendId: String!, $userId: String!) {
     removeFriend(friendId: $friendId, userId: $userId) {
