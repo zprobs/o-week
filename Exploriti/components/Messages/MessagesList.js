@@ -48,10 +48,21 @@ export default function MessagesList() {
       _id: chatId,
       participants,
       messages,
-      image,
       name: chatName,
       messagesAggregate,
     } = item;
+
+    let image;
+
+    if (participants.length === 2) {
+      image = participants.filter(user=>user.id !== authState.user.uid)[0].image;
+    } else {
+      image = item.image
+    }
+
+    console.log('image', image)
+
+    console.log('participants', participants)
 
     const name =
       chatName ||
