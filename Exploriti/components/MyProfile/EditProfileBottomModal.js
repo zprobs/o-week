@@ -14,7 +14,7 @@ import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import { AuthContext, saveImage, yearsData, yearToInt } from '../../context';
+import {AuthContext, refreshToken, saveImage, yearsData, yearToInt} from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
@@ -41,7 +41,7 @@ import { showMessage } from 'react-native-flash-message';
  */
 const EditProfileBottomModal = React.forwardRef(
   ({ image, name, programs, description, year }, ref) => {
-    const { authState } = useContext(AuthContext);
+    const { authState, setAuthState } = useContext(AuthContext);
     const [updateUser, {error: updateError}] = useMutation(UPDATE_USER);
     const [updateInterests, {interestError}] = useMutation(UPDATE_USER_INTERESTS);
     const [updatePrograms, {programError}] = useMutation(UPDATE_USER_PROGRAMS);
@@ -74,43 +74,55 @@ const EditProfileBottomModal = React.forwardRef(
     const onInterestRef = () => interestRef.current.open();
 
     if (error) {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: error.message,
+                autoHide: false,
+                type: 'warning',
+                icon: 'auto'
+            });
+        }
     }
 
     if (updateError) {
-      showMessage({
-        message: "Failed To Update",
-        description: updateError.message,
-        autoHide: false,
-        type: 'danger',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (!(updateError.networkError && updateError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: updateError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
     }
 
     if (interestError) {
-      showMessage({
-        message: "Failed To Update",
-        description: interestError.message,
-        autoHide: false,
-        type: 'danger',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (!(interestError.networkError && interestError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: interestError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
     }
 
     if (programError) {
-      showMessage({
-        message: "Failed To Update",
-        description: programError.message,
-        autoHide: false,
-        type: 'danger',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (!(programError.networkError && programError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: programError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
     }
 
     const programTitle = () => {

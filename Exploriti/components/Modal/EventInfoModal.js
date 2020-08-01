@@ -27,8 +27,9 @@ import {
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
 import { showMessage } from 'react-native-flash-message';
+import {acc} from "react-native-reanimated";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -44,19 +45,22 @@ const WIDTH = Dimensions.get('window').width;
  */
 const EventInfoModal = React.forwardRef(
   ({ eventId, inviteRef, initialIndex }, ref) => {
-    const { authState } = useContext(AuthContext);
+    const { authState, setAuthState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
 
     if (error) {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'warning'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          description: error.message,
+          autoHide: false,
+          type: 'warning',
+          icon: 'warning'
+        });
+      }
     }
 
     const Tabs = () => {
@@ -164,43 +168,53 @@ const EventInfoModal = React.forwardRef(
       });
 
       if (acceptError) {
-        showMessage({
-          message: "Server Error",
-          description: acceptError.message,
-          autoHide: false,
-          type: 'warning',
-          icon: 'warning'
-        });
+        refreshToken(authState.user, setAuthState);
+        if (acceptError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+          showMessage({
+            message: "Server Error",
+            description: acceptError.message,
+            autoHide: false,
+            type: 'warning',
+            icon: 'warning'
+          });
+        }
       }
 
       if (signUpError) {
-        showMessage({
-          message: "Cannot RSVP",
-          description: signUpError.message,
-          type: 'danger',
-          icon: 'danger',
-          autoHide: false
-        });
+        if (!(signUpError.networkError && signUpError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot RSVP",
+            description: signUpError.message,
+            type: 'danger',
+            icon: 'danger',
+            autoHide: false
+          });
+        }
       }
 
       if (confirmError) {
-        showMessage({
-          message: "Cannot Confirm Invite",
-          description: confirmError.message,
-          autoHide: false,
-          type: 'danger',
-          icon: 'danger'
-        });
+        if (!(confirmError.networkError && confirmError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot Confirm Invite",
+            description: confirmError.message,
+            autoHide: false,
+            type: 'danger',
+            icon: 'danger'
+          });
+        }
       }
 
       if (removeError) {
-        showMessage({
-          message: "Cannot Cancel RSVP",
-          description: removeError.message,
-          type: 'danger',
-          icon: 'danger'
-        });
+        if (!(removeError.networkError && removeError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot Cancel RSVP",
+            description: removeError.message,
+            type: 'danger',
+            icon: 'danger'
+          });
+        }
       }
+
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
       const isAccepted = acceptData
         ? isInvited && acceptData.user.events[0].didAccept

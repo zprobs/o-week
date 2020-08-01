@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ScrollView, SafeAreaView,
 } from 'react-native';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
@@ -30,7 +30,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 export default function Dashboard() {
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const navigation = useNavigation();
   const insets = useSafeArea()
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
@@ -43,13 +43,16 @@ export default function Dashboard() {
   }
 
   if (error) {
-    showMessage({
-      message: "Server Error",
-      autoHide: false,
-      description: error.message,
-      type: 'warning',
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        autoHide: false,
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
     return null
   }
 
@@ -79,13 +82,16 @@ export default function Dashboard() {
     let count = 0;
 
     if (sayHiError) {
-      showMessage({
-        message: "Server Error",
-        description: sayHiError.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (sayHiError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          description: sayHiError.message,
+          autoHide: false,
+          type: 'warning',
+          icon: 'auto'
+        });
+      }
     }
 
     return (
@@ -159,13 +165,13 @@ export default function Dashboard() {
   return (
     <View style={styles.container}>
       <SectionList
+        bounces
         sections={listData}
         keyExtractor={(item, index) => item + index}
         renderItem={renderItem}
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
-        bounces={false}
       />
     </View>
   );

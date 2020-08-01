@@ -24,7 +24,7 @@ import {
   UPDATE_EVENT,
 } from '../../graphql';
 import DatePicker from 'react-native-date-picker';
-import { AuthContext, getDefaultImage, saveImage } from '../../context';
+import {AuthContext, getDefaultImage, refreshToken, saveImage} from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import { showMessage } from 'react-native-flash-message';
@@ -64,7 +64,7 @@ const NewEventModal = React.forwardRef(
     const [endDate, setEndDate] = useState(new Date());
     const [showEndDate, setShowEndDate] = useState(false);
     const [minimumDate] = useState(new Date(Date.now() - 86400000));
-    const { authState } = useContext(AuthContext);
+    const { authState, setAuthState } = useContext(AuthContext);
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -72,40 +72,52 @@ const NewEventModal = React.forwardRef(
     const endDateHasShown = useRef(!!editMode);
 
     if (error) {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: error.message,
+                autoHide: false,
+                type: 'warning',
+                icon: 'auto'
+            });
+        }
     }
 
     if (createEventError) {
-      showMessage({
-        message: "Could not Create Event",
-        description: createEventError.message,
-        type: 'danger',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (!(createEventError.networkError && createEventError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Could not Create Event",
+                description: createEventError.message,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
     }
 
     if (updateEventError) {
-      showMessage({
-        message: "Could not Update Event",
-        description: updateEventError.message,
-        type: 'danger',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (!(updateEventError.networkError && updateEventError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Could not Update Event",
+                description: updateEventError.message,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
     }
 
     if (hostsError) {
-      showMessage({
-        message: "Server Error",
-        description: hostsError.message,
-        type: 'warning',
-        icon: 'auto'
-      });
+        refreshToken(authState.user, setAuthState);
+        if (hostsError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: hostsError.message,
+                type: 'warning',
+                icon: 'auto'
+            });
+        }
     }
 
     useEffect(() => {

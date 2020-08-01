@@ -30,7 +30,7 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { AuthContext, ReloadContext } from './context';
+import { AuthContext, ReloadContext, refreshToken } from './context';
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER } from './graphql';
 import Messages from './components/Messages';
@@ -167,33 +167,7 @@ export default function App() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        return user
-          .getIdToken()
-          .then((token) =>
-            firebase
-              .auth()
-              .currentUser.getIdTokenResult()
-              .then((result) => {
-                if (result.claims['https://hasura.io/jwt/claims']) {
-                  setAuthState({ status: 'in', user, token });
-                  return token;
-                }
-                const endpoint =
-                  'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken';
-                return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
-                  if (res.status === 200) {
-                    return user.getIdToken(true);
-                  }
-                  return res.json().then((e) => {
-                    throw e;
-                  });
-                });
-              }),
-          )
-          .then((token) => {
-            setAuthState({ status: 'in', user, token });
-          })
-          .catch(console.error);
+        refreshToken(user, setAuthState);
       } else {
         setAuthState({ status: 'out' });
       }

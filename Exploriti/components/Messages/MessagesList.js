@@ -9,7 +9,7 @@ import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
 import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
-import { AuthContext, getDefaultImage, graphqlify } from '../../context';
+import {AuthContext, getDefaultImage, graphqlify, refreshToken} from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
@@ -86,7 +86,7 @@ export default function MessagesList() {
 
 
 
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
 
   const {
     data: chatsData,
@@ -99,25 +99,30 @@ export default function MessagesList() {
   });
 
   if (chatsError) {
-    showMessage({
-      message: "Server Error",
-      description: chatsError.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'warning'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (chatsError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: chatsError.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
   }
 
   const {data: searchData, loading: searchLoading, error: searchError} = useQuery(SEARCH_CHATS, {variables: {user: authState.user.uid, query: `%${chatSearch}%`}, skip: chatSearch === ''})
 
   if (searchError) {
-    showMessage({
-      message: "Server Error",
-      description: searchError.message,
-      type: 'warning',
-      autoHide: false,
-      icon: 'warning'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (searchError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {      showMessage({
+        message: "Server Error",
+        description: searchError.message,
+        type: 'warning',
+        autoHide: false,
+        icon: 'warning'
+      });
+    }
   }
 
   console.log('searchData', searchData)

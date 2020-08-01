@@ -12,7 +12,7 @@ import UsersBottomModal from '../Modal/UsersBottomModal';
 import GroupBottomModal from '../Modal/GroupBottomModal';
 import UserInteractions from './UserInteractions';
 import ProfileCard from './ProfileCard';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_DETAILED_USER } from '../../graphql';
 import Error from '../ReusableComponents/Error';
@@ -40,7 +40,7 @@ const { colours } = Theme.light;
 export default function Profile({ route }) {
   // used to determine which social media is to be added
   const [socialIndex, setSocialIndex] = useState(0);
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const insets = useSafeArea();
   const editProfileBottomModalRef = useRef();
   const optionsBottomModalRef = useRef();
@@ -57,13 +57,16 @@ export default function Profile({ route }) {
   });
 
   if (error) {
-    showMessage({
-      message: 'Server Error',
-      description: error.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: 'Server Error',
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto',
+      });
+    }
   }
 
   if (loading)
