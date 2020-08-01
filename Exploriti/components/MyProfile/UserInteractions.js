@@ -6,7 +6,8 @@ import {
   CHECK_FRIEND_REQUESTS,
   CONFIRM_FRIEND_REQUEST,
   DELETE_FRIEND_REQUEST,
-  GET_USER_FRIENDS, GET_USER_FRIENDS_ID,
+  GET_USER_FRIENDS,
+  GET_USER_FRIENDS_ID,
   NEW_CHAT,
   REMOVE_FRIEND,
   SEND_FRIEND_REQUEST,
@@ -115,36 +116,38 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   ] = useMutation(REMOVE_FRIEND, {
     variables: { userId: authState.user.uid, friendId: userId },
     update: (cache) => {
-
       // update friends list
 
       try {
         const { friends } = cache.readFragment({
           id: `user:${authState.user.uid}`,
-          fragment: userFriendsFragment
-        })
+          fragment: userFriendsFragment,
+        });
 
-        let newFriends = friends.filter((element) => element.friend.id !== userId);
-        console.log('newFriends', newFriends)
+        let newFriends = friends.filter(
+          (element) => element.friend.id !== userId,
+        );
+        console.log('newFriends', newFriends);
 
         cache.writeFragment({
           id: `user:${authState.user.uid}`,
           fragment: userFriendsFragment,
           data: { __typename: 'user', friends: newFriends },
         });
-
       } catch (e) {
-       console.log(e)
+        console.log(e);
       }
 
       try {
         const { friends } = cache.readFragment({
           id: `user:${userId}`,
-          fragment: userFriendsFragment
-        })
+          fragment: userFriendsFragment,
+        });
 
-        let newFriends = friends.filter((element) => element.friend.id !== authState.user.uid);
-        console.log('newFriends', newFriends)
+        let newFriends = friends.filter(
+          (element) => element.friend.id !== authState.user.uid,
+        );
+        console.log('newFriends', newFriends);
 
         cache.writeFragment({
           id: `user:${userId}`,
@@ -152,11 +155,8 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
           data: { __typename: 'user', friends: newFriends },
         });
       } catch (e) {
-       console.log(e)
+        console.log(e);
       }
-
-
-
 
       // update Aggregate counts
 
@@ -183,6 +183,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
       });
     },
     onCompleted: checkFriendRequests,
+    refetchQueries: [{query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid}}]
   });
 
   const [
@@ -203,14 +204,13 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
 
         if (friends) {
           let newFriend = {
-            __typename: "friend",
+            __typename: 'friend',
             friend: {
               __typename: 'user',
               id: userId,
               name: name,
               image: image,
-
-            }
+            },
           };
           cache.writeFragment({
             id: `user:${authState.user.uid}`,
@@ -242,13 +242,13 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
           });
 
           let newFriend = {
-            __typename: "friend",
+            __typename: 'friend',
             friend: {
               __typename: 'user',
               id: currentUser.id,
               name: currentUser.name,
               image: currentUser.image,
-            }
+            },
           };
           cache.writeFragment({
             id: `user:${userId}`,
@@ -296,6 +296,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
         },
       }).catch((e) => console.log(e));
     },
+    refetchQueries: [{query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid}}]
   });
 
   const {
@@ -306,7 +307,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
     variables: { userId: authState.user.uid },
   });
 
-  if (friendsData) console.log('friendsData', friendsData.user.friends)
+  if (friendsData) console.log('friendsData', friendsData.user.friends);
 
   if (newChatError) {
     showMessage({
@@ -367,6 +368,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
     const isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
     });
+    console.log('isFriend', isFriend)
     if (isFriend) {
       content = <Text style={styles.followInteractionText}>REMOVE FRIEND</Text>;
       friendInteraction = () => removeFriend();
