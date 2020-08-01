@@ -65,7 +65,7 @@ const UsersBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      const { id, image, name } = item;
+      const { id, image, name } = item.friend;
       return (
         <UserCard
           userId={id}
@@ -89,8 +89,9 @@ const UsersBottomModal = React.forwardRef(
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: userData ? userData.friends : null,
+          data: userData ? userData.user.friends : null,
           ListEmptyComponent: listEmptyComponent,
+          keyExtractor: item => item.friend.id,
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,

@@ -98,9 +98,10 @@ const SearchableFlatList = React.forwardRef(
     }
 
     if (!loading && !didSetFirst.current && QueryData && !error) {
+      const listData = title === 'friends' ? QueryData.user.friends.map(f=>f.friend) : QueryData[title]
       didSetFirst.current = true;
-      if (!serverSearch) setUnfilteredList(QueryData[title]);
-      setFilteredList(QueryData[title]);
+      if (!serverSearch) setUnfilteredList(listData);
+      setFilteredList(listData);
     }
 
     useEffect(()=>{

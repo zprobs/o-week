@@ -44,7 +44,7 @@ export const GET_NOTIFICATIONS = gql`
   query getNotifications($id: String!) {
     user(id: $id) {
       id
-      notifications {
+      notifications(order_by: {timestamp: desc}) {
         id
         timestamp
         type
@@ -71,7 +71,7 @@ export const GET_CURRENT_USER = gql`
     user(id: $id) {
       ...DetailedUser
       isAdmin
-      notifications {
+      notifications(order_by: {timestamp: desc}) {
         id
         timestamp
         type
@@ -273,22 +273,30 @@ export const GET_PROGRAMS = gql`
 
 export const GET_USER_FRIENDS = gql`
   query getFriends($userId: String!) {
-    friends(where: { userId: { _eq: $userId } }) {
-      userId
-      id
-      name
-      image
-    }
+      user(id: $userId) {
+          id
+          friends {
+              friend {
+                  id
+                  image
+                  name
+              }
+          }
+      }
   }
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
-  query getFriendsID($userId: String!) {
-    friends(where: { userId: { _eq: $userId } }) {
-      userId
-      id
+    query getFriends($userId: String!) {
+        user(id: $userId) {
+            id
+            friends {
+                friend {
+                    id
+                }
+            }
+        }
     }
-  }
 `;
 
 export const GET_USER_FRIENDS_AGGREGATE = gql`

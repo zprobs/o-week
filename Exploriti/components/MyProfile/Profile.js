@@ -104,6 +104,7 @@ export default function Profile({ route }) {
         userId={userId}
         navigation={useNavigation()}
         image={image}
+        name={name}
       />
     );
   };

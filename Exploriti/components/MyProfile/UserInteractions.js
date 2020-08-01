@@ -6,7 +6,7 @@ import {
   CHECK_FRIEND_REQUESTS,
   CONFIRM_FRIEND_REQUEST,
   DELETE_FRIEND_REQUEST,
-  GET_USER_FRIENDS_ID,
+  GET_USER_FRIENDS, GET_USER_FRIENDS_ID,
   NEW_CHAT,
   REMOVE_FRIEND,
   SEND_FRIEND_REQUEST,
@@ -26,34 +26,12 @@ const { colours } = Theme.light;
  * @param userId {string} The userId of the profile in question. Not the current user.
  * @param navigation
  * @param image {string}
+ * @param name {string} used for cache updates
  * @returns {*}
  * @constructor
  */
-const UserInteractions = ({ userId, navigation, image }) => {
+const UserInteractions = ({ userId, navigation, image, name }) => {
   const { authState } = useContext(AuthContext);
-
-  const aggFriendsFragment = gql`
-    fragment aggFriends on user {
-      friends_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  `;
-
-  const aggFriendsData = (count) => {
-    return {
-      __typename: 'user',
-      friends_aggregate: {
-        __typename: 'friend_aggregate',
-        aggregate: {
-          __typename: 'friend_aggregate_fields',
-          count: count,
-        },
-      },
-    };
-  };
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
@@ -137,16 +115,48 @@ const UserInteractions = ({ userId, navigation, image }) => {
   ] = useMutation(REMOVE_FRIEND, {
     variables: { userId: authState.user.uid, friendId: userId },
     update: (cache) => {
-      const { friends } = cache.readQuery({
-        query: GET_USER_FRIENDS_ID,
-        variables: { userId: authState.user.uid },
-      });
-      const newFriends = friends.filter((element) => element.id !== userId);
-      cache.writeQuery({
-        query: GET_USER_FRIENDS_ID,
-        variables: { userId: authState.user.uid },
-        data: { friends: newFriends },
-      });
+
+      // update friends list
+
+      try {
+        const { friends } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: userFriendsFragment
+        })
+
+        let newFriends = friends.filter((element) => element.friend.id !== userId);
+        console.log('newFriends', newFriends)
+
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: userFriendsFragment,
+          data: { __typename: 'user', friends: newFriends },
+        });
+
+      } catch (e) {
+       console.log(e)
+      }
+
+      try {
+        const { friends } = cache.readFragment({
+          id: `user:${userId}`,
+          fragment: userFriendsFragment
+        })
+
+        let newFriends = friends.filter((element) => element.friend.id !== authState.user.uid);
+        console.log('newFriends', newFriends)
+
+        cache.writeFragment({
+          id: `user:${userId}`,
+          fragment: userFriendsFragment,
+          data: { __typename: 'user', friends: newFriends },
+        });
+      } catch (e) {
+       console.log(e)
+      }
+
+
+
 
       // update Aggregate counts
 
@@ -154,7 +164,7 @@ const UserInteractions = ({ userId, navigation, image }) => {
         id: `user:${authState.user.uid}`,
         fragment: aggFriendsFragment,
       });
-      let newCount = myFriendsAggregate.friends_aggregate.aggregate.count -1;
+      let newCount = myFriendsAggregate.friends_aggregate.aggregate.count - 1;
       cache.writeFragment({
         id: `user:${authState.user.uid}`,
         fragment: aggFriendsFragment,
@@ -171,7 +181,6 @@ const UserInteractions = ({ userId, navigation, image }) => {
         fragment: aggFriendsFragment,
         data: aggFriendsData(newCount),
       });
-
     },
     onCompleted: checkFriendRequests,
   });
@@ -182,21 +191,74 @@ const UserInteractions = ({ userId, navigation, image }) => {
   ] = useMutation(CONFIRM_FRIEND_REQUEST, {
     variables: { recipient: authState.user.uid, sender: userId },
     update: (cache) => {
-      // update friends list for currentUser
-      const { friends } = cache.readQuery({
-        query: GET_USER_FRIENDS_ID,
-        variables: { userId: authState.user.uid },
-      });
-      const newFriend = {
-        __typename: 'friendView',
-        id: userId,
-        userId: authState.user.uid,
-      };
-      cache.writeQuery({
-        query: GET_USER_FRIENDS_ID,
-        variables: { userId: authState.user.uid },
-        data: { friends: friends.concat([newFriend]) },
-      });
+      // update friends list for both
+
+      try {
+        const { friends } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: userFriendsFragment,
+        });
+
+        console.log('friends', friends);
+
+        if (friends) {
+          let newFriend = {
+            __typename: "friend",
+            friend: {
+              __typename: 'user',
+              id: userId,
+              name: name,
+              image: image,
+
+            }
+          };
+          cache.writeFragment({
+            id: `user:${authState.user.uid}`,
+            fragment: userFriendsFragment,
+            data: { __typename: 'user', friends: friends.concat(newFriend) },
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+      try {
+        const { friends } = cache.readFragment({
+          id: `user:${userId}`,
+          fragment: userFriendsFragment,
+        });
+        console.log('friends', friends);
+
+        if (friends) {
+          const currentUser = cache.readFragment({
+            id: `user:${authState.user.uid}`,
+            fragment: gql`
+              fragment basicFragment on user {
+                id
+                name
+                image
+              }
+            `,
+          });
+
+          let newFriend = {
+            __typename: "friend",
+            friend: {
+              __typename: 'user',
+              id: currentUser.id,
+              name: currentUser.name,
+              image: currentUser.image,
+            }
+          };
+          cache.writeFragment({
+            id: `user:${userId}`,
+            fragment: userFriendsFragment,
+            data: { __typename: 'user', friends: friends.concat(newFriend) },
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
 
       // update friend Counts
 
@@ -243,6 +305,8 @@ const UserInteractions = ({ userId, navigation, image }) => {
   } = useQuery(GET_USER_FRIENDS_ID, {
     variables: { userId: authState.user.uid },
   });
+
+  if (friendsData) console.log('friendsData', friendsData.user.friends)
 
   if (newChatError) {
     showMessage({
@@ -300,8 +364,8 @@ const UserInteractions = ({ userId, navigation, image }) => {
   };
 
   if (friendsData) {
-    const isFriend = friendsData.friends.some((user) => {
-      return user.id === userId;
+    const isFriend = friendsData.user.friends.some((e) => {
+      return e.friend.id === userId;
     });
     if (isFriend) {
       content = <Text style={styles.followInteractionText}>REMOVE FRIEND</Text>;
@@ -319,7 +383,8 @@ const UserInteractions = ({ userId, navigation, image }) => {
       sendLoading ||
       deleteLoading ||
       confirmLoading ||
-      removeLoading
+      removeLoading ||
+      friendsLoading
     ) {
       content = LoadingIndicator();
     } else if (
@@ -390,6 +455,41 @@ const LoadingIndicator = () => (
     />
   </View>
 );
+
+const aggFriendsFragment = gql`
+  fragment aggFriends on user {
+    friends_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+const userFriendsFragment = gql`
+  fragment userFriends on user {
+    friends {
+      friend {
+        id
+        image
+        name
+      }
+    }
+  }
+`;
+
+const aggFriendsData = (count) => {
+  return {
+    __typename: 'user',
+    friends_aggregate: {
+      __typename: 'friend_aggregate',
+      aggregate: {
+        __typename: 'friend_aggregate_fields',
+        count: count,
+      },
+    },
+  };
+};
 
 export default UserInteractions;
 
