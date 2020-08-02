@@ -21,7 +21,6 @@ import { useNavigation } from '@react-navigation/native';
 import ImageCard from '../ReusableComponents/ImageCard';
 import { useSafeArea } from 'react-native-safe-area-context';
 import {
-  HeaderPlaceholder,
   ListPlaceholder,
   TitlePlaceholder,
   SayHiPlaceholder,
