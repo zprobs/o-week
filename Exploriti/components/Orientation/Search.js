@@ -17,7 +17,7 @@ import UserCard from '../ReusableComponents/UserCard';
 import { Theme } from '../../theme/Colours';
 import SectionHeader from '../ReusableComponents/SectionHeader';
 import ImageCard from '../ReusableComponents/ImageCard';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import BackIcon from '../Menu/BackIcon';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
@@ -41,6 +41,18 @@ export default function Search() {
     skip: firstRenderRef.current || debounceQuery === '',
   });
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+
+  useEffect(()=>{
+    if (!isFocused && searchRef.current) {
+      searchRef.current.blur();
+    } else if (isFocused && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [isFocused])
+
+
 
   if (error) {
     showMessage({
