@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -26,6 +26,7 @@ import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { showMessage } from 'react-native-flash-message';
+import {AuthContext, refreshToken} from "../../context";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -43,14 +44,18 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
   const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
     variables: { id: groupId },
   });
+  const { authState, setAuthState } = useContext(AuthContext);
 
   if (error) {
-    showMessage({
-      message: "Server Error",
-      description: error.message,
-      type: 'warning',
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
   }
 
   const Tabs = () => {
@@ -111,13 +116,16 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
     if (loading || chatLoading) return null;
 
     if (chatError) {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          description: error.message,
+          autoHide: false,
+          type: 'warning',
+          icon: 'auto'
+        });
+      }
       return null
     }
 
@@ -210,23 +218,29 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
     });
 
     if (errorMembers) {
-      showMessage({
-        message: "Server Error",
-        autoHide: false,
-        description: errorMembers.message,
-        type: 'warning',
-        icon: 'auto'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          autoHide: false,
+          description: errorMembers.message,
+          type: 'warning',
+          icon: 'auto'
+        });
+      }
     }
 
     if (errorLeaders) {
-      showMessage({
-        message: "Server Error",
-        autoHide: false,
-        description: errorLeaders.message,
-        type: 'warning',
-        icon: 'auto'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          autoHide: false,
+          description: errorLeaders.message,
+          type: 'warning',
+          icon: 'auto'
+        });
+      }
     }
 
     if (loadingMembers || errorMembers || loadingLeaders || errorLeaders)
@@ -267,13 +281,16 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
 
     if (eventsLoading || eventsError) return null;
     if (eventsError) {
-      showMessage({
-        message: "Server Error",
-        autoHide: false,
-        description: eventsError.message,
-        type: 'warning',
-        icon: 'auto'
-      });
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          autoHide: false,
+          description: eventsError.message,
+          type: 'warning',
+          icon: 'auto'
+        });
+      }
     }
 
     if (eventsData.events.length > 0) {

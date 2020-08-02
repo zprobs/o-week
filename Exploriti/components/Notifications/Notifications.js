@@ -4,7 +4,7 @@ import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
-import { AuthContext, NotificationTypes } from '../../context';
+import {AuthContext, NotificationTypes, refreshToken} from '../../context';
 import {
   EventNotificationCard,
   SystemNotificationCard,
@@ -13,18 +13,21 @@ import {
 import { showMessage } from 'react-native-flash-message';
 
 export default function Notifications() {
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_NOTIFICATIONS, {
     variables: { id: authState.user.uid },
   });
 
   if (error) {
-    showMessage({
-      message: "Server Error",
-      description: error.message,
-      type: 'warning',
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
   }
 
   const renderItem = ({ item }) => {

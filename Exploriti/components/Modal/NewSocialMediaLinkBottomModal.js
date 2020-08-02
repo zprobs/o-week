@@ -7,7 +7,7 @@ import Fonts from '../../theme/Fonts';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS, UPDATE_USER } from '../../graphql';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -20,7 +20,7 @@ const { colours } = Theme.light;
 const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   console.log('type', type, typeof type);
   const [value, setValue] = useState('');
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const { data, error } = useQuery(GET_USER_LINKS, {
     variables: { user: authState.user.uid },
   });
@@ -37,16 +37,20 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   };
 
   if (error) {
-    showMessage({
-      message: "Server Error",
-      description: error.message,
-      type: 'warning',
-      autoHide: false,
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        autoHide: false,
+        icon: 'auto'
+      });
+    }
   }
 
   if (updateError) {
+    refreshToken(authState.user, setAuthState);
     showMessage({
       message: "Cannot update Links",
       description: updateError.message,

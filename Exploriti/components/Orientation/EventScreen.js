@@ -19,7 +19,7 @@ import {
   GET_USER_GROUPS,
   INVITE_USERS_TO_EVENT,
 } from '../../graphql';
-import { AuthContext, graphqlify_relationship } from '../../context';
+import {AuthContext, graphqlify_relationship, refreshToken} from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
 import { showMessage } from 'react-native-flash-message';
@@ -40,7 +40,7 @@ const EventScreen = ({ route }) => {
   const modalRef = useRef();
   const inviteRef = useRef();
   const editRef = useRef();
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const [invite, {error: inviteError}] = useMutation(INVITE_USERS_TO_EVENT);
   const { eventId } = route.params;
   const [tabIndex, setTabIndex] = useState(0); // used to prevent tabs from defaulting to 0 after rerender
@@ -55,24 +55,30 @@ const EventScreen = ({ route }) => {
 
   if (loading) return null;
   if (error) {
-    showMessage({
-      message: "Server Error",
-      description: error.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
     return null
   }
 
   if (inviteError) {
-    showMessage({
-      message: "Cannot Invite to Event",
-      description: inviteError.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'auto'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (!(inviteError.networkError && inviteError.networkError.statusCode === 400)) {
+      showMessage({
+        message: "Cannot Invite to Event",
+        description: inviteError.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
   }
 
 

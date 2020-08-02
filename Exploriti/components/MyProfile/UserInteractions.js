@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { AuthContext, graphqlify, NotificationTypes } from '../../context';
+import {AuthContext, graphqlify, NotificationTypes, refreshToken} from '../../context';
 import gql from 'graphql-tag';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
@@ -32,7 +32,7 @@ const { colours } = Theme.light;
  * @constructor
  */
 const UserInteractions = ({ userId, navigation, image, name }) => {
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
@@ -310,53 +310,68 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   if (friendsData) console.log('friendsData', friendsData.user.friends);
 
   if (newChatError) {
-    showMessage({
-      message: 'Cannot Create Chat',
-      description: newChatError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (!(newChatError.networkError && newChatError.networkError.statusCode === 400)) {
+      showMessage({
+        message: 'Cannot Create Chat',
+        description: newChatError.message,
+        autoHide: false,
+        type: 'danger',
+        icon: 'auto',
+      });
+    }
   }
 
   if (confirmError) {
-    showMessage({
-      message: 'Cannot Confirm Request',
-      description: confirmError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (!(confirmError.networkError && confirmError.networkError.statusCode === 400)) {
+      showMessage({
+        message: 'Cannot Confirm Request',
+        description: confirmError.message,
+        autoHide: false,
+        type: 'danger',
+        icon: 'auto',
+      });
+    }
   }
 
   if (removeError) {
-    showMessage({
-      message: 'Cannot Remove Friend',
-      description: removeError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (!(removeError.networkError && removeError.networkError.statusCode === 400)) {
+      showMessage({
+        message: 'Cannot Remove Friend',
+        description: removeError.message,
+        autoHide: false,
+        type: 'danger',
+        icon: 'auto',
+      });
+    }
   }
 
   if (deleteError) {
-    showMessage({
-      message: 'Cannot Delete Request',
-      autoHide: false,
-      description: deleteError.message,
-      type: 'danger',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (!(deleteError.networkError && deleteError.networkError.statusCode === 400)) {
+      showMessage({
+        message: 'Cannot Delete Request',
+        autoHide: false,
+        description: deleteError.message,
+        type: 'danger',
+        icon: 'auto',
+      });
+    }
   }
 
   if (friendsError) {
-    showMessage({
-      message: 'Server Error',
-      description: friendsError.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'auto',
-    });
+    refreshToken(authState.user, setAuthState);
+    if (friendsError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: 'Server Error',
+        description: friendsError.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto',
+      });
+    }
   }
 
   let content;

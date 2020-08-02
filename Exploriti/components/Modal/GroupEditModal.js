@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -15,7 +15,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 import ImagePicker from 'react-native-image-crop-picker';
-import { saveImage } from '../../context';
+import {AuthContext, refreshToken, saveImage} from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const HEIGHT = Dimensions.get('window').height;
@@ -37,6 +37,7 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
   const [imageSelection, setImageSelection] = useState();
   const [editableDescription, setEditableDescription] = useState();
   const [isUploading, setIsUploading] = useState(false);
+  const { authState, setAuthState } = useContext(AuthContext)
 
   useEffect(() => {
     if (data) {
@@ -60,16 +61,20 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
   };
 
   if (error) {
-    showMessage({
-      message: "Server Error",
-      description: error.message,
-      autoHide: false,
-      type: 'warning',
-      icon: 'warning'
-    });
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
   }
 
   if (updateError) {
+    refreshToken(authState.user, setAuthState);
     showMessage({
       message: "Cannot Update Group",
       description: updateError.message,

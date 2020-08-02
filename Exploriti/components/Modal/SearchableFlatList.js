@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import { useQuery } from '@apollo/react-hooks';
 import { NULL } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { useKeyboard } from '../../context';
+import {refreshToken, useKeyboard} from '../../context';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import { showMessage } from 'react-native-flash-message';
