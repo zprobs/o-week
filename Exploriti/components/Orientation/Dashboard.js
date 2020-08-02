@@ -9,7 +9,7 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { AuthContext } from '../../context';
+import { AuthContext, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
@@ -25,6 +25,7 @@ import {
   TitlePlaceholder,
   SayHiPlaceholder,
 } from '../Placeholders/DashboardPlaceholder';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -35,12 +36,13 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 export default function Dashboard() {
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const navigation = useNavigation();
   const insets = useSafeArea();
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
+
   const listData = useMemo(
     () => [
       {
@@ -83,14 +85,29 @@ export default function Dashboard() {
   );
 
   const Header = () => {
-    const { data: sayHiData, loading: sayHiLoading } = useQuery(
-      GET_USERS_WHERE,
-      {
-        variables: { _nin: authState.user.uid },
-      },
-    );
+    const {
+      data: sayHiData,
+      loading: sayHiLoading,
+      error: sayHiError,
+    } = useQuery(GET_USERS_WHERE, {
+      variables: { _nin: authState.user.uid },
+    });
     let count = 0;
-    console.log('sayHiLoading', sayHiLoading);
+
+    if (sayHiError) {
+      refreshToken(authState.user, setAuthState);
+      if (
+        sayHiError.message !== 'GraphQL error: Could not verify JWT: JWTExpired'
+      ) {
+        showMessage({
+          message: 'Server Error',
+          description: sayHiError.message,
+          autoHide: false,
+          type: 'warning',
+          icon: 'auto',
+        });
+      }
+    }
 
     return (
       <>
@@ -161,19 +178,29 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return <Text>{error.message}</Text>;
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
+      showMessage({
+        message: 'Server Error',
+        autoHide: false,
+        description: error.message,
+        type: 'warning',
+        icon: 'auto',
+      });
+    }
+    return null;
   }
 
   return (
     <View style={styles.container}>
       <SectionList
+        bounces
         sections={listData}
         keyExtractor={(item, index) => item + index}
         renderItem={renderItem}
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
-        bounces={false}
       />
     </View>
   );

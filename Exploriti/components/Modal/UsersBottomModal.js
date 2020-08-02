@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
@@ -8,6 +8,8 @@ import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_FRIENDS } from '../../graphql';
+import { showMessage } from 'react-native-flash-message';
+import {AuthContext, refreshToken} from "../../context";
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -29,6 +31,21 @@ const UsersBottomModal = React.forwardRef(
       getUsers,
       { data: userData, loading, error, called },
     ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId } });
+
+    const { authState, setAuthState } = useContext(AuthContext);
+
+    if (error) {
+        refreshToken(authState.user, setAuthState);
+        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: error.message,
+                type: "warning",
+                autoHide: false,
+                icon: 'auto'
+            });
+        }
+     }
 
     let heading;
     let subHeading;
@@ -54,7 +71,7 @@ const UsersBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      const { id, image, name } = item;
+      const { id, image, name } = item.friend;
       return (
         <UserCard
           userId={id}
@@ -78,8 +95,9 @@ const UsersBottomModal = React.forwardRef(
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: userData ? userData.friends : null,
+          data: userData ? userData.user.friends : null,
           ListEmptyComponent: listEmptyComponent,
+          keyExtractor: item => item.friend.id,
           style: listContainer,
           renderItem: renderItem,
           ListHeaderComponent: header,

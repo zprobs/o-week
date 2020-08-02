@@ -44,7 +44,7 @@ export const GET_NOTIFICATIONS = gql`
   query getNotifications($id: String!) {
     user(id: $id) {
       id
-      notifications {
+      notifications(order_by: {timestamp: desc}) {
         id
         timestamp
         type
@@ -71,7 +71,7 @@ export const GET_CURRENT_USER = gql`
     user(id: $id) {
       ...DetailedUser
       isAdmin
-      notifications {
+      notifications(order_by: {timestamp: desc}) {
         id
         timestamp
         type
@@ -107,7 +107,7 @@ export const GET_USER_INTERESTS = gql`
         interest {
           id
           name
-            aliases
+          aliases
         }
       }
     }
@@ -273,22 +273,43 @@ export const GET_PROGRAMS = gql`
 
 export const GET_USER_FRIENDS = gql`
   query getFriends($userId: String!) {
-    friends(where: { userId: { _eq: $userId } }) {
-      userId
-      id
-      name
-      image
-    }
+      user(id: $userId) {
+          id
+          friends {
+              friend {
+                  id
+                  image
+                  name
+              }
+          }
+      }
   }
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
-  query getFriendsID($userId: String!) {
-    friends(where: { userId: { _eq: $userId } }) {
-      userId
-      id
+    query getFriends($userId: String!) {
+        user(id: $userId) {
+            id
+            friends {
+                friend {
+                    id
+                }
+            }
+        }
     }
-  }
+`;
+
+export const GET_USER_FRIENDS_AGGREGATE = gql`
+    query getUserFriendsAggregate($id: String!) {
+        user(id: $id) {
+            id
+            friends_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
 `;
 
 export const REMOVE_FRIEND = gql`
@@ -407,6 +428,35 @@ export const GET_CHATS = gql`
       order_by: { messages_aggregate: { max: { date: desc } } }
       where: {
         _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
+      }
+    ) {
+      ...DetailedChat
+    }
+  }
+  ${DETAILED_CHAT}
+`;
+
+export const SEARCH_CHATS = gql`
+  query searchChats($user: String!, $query: String!) {
+    chats(
+      limit: 15
+      order_by: { messages_aggregate: { max: { date: desc } } }
+      where: {
+        _and: [
+          { participants: { id: { _eq: $user } } }
+          {
+            _or: [
+              { name: { _ilike: $query } }
+              {
+                participants: {
+                  name: { _ilike: $query }
+                  _and: { id: { _neq: $user } }
+                }
+              }
+            ]
+          }
+          { messages: {} }
+        ]
       }
     ) {
       ...DetailedChat
@@ -826,6 +876,33 @@ export const INVITE_USER_TO_EVENT = gql`
       }
     }
   }
+`;
+
+export const INVITE_USERS_TO_EVENT = gql`
+    mutation inviteUsersToEvent($objects: [userEvent_insert_input!]!) {
+        signUpUsersForEvent(objects: $objects) {
+            returning {
+                eventId
+                userId
+                event {
+                    id
+                    invited: attendees(where: {didAccept: {_eq: false}}) {
+                        user {
+                            image
+                            id
+                            name
+                        }
+                        didAccept
+                    }
+                    invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
+                        aggregate {
+                            count
+                        }
+                    }
+                }
+            }
+        }
+    }
 `;
 
 export const REMOVE_USER_FROM_EVENT = gql`

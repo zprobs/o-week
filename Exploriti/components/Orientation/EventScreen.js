@@ -17,11 +17,14 @@ import {
   GET_EVENT,
   GET_USER_FRIENDS,
   GET_USER_GROUPS,
-  INVITE_USER_TO_EVENT,
+  INVITE_USERS_TO_EVENT,
 } from '../../graphql';
-import { AuthContext } from '../../context';
+import {AuthContext, graphqlify_relationship, refreshToken} from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
+import { showMessage } from 'react-native-flash-message';
+import SearchableFlatList from '../Modal/SearchableFlatList';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -37,38 +40,52 @@ const EventScreen = ({ route }) => {
   const modalRef = useRef();
   const inviteRef = useRef();
   const editRef = useRef();
-  const { authState } = useContext(AuthContext);
-  const [invite] = useMutation(INVITE_USER_TO_EVENT);
+  const { authState, setAuthState } = useContext(AuthContext);
+  const [invite, {error: inviteError}] = useMutation(INVITE_USERS_TO_EVENT);
   const { eventId } = route.params;
   const [tabIndex, setTabIndex] = useState(0); // used to prevent tabs from defaulting to 0 after rerender
   const { data, loading, error } = useQuery(GET_EVENT, {
     variables: { id: eventId },
   });
-  const { data: isOwnerData, error: isOwnerError } = useQuery(GET_USER_GROUPS, {
+  const { data: isOwnerData } = useQuery(GET_USER_GROUPS, {
     variables: { id: authState.user.uid },
     fetchPolicy: 'cache-only',
   });
-
-  const { data: friendsData } = useQuery(GET_USER_FRIENDS, {
-    variables: { userId: authState.user.uid },
-  });
+  const insets = useSafeArea();
 
   if (loading) return null;
   if (error) {
-    console.log(error.message);
-    return null;
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+    return null
   }
 
-  const friendsIds = [];
-  if (friendsData) friendsData.friends.map((item) => friendsIds.push(item.id));
+  if (inviteError) {
+    refreshToken(authState.user, setAuthState);
+    if (!(inviteError.networkError && inviteError.networkError.statusCode === 400)) {
+      showMessage({
+        message: "Cannot Invite to Event",
+        description: inviteError.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+  }
 
-  console.log('hosts', data.event.hosts);
 
-  const filteredMemberships = isOwnerData.user.member.filter((membership) =>
+  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter((membership) =>
     data.event.hosts.map((host) => host.groupId).includes(membership.group.id),
-  );
+  ) : [];
 
-  console.log('filteredMemberships', filteredMemberships);
 
   const isMember = filteredMemberships.length > 0;
   const isOwner = isMember && filteredMemberships[0].isOwner === true;
@@ -89,9 +106,14 @@ const EventScreen = ({ route }) => {
 
   const parsedYear = year === '2020' ? '' : year;
 
-  const inviteUserToEvent = (userId) => {
+  const inviteUserToEvent = (userIdArray) => {
+    console.log('userIdArray', userIdArray)
+    const IDs = userIdArray.map(user=>user.id)
+    console.log('IdArray', IDs)
     setTabIndex(1);
-    invite({ variables: { userId: userId, eventId: eventId } })
+    const objects = graphqlify_relationship(eventId, IDs, 'event', 'user' )
+    console.log('object', objects);
+    invite({ variables: { objects: objects } })
       .then(inviteRef.current.close())
       .catch((e) => console.log(e));
   };
@@ -131,11 +153,21 @@ const EventScreen = ({ route }) => {
         inviteRef={inviteRef}
         initialIndex={tabIndex}
       />
-      <UsersBottomModal
-        type={'invite'}
+      <SearchableFlatList
         ref={inviteRef}
-        data={friendsIds}
+        title={'friends'}
+        query={GET_USER_FRIENDS}
+        hasImage={true}
+        variables={{ userId: authState.user.uid }}
+        setSelection={()=>{}}
+        aliased={false}
+        floatingButtonText={'Invite'}
+        min={1}
         onPress={inviteUserToEvent}
+        initialSelection={null}
+        clearOnClose={true}
+        offset={70 + insets.top}
+        floatingButtonOffset={70 + insets.bottom}
       />
       {isOwner ? (
         <NewEventModal

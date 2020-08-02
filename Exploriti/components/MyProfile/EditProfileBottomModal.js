@@ -14,7 +14,7 @@ import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import { AuthContext, saveImage, yearsData, yearToInt } from '../../context';
+import {AuthContext, refreshToken, saveImage, yearsData, yearToInt} from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
@@ -28,6 +28,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
 /**
  * Modal for editing the logged in users data
@@ -40,10 +41,10 @@ import { useSafeArea } from 'react-native-safe-area-context';
  */
 const EditProfileBottomModal = React.forwardRef(
   ({ image, name, programs, description, year }, ref) => {
-    const { authState } = useContext(AuthContext);
-    const [updateUser] = useMutation(UPDATE_USER);
-    const [updateInterests] = useMutation(UPDATE_USER_INTERESTS);
-    const [updatePrograms] = useMutation(UPDATE_USER_PROGRAMS);
+    const { authState, setAuthState } = useContext(AuthContext);
+    const [updateUser, {error: updateError}] = useMutation(UPDATE_USER);
+    const [updateInterests, {interestError}] = useMutation(UPDATE_USER_INTERESTS);
+    const [updatePrograms, {programError}] = useMutation(UPDATE_USER_PROGRAMS);
     const headerHeight = useHeaderHeight();
     // only call query when modal has been opened
     const [getInterests, { called, loading, data, error }] = useLazyQuery(
@@ -71,6 +72,58 @@ const EditProfileBottomModal = React.forwardRef(
     const onYearRef = () => yearRef.current.open();
     const onProgramRef = () => programRef.current.open();
     const onInterestRef = () => interestRef.current.open();
+
+    if (error) {
+        refreshToken(authState.user, setAuthState);
+        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: error.message,
+                autoHide: false,
+                type: 'warning',
+                icon: 'auto'
+            });
+        }
+    }
+
+    if (updateError) {
+        refreshToken(authState.user, setAuthState);
+        if (!(updateError.networkError && updateError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: updateError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
+    }
+
+    if (interestError) {
+        refreshToken(authState.user, setAuthState);
+        if (!(interestError.networkError && interestError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: interestError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
+    }
+
+    if (programError) {
+        refreshToken(authState.user, setAuthState);
+        if (!(programError.networkError && programError.networkError.statusCode === 400)) {
+            showMessage({
+                message: "Failed To Update",
+                description: programError.message,
+                autoHide: false,
+                type: 'danger',
+                icon: 'auto'
+            });
+        }
+    }
 
     const programTitle = () => {
       if (programsSelection) {

@@ -15,9 +15,10 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import { useQuery } from '@apollo/react-hooks';
 import { NULL } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { useKeyboard } from '../../context';
+import {refreshToken, useKeyboard} from '../../context';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import SearchUsers from '../../assets/svg/search-users.svg';
+import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -86,10 +87,21 @@ const SearchableFlatList = React.forwardRef(
       variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
     });
 
+    if (error) {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        type: 'warning',
+        autoHide: false,
+        icon: 'auto'
+      });
+    }
+
     if (!loading && !didSetFirst.current && QueryData && !error) {
+      const listData = title === 'friends' ? QueryData.user.friends.map(f=>f.friend) : QueryData[title]
       didSetFirst.current = true;
-      if (!serverSearch) setUnfilteredList(QueryData[title]);
-      setFilteredList(QueryData[title]);
+      if (!serverSearch) setUnfilteredList(listData);
+      setFilteredList(listData);
     }
 
     useEffect(()=>{
@@ -292,7 +304,7 @@ const SearchableFlatList = React.forwardRef(
           FloatingComponent={renderFloatingComponent}
         />
       );
-    }, [ref, offset, filteredList, selected, buttonIsShowing]);
+    }, [ref, offset, filteredList, selected, buttonIsShowing, keyboardHeight]);
 
     return Modal;
   },

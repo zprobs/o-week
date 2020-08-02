@@ -18,8 +18,9 @@ import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
 import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder'
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -32,7 +33,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const ScheduleCarousel = () => {
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_SCHEDULED_EVENTS, {
     variables: {
       userId: authState.user.uid,
@@ -44,6 +45,8 @@ const ScheduleCarousel = () => {
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+
+
   useEffect(() => {
     // separating all the events into pages based on which day they occur on.
     if (!data || data.events.length === 0) return;
@@ -85,7 +88,19 @@ const ScheduleCarousel = () => {
     setIndex(0);
   }, [data]);
 
-  if (error) return null;
+  if (error)  {
+    console.log(error[0]);
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
+  }
 
   const title = () => {
     if (!scheduleData[index] || scheduleData[index].length <= 0)
@@ -167,7 +182,7 @@ const ScheduleCarousel = () => {
       }).start();
     });
   };
-  
+
 
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
@@ -186,9 +201,11 @@ const ScheduleCarousel = () => {
             name={'calendar'}
             color={'white'}
             onPress={() => {
-              navigation.navigate('Calendar', {
-                myCalendars: data.user.member,
-              });
+              if (data) {
+                navigation.navigate('Calendar', {
+                  myCalendars: data.user.member,
+                });
+              }
             }}
           />
         </View>

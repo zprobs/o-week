@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
 import { Keyboard } from 'react-native';
+import firebase from "@react-native-firebase/app";
 
 /**
  * The Context which contains the Firebase information about the current user. Contains object 'authState' which will have a value 'status' to
@@ -28,6 +29,56 @@ export const graphqlify = (list, idType) => {
   });
   return dict;
 };
+
+/**
+ * Used to convert something like a list of users to invite to event into mutation ready object
+ * @param constant {string} the eventId or term you want present in every element
+ * @param list {[string]} the list of userId or the term which is unique in every element
+ * @param constantTerm {string} name of the constant Ex: event
+ * @param listTerm {string} name of the list type Ex: user
+ * @returns {[]}
+ */
+export const graphqlify_relationship = (constant, list, constantTerm, listTerm) => {
+  const data = [];
+  for (const index in list) {
+    const inner = {};
+    inner[constantTerm + "Id"] = constant;
+    inner[listTerm + "Id"] = list[index];
+    data.push(inner);
+  }
+  return data;
+}
+
+export function refreshToken(user, setAuthState) {
+  return user
+      .getIdToken(true)
+      .then((token) =>
+          firebase
+              .auth()
+              .currentUser.getIdTokenResult(true)
+              .then((result) => {
+                console.log(result);
+                if (result.claims['https://hasura.io/jwt/claims']) {
+                  setAuthState({ status: 'in', user, token });
+                  return token;
+                }
+                const endpoint =
+                    'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken';
+                return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
+                  if (res.status === 200) {
+                    return user.getIdToken(true);
+                  }
+                  return res.json().then((e) => {
+                    throw e;
+                  });
+                });
+              }),
+      )
+      .then((token) => {
+        setAuthState({ status: 'in', user, token });
+      })
+      .catch(console.error);
+}
 
 export function yearToInt(year: String) {
   switch (year) {

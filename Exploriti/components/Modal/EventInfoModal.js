@@ -27,7 +27,9 @@ import {
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
+import { showMessage } from 'react-native-flash-message';
+import {acc} from "react-native-reanimated";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -43,10 +45,23 @@ const WIDTH = Dimensions.get('window').width;
  */
 const EventInfoModal = React.forwardRef(
   ({ eventId, inviteRef, initialIndex }, ref) => {
-    const { authState } = useContext(AuthContext);
+    const { authState, setAuthState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
+
+    if (error) {
+      refreshToken(authState.user, setAuthState);
+      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+        showMessage({
+          message: "Server Error",
+          description: error.message,
+          autoHide: false,
+          type: 'warning',
+          icon: 'warning'
+        });
+      }
+    }
 
     const Tabs = () => {
       const [index, setIndex] = useState(initialIndex);
@@ -108,7 +123,7 @@ const EventInfoModal = React.forwardRef(
       } = useQuery(CHECK_USER_EVENT_ACCEPTED, {
         variables: { eventId: eventId, userId: authState.user.uid },
       });
-      const [signUp, { loading: signUpLoading }] = useMutation(
+      const [signUp, { loading: signUpLoading, error: signUpError }] = useMutation(
         SIGN_UP_USER_FOR_EVENT,
         {
           variables: { eventId: eventId, userId: authState.user.uid },
@@ -149,7 +164,56 @@ const EventInfoModal = React.forwardRef(
             variables: { eventId: eventId, userId: authState.user.uid },
           },
         ],
+        awaitRefetchQueries: true
       });
+
+      if (acceptError) {
+        refreshToken(authState.user, setAuthState);
+        if (acceptError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+          showMessage({
+            message: "Server Error",
+            description: acceptError.message,
+            autoHide: false,
+            type: 'warning',
+            icon: 'warning'
+          });
+        }
+      }
+
+      if (signUpError) {
+        if (!(signUpError.networkError && signUpError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot RSVP",
+            description: signUpError.message,
+            type: 'danger',
+            icon: 'danger',
+            autoHide: false
+          });
+        }
+      }
+
+      if (confirmError) {
+        if (!(confirmError.networkError && confirmError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot Confirm Invite",
+            description: confirmError.message,
+            autoHide: false,
+            type: 'danger',
+            icon: 'danger'
+          });
+        }
+      }
+
+      if (removeError) {
+        if (!(removeError.networkError && removeError.networkError.statusCode === 400)) {
+          showMessage({
+            message: "Cannot Cancel RSVP",
+            description: removeError.message,
+            type: 'danger',
+            icon: 'danger'
+          });
+        }
+      }
 
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
       const isAccepted = acceptData
@@ -157,18 +221,16 @@ const EventInfoModal = React.forwardRef(
         : false;
 
       useEffect(() => {
-        setIsSelected(isAccepted);
+        if (acceptData) {
+          setIsSelected(isAccepted);
+        }
       }, [acceptData]);
-
-      if (removeError) console.log(removeError.message);
-      if (confirmError) console.log('confirmError', confirmError.message);
 
       const mutationLoading =
         signUpLoading || confirmLoading || acceptLoading || removeLoading;
 
       if (loading || acceptLoading) return null;
-      if (error || acceptError)
-        return <Text>{acceptError ? acceptError.message : error.message}</Text>;
+      if (error || acceptError) return null;
 
       const date = new Date(data.event.startDate);
       const end = new Date(data.event.endDate);

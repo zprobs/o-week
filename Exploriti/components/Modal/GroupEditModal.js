@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -15,7 +15,8 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 import ImagePicker from 'react-native-image-crop-picker';
-import { saveImage } from '../../context';
+import {AuthContext, refreshToken, saveImage} from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -30,12 +31,13 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
     getGroup,
     { loading, data, error, called },
   ] = useLazyQuery(GET_DETAILED_GROUP, { variables: { id: groupId } });
-  const [updateGroup] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP);
+  const [updateGroup, {error: updateError}] = useMutation(create ? CREATE_GROUP : UPDATE_GROUP);
   const [editableName, setEditableName] = useState();
   const [editableImage, setEditableImage] = useState();
   const [imageSelection, setImageSelection] = useState();
   const [editableDescription, setEditableDescription] = useState();
   const [isUploading, setIsUploading] = useState(false);
+  const { authState, setAuthState } = useContext(AuthContext)
 
   useEffect(() => {
     if (data) {
@@ -58,9 +60,29 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
       .catch((result) => console.log(result));
   };
 
-  console.log('data,', data);
-  console.log('groupId,', groupId);
-  console.log(error);
+  if (error) {
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
+  }
+
+  if (updateError) {
+    refreshToken(authState.user, setAuthState);
+    showMessage({
+      message: "Cannot Update Group",
+      description: updateError.message,
+      autoHide: false,
+      type: 'danger',
+      icon: 'danger'
+    });
+  }
 
   const onDone = async () => {
     setIsUploading(true);

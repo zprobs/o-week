@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
@@ -8,6 +8,8 @@ import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_GROUPS } from '../../graphql';
 import UserCard from '../ReusableComponents/UserCard';
+import { showMessage } from 'react-native-flash-message';
+import {AuthContext, refreshToken} from "../../context";
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -28,10 +30,20 @@ const GroupBottomModal = React.forwardRef(
       { data, called, loading, error },
     ] = useLazyQuery(GET_USER_GROUPS, { variables: { id: userId } });
 
-    console.log('userID', userId);
-    console.log('loading', loading);
-    console.log('error', error);
-    console.log('data', data);
+    const { authState, setAuthState } = useContext(AuthContext);
+
+    if (error) {
+        refreshToken(authState.user, setAuthState);
+        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+            showMessage({
+                message: "Server Error",
+                description: error.message,
+                autoHide: false,
+                type: 'warning',
+                icon: 'warning'
+            });
+        }
+    }
 
     let heading;
     let subHeading;

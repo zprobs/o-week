@@ -16,7 +16,8 @@ import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
-import { AuthContext } from '../../context';
+import {AuthContext, refreshToken} from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -33,7 +34,7 @@ const GroupScreen = ({ route }) => {
   const editRef = useRef();
   const creatEventRef = useRef();
   const { groupId } = route.params;
-  const { authState } = useContext(AuthContext);
+  const { authState, setAuthState } = useContext(AuthContext);
 
   const { data, loading, error } = useQuery(GET_GROUP_IMAGE_NAME, {
     variables: { id: groupId },
@@ -48,15 +49,24 @@ const GroupScreen = ({ route }) => {
     return null;
   }
 
-  if (error || isOwnerError) {
-    console.log('isOwnerError', isOwnerError);
-    console.log('error', error);
-    return null;
+
+  if (error) {
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      showMessage({
+        message: "Server Error",
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'auto'
+      });
+    }
+    return null
   }
 
-  const filteredMemberships = isOwnerData.user.member.filter(
+  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter(
     (membership) => membership.group.id === groupId,
-  );
+  ) : [];
 
   const isMember = filteredMemberships.length > 0;
   const isOwner = isMember && filteredMemberships[0].isOwner === true;
