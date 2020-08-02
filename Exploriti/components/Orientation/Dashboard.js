@@ -6,9 +6,10 @@ import {
   SectionList,
   Image,
   TouchableOpacity,
-  ScrollView, SafeAreaView,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native';
-import {AuthContext, refreshToken} from '../../context';
+import { AuthContext, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
@@ -19,6 +20,11 @@ import SectionHeader from '../ReusableComponents/SectionHeader';
 import { useNavigation } from '@react-navigation/native';
 import ImageCard from '../ReusableComponents/ImageCard';
 import { useSafeArea } from 'react-native-safe-area-context';
+import {
+  ListPlaceholder,
+  TitlePlaceholder,
+  SayHiPlaceholder,
+} from '../Placeholders/DashboardPlaceholder';
 import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
@@ -32,30 +38,10 @@ const { FontWeights, FontSizes } = Fonts;
 export default function Dashboard() {
   const { authState, setAuthState } = useContext(AuthContext);
   const navigation = useNavigation();
-  const insets = useSafeArea()
+  const insets = useSafeArea();
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
-
-  if (loading) {
-    console.log('DashBoard Loading Current User');
-    return null;
-  }
-
-  if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        autoHide: false,
-        description: error.message,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
-    return null
-  }
-
 
   const listData = useMemo(
     () => [
@@ -70,26 +56,55 @@ export default function Dashboard() {
     ],
     [data],
   );
+  const renderItem = React.useCallback(
+    ({ item, section }) => {
+      let screen, options;
+
+      if (section.title === 'Groups') {
+        screen = 'GroupScreen';
+        options = { groupId: item.group.id };
+      } else {
+        screen = 'EventScreen';
+        options = { event: item };
+      }
+
+      console.log('Item : ', item);
+      return (
+        <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
+          <ImageCard groupId={item.group.id} />
+        </TouchableOpacity>
+      );
+    },
+    [navigation],
+  );
+
+  console.log(data);
 
   const SearchIcon = () => (
     <Icon name={'search'} color={ThemeStatic.text01} size={26} />
   );
 
   const Header = () => {
-    const { data: sayHiData, loading: sayHiLoading, error: sayHiError } = useQuery(GET_USERS_WHERE, {
+    const {
+      data: sayHiData,
+      loading: sayHiLoading,
+      error: sayHiError,
+    } = useQuery(GET_USERS_WHERE, {
       variables: { _nin: authState.user.uid },
     });
     let count = 0;
 
     if (sayHiError) {
       refreshToken(authState.user, setAuthState);
-      if (sayHiError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+      if (
+        sayHiError.message !== 'GraphQL error: Could not verify JWT: JWTExpired'
+      ) {
         showMessage({
-          message: "Server Error",
+          message: 'Server Error',
           description: sayHiError.message,
           autoHide: false,
           type: 'warning',
-          icon: 'auto'
+          icon: 'auto',
         });
       }
     }
@@ -97,35 +112,45 @@ export default function Dashboard() {
     return (
       <>
         <View style={{ marginHorizontal: 25, paddingTop: insets.top }}>
-          <Text style={styles.welcomeTitle}>Hi, {data.user.name}!</Text>
-          <Text style={styles.welcomeSubTitle}>Say hi to someone new:</Text>
+          {loading ? (
+            <TitlePlaceholder />
+          ) : (
+            <>
+              <Text style={styles.welcomeTitle}>Hi, {data.user.name}!</Text>
+              <Text style={styles.welcomeSubTitle}>Say hi to someone new:</Text>
+            </>
+          )}
         </View>
+
         <ScrollView
           horizontal={true}
           style={styles.userScrollView}
           showsHorizontalScrollIndicator={false}>
-          {sayHiData
-            ? sayHiData.users.map((user) => {
-                count++;
-                return (
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.push('Profile', { userId: user.id })
-                    }
-                    key={user.id}>
-                    <Image
-                      source={{ uri: user.image }}
-                      style={{
-                        ...styles.userImage,
-                        marginTop: count % 2 === 0 ? 16 : 0,
-                      }}
-                      key={user.id}
-                    />
-                  </TouchableOpacity>
-                );
-              })
-            : null}
+          {sayHiLoading ? (
+            <SayHiPlaceholder />
+          ) : sayHiData ? (
+            sayHiData.users.map((user) => {
+              count++;
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.push('Profile', { userId: user.id })
+                  }
+                  key={user.id}>
+                  <Image
+                    source={{ uri: user.image }}
+                    style={{
+                      ...styles.userImage,
+                      marginTop: count % 2 === 0 ? 16 : 0,
+                    }}
+                    key={user.id}
+                  />
+                </TouchableOpacity>
+              );
+            })
+          ) : null}
         </ScrollView>
+
         <View style={{ marginHorizontal: 25 }}>
           <ButtonColour
             colour={ThemeStatic.lightgray}
@@ -138,29 +163,33 @@ export default function Dashboard() {
             }}
           />
         </View>
-        </>
+      </>
     );
   };
 
-  const renderItem = React.useCallback(
-    ({ item, section }) => {
-      let screen, options;
+  if (loading) {
+    console.log('DashBoard Loading Current User');
+    return (
+      <View style={styles.container}>
+        <Header />
+        <ListPlaceholder />
+      </View>
+    );
+  }
 
-      if (section.title === 'Groups') {
-        screen = 'GroupScreen';
-        options = { groupId: item.group.id };
-      } else {
-        screen = 'EventScreen';
-        options = { event: item };
-      }
-      return (
-        <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-          <ImageCard groupId={item.group.id} />
-        </TouchableOpacity>
-      );
-    },
-    [navigation],
-  );
+  if (error) {
+    refreshToken(authState.user, setAuthState);
+    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
+      showMessage({
+        message: 'Server Error',
+        autoHide: false,
+        description: error.message,
+        type: 'warning',
+        icon: 'auto',
+      });
+    }
+    return null;
+  }
 
   return (
     <View style={styles.container}>
