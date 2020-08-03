@@ -18,7 +18,8 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import { DELETE_CHAT } from '../../graphql';
+import { DELETE_CHAT, UPDATE_MESSAGE_SEEN } from '../../graphql';
+import gql from 'graphql-tag';
 
 const {
   Clock,
@@ -56,7 +57,7 @@ const MessageCard = ({
   image,
   name,
   participants,
-  authorId,
+  senderId,
   messageBody,
   numMessages,
   messages,
@@ -73,7 +74,49 @@ const MessageCard = ({
     deleteChat,
     { loading: deleteChatLoading, error: deleteChatError },
   ] = useMutation(DELETE_CHAT, { variables: { id: chatId } });
+  const [setSeen] = useMutation(UPDATE_MESSAGE_SEEN, {
+    variables: {
+      chatId: chatId
+      participants: [authState.user.uid],
+      seen: true,
+    },
+    update: (cache) => {
 
+      const frag = gql`
+                  fragment usersChats on user {
+                      userChats {
+                          chatId
+                          seen
+                      }
+                  }
+        `;
+
+      try {
+        const { userChats } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag
+        });
+
+        console.log('userChats', userChats);
+        console.log('chatID', chatId)
+
+        const thisChat = userChats.find(e => e.chatId === chatId)
+        console.log(thisChat)
+        if (thisChat) thisChat.seen = true
+
+        console.log('userChats', userChats);
+
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+          data: { __typename: 'user', userChats: userChats },
+        });
+
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  });
   const useValue = (value) => useConst(() => new Value(value));
   const useClock = () => useConst(() => new Clock());
 
@@ -90,7 +133,10 @@ const MessageCard = ({
     return ref.current.value;
   };
 
+  const isHighlighted = senderId !== authState.user.uid && !seen;
+
   const setSeenAndNavigate = () => {
+    if (isHighlighted) setSeen();
     navigation.navigate('Conversation', {
       chatId,
       image,
@@ -100,8 +146,6 @@ const MessageCard = ({
       messages,
     });
   };
-
-  const isHighlighted = authorId !== authState.user.uid && !seen;
 
   const highlightStyle = isHighlighted
     ? {
@@ -394,12 +438,12 @@ const styles = StyleSheet.create({
     ...FontWeights.Light,
     ...FontSizes.Caption,
     maxWidth: '70%',
-    color: colours.text02,
+    color: colours.text03,
   },
   timeText: {
     ...FontWeights.Light,
     ...FontSizes.Caption,
-    color: colours.text02,
+    color: colours.text03,
   },
   remove: {
     ...FontWeights.Bold,

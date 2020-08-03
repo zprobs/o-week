@@ -101,10 +101,13 @@ export function yearToInt(year: String) {
  * @returns {{readableTime: string, parsedTime: string}}
  */
 export const parseTimeElapsed = (utcTime: string) => {
-  const timeNow = new Date().getTime();
   const actionTime = new Date(utcTime).getTime();
+  const timeNow = new Date().getTime();
 
   let difference = timeNow - actionTime;
+  console.log('diff', difference)
+
+  if (difference < 1000) return {readableTime: 'just now', parsedTime: 'just now'}
 
   const secondsInMs = 1000;
   const minutesInMs = secondsInMs * 60;
@@ -114,6 +117,7 @@ export const parseTimeElapsed = (utcTime: string) => {
 
   const elapsedWeeks = parseInt(difference / weekInMs, 10);
   difference = difference % weekInMs;
+  console.log('weeks', elapsedWeeks)
 
   const elapsedDays = parseInt(difference / daysInMs, 10);
   difference = difference % daysInMs;

@@ -44,7 +44,7 @@ export const GET_NOTIFICATIONS = gql`
   query getNotifications($id: String!) {
     user(id: $id) {
       id
-      notifications(order_by: {timestamp: desc}) {
+      notifications(order_by: { timestamp: desc }) {
         id
         timestamp
         type
@@ -71,7 +71,7 @@ export const GET_CURRENT_USER = gql`
     user(id: $id) {
       ...DetailedUser
       isAdmin
-      notifications(order_by: {timestamp: desc}) {
+      notifications(order_by: { timestamp: desc }) {
         id
         timestamp
         type
@@ -83,6 +83,10 @@ export const GET_CURRENT_USER = gql`
         group {
           id
         }
+      }
+      userChats {
+          chatId
+        seen
       }
     }
   }
@@ -273,43 +277,43 @@ export const GET_PROGRAMS = gql`
 
 export const GET_USER_FRIENDS = gql`
   query getFriends($userId: String!) {
-      user(id: $userId) {
+    user(id: $userId) {
+      id
+      friends {
+        friend {
           id
-          friends {
-              friend {
-                  id
-                  image
-                  name
-              }
-          }
+          image
+          name
+        }
       }
+    }
   }
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
-    query getFriends($userId: String!) {
-        user(id: $userId) {
-            id
-            friends {
-                friend {
-                    id
-                }
-            }
+  query getFriends($userId: String!) {
+    user(id: $userId) {
+      id
+      friends {
+        friend {
+          id
         }
+      }
     }
+  }
 `;
 
 export const GET_USER_FRIENDS_AGGREGATE = gql`
-    query getUserFriendsAggregate($id: String!) {
-        user(id: $id) {
-            id
-            friends_aggregate {
-                aggregate {
-                    count
-                }
-            }
+  query getUserFriendsAggregate($id: String!) {
+    user(id: $id) {
+      id
+      friends_aggregate {
+        aggregate {
+          count
         }
+      }
     }
+  }
 `;
 
 export const REMOVE_FRIEND = gql`
@@ -421,16 +425,35 @@ export const DETAILED_CHAT = gql`
   ${MESSAGE_FRAGMENT}
 `;
 
+// export const GET_CHATS = gql`
+//   subscription getChats($user: String!) {
+//     chats(
+//       limit: 15
+//       order_by: { messages_aggregate: { max: { date: desc } } }
+//       where: {
+//         _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
+//       }
+//     ) {
+//       ...DetailedChat
+//     }
+//   }
+//   ${DETAILED_CHAT}
+// `;
+
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
-    chats(
-      limit: 15
-      order_by: { messages_aggregate: { max: { date: desc } } }
-      where: {
-        _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
+    user(id: $user) {
+      id
+      userChats(
+        limit: 15
+        order_by: { chat: { messages_aggregate: { max: { date: desc } } } }
+          where: { chat: {messages: {}}}
+      ) {
+        seen
+        chat {
+          ...DetailedChat
+        }
       }
-    ) {
-      ...DetailedChat
     }
   }
   ${DETAILED_CHAT}
@@ -528,6 +551,17 @@ export const SEND_MESSAGE = gql`
     }
   }
 `;
+
+export const UPDATE_MESSAGE_SEEN = gql`
+    mutation MyMutation($chatId: Int!, $participants: [String!]!, $seen: Boolean ) {
+        update_userChat(where: {chatId: {_eq: $chatId}, userId: {_in: $participants}}, _set: {seen: $seen}) {
+            returning {
+                seen
+            }
+        }
+    }
+
+`
 
 export const DETAILED_EVENT_FRAGMENT = gql`
   fragment DetailedEvent on event {
@@ -879,30 +913,32 @@ export const INVITE_USER_TO_EVENT = gql`
 `;
 
 export const INVITE_USERS_TO_EVENT = gql`
-    mutation inviteUsersToEvent($objects: [userEvent_insert_input!]!) {
-        signUpUsersForEvent(objects: $objects) {
-            returning {
-                eventId
-                userId
-                event {
-                    id
-                    invited: attendees(where: {didAccept: {_eq: false}}) {
-                        user {
-                            image
-                            id
-                            name
-                        }
-                        didAccept
-                    }
-                    invited_aggregate: attendees_aggregate(where: {didAccept: {_eq: false}}) {
-                        aggregate {
-                            count
-                        }
-                    }
-                }
+  mutation inviteUsersToEvent($objects: [userEvent_insert_input!]!) {
+    signUpUsersForEvent(objects: $objects) {
+      returning {
+        eventId
+        userId
+        event {
+          id
+          invited: attendees(where: { didAccept: { _eq: false } }) {
+            user {
+              image
+              id
+              name
             }
+            didAccept
+          }
+          invited_aggregate: attendees_aggregate(
+            where: { didAccept: { _eq: false } }
+          ) {
+            aggregate {
+              count
+            }
+          }
         }
+      }
     }
+  }
 `;
 
 export const REMOVE_USER_FROM_EVENT = gql`

@@ -44,23 +44,22 @@ export default function MessagesList() {
   );
 
   const renderItem = ({ item }) => {
+    const {seen, chat} = item
     const {
       _id: chatId,
       participants,
       messages,
       name: chatName,
       messagesAggregate,
-    } = item;
+    } = chat;
 
     let image;
 
     if (participants.length === 2) {
       image = participants.filter(user=>user.id !== authState.user.uid)[0].image;
     } else {
-      image = item.image
+      image = chat.image
     }
-
-
 
     const name =
       chatName ||
@@ -68,6 +67,8 @@ export default function MessagesList() {
         .filter((participant) => participant._id !== authState.user.uid)
         .map((participant) => participant.name)
         .join(', ');
+
+    const senderId = messages[0].user._id
 
     return (
       <MessageCard
@@ -80,6 +81,8 @@ export default function MessagesList() {
         isOnline={true}
         time={messages[0].createdAt}
         messageBody={messages[0].text}
+        seen={seen}
+        senderId={senderId}
       />
     );
   };
@@ -97,6 +100,7 @@ export default function MessagesList() {
       user: authState.user.uid,
     },
   });
+
 
   if (chatsError) {
     refreshToken(authState.user, setAuthState);
@@ -194,11 +198,11 @@ export default function MessagesList() {
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={ searchData ? searchData.chats : chatsLoading ? [] : chatsError ? [] : chatsData.chats}
+      data={ searchData ? searchData.chats : chatsLoading ? [] : chatsError ? [] : chatsData.user.userChats}
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.chat.id.toString()}
     />
   );
 

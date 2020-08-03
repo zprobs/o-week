@@ -10537,6 +10537,7 @@ type userChat {
   # An object relationship
   chat: chat!
   chatId: Int!
+  seen: Boolean!
 
   # An object relationship
   user: user!
@@ -10602,6 +10603,7 @@ input userChat_bool_exp {
   _or: [userChat_bool_exp]
   chat: chat_bool_exp
   chatId: Int_comparison_exp
+  seen: Boolean_comparison_exp
   user: user_bool_exp
   userId: String_comparison_exp
 }
@@ -10621,6 +10623,7 @@ input userChat_inc_input {
 input userChat_insert_input {
   chat: chat_obj_rel_insert_input
   chatId: Int
+  seen: Boolean
   user: user_obj_rel_insert_input
   userId: String
 }
@@ -10675,6 +10678,7 @@ input userChat_on_conflict {
 input userChat_order_by {
   chat: chat_order_by
   chatId: order_by
+  seen: order_by
   user: user_order_by
   userId: order_by
 }
@@ -10691,12 +10695,16 @@ enum userChat_select_column {
   chatId
 
   # column name
+  seen
+
+  # column name
   userId
 }
 
 # input type for updating data in table "userChat"
 input userChat_set_input {
   chatId: Int
+  seen: Boolean
   userId: String
 }
 
@@ -10744,6 +10752,9 @@ input userChat_sum_order_by {
 enum userChat_update_column {
   # column name
   chatId
+
+  # column name
+  seen
 
   # column name
   userId
