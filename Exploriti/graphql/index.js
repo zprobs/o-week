@@ -84,10 +84,10 @@ export const GET_CURRENT_USER = gql`
           id
         }
       }
-      userChats {
-          chatId
-        seen
-      }
+        userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
+            chatId
+            seen
+        }
     }
   }
   ${DETAILED_USER_FRAGMENT}
@@ -447,7 +447,7 @@ export const GET_CHATS = gql`
       userChats(
         limit: 15
         order_by: { chat: { messages_aggregate: { max: { date: desc } } } }
-          where: { chat: {messages: {}}}
+        where: { chat: { messages: {} } }
       ) {
         seen
         chat {
@@ -458,6 +458,18 @@ export const GET_CHATS = gql`
   }
   ${DETAILED_CHAT}
 `;
+
+export const GET_UNREAD_CHAT_COUNT = gql`
+    query getUnreadChatCount($id: String!) {
+        user(id: $id) {
+            id
+            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
+                chatId
+                seen
+            }
+        }
+    }
+`
 
 export const SEARCH_CHATS = gql`
   query searchChats($user: String!, $query: String!) {
@@ -553,15 +565,21 @@ export const SEND_MESSAGE = gql`
 `;
 
 export const UPDATE_MESSAGE_SEEN = gql`
-    mutation MyMutation($chatId: Int!, $participants: [String!]!, $seen: Boolean ) {
-        update_userChat(where: {chatId: {_eq: $chatId}, userId: {_in: $participants}}, _set: {seen: $seen}) {
-            returning {
-                seen
-            }
-        }
+  mutation MyMutation(
+    $chatId: Int!
+    $participants: [String!]!
+    $seen: Boolean
+  ) {
+    update_userChat(
+      where: { chatId: { _eq: $chatId }, userId: { _in: $participants } }
+      _set: { seen: $seen }
+    ) {
+      returning {
+        seen
+      }
     }
-
-`
+  }
+`;
 
 export const DETAILED_EVENT_FRAGMENT = gql`
   fragment DetailedEvent on event {

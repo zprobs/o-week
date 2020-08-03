@@ -68,7 +68,6 @@ export default function Dashboard() {
         options = { event: item };
       }
 
-      console.log('Item : ', item);
       return (
         <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
           <ImageCard groupId={item.group.id} />
@@ -78,7 +77,6 @@ export default function Dashboard() {
     [navigation],
   );
 
-  console.log(data);
 
   const SearchIcon = () => (
     <Icon name={'search'} color={ThemeStatic.text01} size={26} />

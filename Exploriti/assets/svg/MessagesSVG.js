@@ -1,6 +1,11 @@
 import * as React from 'react';
-import Animated from 'react-native-reanimated';
-import Svg, { Path } from 'react-native-svg';
+import Animated, {interpolate} from 'react-native-reanimated';
+import Svg, { Path, Circle } from 'react-native-svg';
+import { Text, View } from 'react-native';
+import { useContext, useState } from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_UNREAD_CHAT_COUNT } from '../../graphql';
+import { AuthContext } from '../../context';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -8,8 +13,14 @@ Animated.addWhitelistedNativeProps({
   stroke: true,
 });
 
-const MessagesSVG = ({ color, size }) => {
-  console.log(size);
+const MessagesSVG = ({ color, size, animatedFocus }) => {
+  const {authState} = useContext(AuthContext)
+  const {data, loading, error} = useQuery(GET_UNREAD_CHAT_COUNT, {variables: {id: authState.user.uid }, pollInterval: 3000})
+  console.log('chatcounts', data)
+  if (data) console.log('userChats', data.user.userChats)
+  const badgeCount = data ? data.user.userChats.length : 0
+  console.log('badgeCount', badgeCount)
+
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -22,6 +33,31 @@ const MessagesSVG = ({ color, size }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+
+      {badgeCount > 0 && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            right: -6,
+            top: -3,
+            backgroundColor: 'red',
+            borderRadius: 7,
+            width: badgeCount > 99 ? 21 : badgeCount > 9 ? 17 :  14,
+            height: 14,
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: interpolate( animatedFocus, {
+              inputRange: [0, 1],
+              outputRange: [1, 0]
+            })
+          }}
+        >
+          <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: 'center', letterSpacing: -1  }}>
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </Text>
+        </Animated.View>
+      )}
+
     </Svg>
   );
 };

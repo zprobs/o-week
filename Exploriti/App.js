@@ -1,7 +1,7 @@
 /**
- * The frontend application of 'Exploriti'. Built on React-Native, GraphQL, and Django for iOS and Android
+ * The frontend application of 'Exploriti'. Built on React-Native, GraphQL for iOS and Android
  * https://github.com/exploriti
- * @author Zachary Probst, Shayan Shakeri, Salman Shahid, Paul Giugeu, and Antoine Finot
+ * @author Zachary Probst, Shayan Shakeri, Salman Shahid, Paul Giurgeu, Usman Aymen and Antoine Finot
  * @copyright Arravon Technologies Inc.
  * @format
  * @flow strict-local

@@ -1,27 +1,28 @@
-import React, { useContext, useRef, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import {AuthContext} from '../../context';
+import React, { useContext, useRef, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { AuthContext } from '../../context';
 import {
   useMutation,
   useSubscription,
   useLazyQuery,
-} from "@apollo/react-hooks";
-import { Text, StyleSheet, SafeAreaView } from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
-import GoBackHeader from "../Menu/GoBackHeader";
-import { Theme } from "../../theme/Colours";
-import ChatHeaderImage from "./ChatHeaderImage";
-import CustomComposer from "./CustomComposer";
-import CustomMessageText from "./CustomMessageText";
-import CustomSend from "./CustomSend";
-import CustomScrollToBottom from "./CustomScrollToBottom";
-import CustomInputToolbar from "./CustomInputToolbar";
-import { ifIphoneX } from "react-native-iphone-x-helper";
+} from '@apollo/react-hooks';
+import { Text, StyleSheet, SafeAreaView } from 'react-native';
+import { GiftedChat } from 'react-native-gifted-chat';
+import GoBackHeader from '../Menu/GoBackHeader';
+import { Theme } from '../../theme/Colours';
+import ChatHeaderImage from './ChatHeaderImage';
+import CustomComposer from './CustomComposer';
+import CustomMessageText from './CustomMessageText';
+import CustomSend from './CustomSend';
+import CustomScrollToBottom from './CustomScrollToBottom';
+import CustomInputToolbar from './CustomInputToolbar';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
   GET_EARLIER_MESSAGES,
   GET_NEW_MESSAGES,
   SEND_MESSAGE,
-} from "../../graphql";
+  UPDATE_MESSAGE_SEEN,
+} from '../../graphql';
 import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
@@ -42,15 +43,19 @@ const Conversation = () => {
   } = route.params;
   const { navigate } = useNavigation();
   const { authState } = useContext(AuthContext);
-  const [sendMessage] = useMutation(SEND_MESSAGE);
-  const [getEarlierMessages, {error: earlierError}] = useLazyQuery(GET_EARLIER_MESSAGES, {
-    onCompleted: ({ messages: oldMessages }) => {
-      setMessages(GiftedChat.prepend(messages, oldMessages));
-      setLoadEarlier(numMessages - messageOffset > numToLoad);
-      setMessageOffset(messageOffset + numToLoad);
-      setIsLoadingEarlier(false);
+  const [sendMessage, { error: sendError }] = useMutation(SEND_MESSAGE);
+  const [updateMessageSeen] = useMutation(UPDATE_MESSAGE_SEEN);
+  const [getEarlierMessages, { error: earlierError }] = useLazyQuery(
+    GET_EARLIER_MESSAGES,
+    {
+      onCompleted: ({ messages: oldMessages }) => {
+        setMessages(GiftedChat.prepend(messages, oldMessages));
+        setLoadEarlier(numMessages - messageOffset > numToLoad);
+        setMessageOffset(messageOffset + numToLoad);
+        setIsLoadingEarlier(false);
+      },
     },
-  });
+  );
   const [messages, setMessages] = useState(initialMessages);
   const [messageOffset, setMessageOffset] = useState(initialMessages.length);
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
@@ -60,15 +65,15 @@ const Conversation = () => {
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
-      chatId: chatId
+      chatId: chatId,
     },
     onSubscriptionData: ({ subscriptionData }) => {
       const newMessage = subscriptionData.data.messages[0];
       if (didSetFirst.current) {
-        console.log(newMessage.user._id !== authState.user.uid)
+        console.log(newMessage.user._id !== authState.user.uid);
         if (newMessage.user._id !== authState.user.uid) {
           setMessages(
-              GiftedChat.append(messages, subscriptionData.data.messages),
+            GiftedChat.append(messages, subscriptionData.data.messages),
           );
         }
       } else {
@@ -79,15 +84,25 @@ const Conversation = () => {
 
   if (earlierError) {
     showMessage({
-      message: "Cannot load Messages",
+      message: 'Cannot load Messages',
       description: earlierError.message,
-      type: "warning",
+      type: 'warning',
       icon: 'warning',
-      autoHide: false
+      autoHide: false,
     });
   }
 
-  const onSend = updatedMessages => {
+  if (sendError) {
+    showMessage({
+      message: 'Cannot Send Message',
+      description: sendError.message,
+      type: 'danger',
+      icon: 'danger',
+      autoHide: false,
+    });
+  }
+console.log('participants', participants)
+  const onSend = (updatedMessages) => {
     const [updatedMessage] = updatedMessages;
     sendMessage({
       variables: {
@@ -97,6 +112,15 @@ const Conversation = () => {
       },
     });
     setMessages(GiftedChat.append(messages, updatedMessages));
+    updateMessageSeen({
+      variables: {
+        chatId: chatId,
+        participants: participants
+          .map((p) => p.id)
+          .filter(p => p.id !== authState.user.uid),
+        seen: false,
+      },
+    }).catch((e) => console.log(e));
   };
 
   const loadEarlierMessages = () => {
@@ -110,18 +134,18 @@ const Conversation = () => {
     });
   };
 
-  const handlePressAvatar = user => {
-    navigate("Profile", { userId: user._id });
+  const handlePressAvatar = (user) => {
+    navigate('Profile', { userId: user._id });
   };
 
   const handleTitlePress = () => {
     if (participants.length === 2) {
       const userId = participants.filter(
-        participant => participant._id !== authState.user.uid,
+        (participant) => participant._id !== authState.user.uid,
       )[0]._id;
-      navigate("Profile", { userId: userId });
+      navigate('Profile', { userId: userId });
     } else {
-      console.log("Maybe we can show a modal of users in this chat?");
+      console.log('Maybe we can show a modal of users in this chat?');
     }
   };
 
@@ -145,7 +169,7 @@ const Conversation = () => {
       messages={messages}
       scrollToBottomComponent={CustomScrollToBottom}
       textInputProps={{ disable: true }}
-      renderComposer={composerProps => <CustomComposer {...composerProps} />}
+      renderComposer={(composerProps) => <CustomComposer {...composerProps} />}
       renderMessageText={CustomMessageText}
       renderSend={CustomSend}
       renderInputToolbar={CustomInputToolbar}
@@ -163,16 +187,11 @@ const Conversation = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackHeader
-        title={name}
-        titleStyle={styles.headerTitleStyle}
-      />
+      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} />
       {content}
     </SafeAreaView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {

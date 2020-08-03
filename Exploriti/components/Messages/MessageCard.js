@@ -81,28 +81,27 @@ const MessageCard = ({
       seen: true,
     },
     update: (cache) => {
-
       const frag = gql`
-                  fragment usersChats on user {
-                      userChats {
-                          chatId
-                          seen
-                      }
-                  }
-        `;
+        fragment usersChats on user {
+          userChats {
+            chatId
+            seen
+          }
+        }
+      `;
 
       try {
         const { userChats } = cache.readFragment({
           id: `user:${authState.user.uid}`,
-          fragment: frag
+          fragment: frag,
         });
 
         console.log('userChats', userChats);
-        console.log('chatID', chatId)
+        console.log('chatID', chatId);
 
-        const thisChat = userChats.find(e => e.chatId === chatId)
-        console.log(thisChat)
-        if (thisChat) thisChat.seen = true
+        const thisChat = userChats.find((e) => e.chatId === chatId);
+        console.log(thisChat);
+        if (thisChat) thisChat.seen = true;
 
         console.log('userChats', userChats);
 
@@ -111,11 +110,10 @@ const MessageCard = ({
           fragment: frag,
           data: { __typename: 'user', userChats: userChats },
         });
-
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
-    }
+    },
   });
   const useValue = (value) => useConst(() => new Value(value));
   const useClock = () => useConst(() => new Clock());
