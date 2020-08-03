@@ -76,7 +76,7 @@ const MessageCard = ({
   ] = useMutation(DELETE_CHAT, { variables: { id: chatId } });
   const [setSeen] = useMutation(UPDATE_MESSAGE_SEEN, {
     variables: {
-      chatId: chatId
+      chatId: chatId,
       participants: [authState.user.uid],
       seen: true,
     },
