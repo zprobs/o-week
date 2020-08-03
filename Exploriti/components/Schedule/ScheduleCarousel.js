@@ -18,8 +18,8 @@ import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-import {AuthContext, refreshToken} from '../../context';
-import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder'
+import { AuthContext, refreshToken } from '../../context';
+import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -45,7 +45,6 @@ const ScheduleCarousel = () => {
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-
 
   useEffect(() => {
     // separating all the events into pages based on which day they occur on.
@@ -88,16 +87,16 @@ const ScheduleCarousel = () => {
     setIndex(0);
   }, [data]);
 
-  if (error)  {
+  if (error) {
     console.log(error[0]);
     refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
       showMessage({
-        message: "Server Error",
+        message: 'Server Error',
         description: error.message,
         autoHide: false,
         type: 'warning',
-        icon: 'warning'
+        icon: 'warning',
       });
     }
   }
@@ -183,45 +182,48 @@ const ScheduleCarousel = () => {
     });
   };
 
-
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
       {isFocused ? <StatusBar barStyle="light-content" /> : null}
       <ScrollView bounces={false}>
-        <View style={styles.header}>
-          <View style={{ minWidth: '65%' }}>
-            <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
-              {title()}
-            </Animated.Text>
-
-            <Text style={styles.dateText}>{pageDate()}</Text>
-          </View>
-          <Icon
-            size={32}
-            name={'calendar'}
-            color={'white'}
-            onPress={() => {
-              if (data) {
-                navigation.navigate('Calendar', {
-                  myCalendars: data.user.member,
-                });
-              }
-            }}
-          />
-        </View>
         {loading ? (
           <SchedulePlaceholder />
         ) : (
-          <Carousel
-            ref={carouselRef}
-            data={scheduleData}
-            renderItem={renderItem}
-            sliderWidth={WIDTH}
-            itemWidth={ITEM_WIDTH}
-            containerCustomStyle={styles.carousel}
-            removeClippedSubviews={false}
-            onBeforeSnapToItem={onSwipe}
-          />
+          <>
+            <View style={styles.header}>
+              <View style={{ minWidth: '65%' }}>
+                <Animated.Text
+                  style={{ ...styles.dayText, opacity: titleOpacity }}>
+                  {title()}
+                </Animated.Text>
+
+                <Text style={styles.dateText}>{pageDate()}</Text>
+              </View>
+              <Icon
+                size={32}
+                name={'calendar'}
+                color={'white'}
+                onPress={() => {
+                  if (data) {
+                    navigation.navigate('Calendar', {
+                      myCalendars: data.user.member,
+                    });
+                  }
+                }}
+              />
+            </View>
+
+            <Carousel
+              ref={carouselRef}
+              data={scheduleData}
+              renderItem={renderItem}
+              sliderWidth={WIDTH}
+              itemWidth={ITEM_WIDTH}
+              containerCustomStyle={styles.carousel}
+              removeClippedSubviews={false}
+              onBeforeSnapToItem={onSwipe}
+            />
+          </>
         )}
       </ScrollView>
     </LinearGradient>
