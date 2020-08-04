@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext, processError, processWarning } from '../../context';
 import {
   useMutation,
@@ -40,6 +40,7 @@ const Conversation = () => {
     participants,
     numMessages,
     messages: initialMessages,
+    isHighlighted: notSeen
   } = route.params;
   const { navigate } = useNavigation();
   const { authState } = useContext(AuthContext);
@@ -63,6 +64,9 @@ const Conversation = () => {
   const didSetFirst = useRef(false);
   const numToLoad = 5;
 
+
+  const isFocused = useIsFocused();
+
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
       chatId: chatId,
@@ -75,12 +79,30 @@ const Conversation = () => {
           setMessages(
             GiftedChat.append(messages, subscriptionData.data.messages),
           );
+          if (isFocused) setSeen()
         }
       } else {
         didSetFirst.current = true;
       }
     },
   });
+
+  const [setSeen] = useMutation(UPDATE_MESSAGE_SEEN, {
+    variables: {
+      chatId: chatId,
+      participants: [authState.user.uid],
+      seen: true,
+    },
+  });
+
+  const hasSetSeen = useRef(false)
+
+  if (isFocused && notSeen && !hasSetSeen.current ){
+    hasSetSeen.current = true
+    setSeen()
+  }
+
+  if (!isFocused) hasSetSeen.current = false
 
   if (earlierError) {
     processWarning(earlierError, 'Could not load messages')
@@ -109,6 +131,7 @@ const Conversation = () => {
         seen: false,
       },
     }).catch((e) => console.log(e));
+    setSeen()
   };
 
   const loadEarlierMessages = () => {
