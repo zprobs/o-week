@@ -175,7 +175,7 @@ export default function MessagesList() {
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={ searchData ? searchData.chats : chatsLoading ? [] : chatsError ? [] : chatsData.user.userChats}
+      data={ searchData ? searchData.user.userChats : chatsLoading ? [] : chatsError ? [] : chatsData.user.userChats}
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
       renderItem={renderItem}

@@ -467,33 +467,34 @@ export const GET_UNREAD_CHAT_COUNT = gql`
     }
 `
 
+
 export const SEARCH_CHATS = gql`
-  query searchChats($user: String!, $query: String!) {
-    chats(
-      limit: 15
-      order_by: { messages_aggregate: { max: { date: desc } } }
-      where: {
-        _and: [
-          { participants: { id: { _eq: $user } } }
-          {
-            _or: [
-              { name: { _ilike: $query } }
-              {
-                participants: {
-                  name: { _ilike: $query }
-                  _and: { id: { _neq: $user } }
+    query searchChats($user: String!, $query: String!) {
+        user(id: $user) {
+            id
+            userChats(where: {chat: {
+                _and: [
+                {
+                    _or: [
+                        { name: { _ilike: $query } }
+                        {
+                            participants: {
+                                name: { _ilike: $query }
+                                _and: { id: { _neq: $user } }
+                            }
+                        }
+                    ]
                 }
-              }
-            ]
-          }
-          { messages: {} }
-        ]
-      }
-    ) {
-      ...DetailedChat
+                { messages: {} }
+            ]}})
+            {
+                chat {
+                    ...DetailedChat
+                }
+            }
+        }
     }
-  }
-  ${DETAILED_CHAT}
+    ${DETAILED_CHAT}
 `;
 
 export const GET_CHAT_BY_ID = gql`
