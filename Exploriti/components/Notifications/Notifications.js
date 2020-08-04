@@ -4,13 +4,14 @@ import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
-import {AuthContext, NotificationTypes, refreshToken} from '../../context';
+import { AuthContext, NotificationTypes, refreshToken } from '../../context';
 import {
   EventNotificationCard,
   SystemNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
 import { showMessage } from 'react-native-flash-message';
+import NotificationsPlaceholder from '../Placeholders/NotificationsPlaceholder';
 
 export default function Notifications() {
   const { authState, setAuthState } = useContext(AuthContext);
@@ -18,14 +19,22 @@ export default function Notifications() {
     variables: { id: authState.user.uid },
   });
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <NotificationsPlaceholder />
+      </View>
+    );
+  }
+
   if (error) {
     refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
+    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
       showMessage({
-        message: "Server Error",
+        message: 'Server Error',
         description: error.message,
         type: 'warning',
-        icon: 'auto'
+        icon: 'auto',
       });
     }
   }
@@ -58,7 +67,6 @@ export default function Notifications() {
     }
     return <Text>{item.type}</Text>;
   };
-
 
   return (
     <View style={styles.container}>
