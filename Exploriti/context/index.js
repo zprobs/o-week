@@ -115,6 +115,7 @@ export function processWarning(error, message) {
   console.log(error)
   const {authState, setAuthState} = useContext(AuthContext);
     if (error.message.includes('JWTExpired')){
+      console.log('refreshing Token')
         refreshToken(authState.user, setAuthState);
     } else  {
       showMessage({
