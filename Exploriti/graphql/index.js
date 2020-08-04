@@ -526,6 +526,14 @@ export const UNSUBSCRIBE_FROM_CHAT = gql`
   }
 `;
 
+export const DELETE_CHAT = gql`
+    mutation deleteChat($chatId: Int!) {
+        deleteChat(id: $chatId) {
+            id
+        }
+    }
+`
+
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {
     messages(

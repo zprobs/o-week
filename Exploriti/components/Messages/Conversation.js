@@ -42,7 +42,7 @@ const Conversation = () => {
     messages: initialMessages,
     isHighlighted: notSeen
   } = route.params;
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
   const [sendMessage, { error: sendError }] = useMutation(SEND_MESSAGE);
   const [updateMessageSeen] = useMutation(UPDATE_MESSAGE_SEEN);
@@ -73,8 +73,12 @@ const Conversation = () => {
     },
     onSubscriptionData: ({ subscriptionData }) => {
       const newMessage = subscriptionData.data.messages[0];
+
       if (didSetFirst.current) {
-        console.log(newMessage.user._id !== authState.user.uid);
+        if (!newMessage) {
+          goBack();
+          return null
+        }
         if (newMessage.user._id !== authState.user.uid) {
           setMessages(
             GiftedChat.append(messages, subscriptionData.data.messages),
