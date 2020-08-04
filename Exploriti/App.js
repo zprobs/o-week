@@ -42,7 +42,7 @@ import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import FlashMessage from "react-native-flash-message";
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 
 const Tab = createBottomTabNavigator();
@@ -167,7 +167,7 @@ export default function App() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        refreshToken(user, setAuthState);
+          refreshToken(user, setAuthState);
       } else {
         setAuthState({ status: 'out' });
       }

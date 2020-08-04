@@ -51,34 +51,45 @@ export const graphqlify_relationship = (constant, list, constantTerm, listTerm) 
 }
 
 export function refreshToken(user, setAuthState) {
-  return user
+  try {
+    return user
       .getIdToken(true)
       .then((token) =>
-          firebase
-              .auth()
-              .currentUser.getIdTokenResult(true)
-              .then((result) => {
-                console.log(result);
-                if (result.claims['https://hasura.io/jwt/claims']) {
-                  setAuthState({ status: 'in', user, token });
-                  return token;
-                }
-                const endpoint =
-                    'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken';
-                return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
-                  if (res.status === 200) {
-                    return user.getIdToken(true);
-                  }
-                  return res.json().then((e) => {
-                    throw e;
-                  });
-                });
-              }),
-      )
+        firebase
+          .auth()
+          .currentUser.getIdTokenResult(true)
+          .then((result) => {
+            console.log(result);
+            if (result.claims['https://hasura.io/jwt/claims']) {
+              setAuthState({ status: 'in', user, token });
+              return token;
+            }
+            const endpoint =
+              'https://us-central1-exploriti-rotman.cloudfunctions.net/refreshToken';
+            return fetch(`${endpoint}?uid=${user.uid}`).then((res) => {
+              if (res.status === 200) {
+                return user.getIdToken(true);
+              }
+              return res.json().then((e) => {
+                throw e;
+              });
+            });
+          }),
+      ).catch(e => console.log('caught', e))
       .then((token) => {
         setAuthState({ status: 'in', user, token });
       })
       .catch(console.error);
+
+  } catch (e) {
+    showMessage({
+      message: 'Network error',
+      description: e.message,
+      autoHide: false,
+      type: 'warning',
+      icon: 'warning'
+    });
+  }
 }
 
 export function yearToInt(year: String) {
@@ -103,8 +114,8 @@ export function yearToInt(year: String) {
 export function processWarning(error, message) {
   console.log(error)
   const {authState, setAuthState} = useContext(AuthContext);
-    if (error.message.includes('JWTExpired') || error.message.includes('Network error')){
-      refreshToken(authState.user, setAuthState);
+    if (error.message.includes('JWTExpired')){
+        refreshToken(authState.user, setAuthState);
     } else  {
       showMessage({
         message: message,
