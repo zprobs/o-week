@@ -517,10 +517,11 @@ export const NEW_CHAT = gql`
   ${DETAILED_CHAT}
 `;
 
-export const DELETE_CHAT = gql`
-  mutation deleteChat($id: Int!) {
-    deleteChat(id: $id) {
-      id
+export const UNSUBSCRIBE_FROM_CHAT = gql`
+  mutation unsubscribeFromChat($chatId: Int!, $userId: String!) {
+    unsubscribeFromChat(chatId: $chatId, userId: $userId) {
+      chatId
+      userId
     }
   }
 `;

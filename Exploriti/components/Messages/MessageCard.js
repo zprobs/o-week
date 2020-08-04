@@ -18,7 +18,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import { DELETE_CHAT, UPDATE_MESSAGE_SEEN } from '../../graphql';
+import { UNSUBSCRIBE_FROM_CHAT, UPDATE_MESSAGE_SEEN } from '../../graphql';
 import gql from 'graphql-tag';
 
 const {
@@ -71,9 +71,9 @@ const MessageCard = ({
   const { readableTime } = parseTimeElapsed(time);
   const navigation = useNavigation();
   const [
-    deleteChat,
-    { loading: deleteChatLoading, error: deleteChatError },
-  ] = useMutation(DELETE_CHAT, { variables: { id: chatId } });
+    unsubscribeFromChat,
+    { loading: unsubscribeLoading, error: unsubscribeError },
+  ] = useMutation(UNSUBSCRIBE_FROM_CHAT, { variables: { chatId: chatId, userId: authState.user.uid } });
   const [setSeen] = useMutation(UPDATE_MESSAGE_SEEN, {
     variables: {
       chatId: chatId,
@@ -336,7 +336,7 @@ const MessageCard = ({
         set(deleteOpacity, 0),
         cond(
           not(clockRunning(clock)),
-          call([], () => deleteChat()),
+          call([], () => unsubscribeFromChat()),
         ),
       ]),
     ],
