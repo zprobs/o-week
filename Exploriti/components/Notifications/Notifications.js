@@ -5,18 +5,28 @@ import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
 import { AuthContext, NotificationTypes, processWarning, refreshToken } from '../../context';
+
 import {
   EventNotificationCard,
   SystemNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
 import { showMessage } from 'react-native-flash-message';
+import NotificationsPlaceholder from '../Placeholders/NotificationsPlaceholder';
 
 export default function Notifications() {
   const { authState, setAuthState } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_NOTIFICATIONS, {
     variables: { id: authState.user.uid },
   });
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <NotificationsPlaceholder />
+      </View>
+    );
+  }
 
   if (error) {
     processWarning(error, 'Server Error')
@@ -50,7 +60,6 @@ export default function Notifications() {
     }
     return <Text>{item.type}</Text>;
   };
-
 
   return (
     <View style={styles.container}>
