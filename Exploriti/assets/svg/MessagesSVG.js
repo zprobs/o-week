@@ -2,7 +2,7 @@ import * as React from 'react';
 import Animated, { call, interpolate } from 'react-native-reanimated';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { Text, View } from 'react-native';
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_UNREAD_CHAT_COUNT } from '../../graphql';
 import { AuthContext } from '../../context';
@@ -15,14 +15,13 @@ Animated.addWhitelistedNativeProps({
 
 const MessagesSVG = ({ color, size, animatedFocus }) => {
   const {authState} = useContext(AuthContext)
-  const {data, loading, error} = useQuery(GET_UNREAD_CHAT_COUNT, {variables: {id: authState.user.uid }, pollInterval: 3000})
+  const isFocused = useRef(false)
+  const {data, loading, error, startPolling, stopPolling, refetch} = useQuery(GET_UNREAD_CHAT_COUNT, {variables: {id: authState.user.uid }, pollInterval: 3000})
   const badgeCount = data ? data.user.userChats.length : 0
 
+  if (data) console.log('chats', data.user.userChats)
 
-  const focusLength = animatedFocus.__inputNodes.length
-  const value = animatedFocus.__inputNodes[focusLength-1]._value
-  console.log('value', value );
-
+  console.log('isFocused', isFocused.current)
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -35,6 +34,24 @@ const MessagesSVG = ({ color, size, animatedFocus }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+
+      <Animated.Code>
+        {
+          () => call([animatedFocus], ([animatedFocus]) => {
+            if ( !isFocused.current && animatedFocus === 1) {
+              isFocused.current = true
+               stopPolling();
+              console.log('stopped polling')
+            }
+            else if (isFocused.current && animatedFocus < 1) {
+              isFocused.current = false
+              refetch()
+               startPolling(3000)
+              console.log('start Polling')
+            }
+          })
+        }
+      </Animated.Code>
 
         <Animated.View
           style={{

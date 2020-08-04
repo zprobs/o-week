@@ -101,8 +101,9 @@ export function yearToInt(year: String) {
  * @param message {string}
  */
 export function processWarning(error, message) {
+  console.log(error)
   const {authState, setAuthState} = useContext(AuthContext);
-    if (error.message.includes('JWTExpired')){
+    if (error.message.includes('JWTExpired') || error.message.includes('Network error')){
       refreshToken(authState.user, setAuthState);
     } else  {
       showMessage({
@@ -122,7 +123,7 @@ export function processWarning(error, message) {
  */
 export function processError(error, message) {
   const {authState, setAuthState} = useContext(AuthContext);
-  if (error.message.includes('JWTExpired')){
+  if (error.message.includes('JWTExpired') || error.message.includes('Network error')){
     refreshToken(authState.user, setAuthState);
   } else  {
     showMessage({
