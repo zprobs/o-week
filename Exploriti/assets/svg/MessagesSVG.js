@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Animated, {interpolate} from 'react-native-reanimated';
+import Animated, { call, interpolate } from 'react-native-reanimated';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { Text, View } from 'react-native';
 import { useContext, useState } from 'react';
@@ -16,10 +16,12 @@ Animated.addWhitelistedNativeProps({
 const MessagesSVG = ({ color, size, animatedFocus }) => {
   const {authState} = useContext(AuthContext)
   const {data, loading, error} = useQuery(GET_UNREAD_CHAT_COUNT, {variables: {id: authState.user.uid }, pollInterval: 3000})
-  console.log('chatcounts', data)
-  if (data) console.log('userChats', data.user.userChats)
   const badgeCount = data ? data.user.userChats.length : 0
-  console.log('badgeCount', badgeCount)
+
+
+  const focusLength = animatedFocus.__inputNodes.length
+  const value = animatedFocus.__inputNodes[focusLength-1]._value
+  console.log('value', value );
 
 
   return (
@@ -34,7 +36,6 @@ const MessagesSVG = ({ color, size, animatedFocus }) => {
         strokeLinejoin="round"
       />
 
-      {badgeCount > 0 && (
         <Animated.View
           style={{
             position: 'absolute',
@@ -46,17 +47,16 @@ const MessagesSVG = ({ color, size, animatedFocus }) => {
             height: 14,
             justifyContent: 'center',
             alignItems: 'center',
-            opacity: interpolate( animatedFocus, {
+            opacity: badgeCount > 0 ? interpolate( animatedFocus, {
               inputRange: [0, 1],
               outputRange: [1, 0]
-            })
+            }) : 0
           }}
         >
           <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: 'center', letterSpacing: -1  }}>
             {badgeCount > 99 ? '99+' : badgeCount}
           </Text>
         </Animated.View>
-      )}
 
     </Svg>
   );

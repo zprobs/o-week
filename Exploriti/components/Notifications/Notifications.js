@@ -4,7 +4,7 @@ import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
-import {AuthContext, NotificationTypes, refreshToken} from '../../context';
+import { AuthContext, NotificationTypes, processWarning, refreshToken } from '../../context';
 import {
   EventNotificationCard,
   SystemNotificationCard,
@@ -19,15 +19,7 @@ export default function Notifications() {
   });
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   const renderItem = ({ item }) => {

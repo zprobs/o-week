@@ -16,7 +16,7 @@ import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
-import {AuthContext, refreshToken} from '../../context';
+import { AuthContext, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -51,16 +51,7 @@ const GroupScreen = ({ route }) => {
 
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
+    processWarning(error, 'Server Error')
     return null
   }
 

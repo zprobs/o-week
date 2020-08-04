@@ -19,7 +19,7 @@ import {
   GET_USER_GROUPS,
   INVITE_USERS_TO_EVENT,
 } from '../../graphql';
-import {AuthContext, graphqlify_relationship, refreshToken} from '../../context';
+import { AuthContext, graphqlify_relationship, processWarning, refreshToken } from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
 import { showMessage } from 'react-native-flash-message';
@@ -55,30 +55,12 @@ const EventScreen = ({ route }) => {
 
   if (loading) return null;
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
+    processWarning(error, 'Server Error')
     return null
   }
 
   if (inviteError) {
-    refreshToken(authState.user, setAuthState);
-    if (!(inviteError.networkError && inviteError.networkError.statusCode === 400)) {
-      showMessage({
-        message: "Cannot Invite to Event",
-        description: inviteError.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
+    processWarning(inviteError, 'Could not Invite to Event')
   }
 
 

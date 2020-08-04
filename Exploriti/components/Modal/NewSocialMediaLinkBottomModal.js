@@ -7,7 +7,7 @@ import Fonts from '../../theme/Fonts';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS, UPDATE_USER } from '../../graphql';
-import {AuthContext, refreshToken} from '../../context';
+import { AuthContext, processError, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -37,27 +37,11 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   };
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        type: 'warning',
-        autoHide: false,
-        icon: 'auto'
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   if (updateError) {
-    refreshToken(authState.user, setAuthState);
-    showMessage({
-      message: "Cannot update Links",
-      description: updateError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'auto'
-    });
+    processError(updateError, 'Cannot update Links')
   }
 
   const title = () => {

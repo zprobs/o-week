@@ -9,7 +9,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_GROUPS } from '../../graphql';
 import UserCard from '../ReusableComponents/UserCard';
 import { showMessage } from 'react-native-flash-message';
-import {AuthContext, refreshToken} from "../../context";
+import { AuthContext, processWarning, refreshToken } from '../../context';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -33,16 +33,7 @@ const GroupBottomModal = React.forwardRef(
     const { authState, setAuthState } = useContext(AuthContext);
 
     if (error) {
-        refreshToken(authState.user, setAuthState);
-        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-            showMessage({
-                message: "Server Error",
-                description: error.message,
-                autoHide: false,
-                type: 'warning',
-                icon: 'warning'
-            });
-        }
+       processWarning(error, 'Server Error')
     }
 
     let heading;

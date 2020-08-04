@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import { useQuery } from '@apollo/react-hooks';
 import { NULL } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import {refreshToken, useKeyboard} from '../../context';
+import { processWarning, refreshToken, useKeyboard } from '../../context';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import { showMessage } from 'react-native-flash-message';
@@ -88,13 +88,7 @@ const SearchableFlatList = React.forwardRef(
     });
 
     if (error) {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        type: 'warning',
-        autoHide: false,
-        icon: 'auto'
-      });
+      processWarning(error, 'Server Error')
     }
 
     if (!loading && !didSetFirst.current && QueryData && !error) {

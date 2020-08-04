@@ -14,7 +14,15 @@ import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Selection from '../ReusableComponents/Selection';
 import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
-import {AuthContext, refreshToken, saveImage, yearsData, yearToInt} from '../../context';
+import {
+  AuthContext,
+  processError,
+  processWarning,
+  refreshToken,
+  saveImage,
+  yearsData,
+  yearToInt,
+} from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
@@ -74,55 +82,19 @@ const EditProfileBottomModal = React.forwardRef(
     const onInterestRef = () => interestRef.current.open();
 
     if (error) {
-        refreshToken(authState.user, setAuthState);
-        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-            showMessage({
-                message: "Server Error",
-                description: error.message,
-                autoHide: false,
-                type: 'warning',
-                icon: 'auto'
-            });
-        }
+        processWarning(error, 'Server Error')
     }
 
     if (updateError) {
-        refreshToken(authState.user, setAuthState);
-        if (!(updateError.networkError && updateError.networkError.statusCode === 400)) {
-            showMessage({
-                message: "Failed To Update",
-                description: updateError.message,
-                autoHide: false,
-                type: 'danger',
-                icon: 'auto'
-            });
-        }
+        processError(updateError, 'Cannot Update Profile')
     }
 
     if (interestError) {
-        refreshToken(authState.user, setAuthState);
-        if (!(interestError.networkError && interestError.networkError.statusCode === 400)) {
-            showMessage({
-                message: "Failed To Update",
-                description: interestError.message,
-                autoHide: false,
-                type: 'danger',
-                icon: 'auto'
-            });
-        }
+      processError(interestError, 'Cannot Update Profile')
     }
 
     if (programError) {
-        refreshToken(authState.user, setAuthState);
-        if (!(programError.networkError && programError.networkError.statusCode === 400)) {
-            showMessage({
-                message: "Failed To Update",
-                description: programError.message,
-                autoHide: false,
-                type: 'danger',
-                icon: 'auto'
-            });
-        }
+      processError(programError, 'Cannot Update Profile')
     }
 
     const programTitle = () => {

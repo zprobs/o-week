@@ -12,7 +12,7 @@ import UsersBottomModal from '../Modal/UsersBottomModal';
 import GroupBottomModal from '../Modal/GroupBottomModal';
 import UserInteractions from './UserInteractions';
 import ProfileCard from './ProfileCard';
-import {AuthContext, refreshToken} from '../../context';
+import { AuthContext, processWarning, refreshToken } from '../../context';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_DETAILED_USER } from '../../graphql';
 import Error from '../ReusableComponents/Error';
@@ -57,16 +57,7 @@ export default function Profile({ route }) {
   });
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: 'Server Error',
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto',
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   if (loading)

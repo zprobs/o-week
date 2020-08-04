@@ -1,7 +1,8 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
 import { Keyboard } from 'react-native';
 import firebase from "@react-native-firebase/app";
+import { showMessage } from 'react-native-flash-message';
 
 /**
  * The Context which contains the Firebase information about the current user. Contains object 'authState' which will have a value 'status' to
@@ -92,6 +93,45 @@ export function yearToInt(year: String) {
       return 4;
     default:
       return 5;
+  }
+}
+/**
+ * function for processing graphQl query errors.
+ * @param error The apollo error object
+ * @param message {string}
+ */
+export function processWarning(error, message) {
+  const {authState, setAuthState} = useContext(AuthContext);
+    if (error.message.includes('JWTExpired')){
+      refreshToken(authState.user, setAuthState);
+    } else  {
+      showMessage({
+        message: message,
+        description: error.message,
+        autoHide: false,
+        type: 'warning',
+        icon: 'warning'
+      });
+    }
+}
+
+/**
+ * function for displaying an error message. Used for mutations
+ * @param error
+ * @param message {string}
+ */
+export function processError(error, message) {
+  const {authState, setAuthState} = useContext(AuthContext);
+  if (error.message.includes('JWTExpired')){
+    refreshToken(authState.user, setAuthState);
+  } else  {
+    showMessage({
+      message: message,
+      description: error.message,
+      autoHide: false,
+      type: 'danger',
+      icon: 'danger'
+    });
   }
 }
 

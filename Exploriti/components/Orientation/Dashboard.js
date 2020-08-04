@@ -9,7 +9,7 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { AuthContext, refreshToken } from '../../context';
+import { AuthContext, processWarning, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
@@ -93,18 +93,7 @@ export default function Dashboard() {
     let count = 0;
 
     if (sayHiError) {
-      refreshToken(authState.user, setAuthState);
-      if (
-        sayHiError.message !== 'GraphQL error: Could not verify JWT: JWTExpired'
-      ) {
-        showMessage({
-          message: 'Server Error',
-          description: sayHiError.message,
-          autoHide: false,
-          type: 'warning',
-          icon: 'auto',
-        });
-      }
+      processWarning(sayHiError, 'Server Error')
     }
 
     return (
@@ -176,16 +165,7 @@ export default function Dashboard() {
   }
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
-      showMessage({
-        message: 'Server Error',
-        autoHide: false,
-        description: error.message,
-        type: 'warning',
-        icon: 'auto',
-      });
-    }
+    processWarning(error, 'Server Error')
     return null;
   }
 

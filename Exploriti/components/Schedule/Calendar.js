@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import EventCard from '../ReusableComponents/EventCard';
 import { useMutation } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
-import { AuthContext } from '../../context';
+import { AuthContext, processError } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -51,13 +51,7 @@ const Calendar = () => {
   };
 
   if (error) {
-    showMessage({
-      message: "Could not update Calendars",
-      description: error.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'auto'
-    });
+    processError(error, 'Could not update Calendar changes')
   }
 
   return (

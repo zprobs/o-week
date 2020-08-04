@@ -83,7 +83,7 @@ const MessageCard = ({
     update: (cache) => {
       const frag = gql`
         fragment usersChats on user {
-          userChats {
+          userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
             chatId
             seen
           }

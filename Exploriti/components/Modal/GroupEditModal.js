@@ -15,7 +15,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { CREATE_GROUP, GET_DETAILED_GROUP, UPDATE_GROUP } from '../../graphql';
 import ImagePicker from 'react-native-image-crop-picker';
-import {AuthContext, refreshToken, saveImage} from '../../context';
+import { AuthContext, processError, processWarning, refreshToken, saveImage } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 
 const HEIGHT = Dimensions.get('window').height;
@@ -61,27 +61,11 @@ const GroupEditModal = React.forwardRef(({ groupId, onClose, create }, ref) => {
   };
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'warning'
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   if (updateError) {
-    refreshToken(authState.user, setAuthState);
-    showMessage({
-      message: "Cannot Update Group",
-      description: updateError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'danger'
-    });
+    processError(updateError, 'Cannot Update Group')
   }
 
   const onDone = async () => {

@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { AuthContext } from '../../context';
+import { AuthContext, processError, processWarning } from '../../context';
 import {
   useMutation,
   useSubscription,
@@ -83,25 +83,13 @@ const Conversation = () => {
   });
 
   if (earlierError) {
-    showMessage({
-      message: 'Cannot load Messages',
-      description: earlierError.message,
-      type: 'warning',
-      icon: 'warning',
-      autoHide: false,
-    });
+    processWarning(earlierError, 'Could not load messages')
   }
 
   if (sendError) {
-    showMessage({
-      message: 'Cannot Send Message',
-      description: sendError.message,
-      type: 'danger',
-      icon: 'danger',
-      autoHide: false,
-    });
+   processError(sendError, 'Could not send message')
   }
-console.log('participants', participants)
+
   const onSend = (updatedMessages) => {
     const [updatedMessage] = updatedMessages;
     sendMessage({

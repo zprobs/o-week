@@ -22,7 +22,7 @@ import BackIcon from '../Menu/BackIcon';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { showMessage } from 'react-native-flash-message';
-import {AuthContext, refreshToken} from "../../context";
+import { AuthContext, processWarning, refreshToken } from '../../context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -57,16 +57,7 @@ export default function Search() {
 
 
   if (error) {
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'auto'
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   const listData =

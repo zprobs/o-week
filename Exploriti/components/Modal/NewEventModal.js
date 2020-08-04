@@ -24,7 +24,14 @@ import {
   UPDATE_EVENT,
 } from '../../graphql';
 import DatePicker from 'react-native-date-picker';
-import {AuthContext, getDefaultImage, refreshToken, saveImage} from '../../context';
+import {
+  AuthContext,
+  getDefaultImage,
+  processError,
+  processWarning,
+  refreshToken,
+  saveImage,
+} from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import { showMessage } from 'react-native-flash-message';
@@ -44,8 +51,12 @@ const { FontWeights, FontSizes } = Fonts;
  */
 const NewEventModal = React.forwardRef(
   ({ groupId, onClose, groupName, editMode, eventId }, ref) => {
-    const [createEvent, {error: createEventError}] = useMutation(CREATE_EVENT);
-    const [updateEvent, {error: updateEventError}] = useMutation(UPDATE_EVENT);
+    const [createEvent, { error: createEventError }] = useMutation(
+      CREATE_EVENT,
+    );
+    const [updateEvent, { error: updateEventError }] = useMutation(
+      UPDATE_EVENT,
+    );
     const [getEvent, { data, error }] = useLazyQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
@@ -72,52 +83,19 @@ const NewEventModal = React.forwardRef(
     const endDateHasShown = useRef(!!editMode);
 
     if (error) {
-        refreshToken(authState.user, setAuthState);
-        if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-            showMessage({
-                message: "Server Error",
-                description: error.message,
-                autoHide: false,
-                type: 'warning',
-                icon: 'auto'
-            });
-        }
+      processWarning(error, 'Server Error');
     }
 
     if (createEventError) {
-        refreshToken(authState.user, setAuthState);
-        if (!(createEventError.networkError && createEventError.networkError.statusCode === 400)) {
-            showMessage({
-                message: "Could not Create Event",
-                description: createEventError.message,
-                type: 'danger',
-                icon: 'auto'
-            });
-        }
+      processError(createEventError, 'Cannot create Event');
     }
 
     if (updateEventError) {
-        refreshToken(authState.user, setAuthState);
-        if (!(updateEventError.networkError && updateEventError.networkError.statusCode === 400)) {
-            showMessage({
-                message: "Could not Update Event",
-                description: updateEventError.message,
-                type: 'danger',
-                icon: 'auto'
-            });
-        }
+      processError(updateEventError, 'Cannot update Event');
     }
 
     if (hostsError) {
-        refreshToken(authState.user, setAuthState);
-        if (hostsError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-            showMessage({
-                message: "Server Error",
-                description: hostsError.message,
-                type: 'warning',
-                icon: 'auto'
-            });
-        }
+      processWarning(hostsError, 'Server Error');
     }
 
     useEffect(() => {
@@ -150,7 +128,9 @@ const NewEventModal = React.forwardRef(
 
     const onDone = async () => {
       setIsUploading(true);
-      const imageURL = imageSelection ? await saveImage(imageSelection, null, 'event', eventId) : image;
+      const imageURL = imageSelection
+        ? await saveImage(imageSelection, null, 'event', eventId)
+        : image;
       const fields = {};
       fields.image = imageURL;
       fields.email = authState.user.email;

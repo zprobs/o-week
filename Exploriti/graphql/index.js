@@ -84,10 +84,6 @@ export const GET_CURRENT_USER = gql`
           id
         }
       }
-        userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
-            chatId
-            seen
-        }
     }
   }
   ${DETAILED_USER_FRAGMENT}

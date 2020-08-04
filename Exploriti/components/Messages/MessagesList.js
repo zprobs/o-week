@@ -9,7 +9,7 @@ import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
 import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
-import {AuthContext, getDefaultImage, graphqlify, refreshToken} from '../../context';
+import { AuthContext, getDefaultImage, graphqlify, processError, processWarning, refreshToken } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
@@ -103,30 +103,13 @@ export default function MessagesList() {
 
 
   if (chatsError) {
-    refreshToken(authState.user, setAuthState);
-    if (chatsError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-      showMessage({
-        message: "Server Error",
-        description: chatsError.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'warning'
-      });
+    processWarning(chatsError, 'Could not load chat')
     }
-  }
 
   const {data: searchData, loading: searchLoading, error: searchError} = useQuery(SEARCH_CHATS, {variables: {user: authState.user.uid, query: `%${chatSearch}%`}, skip: chatSearch === ''})
 
   if (searchError) {
-    refreshToken(authState.user, setAuthState);
-    if (searchError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {      showMessage({
-        message: "Server Error",
-        description: searchError.message,
-        type: 'warning',
-        autoHide: false,
-        icon: 'warning'
-      });
-    }
+    processWarning(searchError, 'Could not complete search')
   }
 
   console.log('searchData', searchData)
@@ -166,13 +149,7 @@ export default function MessagesList() {
   });
 
   if (newChatError) {
-    showMessage({
-      message: "Cannot Create Chat",
-      description: newChatError.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'danger'
-    });
+   processError(newChatError, 'Cannot Create Chat')
   }
 
   const newConversation = (participants) => {

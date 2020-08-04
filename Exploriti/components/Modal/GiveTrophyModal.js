@@ -13,6 +13,7 @@ import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation } from '@apollo/react-hooks';
 import { AWARD_TROPHIES } from '../../graphql';
 import { showMessage } from 'react-native-flash-message';
+import { processError } from '../../context';
 const { FontWeights, FontSizes } = Fonts;
 
 const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
@@ -24,13 +25,7 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
   const [award, {error}] = useMutation(AWARD_TROPHIES);
 
   if (error) {
-    showMessage({
-      message: "Cannot Award Trophy",
-      description: error.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'danger'
-    });
+   processError(error, 'Cannot Award Trophy')
   }
 
   const onDone = async () => {

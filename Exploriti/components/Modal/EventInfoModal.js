@@ -27,7 +27,7 @@ import {
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import {AuthContext, refreshToken} from '../../context';
+import { AuthContext, processError, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 import {acc} from "react-native-reanimated";
 
@@ -51,16 +51,7 @@ const EventInfoModal = React.forwardRef(
     });
 
     if (error) {
-      refreshToken(authState.user, setAuthState);
-      if (error.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-        showMessage({
-          message: "Server Error",
-          description: error.message,
-          autoHide: false,
-          type: 'warning',
-          icon: 'warning'
-        });
-      }
+      processError(error, 'Server Error')
     }
 
     const Tabs = () => {
@@ -168,51 +159,19 @@ const EventInfoModal = React.forwardRef(
       });
 
       if (acceptError) {
-        refreshToken(authState.user, setAuthState);
-        if (acceptError.message !== "GraphQL error: Could not verify JWT: JWTExpired") {
-          showMessage({
-            message: "Server Error",
-            description: acceptError.message,
-            autoHide: false,
-            type: 'warning',
-            icon: 'warning'
-          });
-        }
+        processWarning(acceptError, 'Server Error')
       }
 
       if (signUpError) {
-        if (!(signUpError.networkError && signUpError.networkError.statusCode === 400)) {
-          showMessage({
-            message: "Cannot RSVP",
-            description: signUpError.message,
-            type: 'danger',
-            icon: 'danger',
-            autoHide: false
-          });
-        }
+        processError(signUpError, 'Could not join Event')
       }
 
       if (confirmError) {
-        if (!(confirmError.networkError && confirmError.networkError.statusCode === 400)) {
-          showMessage({
-            message: "Cannot Confirm Invite",
-            description: confirmError.message,
-            autoHide: false,
-            type: 'danger',
-            icon: 'danger'
-          });
-        }
+        processError(confirmError, 'Could not join Event')
       }
 
       if (removeError) {
-        if (!(removeError.networkError && removeError.networkError.statusCode === 400)) {
-          showMessage({
-            message: "Cannot Cancel RSVP",
-            description: removeError.message,
-            type: 'danger',
-            icon: 'danger'
-          });
-        }
+        processError(removeError, 'Cannot cancel RSVP')
       }
 
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;

@@ -18,7 +18,7 @@ import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-import { AuthContext, refreshToken } from '../../context';
+import { AuthContext, processWarning, refreshToken } from '../../context';
 import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder';
 import { showMessage } from 'react-native-flash-message';
 
@@ -88,17 +88,7 @@ const ScheduleCarousel = () => {
   }, [data]);
 
   if (error) {
-    console.log(error[0]);
-    refreshToken(authState.user, setAuthState);
-    if (error.message !== 'GraphQL error: Could not verify JWT: JWTExpired') {
-      showMessage({
-        message: 'Server Error',
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'warning',
-      });
-    }
+    processWarning(error, 'Server Error')
   }
 
   const title = () => {
