@@ -456,45 +456,50 @@ export const GET_CHATS = gql`
 `;
 
 export const GET_UNREAD_CHAT_COUNT = gql`
-    query getUnreadChatCount($id: String!) {
-        user(id: $id) {
-            id
-            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
-                chatId
-                seen
-            }
-        }
+  query getUnreadChatCount($id: String!) {
+    user(id: $id) {
+      id
+      userChats(
+        where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
+      ) {
+        chatId
+        seen
+      }
     }
-`
-
+  }
+`;
 
 export const SEARCH_CHATS = gql`
-    query searchChats($user: String!, $query: String!) {
-        user(id: $user) {
-            id
-            userChats(where: {chat: {
-                _and: [
-                {
-                    _or: [
-                        { name: { _ilike: $query } }
-                        {
-                            participants: {
-                                name: { _ilike: $query }
-                                _and: { id: { _neq: $user } }
-                            }
-                        }
-                    ]
-                }
-                { messages: {} }
-            ]}})
-            {
-                chat {
-                    ...DetailedChat
-                }
-            }
+  query searchChats($user: String!, $query: String!) {
+    user(id: $user) {
+      id
+      userChats(
+        where: {
+          chat: {
+            _and: [
+              {
+                _or: [
+                  { name: { _ilike: $query } }
+                  {
+                    participants: {
+                      name: { _ilike: $query }
+                      _and: { id: { _neq: $user } }
+                    }
+                  }
+                ]
+              }
+              { messages: {} }
+            ]
+          }
         }
+      ) {
+        chat {
+          ...DetailedChat
+        }
+      }
     }
-    ${DETAILED_CHAT}
+  }
+  ${DETAILED_CHAT}
 `;
 
 export const GET_CHAT_BY_ID = gql`
@@ -528,12 +533,12 @@ export const UNSUBSCRIBE_FROM_CHAT = gql`
 `;
 
 export const DELETE_CHAT = gql`
-    mutation deleteChat($chatId: Int!) {
-        deleteChat(id: $chatId) {
-            id
-        }
+  mutation deleteChat($chatId: Int!) {
+    deleteChat(id: $chatId) {
+      id
     }
-`
+  }
+`;
 
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {

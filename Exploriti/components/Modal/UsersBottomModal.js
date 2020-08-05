@@ -7,9 +7,10 @@ import { Theme } from '../../theme/Colours';
 import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { GET_USER_FRIENDS } from '../../graphql';
+import { GET_USER_FRIENDS, GET_USERS_BY_ID } from '../../graphql';
 import { showMessage } from 'react-native-flash-message';
 import { AuthContext, processWarning, refreshToken } from '../../context';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -25,14 +26,17 @@ const window05 = window * 0.05;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const UsersBottomModal = React.forwardRef(
-  ({ name, userId, type, onPress }, ref) => {
+  ({ name, userId, type, onPress, idArray }, ref) => {
     // use Lazy Query so that it is not executed unless opened
     const [
       getUsers,
       { data: userData, loading, error, called },
-    ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId } });
+    ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId }, skip: idArray });
 
-    const { authState, setAuthState } = useContext(AuthContext);
+    const [getUsersByID, {data: arrayData, error: arrayError, called: arrayCalled}] = useLazyQuery(GET_USERS_BY_ID, {variables: {_in: idArray}, skip: userId})
+
+    const insets = useSafeArea()
+
 
     if (error) {
         processWarning(error, 'Server Error')
@@ -51,6 +55,10 @@ const UsersBottomModal = React.forwardRef(
     } else if (type === 'invite') {
       heading = 'Invite';
       subHeading = 'Invite someone you know';
+    } else if (type === 'chat') {
+      heading = 'Chat Participants'
+      subHeading = `Members of ${name ? name : 'this chat'}`;
+      console.log(subHeading)
     }
 
     const listEmptyComponent = () => (
@@ -62,7 +70,8 @@ const UsersBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      const { id, image, name } = item.friend;
+      console.log('item', item)
+      const { id, image, name } = userId ? item.friend : item;
       return (
         <UserCard
           userId={id}
@@ -80,21 +89,32 @@ const UsersBottomModal = React.forwardRef(
     );
     const listContainer = styles.listContainer;
 
+    const onOpen = () => {
+      console.log('onOpen', idArray, arrayCalled)
+      if (idArray) {
+        if (!arrayCalled) getUsersByID();
+      } else if (userId) {
+        if (!called) getUsers();
+      }
+    }
+
+    console.log('arrayData', arrayData)
+
     return (
       <Modalize
         ref={ref}
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: userData ? userData.user.friends : null,
+          data: userId ? userData ? userData.user.friends : null : arrayData ? arrayData.users : null ,
           ListEmptyComponent: listEmptyComponent,
-          keyExtractor: item => item.friend.id,
-          style: listContainer,
+          keyExtractor: userId ? item => item.friend.id : item => item.id,
+          style: {flex: 1, marginBottom: 70 + insets.bottom},
           renderItem: renderItem,
           ListHeaderComponent: header,
           bounces: false,
         }}
-        onOpen={called ? null : getUsers}
+        onOpen={onOpen}
         disableScrollIfPossible={true}
       />
     );
@@ -110,9 +130,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingBottom: window05,
-  },
-  listContainer: {
-    flex: 1,
   },
   listItemContainer: {
     width: '106%',

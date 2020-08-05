@@ -36,7 +36,7 @@ const GoBackHeader = ({
         <BackIcon iconColor={iconColor} destination={destination} />
         {ContentLeft && <ContentLeft />}
         {title && (
-          <Text onPress={onTitlePress} style={[styles.title, titleStyle]}>
+          <Text onPress={onTitlePress} style={[styles.title, titleStyle]} numberOfLines={1}>
             {title}
           </Text>
         )}

@@ -23,7 +23,9 @@ import {
   SEND_MESSAGE,
   UPDATE_MESSAGE_SEEN,
 } from '../../graphql';
-import { showMessage } from 'react-native-flash-message';
+import Icon from 'react-native-vector-icons/Feather';
+import OptionsIcon from '../Menu/OptionsIcon';
+import UsersBottomModal from '../Modal/UsersBottomModal';
 
 const { colours } = Theme.light;
 
@@ -40,7 +42,8 @@ const Conversation = () => {
     participants,
     numMessages,
     messages: initialMessages,
-    isHighlighted: notSeen
+    isHighlighted: notSeen,
+    chatName
   } = route.params;
   const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
@@ -62,6 +65,7 @@ const Conversation = () => {
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [loadEarlier, setLoadEarlier] = useState(messageOffset < numMessages);
   const didSetFirst = useRef(false);
+  const usersRef = useRef();
   const numToLoad = 5;
 
 
@@ -160,17 +164,15 @@ const Conversation = () => {
       )[0]._id;
       navigate('Profile', { userId: userId });
     } else {
-      console.log('Maybe we can show a modal of users in this chat?');
+      usersRef.current.open();
     }
   };
 
-  // let content = <ConversationScreenPlaceholder />
-
-  let content = <Text>Loading...</Text>;
+  console.log('part', participants)
 
   // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
   // const transform = transformMessages(messages);
-  content = (
+  const content = (
     <GiftedChat
       alignTop={false}
       scrollToBottom
@@ -202,8 +204,9 @@ const Conversation = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} />
+      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} IconRight={OptionsIcon} onTitlePress={handleTitlePress} />
       {content}
+      <UsersBottomModal name={'Participants'} type={'chat'} name={chatName} idArray={participants.map(p => p.id)} ref={usersRef} />
     </SafeAreaView>
   );
 };
@@ -215,6 +218,7 @@ const styles = StyleSheet.create({
   },
   headerTitleStyle: {
     marginLeft: 0,
+    maxWidth: '85%'
   },
 });
 

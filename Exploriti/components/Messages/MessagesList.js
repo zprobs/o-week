@@ -83,6 +83,7 @@ export default function MessagesList() {
         messageBody={messages[0].text}
         seen={seen}
         senderId={senderId}
+        chatName={chatName}
       />
     );
   };
@@ -144,6 +145,7 @@ export default function MessagesList() {
         participants,
         numMessages,
         messages,
+        chatName
       });
     },
   });
