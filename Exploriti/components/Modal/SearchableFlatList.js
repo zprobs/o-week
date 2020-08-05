@@ -262,6 +262,7 @@ const SearchableFlatList = React.forwardRef(
     };
 
     const onClose = () => {
+      console.log('ref', inputRef)
       inputRef && inputRef.current && inputRef.current.blur();
       hideButton()
       if (setData) {

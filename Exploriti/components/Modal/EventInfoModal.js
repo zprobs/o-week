@@ -102,9 +102,7 @@ const EventInfoModal = React.forwardRef(
     };
 
     const Details = () => {
-      /**
-       * @Todo fix this selected problem. It flashes when deleting an RSVP
-       */
+
       const [isSelected, setIsSelected] = useState(false);
 
       const {
@@ -459,6 +457,8 @@ const EventInfoModal = React.forwardRef(
         }}
         alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
+        panGestureEnabled={true}
+        disable
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <Tabs />
       </Modalize>

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext, processError, processWarning } from '../../context';
 import {
@@ -6,7 +6,7 @@ import {
   useSubscription,
   useLazyQuery,
 } from '@apollo/react-hooks';
-import { Text, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, StyleSheet, SafeAreaView, Keyboard, StatusBar, View, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { Theme } from '../../theme/Colours';
@@ -68,8 +68,8 @@ const Conversation = () => {
   const usersRef = useRef();
   const numToLoad = 5;
 
-
   const isFocused = useIsFocused();
+
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
@@ -174,8 +174,9 @@ const Conversation = () => {
   // const transform = transformMessages(messages);
   const content = (
     <GiftedChat
-      alignTop={false}
+      // alignTop={false}
       scrollToBottom
+      isKeyboardInternallyHandled={ Platform.OS !== 'android'}
       alwaysShowSend
       isLoadingEarlier={isLoadingEarlier}
       onLoadEarlier={loadEarlierMessages}

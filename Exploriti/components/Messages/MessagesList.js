@@ -197,7 +197,7 @@ export default function MessagesList() {
         hideBackground={true}
       />
       <View style={{ height: 10 }} />
-      {chatsLoading ? <MessagesListPlaceholder /> : content}
+      {chatsLoading || searchLoading ? <MessagesListPlaceholder /> : content}
       <SearchableFlatList
         ref={newMessageBottomModalRef}
         title={'friends'}
