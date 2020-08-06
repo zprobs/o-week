@@ -194,7 +194,7 @@ const NewEventModal = React.forwardRef(
               const IDs = data.event.attendees.map(a => a.user.id).concat(data.event.invited.map(i => i.user.id))
               console.log('Id', IDs);
               const recipients = []
-              IDs.forEach(id => recipients.push({userID: id}))
+              IDs.forEach(id => recipients.push({userId: id}))
               console.log('recips', recipients)
               sendNotifications({
                 variables: {
@@ -392,7 +392,7 @@ const NewEventModal = React.forwardRef(
               containerStyle={styles.doneButton}
               colour={ThemeStatic.accent}
               light={true}
-              disabled={!hostsData || !data}
+              disabled={editMode ? !data :  !hostsData}
             />
           </View>
         </View>

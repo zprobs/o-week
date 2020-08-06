@@ -41,19 +41,44 @@ export const GET_DETAILED_USER = gql`
 `;
 
 export const GET_NOTIFICATIONS = gql`
-  query getNotifications($id: String!) {
-    user(id: $id) {
-      id
-      notifications(order_by: { timestamp: desc }) {
-        id
-        timestamp
-        type
-        typeId
-        seen
-      }
+    subscription getNotifications($id: String!) {
+        user(id: $id) {
+            id
+            notifications(order_by: { timestamp: desc }) {
+                id
+                timestamp
+                type
+                typeId
+                seen
+            }
+        }
     }
-  }
+
 `;
+
+export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
+    query getUnreadNotificationsCount($id: String!) {
+        user(id: $id) {
+            id
+            notifications(where: {seen: {_eq: false}}) {
+                id
+                seen
+            }
+        }
+    }
+`
+
+export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
+    subscription getUnreadNotificationsCount($id: String!) {
+        user(id: $id) {
+            id
+            notifications(where: {seen: {_eq: false}}) {
+                id
+                seen
+            }
+        }
+    }
+`
 
 export const SEE_NOTIFICATION = gql`
   mutation seeNotification($id: Int!) {

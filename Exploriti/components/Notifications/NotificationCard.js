@@ -17,6 +17,8 @@ import {
   SEE_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
+import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
+import images from '../../assets/images';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -36,6 +38,7 @@ const { colours } = Theme.light;
  */
 const NotificationCard = ({
   image,
+  localImage,
   title,
   titleLast,
   message,
@@ -67,7 +70,7 @@ const NotificationCard = ({
       ]}
       onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: image }} style={styles.image} />
+        <Image source={localImage ? localImage : { uri: image }} style={styles.image} />
         <View style={styles.textContainer}>
           <Text style={styles.message}>
             {titleLast ? `${message} `  : null}
@@ -84,21 +87,36 @@ const NotificationCard = ({
   );
 };
 
-const LoadingNotificationCard = () => <Text>Loading...</Text>;
 
 const ErrorNotificationsCard = ({ error }) => (
-  <Text>{`Error: ${error.message}`}</Text>
+  <View style={styles.container}>
+    <View style={styles.image}>
+      <PlaceholderMedia size={40} color={colours.placeholder} isRound />
+    </View>
+    <View style={styles.textContainer}>
+     <Text style={styles.message}>{`ERROR: ${error.message}`}</Text>
+    </View>
+  </View>
 );
+
+const LoadingNotificationCard = () => (
+  <Placeholder Animation={Shine}>
+  <View style={styles.container}>
+    <View style={styles.image}>
+      <PlaceholderMedia size={40} color={colours.placeholder} isRound />
+    </View>
+      <PlaceholderLine width={90} style={{alignSelf: 'center'}}  />
+  </View>
+  </Placeholder>
+)
 
 export const SystemNotificationCard = ({ item }) => {
   return (
     <NotificationCard
-      title={'System'}
+      title={''}
       message={'Welcome to the App'}
       timestamp={item.timestamp}
-      image={
-        'https://banner2.cleanpng.com/20180714/hpt/kisspng-computer-software-computer-icons-system-integratio-b2c-5b4ab6436b7241.1214688515316229794401.jpg'
-      }
+      localImage={images.logo}
       id={item.id}
       seen={item.seen}
     />
@@ -133,12 +151,12 @@ export const UserNotificationCard = ({ item, message }) => {
   );
 };
 
-export const EventNotificationCard = ({ item, message }) => {
+export const EventNotificationCard = ({ item, message, titleLast }) => {
   const { loading, data, error } = useQuery(GET_EVENT_IMAGE_NAME, {
     variables: { id: item.typeId },
   });
   const navigation = useNavigation();
-  if (loading) return <LoadingNotificationCard />;
+  if (loading) return <LoadingNotificationCard />
   if (error || !data.event)
     return (
       <ErrorNotificationsCard
@@ -152,7 +170,7 @@ export const EventNotificationCard = ({ item, message }) => {
     <NotificationCard
       timestamp={item.timestamp}
       title={data.event.name}
-      titleLast={true}
+      titleLast={titleLast}
       message={message}
       image={data.event.image}
       id={item.id}
