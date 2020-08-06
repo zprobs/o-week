@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
+import { CHECK_USER_ADMIN, GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
@@ -43,6 +43,8 @@ const GroupScreen = ({ route }) => {
     variables: { id: authState.user.uid },
     fetchPolicy: 'cache-only',
   });
+
+  const {data: isAdminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}, fetchPolicy: 'cache-only'})
 
   if (loading) {
     console.log('groupScreen Loading');
@@ -86,7 +88,7 @@ const GroupScreen = ({ route }) => {
         <View style={styles.header}>
           <View style={styles.icons}>
             <CircleBackIcon style={styles.circleBackIcon} />
-            {isOwner ? (
+            {isAdminData.user.isAdmin || isOwner ? (
               <View>
                 <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
                 <CircleEditIcon
@@ -105,7 +107,7 @@ const GroupScreen = ({ route }) => {
         </View>
       </ImageBackground>
       <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember} />
-      {isOwner ? (
+      {isAdminData.user.isAdmin || isOwner ? (
         <>
           <GroupEditModal
             ref={editRef}

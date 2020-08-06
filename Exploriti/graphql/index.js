@@ -193,6 +193,24 @@ export const SEND_NOTIFICATION = gql`
   }
 `;
 
+export const SEND_NOTIFICATIONS = gql`
+    mutation sendNotifications(
+        $recipients: [userNotification_insert_input!]! 
+        $type: String!
+        $typeId: String!
+    ) {
+        sendNotification(
+            object: {
+                type: $type
+                typeId: $typeId
+                userNotifications: { data: $recipients }
+            }
+        ) {
+            id
+        }
+    }
+`;
+
 export const SIGN_UP = gql`
   mutation SIGN_UP($data: user_insert_input!) {
     createUser(object: $data) {
@@ -284,6 +302,21 @@ export const GET_USER_FRIENDS = gql`
       }
     }
   }
+`;
+
+export const GET_USER_FRIENDS_EXCLUDING = gql`
+    query getFriends($userId: String!, $excluding: [String!]!) {
+        user(id: $userId) {
+            id
+            friends(where: {friendId: {_nin: $excluding}}) {
+                friend {
+                    id
+                    image
+                    name
+                }
+            }
+        }
+    }
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
@@ -777,6 +810,9 @@ export const GET_EVENT = gql`
       hosts {
         groupId
       }
+        attendees {
+            userId
+        }
     }
   }
 `;
@@ -1106,6 +1142,7 @@ export const GET_DETAILED_GROUP = gql`
           id
         }
       }
+        unsubscribable
     }
   }
 `;

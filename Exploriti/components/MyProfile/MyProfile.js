@@ -6,6 +6,7 @@ import Conversation from '../Messages/Conversation';
 import GroupScreen from '../Orientation/GroupScreen';
 import { NotificationsIcon } from '../Menu/NotificationsIcon';
 import Notifications from '../Notifications';
+import EventScreen from '../Orientation/EventScreen';
 const Stack = createStackNavigator();
 
 /**
@@ -36,6 +37,13 @@ export default function MyProfile() {
       <Stack.Screen
         name={'GroupScreen'}
         component={GroupScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={'EventScreen'}
+        component={EventScreen}
         options={{
           headerShown: false,
         }}

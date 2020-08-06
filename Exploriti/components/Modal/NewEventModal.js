@@ -20,13 +20,13 @@ import {
   CREATE_EVENT,
   GET_ALL_GROUP_IDS,
   GET_DETAILED_EVENT,
-  GET_GROUP_EVENTS,
+  GET_GROUP_EVENTS, SEND_NOTIFICATIONS,
   UPDATE_EVENT,
 } from '../../graphql';
 import DatePicker from 'react-native-date-picker';
 import {
   AuthContext,
-  getDefaultImage,
+  getDefaultImage, NotificationTypes,
   processError,
   processWarning,
   refreshToken,
@@ -63,6 +63,8 @@ const NewEventModal = React.forwardRef(
     const [getAllHosts, { data: hostsData, error: hostsError }] = useLazyQuery(
       GET_ALL_GROUP_IDS,
     );
+
+    const [sendNotifications] = useMutation(SEND_NOTIFICATIONS)
 
     const [name, setName] = useState();
     const [image, setImage] = useState(getDefaultImage());
@@ -164,6 +166,7 @@ const NewEventModal = React.forwardRef(
 
     const onUpdate = async () => {
       setIsUploading(true);
+      let startChanged = false;
       const { event } = data;
       const imageURL = imageSelection
         ? await saveImage(imageSelection, data.event.image, 'event', eventId)
@@ -174,7 +177,10 @@ const NewEventModal = React.forwardRef(
       if (description !== event.description) fields.description = description;
       if (location !== event.location) fields.location = location;
       if (website !== event.website) fields.website = website;
-      if (startDate !== event.startDate) fields.startDate = startDate;
+      if (startDate !== event.startDate) {
+        fields.startDate = startDate;
+        startChanged = true;
+      }
       if (endDate !== event.endDate) fields.endDate = endDate;
 
       if (Object.keys(fields).length !== 0) {
@@ -184,6 +190,20 @@ const NewEventModal = React.forwardRef(
           .then(() => {
             setIsUploading(false);
             ref.current.close();
+            if (startChanged) {
+              const IDs = data.event.attendees.map(a => a.user.id).concat(data.event.invited.map(i => i.user.id))
+              console.log('Id', IDs);
+              const recipients = []
+              IDs.forEach(id => recipients.push({userID: id}))
+              console.log('recips', recipients)
+              sendNotifications({
+                variables: {
+                  type: NotificationTypes.eventTimeChange,
+                  typeId: eventId,
+                  recipients: recipients ,
+                },
+              }).catch((e) => console.log(e));
+            }
           })
           .catch((e) => console.log(e.message));
       } else {

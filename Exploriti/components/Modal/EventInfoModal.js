@@ -24,7 +24,7 @@ import {
   GET_DETAILED_EVENT,
   GET_EVENT_ATTENDANCE,
   GET_EVENT_INVITED,
-  REMOVE_USER_FROM_EVENT,
+  REMOVE_USER_FROM_EVENT, SEND_NOTIFICATION,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
 import { AuthContext, processError, processWarning, refreshToken } from '../../context';

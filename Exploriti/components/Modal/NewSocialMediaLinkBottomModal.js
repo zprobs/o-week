@@ -101,7 +101,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   const header = () => (
     <ModalHeader
       heading={'Add your ' + title()}
-      subHeading={'Copy the exact address from the URL bar to create a link'}
+      subHeading={ type === 2 ||type === 5 ? 'Enter your @ ' : 'Copy the exact address from the URL bar to create a link'}
     />
   );
 

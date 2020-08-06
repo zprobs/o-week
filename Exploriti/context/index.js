@@ -102,8 +102,10 @@ export function yearToInt(year: String) {
       return 3;
     case 'Fourth Year':
       return 4;
+    case 'Year 5+':
+      return 5
     default:
-      return 5;
+      return 6;
   }
 }
 /**
@@ -301,6 +303,8 @@ export const NotificationTypes = {
   sendFriendRequest: 'sendFriendRequest',
   eventInvite: 'eventInvite',
   newEvent: 'newEvent',
+  eventTimeChange: 'eventTimeChange',
+
 };
 
 export const yearsData = [
@@ -308,6 +312,7 @@ export const yearsData = [
   'Second Year',
   'Third Year',
   'Fourth Year',
+  'Year 5+',
   'Graduate School',
 ];
 export const facultiesData = [

@@ -14,12 +14,13 @@ import EventInfoModal from '../Modal/EventInfoModal';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
+  CHECK_USER_ADMIN,
   GET_EVENT,
-  GET_USER_FRIENDS,
+  GET_USER_FRIENDS, GET_USER_FRIENDS_EXCLUDING,
   GET_USER_GROUPS,
-  INVITE_USERS_TO_EVENT,
+  INVITE_USERS_TO_EVENT, SEND_NOTIFICATION, SEND_NOTIFICATIONS,
 } from '../../graphql';
-import { AuthContext, graphqlify_relationship, processWarning, refreshToken } from '../../context';
+import { AuthContext, graphqlify_relationship, NotificationTypes, processWarning, refreshToken } from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
 import { showMessage } from 'react-native-flash-message';
@@ -41,6 +42,7 @@ const EventScreen = ({ route }) => {
   const inviteRef = useRef();
   const editRef = useRef();
   const { authState, setAuthState } = useContext(AuthContext);
+  const [sendNotifications] = useMutation(SEND_NOTIFICATIONS);
   const [invite, {error: inviteError}] = useMutation(INVITE_USERS_TO_EVENT);
   const { eventId } = route.params;
   const [tabIndex, setTabIndex] = useState(0); // used to prevent tabs from defaulting to 0 after rerender
@@ -51,6 +53,9 @@ const EventScreen = ({ route }) => {
     variables: { id: authState.user.uid },
     fetchPolicy: 'cache-only',
   });
+
+  const {data: isAdminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}, fetchPolicy: 'cache-only'})
+
   const insets = useSafeArea();
 
   if (loading) return null;
@@ -96,7 +101,19 @@ const EventScreen = ({ route }) => {
     const objects = graphqlify_relationship(eventId, IDs, 'event', 'user' )
     console.log('object', objects);
     invite({ variables: { objects: objects } })
-      .then(inviteRef.current.close())
+      .then(() => {
+        inviteRef.current.close();
+        const recipients = []
+        IDs.forEach(id => recipients.push({userId: id}))
+        console.log('recips', recipients)
+        sendNotifications({
+          variables: {
+            type: NotificationTypes.eventInvite,
+            typeId: eventId,
+            recipients: recipients ,
+          },
+        }).catch((e) => console.log(e));
+      })
       .catch((e) => console.log(e));
   };
 
@@ -109,6 +126,8 @@ const EventScreen = ({ route }) => {
     modalRef.current.open();
   };
 
+  console.log('attendees', data.event.attendees)
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -117,7 +136,7 @@ const EventScreen = ({ route }) => {
         <View style={styles.header}>
           <View style={styles.icons}>
             <CircleBackIcon style={styles.circleBackIcon} />
-            {isOwner ? (
+            {isAdminData.user.isAdmin || isOwner ? (
               <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
             ) : null}
           </View>
@@ -138,9 +157,9 @@ const EventScreen = ({ route }) => {
       <SearchableFlatList
         ref={inviteRef}
         title={'friends'}
-        query={GET_USER_FRIENDS}
+        query={GET_USER_FRIENDS_EXCLUDING}
         hasImage={true}
-        variables={{ userId: authState.user.uid }}
+        variables={{ userId: authState.user.uid, excluding: data.event.attendees.map(a => a.userId) }}
         setSelection={()=>{}}
         aliased={false}
         floatingButtonText={'Invite'}
@@ -151,7 +170,7 @@ const EventScreen = ({ route }) => {
         offset={70 + insets.top}
         floatingButtonOffset={70 + insets.bottom}
       />
-      {isOwner ? (
+      {isAdminData.user.isAdmin || isOwner ? (
         <NewEventModal
           ref={editRef}
           onClose={onCloseEdit}

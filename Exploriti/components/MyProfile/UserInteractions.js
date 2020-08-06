@@ -200,8 +200,6 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
           fragment: userFriendsFragment,
         });
 
-        console.log('friends', friends);
-
         if (friends) {
           let newFriend = {
             __typename: 'friend',
@@ -306,8 +304,6 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   } = useQuery(GET_USER_FRIENDS_ID, {
     variables: { userId: authState.user.uid },
   });
-
-  if (friendsData) console.log('friendsData', friendsData.user.friends);
 
   if (newChatError) {
     processError(newChatError, 'Cannot create Chat')

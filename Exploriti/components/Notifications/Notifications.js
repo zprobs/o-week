@@ -57,6 +57,13 @@ export default function Notifications() {
             message={'You have been invited to '}
           />
         );
+      case NotificationTypes.eventTimeChange:
+        return  (
+          <EventNotificationCard
+            item={item}
+            message={'The start time has changed for'}
+          />
+        )
     }
     return <Text>{item.type}</Text>;
   };

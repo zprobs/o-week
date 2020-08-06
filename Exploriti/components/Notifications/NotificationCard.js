@@ -21,9 +21,23 @@ import { useNavigation } from '@react-navigation/native';
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * Card for Notification list. Supports all notification types
+ * @param image {string}
+ * @param title {string}
+ * @param titleLast {boolean} if true, the bold title will appear after the message
+ * @param message {string}
+ * @param timestamp {string}
+ * @param id {string}
+ * @param seen {boolean}
+ * @param nav
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const NotificationCard = ({
   image,
   title,
+  titleLast,
   message,
   timestamp,
   id,
@@ -56,8 +70,10 @@ const NotificationCard = ({
         <Image source={{ uri: image }} style={styles.image} />
         <View style={styles.textContainer}>
           <Text style={styles.message}>
+            {titleLast ? `${message} `  : null}
+
             <Text style={{ ...FontWeights.Bold }}>{title}</Text>
-            {` ${message}`}
+            {titleLast ? null :` ${message}`}
           </Text>
         </View>
       </View>
@@ -136,6 +152,7 @@ export const EventNotificationCard = ({ item, message }) => {
     <NotificationCard
       timestamp={item.timestamp}
       title={data.event.name}
+      titleLast={true}
       message={message}
       image={data.event.image}
       id={item.id}

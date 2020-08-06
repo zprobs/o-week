@@ -126,14 +126,16 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
       <>
         {isMember ? (
           <View style={styles.contactContainer}>
-            <View style={styles.contactView}>
-              <Icon name={'phone'} size={18} style={styles.contactIcon} />
-              <Text style={styles.contactText}>Call</Text>
-            </View>
-            <View style={styles.contactView}>
-              <Icon name={'video'} size={18} style={styles.contactIcon} />
-              <Text style={styles.contactText}>Video</Text>
-            </View>
+            {
+              !data.group.unsubscribable ? (
+                <View style={styles.contactView}>
+                  <Icon name={'phone'} size={18} style={styles.contactIcon} />
+                  <Text style={styles.contactText}>Call</Text>
+                </View>
+              ) : null
+            }
+
+
             <TouchableOpacity
               style={styles.contactView}
               onPress={() => {
@@ -159,6 +161,9 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
           </View>
         ) : null}
 
+        <Text style={styles.sectionText}>Description</Text>
+        <Text style={styles.descriptionText}>{data.group.description}</Text>
+
         {data.group.trophies.length > 0 ? (
           <>
             <Text style={styles.sectionText}>Leaderboard</Text>
@@ -177,8 +182,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
             />
           </>
         ) : null}
-        <Text style={styles.sectionText}>Description</Text>
-        <Text style={styles.descriptionText}>{data.group.description}</Text>
+
       </>
     );
   };
@@ -314,7 +318,10 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
+    marginHorizontal: 15,
+    flex: 1
   },
   contactText: {
     ...FontWeights.Regular,
