@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
-import { parseTimeElapsed } from '../../context';
+import { AuthContext, parseTimeElapsed } from '../../context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_EVENT_IMAGE_NAME,
@@ -19,6 +19,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
 import images from '../../assets/images';
+import gql from "graphql-tag";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -26,6 +27,7 @@ const { colours } = Theme.light;
 /**
  * Card for Notification list. Supports all notification types
  * @param image {string}
+ * @param localImage An image stored within the app in the images file. Exclusive with image which is an image from the internet
  * @param title {string}
  * @param titleLast {boolean} if true, the bold title will appear after the message
  * @param message {string}
@@ -47,8 +49,41 @@ const NotificationCard = ({
   seen,
   nav,
 }) => {
+  const {authState} = useContext(AuthContext);
   const [seeNotification] = useMutation(SEE_NOTIFICATION, {
     variables: { id: id },
+    update: (cache) => {
+      const frag = gql`
+          fragment notificationFrag on user {
+              notifications(where: {seen: {_eq: false}}) {
+                  id
+                  seen
+              }
+          }
+      `;
+
+      try {
+        const { notifications } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+        });
+
+        console.log('notifications', notifications);
+        console.log('id', id);
+
+        const newNotifications = notifications.filter((n) => n.id !== id);
+
+        console.log('newNotifications', newNotifications);
+
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+          data: { __typename: 'user', notifications: newNotifications },
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
   });
   const [isSeen, setIsSeen] = useState(seen);
 

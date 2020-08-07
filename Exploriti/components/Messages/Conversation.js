@@ -26,6 +26,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import OptionsIcon from '../Menu/OptionsIcon';
 import UsersBottomModal from '../Modal/UsersBottomModal';
+import gql from 'graphql-tag';
 
 const { colours } = Theme.light;
 
@@ -101,7 +102,42 @@ const Conversation = () => {
       participants: [authState.user.uid],
       seen: true,
     },
-  });
+      update: (cache) => {
+        const frag = gql`
+          fragment usersChats on user {
+            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
+              chatId
+              seen
+            }
+          }
+        `;
+
+        try {
+          const { userChats } = cache.readFragment({
+            id: `user:${authState.user.uid}`,
+            fragment: frag,
+          });
+
+          console.log('userChats', userChats);
+          console.log('chatID', chatId);
+
+          const newChats = userChats.filter((e) => e.chatId !== chatId);
+
+
+          console.log('newChats', newChats);
+
+          cache.writeFragment({
+            id: `user:${authState.user.uid}`,
+            fragment: frag,
+            data: { __typename: 'user', userChats: newChats },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      },
+  }
+
+    );
 
   const hasSetSeen = useRef(false)
 

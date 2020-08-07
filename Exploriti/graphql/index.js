@@ -504,6 +504,7 @@ export const GET_CHATS = gql`
         where: { chat: { messages: {} } }
       ) {
         seen
+          _id: chatId
         chat {
           ...DetailedChat
         }
@@ -521,6 +522,7 @@ export const GET_UNREAD_CHAT_COUNT = gql`
         where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
       ) {
         chatId
+         _id: chatId 
         seen
       }
     }
