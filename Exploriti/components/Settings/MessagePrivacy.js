@@ -5,40 +5,53 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
 import SettingsCheckbox from '../ReusableComponents/SettingsCheckbox'
+import { Theme } from '../../theme/Colours';
+import SegmentedControl from '@react-native-community/segmented-control';
 
 const {FontWeights, FontSizes} = Fonts
+const { colours } = Theme.light;
+
+const messagesDescription = ["You will be able to recieve messages from anyone on The app, except for people you've blocked", "Only people who you're friends with will be able to send you messages" ]
+const inviteDescription = ["Anyone on the app will be able to invite you to an event, except for people you've blocked", "Only your friends and leaders of groups you are in can invite you to events"]
 
 function MessagePrivacy() {
+
+  const [messagesIndex, setMessagesIndex] = useState(0)
+  const [inviteIndex, setInviteIndex] = useState(0)
+
   return(
-    <View>
-      <View style={{flexDirection: 'column', paddingVertical:15}}>
-        <Text style={styles().headerText}>Who Can Send You Messages?</Text>
+    <View style={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.headerText}>Who Can Send You Messages?</Text>
 
-        <SettingsCheckbox
-        title='Anyone'
-        description="You will be able to recieve messages from anyone on The Hub, except for people you've blocked" />
+        <SegmentedControl
+          values={['Anyone', 'Friends']}
+          selectedIndex={messagesIndex}
+          onChange={(event) => {
+            setMessagesIndex(event.nativeEvent.selectedSegmentIndex);
+          }}
+          style={styles.selector}
+        />
 
-        <SettingsCheckbox
-        title='Friends'
-        description="Only people who you're friends with will be able to send you messages" />
+        <Text style={styles.descriptionText}>{messagesDescription[messagesIndex]}</Text>
+
 
       </View>
 
-      <View style={{flexDirection: 'column', paddingVertical:15}}>
+      <View style={styles.section}>
+        <Text style={styles.headerText}>Who Can Invite You To Events?</Text>
 
-        <Text style={styles().headerText}>Who Can Invite You To Events?</Text>
+        <SegmentedControl
+          values={['Anyone', 'Friends']}
+          selectedIndex={inviteIndex}
+          onChange={(event) => {
+            setInviteIndex(event.nativeEvent.selectedSegmentIndex);
+          }}
+          style={styles.selector}
+        />
 
-        <SettingsCheckbox
-        title='Anyone'
-        description="Anyone on The Hub can invite you to an event, except for people you've blocked" />
+        <Text style={styles.descriptionText}>{inviteDescription[inviteIndex]}</Text>
 
-        <SettingsCheckbox
-        title='Friends'
-        description="Only your friends can invite you to events" />
-
-        <SettingsCheckbox
-        title='Group Leaders'
-        description="The only people that can invite you to events are registered orientation leaders" />
 
       </View>
 
@@ -46,12 +59,22 @@ function MessagePrivacy() {
   );
 };
 
-const styles = () =>
+const styles =
   StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colours.base
+    },
+    section: {
+      paddingHorizontal: 20,
+      flexDirection: 'column',
+      marginVertical:15
+    },
     headerText: {
-      ...FontSizes.Body,
+      ...FontSizes.Label,
       ...FontWeights.Bold,
       paddingLeft:20,
+      marginVertical: 12
     },
     titleText: {
       ...FontSizes.Caption,
@@ -59,9 +82,9 @@ const styles = () =>
       paddingLeft:20,
     },
     descriptionText: {
-      fontSize: 12,
-      ...FontWeights.Light,
-      paddingLeft:20,
+      ...FontSizes.Body,
+      ...FontWeights.Regular,
+      marginVertical: 10
     },
     SettingCardView: {
       flexDirection: 'column',

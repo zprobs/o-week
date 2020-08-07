@@ -5,13 +5,14 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation } from '@react-navigation/native';
 import Fonts from '../../theme/Fonts';
 import SettingsSwitch from '../ReusableComponents/SettingsSwitch'
+import { Theme } from '../../theme/Colours';
 
 const {FontWeights, FontSizes} = Fonts
-
+const {colours} = Theme.light;
 
 function Notifications() {
   return(
-    <View>
+    <View style={styles.container}>
       <SettingsSwitch title='Mute Messages'/>
       <SettingsSwitch title='Mute Events'/>
       <SettingsSwitch title='Mute Group Notifications'/>
@@ -20,21 +21,13 @@ function Notifications() {
   );
 };
 
-const styles = () =>
+const styles =
   StyleSheet.create({
-    viewStyle:{
+    container:{
+      flex: 1,
+      backgroundColor: colours.base
     },
-    settingItemViewStyle: {
-      //borderWidth: 1,
-      //borderColor: 'black',
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      margin: 15,
-    },
-    settingItemTextStyle: {
-      ...FontSizes.Body
-    },
+
   });
 
 export default Notifications

@@ -31,11 +31,11 @@ const FormInput = React.forwardRef(
   ) => {
     return (
       <>
-        <Text style={styles().labelTextStyle}>{label}</Text>
+        <Text style={styles.labelTextStyle}>{label}</Text>
         <TextInput
           ref={ref}
           autoCapitalize="none"
-          style={styles().textStyle}
+          style={styles.textStyle}
           activeLineWidth={0}
           placeholder={placeholder}
           placeholderTextColor={colours.text02}
@@ -50,7 +50,7 @@ const FormInput = React.forwardRef(
   },
 );
 
-const styles = () =>
+const styles =
   StyleSheet.create({
     labelTextStyle: {
       ...FontWeights.Regular,

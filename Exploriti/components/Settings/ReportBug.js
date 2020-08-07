@@ -1,74 +1,96 @@
-import React, { Component } from 'react';
-import { View, TextInput, Button, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import React, { Component, useRef } from 'react';
+import {
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import Fonts from '../../theme/Fonts';
-import Icon from "react-native-vector-icons/EvilIcons";
+import Icon from 'react-native-vector-icons/EvilIcons';
+import { Theme } from '../../theme/Colours';
+import FormInput from '../ReusableComponents/FormInput';
+import ButtonColour from '../ReusableComponents/ButtonColour';
 
-const {FontWeights, FontSizes} = Fonts
-
-function UselessTextInput(props) {
-  return (
-    <TextInput
-      {...props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
-      editable
-      maxLength={40}
-    />
-  );
-}
+const { FontWeights, FontSizes } = Fonts;
+const { colours } = Theme.light;
 
 export default function UselessTextInputMultiline() {
   const [value, onChangeText] = React.useState('');
+  const inputRef = useRef()
 
   // If you type something in the text box that is a color, the background will change to that
   // color.
   return (
-    <View>
-      <View style={styles().viewStyle}>
-        <Text style={styles().titleTextStyle}>Something Isn't Working?</Text>
-        <Text style={styles().bodyTextStyle}>Please explain the problem briefly, and describe how to reproduce the bug</Text>
+    <View style={styles.container}>
+      <View style={styles.viewStyle}>
+        <Text style={styles.titleTextStyle}>Something Isn't Working?</Text>
+        <Text style={styles.bodyTextStyle}>
+          Please explain the problem briefly, and describe how to reproduce the
+          bug
+        </Text>
       </View>
-      <View
-        style={{
-          backgroundColor: value,
-          borderBottomColor: '#000000',
-          borderBottomWidth: 1,
-        }}>
-        <UselessTextInput
-          multiline
-          numberOfLines={4}
-          onChangeText={text => onChangeText(text)}
-          value={value}
-        />
-      </View>
-      <View style={{flexDirection:'row', justifyContent:'flex-end'}}>
-      <TouchableOpacity>
-      <Icon name="sc-telegram"
-      size={45}
+
+      <TextInput
+        ref={inputRef}
+        autoCapitalize="none"
+        style={styles.textStyle}
+        activeLineWidth={1}
+        onChangeText={onChangeText}
+        value={value}
+        multiline={true}
+        returnKeyType={'default'}
+        maxLength={600}
       />
-      </TouchableOpacity>
-      </View>
+
+      <ButtonColour colour={colours.accent} label={'Submit'} light={true} containerStyle={styles.button} />
+
     </View>
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colours.base,
+  },
 
-const styles = () =>
-  StyleSheet.create({
-    viewStyle:{
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      marginBottom: 30,
-      padding: 10,
-      borderColor: 'black',
-      borderWidth: 0,
-      elevation: 1,
-    },
-    titleTextStyle:{
-      ...FontSizes.Caption,
-      ...FontWeights.Bold,
-    },
-    bodyTextStyle:{
-      ...FontSizes.Caption,
-      ...FontWeights.Light,
-    },
-  });
+  button: {
+    marginVertical: 30,
+    width: '80%',
+    alignSelf: 'center'
+  },
+
+  viewStyle: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginBottom: 30,
+    padding: 10,
+    borderColor: 'black',
+    borderWidth: 0,
+    elevation: 1,
+  },
+  titleTextStyle: {
+    ...FontSizes.Label,
+    ...FontWeights.Bold,
+    marginVertical: 10,
+  },
+  bodyTextStyle: {
+    ...FontSizes.Body,
+    ...FontWeights.Light,
+  },
+  textStyle: {
+    ...FontWeights.Light,
+    color: colours.text01,
+    fontSize: FontSizes.Body.fontSize,
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    height: 190,
+    padding: 12
+  },
+});
