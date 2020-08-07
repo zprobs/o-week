@@ -1,28 +1,16 @@
-import React, { Component, useRef } from 'react';
-import {
-  View,
-  TextInput,
-  Button,
-  StyleSheet,
-  Image,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
 import Fonts from '../../theme/Fonts';
-import Icon from 'react-native-vector-icons/EvilIcons';
 import { Theme } from '../../theme/Colours';
-import FormInput from '../ReusableComponents/FormInput';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
-export default function UselessTextInputMultiline() {
-  const [value, onChangeText] = React.useState('');
-  const inputRef = useRef()
+export default function ReportBug() {
+  const [value, onChangeText] = useState('');
+  const inputRef = useRef();
 
-  // If you type something in the text box that is a color, the background will change to that
-  // color.
   return (
     <View style={styles.container}>
       <View style={styles.viewStyle}>
@@ -45,8 +33,12 @@ export default function UselessTextInputMultiline() {
         maxLength={600}
       />
 
-      <ButtonColour colour={colours.accent} label={'Submit'} light={true} containerStyle={styles.button} />
-
+      <ButtonColour
+        colour={colours.accent}
+        label={'Submit'}
+        light={true}
+        containerStyle={styles.button}
+      />
     </View>
   );
 }
@@ -60,7 +52,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 30,
     width: '80%',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
 
   viewStyle: {
@@ -91,6 +83,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 20,
     height: 190,
-    padding: 12
+    padding: 12,
   },
 });

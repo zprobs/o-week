@@ -1,28 +1,22 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Text,
   View,
   Button,
-  Switch,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
   Linking,
 } from 'react-native';
-import Fonts from '../../theme/Fonts';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import firebase from '@react-native-firebase/app';
 import { AuthContext } from '../../context';
 import Notifications from './Notifications';
-import { BackIcon } from '../Menu/BackIcon';
 import { useNavigation } from '@react-navigation/native';
 import { Theme, ThemeStatic } from '../../theme/Colours';
-import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useQuery } from '@apollo/react-hooks';
 import { CHECK_USER_ADMIN } from '../../graphql';
 import { linkError } from '../ReusableComponents/SocialMediaIcons';
-const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
 export default function SettingsList() {
@@ -105,7 +99,6 @@ export default function SettingsList() {
         </View>
       </View>
       <View style={styles.bottomBannerViewStyle}>
-        <Text style={{ ...FontWeights.Light, color: 'gray', marginBottom: 2 }}>Powered By</Text>
         <Image
           style={{}}
           source={require('../../assets/images/ArravonLogo.png')}
@@ -167,8 +160,6 @@ const styles = StyleSheet.create({
     backgroundColor: colours.base,
   },
   settingItemViewStyle: {
-    //borderWidth: 1,
-    //borderColor: 'black',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -184,9 +175,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    //backgroundColor: '#ECECEC',
     padding: 10,
-    paddingBottom: 20,
+    marginBottom: 25,
   },
   button: {
     paddingVertical: 35,
