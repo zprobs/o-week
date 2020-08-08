@@ -56,9 +56,9 @@ export const BadgeView = ({ badgeCount, animatedFocus }) => (
       right: -6,
       top: -3,
       backgroundColor: 'red',
-      borderRadius: 7,
-      width: badgeCount > 99 ? 21 : badgeCount > 9 ? 17 : 14,
-      height: 14,
+      borderRadius: 7.5,
+      width: badgeCount > 99 ? 22 : badgeCount > 9 ? 18 : 15,
+      height: 15,
       justifyContent: 'center',
       alignItems: 'center',
       opacity:
@@ -75,6 +75,8 @@ export const BadgeView = ({ badgeCount, animatedFocus }) => (
         fontSize: 10,
         fontWeight: 'bold',
         textAlign: 'center',
+        marginLeft: 0,
+        marginRight: 1,
         letterSpacing: -1,
       }}>
       {badgeCount > 99 ? '99+' : badgeCount}

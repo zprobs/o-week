@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Text } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import ButtonColour from '../ReusableComponents/ButtonColour';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -13,6 +14,8 @@ export default function ReportBug() {
 
   return (
     <View style={styles.container}>
+      <KeyboardAwareScrollView>
+
       <View style={styles.viewStyle}>
         <Text style={styles.titleTextStyle}>Something Isn't Working?</Text>
         <Text style={styles.bodyTextStyle}>
@@ -39,6 +42,7 @@ export default function ReportBug() {
         light={true}
         containerStyle={styles.button}
       />
+      </KeyboardAwareScrollView>
     </View>
   );
 }

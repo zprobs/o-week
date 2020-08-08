@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
+  Dimensions, Alert,
 } from 'react-native';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Fonts from '../../theme/Fonts';
@@ -14,18 +14,26 @@ import EventInfoModal from '../Modal/EventInfoModal';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CHECK_USER_ADMIN,
+  CHECK_USER_ADMIN, DELETE_EVENT,
   GET_EVENT,
   GET_USER_FRIENDS, GET_USER_FRIENDS_EXCLUDING,
   GET_USER_GROUPS,
   INVITE_USERS_TO_EVENT, SEND_NOTIFICATION, SEND_NOTIFICATIONS,
 } from '../../graphql';
-import { AuthContext, graphqlify_relationship, NotificationTypes, processWarning, refreshToken } from '../../context';
+import {
+  AuthContext,
+  graphqlify_relationship,
+  NotificationTypes,
+  processError,
+  processWarning,
+  refreshToken,
+} from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
 import { showMessage } from 'react-native-flash-message';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -41,6 +49,7 @@ const EventScreen = ({ route }) => {
   const modalRef = useRef();
   const inviteRef = useRef();
   const editRef = useRef();
+  const {goBack} = useNavigation();
   const { authState, setAuthState } = useContext(AuthContext);
   const [sendNotifications] = useMutation(SEND_NOTIFICATIONS);
   const [invite, {error: inviteError}] = useMutation(INVITE_USERS_TO_EVENT);
@@ -56,6 +65,8 @@ const EventScreen = ({ route }) => {
 
   const {data: isAdminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}, fetchPolicy: 'cache-only'})
 
+  const [deleteEvent, {error: deleteError}] = useMutation(DELETE_EVENT, {variables: {id: eventId}});
+
   const insets = useSafeArea();
 
   if (loading) return null;
@@ -66,6 +77,10 @@ const EventScreen = ({ route }) => {
 
   if (inviteError) {
     processWarning(inviteError, 'Could not Invite to Event')
+  }
+
+  if (deleteError) {
+    processError(deleteError, 'Could not Delete event')
   }
 
 
@@ -126,6 +141,21 @@ const EventScreen = ({ route }) => {
     modalRef.current.open();
   };
 
+  const onDeleteEvent = () => {
+    Alert.alert(
+      'Permanently Delete this Event',
+      'All event data will be erased, Users will not be notified. Reload the app to see changes.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => {
+          deleteEvent().catch(e=>console.log(e))
+            goBack();
+        } },
+      ],
+      { cancelable: true },
+    );
+  }
+
   console.log('attendees', data.event.attendees)
 
   return (
@@ -137,7 +167,14 @@ const EventScreen = ({ route }) => {
           <View style={styles.icons}>
             <CircleBackIcon style={styles.circleBackIcon} />
             {isAdminData.user.isAdmin || isOwner ? (
+              <View>
               <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
+              <CircleEditIcon
+                style={styles.circleEditIcon}
+                onPress={onDeleteEvent}
+                icon={'trash-2'}
+              />
+              </View>
             ) : null}
           </View>
           <LinearGradient

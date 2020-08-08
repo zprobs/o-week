@@ -20,7 +20,7 @@ import {
   CREATE_EVENT,
   GET_ALL_GROUP_IDS,
   GET_DETAILED_EVENT,
-  GET_GROUP_EVENTS, SEND_NOTIFICATIONS,
+  GET_GROUP_EVENTS, GET_GROUP_MEMBERS, SEND_NOTIFICATIONS,
   UPDATE_EVENT,
 } from '../../graphql';
 import DatePicker from 'react-native-date-picker';
@@ -51,7 +51,7 @@ const { FontWeights, FontSizes } = Fonts;
  */
 const NewEventModal = React.forwardRef(
   ({ groupId, onClose, groupName, editMode, eventId }, ref) => {
-    const [createEvent, { error: createEventError }] = useMutation(
+    const [createEvent, { error: createEventError, data: createEventData }] = useMutation(
       CREATE_EVENT,
     );
     const [updateEvent, { error: updateEventError }] = useMutation(
@@ -62,6 +62,10 @@ const NewEventModal = React.forwardRef(
     });
     const [getAllHosts, { data: hostsData, error: hostsError }] = useLazyQuery(
       GET_ALL_GROUP_IDS,
+    );
+
+    const [getHostMembers, { data: membersData, error: membersError }] = useLazyQuery(
+      GET_GROUP_MEMBERS, {variables: {groupId: groupId}}
     );
 
     const [sendNotifications] = useMutation(SEND_NOTIFICATIONS)
@@ -142,8 +146,22 @@ const NewEventModal = React.forwardRef(
       fields.website = website;
       fields.startDate = startDate;
       fields.endDate = endDate;
+      let userIDs = [];
       if (groupId) {
         fields.hosts = { data: [{ groupId: groupId }] };
+          if (membersError) processError(membersError, 'Could not notify users')
+          else {
+            userIDs = membersData.group.members.map(m => m.userId);
+            console.log('userIDs of members', userIDs);
+            const userEvent_insert_input = [];
+
+            userIDs.forEach(id => userEvent_insert_input.push({userId: id, didAccept: false}))
+
+            fields.attendees = {data: userEvent_insert_input};
+
+            console.log('attendees', fields.attendees)
+
+          }
       } else {
         if (hostsError) return;
         const IDs = [];
@@ -153,15 +171,29 @@ const NewEventModal = React.forwardRef(
       }
       createEvent({
         variables: { data: fields },
+        onCompleted: () => {
+          setIsUploading(false);
+          ref.current.close();
+          if (userIDs.length > 0) {
+            console.log('createEventData', createEventData);
+            sendNotifications({
+              variables: {
+                type: NotificationTypes.newEvent,
+                typeId: createEventData.id,
+                recipients: userIDs,
+              }
+            });
+          }
+        },
         refetchQueries: groupId
           ? [{ query: GET_GROUP_EVENTS, variables: { id: groupId } }]
           : null,
       })
-        .then(() => {
+
+        .catch((e) => {
+          console.log(e.message)
           setIsUploading(false);
-          ref.current.close();
-        })
-        .catch((e) => console.log(e.message));
+        });
     };
 
     const onUpdate = async () => {
@@ -281,6 +313,16 @@ const NewEventModal = React.forwardRef(
       }
     };
 
+    const onOpen = () => {
+      if(editMode) {
+        getEvent(); // editing an event
+      } else if (groupId) {
+        getHostMembers() // creating an event for a single group
+      } else {
+        getAllHosts() // creating a global event
+      }
+    }
+
     return (
       <Modalize
         ref={ref}
@@ -290,7 +332,7 @@ const NewEventModal = React.forwardRef(
         }}
         modalTopOffset={110}
         onClose={onClose}
-        onOpen={editMode ? getEvent : getAllHosts}
+        onOpen={onOpen}
         tapGestureEnabled={false}
         rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
         <View style={{ paddingHorizontal: 20 }}>
@@ -392,7 +434,7 @@ const NewEventModal = React.forwardRef(
               containerStyle={styles.doneButton}
               colour={ThemeStatic.accent}
               light={true}
-              disabled={editMode ? !data :  !hostsData}
+              disabled={editMode ? !data :  groupId ? !membersData : !hostsData}
             />
           </View>
         </View>

@@ -369,7 +369,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
       requestsData.user.friendRequestsReceived.length !== 0
     ) {
       content = (
-        <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
+        <Text  style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
       );
       friendInteraction = () => confirmRequest();
     } else if (

@@ -65,8 +65,18 @@ export default function Notifications() {
             message={'has updated the time of the event'}
           />
         )
+      case NotificationTypes.newEvent:
+        return  (
+          <EventNotificationCard
+            item={item}
+            message={'A new event has been created: '}
+            titleLast={true}
+            />
+        )
+      default:
+        return <SystemNotificationCard item={item} />
+
     }
-    return <Text>{item.type}</Text>;
   };
 
   return (

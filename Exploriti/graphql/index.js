@@ -881,6 +881,14 @@ export const UPDATE_EVENT = gql`
   }
 `;
 
+export const DELETE_EVENT = gql`
+    mutation deleteEvent($id: uuid!) {
+        deleteEvent(id: $id) {
+            id
+        }
+    }
+`
+
 export const CHECK_USER_EVENT_ACCEPTED = gql`
   query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
     user(id: $userId) {
@@ -1185,6 +1193,17 @@ export const GET_DETAILED_GROUP = gql`
     }
   }
 `;
+
+export const GET_GROUP_MEMBERS = gql`
+    query getGroupMembers($groupId: uuid!) {
+        group(id: $groupId) {
+            id
+            members {
+                userId
+            }
+        }
+    }
+`
 
 export const UPDATE_GROUP = gql`
   mutation updateGroup($id: uuid!, $data: group_set_input!) {
