@@ -113,17 +113,6 @@ const NotificationCard = ({
 };
 
 
-const ErrorNotificationsCard = ({ error }) => (
-  <View style={styles.container}>
-    <View style={styles.image}>
-      <PlaceholderMedia size={40} color={colours.placeholder} isRound />
-    </View>
-    <View style={styles.textContainer}>
-     <Text style={styles.message}>{`ERROR: ${error.message}`}</Text>
-    </View>
-  </View>
-);
-
 const LoadingNotificationCard = () => (
   <Placeholder Animation={Shine}>
   <View style={styles.container}>
@@ -155,11 +144,7 @@ export const UserNotificationCard = ({ item, message }) => {
   const navigation = useNavigation();
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.user)
-    return (
-      <ErrorNotificationsCard
-        error={error ? error : { message: 'no users found' }}
-      />
-    );
+    return null
   const nav = () => {
     navigation.push('Profile', { userId: item.typeId });
   };
@@ -183,11 +168,7 @@ export const EventNotificationCard = ({ item, message, titleLast }) => {
   const navigation = useNavigation();
   if (loading) return <LoadingNotificationCard />
   if (error || !data.event)
-    return (
-      <ErrorNotificationsCard
-        error={error ? error : { message: 'Could not find event' }}
-      />
-    );
+    return null
   const nav = () => {
     navigation.push('EventScreen', { eventId: item.typeId });
   };
