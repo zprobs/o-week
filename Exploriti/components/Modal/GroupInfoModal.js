@@ -4,7 +4,7 @@ import {
   Text,
   Dimensions,
   View,
-  TouchableOpacity,
+  TouchableOpacity, Linking,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -128,10 +128,12 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
           <View style={styles.contactContainer}>
             {
               !data.group.unsubscribable ? (
-                <View style={styles.contactView}>
+                <TouchableOpacity style={styles.contactView} onPress={()=>{
+                  Linking.openURL('tel:416-736-2100%2366512')
+                }}>
                   <Icon name={'phone'} size={18} style={styles.contactIcon} />
                   <Text style={styles.contactText}>Call</Text>
-                </View>
+                </TouchableOpacity>
               ) : null
             }
 
@@ -149,6 +151,7 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
                     numMessages,
                     messages,
                   },
+                  initial: false,
                 });
               }}>
               <Icon

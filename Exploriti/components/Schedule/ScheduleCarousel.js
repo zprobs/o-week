@@ -21,6 +21,7 @@ import { GET_SCHEDULED_EVENTS } from '../../graphql';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder';
 import { showMessage } from 'react-native-flash-message';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { FontWeights, FontSizes } = Fonts;
 const WIDTH = Dimensions.get('window').width;
@@ -45,6 +46,7 @@ const ScheduleCarousel = () => {
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const insets = useSafeArea();
 
   useEffect(() => {
     // separating all the events into pages based on which day they occur on.
@@ -88,7 +90,7 @@ const ScheduleCarousel = () => {
   }, [data]);
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Server Error');
   }
 
   const title = () => {
@@ -175,7 +177,7 @@ const ScheduleCarousel = () => {
   return (
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
       {isFocused ? <StatusBar barStyle="light-content" /> : null}
-      <ScrollView bounces={false}>
+      <ScrollView bounces={false} style={{ marginTop: insets.top }}>
         {loading ? (
           <SchedulePlaceholder />
         ) : (
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 25,
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginTop: 60,
+    marginTop: 45,
   },
   dayText: {
     ...FontWeights.Bold,

@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
 } from 'react-native';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -98,7 +97,7 @@ export default function Dashboard() {
 
     return (
       <>
-        <View style={{ marginHorizontal: 25, paddingTop: insets.top }}>
+        <View style={{ marginHorizontal: 25}}>
           {loading ? (
             <TitlePlaceholder />
           ) : (
@@ -179,6 +178,7 @@ export default function Dashboard() {
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
+        style={{marginTop: insets.top }}
       />
     </View>
   );

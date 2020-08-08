@@ -241,7 +241,7 @@ const Conversation = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} IconRight={OptionsIcon} onTitlePress={handleTitlePress} />
+      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} IconRight={OptionsIcon} onTitlePress={handleTitlePress}  />
       {content}
       <UsersBottomModal name={'Participants'} type={'chat'} name={chatName} idArray={participants.map(p => p.id)} ref={usersRef} />
     </SafeAreaView>
