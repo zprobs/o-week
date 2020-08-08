@@ -7,6 +7,7 @@ import GroupScreen from '../Orientation/GroupScreen';
 import { NotificationsIcon } from '../Menu/NotificationsIcon';
 import Notifications from '../Notifications';
 import EventScreen from '../Orientation/EventScreen';
+import SeeAllNotifications from '../Menu/SeeAllNotifications';
 const Stack = createStackNavigator();
 
 /**
@@ -51,9 +52,9 @@ export default function MyProfile() {
       <Stack.Screen
         name={'Notifications'}
         component={Notifications}
-        // options={{
-        //   headerShown: false,
-        // }}
+        options={{
+          headerRight: () => <SeeAllNotifications />
+        }}
       />
     </Stack.Navigator>
   );

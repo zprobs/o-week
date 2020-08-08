@@ -13,7 +13,7 @@ import { AuthContext, parseTimeElapsed } from '../../context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_EVENT_IMAGE_NAME,
-  GET_USER_BY_ID,
+  GET_USER_BY_ID, NOTIFICATION_FRAG, NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
@@ -32,7 +32,7 @@ const { colours } = Theme.light;
  * @param titleLast {boolean} if true, the bold title will appear after the message
  * @param message {string}
  * @param timestamp {string}
- * @param id {string}
+ * @param id {int}
  * @param seen {boolean}
  * @param nav
  * @returns {JSX.Element}
@@ -53,55 +53,45 @@ const NotificationCard = ({
   const [seeNotification] = useMutation(SEE_NOTIFICATION, {
     variables: { id: id },
     update: (cache) => {
-      const frag = gql`
-          fragment notificationFrag on user {
-              notifications(where: {seen: {_eq: false}}) {
-                  id
-                  seen
-              }
-          }
-      `;
 
       try {
+
         const { notifications } = cache.readFragment({
           id: `user:${authState.user.uid}`,
-          fragment: frag,
+          fragment: NOTIFICATION_FRAG,
         });
-
-        console.log('notifications', notifications);
-        console.log('id', id);
 
         const newNotifications = notifications.filter((n) => n.id !== id);
-
-        console.log('newNotifications', newNotifications);
-
         cache.writeFragment({
           id: `user:${authState.user.uid}`,
-          fragment: frag,
+          fragment: NOTIFICATION_FRAG,
           data: { __typename: 'user', notifications: newNotifications },
         });
+
       } catch (e) {
         console.log(e);
       }
     },
   });
-  const [isSeen, setIsSeen] = useState(seen);
 
-  console.log('seen', seen);
+  const [wasTapped, setWasTapped] = useState(false)
+
 
   const onPress = () => {
-    if (!isSeen) {
-      setIsSeen(true);
+    if (!seen) {
+      setWasTapped(true)
       seeNotification();
     }
     nav && nav();
   };
 
+  console.log('seen', seen)
+
   return (
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: isSeen ? colours.placeholder : colours.base },
+        { backgroundColor: seen ? colours.placeholder : wasTapped ? colours.placeholder : colours.base },
       ]}
       onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>

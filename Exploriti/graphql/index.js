@@ -40,44 +40,55 @@ export const GET_DETAILED_USER = gql`
   ${DETAILED_USER_FRAGMENT}
 `;
 
+export const NOTIFICATION_SUBSCRIPTION_FRAG = gql`
+    fragment notificationSubcriptionFrag on user {
+        notifications(order_by: { timestamp: desc }) {
+            id
+            timestamp
+            type
+            typeId
+            seen
+        }
+    }
+`
+
 export const GET_NOTIFICATIONS = gql`
     subscription getNotifications($id: String!) {
         user(id: $id) {
             id
-            notifications(order_by: { timestamp: desc }) {
-                id
-                timestamp
-                type
-                typeId
-                seen
-            }
+           ...notificationSubcriptionFrag 
         }
     }
+${NOTIFICATION_SUBSCRIPTION_FRAG}
+`;
 
+export const NOTIFICATION_FRAG = gql`
+    fragment notificationFrag on user {
+        notifications(where: {seen: {_eq: false}}) {
+            id
+            seen
+        }
+    }
 `;
 
 export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
     query getUnreadNotificationsCount($id: String!) {
         user(id: $id) {
             id
-            notifications(where: {seen: {_eq: false}}) {
-                id
-                seen
-            }
+            ...notificationFrag 
         }
     }
+    ${NOTIFICATION_FRAG}
 `
 
 export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
     subscription getUnreadNotificationsCount($id: String!) {
         user(id: $id) {
             id
-            notifications(where: {seen: {_eq: false}}) {
-                id
-                seen
-            }
+            ...notificationFrag 
         }
     }
+    ${NOTIFICATION_FRAG}
 `
 
 export const SEE_NOTIFICATION = gql`
@@ -91,18 +102,19 @@ export const SEE_NOTIFICATION = gql`
   }
 `;
 
+export const SEE_ALL_NOTIFICATIONS = gql`
+    mutation seeAllNotifications($id: String!) {
+        update_notification(where: {userNotifications: {userId: {_eq: $id}}}, _set: {seen: true}) {
+            affected_rows
+        }
+    }
+`
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
       isAdmin
-      notifications(order_by: { timestamp: desc }) {
-        id
-        timestamp
-        type
-        typeId
-        seen
-      }
       member {
         isOwner
         group {
