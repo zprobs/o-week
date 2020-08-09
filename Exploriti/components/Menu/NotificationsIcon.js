@@ -17,9 +17,7 @@ export const NotificationsIcon = ({white}) => {
   const {data} = useQuery(GET_UNREAD_NOTIFICATIONS_COUNT, {variables: {id: authState.user.uid }, fetchPolicy: 'cache-only'})
   const badgeCount = data ? data.user.notifications.length : 0
 
-  if (data) console.log('data', data)
 
-  console.log('notifIcon bC', badgeCount);
 
   const navigation = useNavigation();
   return (

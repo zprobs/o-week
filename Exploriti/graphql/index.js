@@ -41,55 +41,55 @@ export const GET_DETAILED_USER = gql`
 `;
 
 export const NOTIFICATION_SUBSCRIPTION_FRAG = gql`
-    fragment notificationSubcriptionFrag on user {
-        notifications(order_by: { timestamp: desc }) {
-            id
-            timestamp
-            type
-            typeId
-            seen
-        }
+  fragment notificationSubcriptionFrag on user {
+    notifications(order_by: { timestamp: desc }) {
+      id
+      timestamp
+      type
+      typeId
+      seen
     }
-`
+  }
+`;
 
 export const GET_NOTIFICATIONS = gql`
-    subscription getNotifications($id: String!) {
-        user(id: $id) {
-            id
-           ...notificationSubcriptionFrag 
-        }
+  subscription getNotifications($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationSubcriptionFrag
     }
-${NOTIFICATION_SUBSCRIPTION_FRAG}
+  }
+  ${NOTIFICATION_SUBSCRIPTION_FRAG}
 `;
 
 export const NOTIFICATION_FRAG = gql`
-    fragment notificationFrag on user {
-        notifications(where: {seen: {_eq: false}}) {
-            id
-            seen
-        }
+  fragment notificationFrag on user {
+    notifications(where: { seen: { _eq: false } }) {
+      id
+      seen
     }
+  }
 `;
 
 export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
-    query getUnreadNotificationsCount($id: String!) {
-        user(id: $id) {
-            id
-            ...notificationFrag 
-        }
+  query getUnreadNotificationsCount($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationFrag
     }
-    ${NOTIFICATION_FRAG}
-`
+  }
+  ${NOTIFICATION_FRAG}
+`;
 
 export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
-    subscription getUnreadNotificationsCount($id: String!) {
-        user(id: $id) {
-            id
-            ...notificationFrag 
-        }
+  subscription getUnreadNotificationsCount($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationFrag
     }
-    ${NOTIFICATION_FRAG}
-`
+  }
+  ${NOTIFICATION_FRAG}
+`;
 
 export const SEE_NOTIFICATION = gql`
   mutation seeNotification($id: Int!) {
@@ -103,12 +103,15 @@ export const SEE_NOTIFICATION = gql`
 `;
 
 export const SEE_ALL_NOTIFICATIONS = gql`
-    mutation seeAllNotifications($id: String!) {
-        update_notification(where: {userNotifications: {userId: {_eq: $id}}}, _set: {seen: true}) {
-            affected_rows
-        }
+  mutation seeAllNotifications($id: String!) {
+    update_notification(
+      where: { userNotifications: { userId: { _eq: $id } } }
+      _set: { seen: true }
+    ) {
+      affected_rows
     }
-`
+  }
+`;
 
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
@@ -231,21 +234,21 @@ export const SEND_NOTIFICATION = gql`
 `;
 
 export const SEND_NOTIFICATIONS = gql`
-    mutation sendNotifications(
-        $recipients: [userNotification_insert_input!]! 
-        $type: String!
-        $typeId: String!
+  mutation sendNotifications(
+    $recipients: [userNotification_insert_input!]!
+    $type: String!
+    $typeId: String!
+  ) {
+    sendNotification(
+      object: {
+        type: $type
+        typeId: $typeId
+        userNotifications: { data: $recipients }
+      }
     ) {
-        sendNotification(
-            object: {
-                type: $type
-                typeId: $typeId
-                userNotifications: { data: $recipients }
-            }
-        ) {
-            id
-        }
+      id
     }
+  }
 `;
 
 export const SIGN_UP = gql`
@@ -342,18 +345,18 @@ export const GET_USER_FRIENDS = gql`
 `;
 
 export const GET_USER_FRIENDS_EXCLUDING = gql`
-    query getFriends($userId: String!, $excluding: [String!]!) {
-        user(id: $userId) {
-            id
-            friends(where: {friendId: {_nin: $excluding}}) {
-                friend {
-                    id
-                    image
-                    name
-                }
-            }
+  query getFriends($userId: String!, $excluding: [String!]!) {
+    user(id: $userId) {
+      id
+      friends(where: { friendId: { _nin: $excluding } }) {
+        friend {
+          id
+          image
+          name
         }
+      }
     }
+  }
 `;
 
 export const GET_USER_FRIENDS_ID = gql`
@@ -491,7 +494,6 @@ export const DETAILED_CHAT = gql`
   ${MESSAGE_FRAGMENT}
 `;
 
-
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
     user(id: $user) {
@@ -502,7 +504,7 @@ export const GET_CHATS = gql`
         where: { chat: { messages: {} } }
       ) {
         seen
-          _id: chatId
+        _id: chatId
         chat {
           ...DetailedChat
         }
@@ -520,7 +522,7 @@ export const GET_UNREAD_CHAT_COUNT = gql`
         where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
       ) {
         chatId
-         _id: chatId 
+        _id: chatId
         seen
       }
     }
@@ -598,16 +600,17 @@ export const DELETE_CHAT = gql`
   }
 `;
 
-export const UPDATE_CHAT = gql`    
-    mutation updateChat($id: Int!, $_set: chat_set_input!) {
-        update_chat(where: {id: {_eq: $id}}, _set: $_set) {
-            returning {
-                id
-                image
-                name
-            }
-        }
-    }`
+export const UPDATE_CHAT = gql`
+  mutation updateChat($id: Int!, $_set: chat_set_input!) {
+    update_chat(where: { id: { _eq: $id } }, _set: $_set) {
+      returning {
+        id
+        image
+        name
+      }
+    }
+  }
+`;
 
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {
@@ -846,9 +849,9 @@ export const GET_EVENT = gql`
       hosts {
         groupId
       }
-        attendees {
-            userId
-        }
+      attendees {
+        userId
+      }
     }
   }
 `;
@@ -879,12 +882,12 @@ export const UPDATE_EVENT = gql`
 `;
 
 export const DELETE_EVENT = gql`
-    mutation deleteEvent($id: uuid!) {
-        deleteEvent(id: $id) {
-            id
-        }
+  mutation deleteEvent($id: uuid!) {
+    deleteEvent(id: $id) {
+      id
     }
-`
+  }
+`;
 
 export const CHECK_USER_EVENT_ACCEPTED = gql`
   query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
@@ -1186,21 +1189,21 @@ export const GET_DETAILED_GROUP = gql`
           id
         }
       }
-        unsubscribable
+      unsubscribable
     }
   }
 `;
 
 export const GET_GROUP_MEMBERS = gql`
-    query getGroupMembers($groupId: uuid!) {
-        group(id: $groupId) {
-            id
-            members {
-                userId
-            }
-        }
+  query getGroupMembers($groupId: uuid!) {
+    group(id: $groupId) {
+      id
+      members {
+        userId
+      }
     }
-`
+  }
+`;
 
 export const UPDATE_GROUP = gql`
   mutation updateGroup($id: uuid!, $data: group_set_input!) {
@@ -1316,6 +1319,48 @@ export const BAN_USER = gql`
   mutation banUser($id: String!) {
     deleteUser(id: $id) {
       id
+    }
+  }
+`;
+
+export const CHECK_USER_BLOCKED = gql`
+    query checkUserBlocked($blockedId: String!, $blockerId: String!) {
+        block(where: {blockedId: {_eq: $blockedId}, blockerId: {_eq: $blockerId}}) {
+            blockedId
+            blockerId
+        }
+    }
+`
+
+export const GET_USER_BLOCKS = gql`
+    query getUserBlocks($id: String!) {
+        user(id: $id) {
+            id
+            blocker {
+                userByBlockedid {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`
+
+export const BLOCK_USER = gql`
+  mutation blockUser($blockedId: String!, $blockerId: String!) {
+    blockUser(object: { blockedId: $blockedId, blockerId: $blockerId }) {
+      blockedId
+      blockerId
+    }
+  }
+`;
+
+export const UNBLOCK_USER = gql`
+  mutation unBlockUser($blockedId: String!, $blockerId: String!) {
+    unblockUser(
+      where: { blockedId: { _eq: $blockedId }, blockerId: { _eq: $blockerId } }
+    ) {
+      affected_rows
     }
   }
 `;

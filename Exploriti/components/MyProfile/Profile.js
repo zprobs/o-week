@@ -57,7 +57,7 @@ export default function Profile({ route }) {
   });
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Could not load Profile')
   }
 
   if (loading)
@@ -72,7 +72,6 @@ export default function Profile({ route }) {
         <ProfilePlaceholder hasInteractions={!isCurrentUser} />
       </View>
     );
-  if (error) return <Error e={error} />;
   const description = data.user.description;
   const name = data.user.name;
   const image =
@@ -158,7 +157,7 @@ export default function Profile({ route }) {
           />
         </>
       ) : (
-        <OptionsBottomModal ref={optionsBottomModalRef} />
+        <OptionsBottomModal ref={optionsBottomModalRef} id={userId} />
       )}
     </View>
   );
