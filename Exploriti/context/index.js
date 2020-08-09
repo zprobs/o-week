@@ -82,6 +82,7 @@ export function refreshToken(user, setAuthState) {
       .catch(console.error);
 
   } catch (e) {
+    console.log('failed to refresh');
     showMessage({
       message: 'Network error',
       description: e.message,

@@ -491,20 +491,6 @@ export const DETAILED_CHAT = gql`
   ${MESSAGE_FRAGMENT}
 `;
 
-// export const GET_CHATS = gql`
-//   subscription getChats($user: String!) {
-//     chats(
-//       limit: 15
-//       order_by: { messages_aggregate: { max: { date: desc } } }
-//       where: {
-//         _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
-//       }
-//     ) {
-//       ...DetailedChat
-//     }
-//   }
-//   ${DETAILED_CHAT}
-// `;
 
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
@@ -611,6 +597,17 @@ export const DELETE_CHAT = gql`
     }
   }
 `;
+
+export const UPDATE_CHAT = gql`    
+    mutation updateChat($id: Int!, $_set: chat_set_input!) {
+        update_chat(where: {id: {_eq: $id}}, _set: $_set) {
+            returning {
+                id
+                image
+                name
+            }
+        }
+    }`
 
 export const GET_NEW_MESSAGES = gql`
   subscription getMessages($chatId: Int!) {

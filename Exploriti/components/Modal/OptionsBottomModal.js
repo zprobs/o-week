@@ -20,7 +20,8 @@ const { colours } = Theme.light;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}
  */
 const OptionsBottomModal = React.forwardRef(
-  ({ data, title, selectedData, setData }, ref) => {
+  ({ id }, ref) => {
+    console.log('optionsID', id)
     return (
       <Modalize
         ref={ref}

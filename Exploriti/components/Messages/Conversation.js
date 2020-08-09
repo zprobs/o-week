@@ -27,6 +27,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import OptionsIcon from '../Menu/OptionsIcon';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import gql from 'graphql-tag';
+import ChatOptionsModal from '../Modal/ChatOptionsModal';
+import OptionsBottomModal from '../Modal/OptionsBottomModal';
 
 const { colours } = Theme.light;
 
@@ -44,7 +46,8 @@ const Conversation = () => {
     numMessages,
     messages: initialMessages,
     isHighlighted: notSeen,
-    chatName
+    chatName,
+    image
   } = route.params;
   const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
@@ -64,9 +67,11 @@ const Conversation = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [messageOffset, setMessageOffset] = useState(initialMessages.length);
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+  const [nameState, setNameState] = useState(name)
   const [loadEarlier, setLoadEarlier] = useState(messageOffset < numMessages);
   const didSetFirst = useRef(false);
   const usersRef = useRef();
+  const optionsRef = useRef();
   const numToLoad = 5;
 
   const isFocused = useIsFocused();
@@ -204,6 +209,10 @@ const Conversation = () => {
     }
   };
 
+  const handleOptionsPress = () => {
+    optionsRef.current && optionsRef.current.open();
+  }
+
   console.log('part', participants)
 
   // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
@@ -241,9 +250,16 @@ const Conversation = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackHeader title={name} titleStyle={styles.headerTitleStyle} IconRight={OptionsIcon} onTitlePress={handleTitlePress}  />
+      <GoBackHeader title={nameState} titleStyle={styles.headerTitleStyle} IconRight={()=><OptionsIcon onPress={handleOptionsPress}/>} onTitlePress={handleTitlePress}  />
       {content}
       <UsersBottomModal name={'Participants'} type={'chat'} name={chatName} idArray={participants.map(p => p.id)} ref={usersRef} />
+      {
+        participants.length > 2 ? (
+          <ChatOptionsModal id={chatId} prevName={nameState} prevImage={image} ref={optionsRef} setName={setNameState} />
+        ) : (
+          <OptionsBottomModal id={participants.find(p => p.id !== authState.user.uid).id} ref={optionsRef} />
+        )
+      }
     </SafeAreaView>
   );
 };
