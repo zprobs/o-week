@@ -21,6 +21,7 @@ import { DETAILED_CHAT, UNSUBSCRIBE_FROM_CHAT, UPDATE_CHAT } from '../../graphql
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import gql from 'graphql-tag';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -57,6 +58,17 @@ const ChatOptionsModal = React.forwardRef(
         })
         .catch((result) => console.log(result));
     };
+
+    const report = () => {
+      showMessage({
+        message: 'Report Submitted',
+        description: 'This chat has been submitted for review. You may leave the chat by swiping left in the Messages List screen',
+        autoHide: true,
+        duration: 4500,
+        type: 'success',
+        icon: 'auto'
+      });
+    }
 
     const onDone = async (values) => {
       setIsUploading(true);
@@ -148,6 +160,15 @@ const ChatOptionsModal = React.forwardRef(
                   colour={ThemeStatic.accent}
                   light={true}
                 />
+
+                <ButtonColour
+                  labelStyle={{ color: ThemeStatic.delete }}
+                  colour={colours.placeholder}
+                  containerStyle={styles.button}
+                  label={'Report Chat'}
+                  onPress={report}
+                />
+
               </>
             )}
           </Formik>

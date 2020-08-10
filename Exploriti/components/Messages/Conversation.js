@@ -19,7 +19,7 @@ import CustomInputToolbar from './CustomInputToolbar';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
   GET_EARLIER_MESSAGES,
-  GET_NEW_MESSAGES,
+  GET_NEW_MESSAGES,  GET_USERS_BY_ID,
   SEND_MESSAGE,
   UPDATE_MESSAGE_SEEN,
 } from '../../graphql';
@@ -252,7 +252,7 @@ const Conversation = () => {
     <SafeAreaView style={styles.container}>
       <GoBackHeader title={nameState} titleStyle={styles.headerTitleStyle} IconRight={()=><OptionsIcon onPress={handleOptionsPress}/>} onTitlePress={handleTitlePress}  />
       {content}
-      <UsersBottomModal name={'Participants'} type={'chat'} name={chatName} idArray={participants.map(p => p.id)} ref={usersRef} />
+      <UsersBottomModal type={'chat'} name={chatName} query={GET_USERS_BY_ID} variables={{_in: participants.map(p => p.id)}} ref={usersRef} />
       {
         participants.length > 2 ? (
           <ChatOptionsModal id={chatId} prevName={nameState} prevImage={image} ref={optionsRef} setName={setNameState} />

@@ -14,7 +14,7 @@ import UserInteractions from './UserInteractions';
 import ProfileCard from './ProfileCard';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_DETAILED_USER } from '../../graphql';
+import { GET_DETAILED_USER, GET_USER_FRIENDS } from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
@@ -131,9 +131,10 @@ export default function Profile({ route }) {
       </SafeAreaView>
       <UsersBottomModal
         ref={usersBottomModalRef}
-        type="Friends"
+        type="friends"
+        query={GET_USER_FRIENDS}
+        variables={{userId: userId}}
         name={isCurrentUser ? null : name}
-        userId={userId}
       />
       <GroupBottomModal
         ref={groupBottomModalRef}

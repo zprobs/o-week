@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  Button,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -22,14 +23,11 @@ import {
   CHECK_USER_EVENT_ACCEPTED,
   CONFIRM_EVENT_INVITE,
   GET_DETAILED_EVENT,
-  GET_EVENT_ATTENDANCE,
-  GET_EVENT_INVITED,
-  REMOVE_USER_FROM_EVENT, SEND_NOTIFICATION,
+  REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
 import { AuthContext, processError, processWarning, refreshToken } from '../../context';
-import { showMessage } from 'react-native-flash-message';
-import {acc} from "react-native-reanimated";
+import images from '../../assets/images';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -44,7 +42,7 @@ const WIDTH = Dimensions.get('window').width;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
 const EventInfoModal = React.forwardRef(
-  ({ eventId, inviteRef, initialIndex }, ref) => {
+  ({ eventId, inviteRef, initialIndex, allAttendingRef, allInvitedRef }, ref) => {
     const { authState, setAuthState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
@@ -53,6 +51,7 @@ const EventInfoModal = React.forwardRef(
     if (error) {
       processError(error, 'Server Error')
     }
+
 
     const Tabs = () => {
       const [index, setIndex] = useState(initialIndex);
@@ -123,19 +122,12 @@ const EventInfoModal = React.forwardRef(
         { loading: confirmLoading, error: confirmError },
       ] = useMutation(CONFIRM_EVENT_INVITE, {
         variables: { eventId: eventId, userId: authState.user.uid },
+        // todo: update cache properly
         refetchQueries: [
-          {
-            query: GET_EVENT_ATTENDANCE,
-            variables: { eventId: eventId },
-          },
           {
             query: CHECK_USER_EVENT_ACCEPTED,
             variables: { eventId: eventId, userId: authState.user.uid },
-          },
-          {
-            query: GET_EVENT_INVITED,
-            variables: { eventId: eventId },
-          },
+          }
         ],
       });
       const [
@@ -145,13 +137,9 @@ const EventInfoModal = React.forwardRef(
         variables: { eventId: eventId, userId: authState.user.uid },
         refetchQueries: [
           {
-            query: GET_EVENT_ATTENDANCE,
-            variables: { eventId: eventId },
-          },
-          {
             query: CHECK_USER_EVENT_ACCEPTED,
             variables: { eventId: eventId, userId: authState.user.uid },
-          },
+          }
         ],
         awaitRefetchQueries: true
       });
@@ -243,16 +231,13 @@ const EventInfoModal = React.forwardRef(
             {data.event.isOfficial ? (
               <View style={styles.iconView}>
                 <Image
-                  source={{
-                    uri:
-                      'https://www.iedp.com/media/1699/rotman-circle-blue.png',
-                  }}
+                  source={images.logo}
                   style={styles.icon}
                   width={32}
                   height={32}
                   borderRadius={16}
                 />
-                <Text style={styles.iconLabel}>Rotman Event</Text>
+                <Text style={styles.iconLabel}>Vanier College Council Event</Text>
               </View>
             ) : null}
             <View style={styles.iconView}>
@@ -290,7 +275,9 @@ const EventInfoModal = React.forwardRef(
                 <Text style={styles.iconLabel}>{data.event.location}</Text>
               </View>
             ) : null}
-            <Text style={styles.sectionText}>Description</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Description</Text>
+            </View>
             <Text style={styles.descriptionText}>{data.event.description}</Text>
           </View>
         </>
@@ -320,15 +307,34 @@ const EventInfoModal = React.forwardRef(
           />
           {going.length > 0 ? (
             <>
+              <View style={styles.sectionView}>
               <Text style={styles.sectionText}>Going</Text>
+                {
+                  going.length > 20 ? (
+                    <TouchableOpacity style={styles.seeAllButton} onPress={allAttendingRef.current.open}>
+                      <Text style={styles.seeAllText} >See All</Text>
+                    </TouchableOpacity>
+                  ) : null
+                }
+              </View>
               <HorizontalUserList data={going} style={{ marginBottom: 15 }} />
             </>
           ) : null}
           {invited.length > 0 ? (
             <>
-              <Text style={{ ...styles.sectionText, marginTop: 0 }}>
+              <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>
                 Invited
               </Text>
+              {
+                invited.length > 20 ? (
+                  <TouchableOpacity style={styles.seeAllButton} onPress={allInvitedRef.current.open}>
+                    <Text style={styles.seeAllText} >See All</Text>
+                  </TouchableOpacity>
+                ) : null
+              }
+              </View>
+
               <HorizontalUserList data={invited} />
             </>
           ) : null}
@@ -478,13 +484,26 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
   },
+  sectionView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   sectionText: {
     ...FontSizes.Label,
     ...FontWeights.Bold,
     color: colours.text03,
-    marginTop: 20,
     marginHorizontal: 25,
-    marginBottom: 5,
+    marginBottom: 5
+  },
+  seeAllText: {
+    ...FontSizes.Body,
+    ...FontWeights.Regular,
+    color: ThemeStatic.lightBlue,
+  },
+  seeAllButton: {
+    marginHorizontal: 25,
+    marginLeft: 'auto',
   },
   descriptionText: {
     ...FontSizes.Body,
@@ -602,6 +621,7 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 20,
   },
+
 });
 
 export default EventInfoModal;

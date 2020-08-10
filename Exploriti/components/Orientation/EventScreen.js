@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions, Alert,
+  Dimensions,
+  Alert,
 } from 'react-native';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import Fonts from '../../theme/Fonts';
@@ -14,11 +15,17 @@ import EventInfoModal from '../Modal/EventInfoModal';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CHECK_USER_ADMIN, DELETE_EVENT,
+  ALL_USERS_PAGINATION_TEST,
+  CHECK_USER_ADMIN,
+  DELETE_EVENT,
   GET_EVENT,
-  GET_USER_FRIENDS, GET_USER_FRIENDS_EXCLUDING,
+  GET_EVENT_ATTENDANCE,
+  GET_USER_FRIENDS,
+  GET_USER_FRIENDS_NOT_ATTENDING_EVENT,
   GET_USER_GROUPS,
-  INVITE_USERS_TO_EVENT, SEND_NOTIFICATION, SEND_NOTIFICATIONS,
+  INVITE_USERS_TO_EVENT,
+  SEND_NOTIFICATION,
+  SEND_NOTIFICATIONS,
 } from '../../graphql';
 import {
   AuthContext,
@@ -49,10 +56,12 @@ const EventScreen = ({ route }) => {
   const modalRef = useRef();
   const inviteRef = useRef();
   const editRef = useRef();
-  const {goBack} = useNavigation();
+  const allInvitedRef = useRef();
+  const allAttendingRef = useRef();
+  const { goBack } = useNavigation();
   const { authState, setAuthState } = useContext(AuthContext);
   const [sendNotifications] = useMutation(SEND_NOTIFICATIONS);
-  const [invite, {error: inviteError}] = useMutation(INVITE_USERS_TO_EVENT);
+  const [invite, { error: inviteError }] = useMutation(INVITE_USERS_TO_EVENT);
   const { eventId } = route.params;
   const [tabIndex, setTabIndex] = useState(0); // used to prevent tabs from defaulting to 0 after rerender
   const { data, loading, error } = useQuery(GET_EVENT, {
@@ -63,31 +72,38 @@ const EventScreen = ({ route }) => {
     fetchPolicy: 'cache-only',
   });
 
-  const {data: isAdminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}, fetchPolicy: 'cache-only'})
+  const { data: isAdminData } = useQuery(CHECK_USER_ADMIN, {
+    variables: { id: authState.user.uid },
+    fetchPolicy: 'cache-only',
+  });
 
-  const [deleteEvent, {error: deleteError}] = useMutation(DELETE_EVENT, {variables: {id: eventId}});
+  const [deleteEvent, { error: deleteError }] = useMutation(DELETE_EVENT, {
+    variables: { id: eventId },
+  });
 
   const insets = useSafeArea();
 
   if (loading) return null;
   if (error) {
-    processWarning(error, 'Server Error')
-    return null
+    processWarning(error, 'Server Error');
+    return null;
   }
 
   if (inviteError) {
-    processWarning(inviteError, 'Could not Invite to Event')
+    processWarning(inviteError, 'Could not Invite to Event');
   }
 
   if (deleteError) {
-    processError(deleteError, 'Could not Delete event')
+    processError(deleteError, 'Could not Delete event');
   }
 
-
-  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter((membership) =>
-    data.event.hosts.map((host) => host.groupId).includes(membership.group.id),
-  ) : [];
-
+  const filteredMemberships = isOwnerData
+    ? isOwnerData.user.member.filter((membership) =>
+        data.event.hosts
+          .map((host) => host.groupId)
+          .includes(membership.group.id),
+      )
+    : [];
 
   const isMember = filteredMemberships.length > 0;
   const isOwner = isMember && filteredMemberships[0].isOwner === true;
@@ -109,23 +125,23 @@ const EventScreen = ({ route }) => {
   const parsedYear = year === '2020' ? '' : year;
 
   const inviteUserToEvent = (userIdArray) => {
-    console.log('userIdArray', userIdArray)
-    const IDs = userIdArray.map(user=>user.id)
-    console.log('IdArray', IDs)
+    console.log('userIdArray', userIdArray);
+    const IDs = userIdArray.map((user) => user.id);
+    console.log('IdArray', IDs);
     setTabIndex(1);
-    const objects = graphqlify_relationship(eventId, IDs, 'event', 'user' )
+    const objects = graphqlify_relationship(eventId, IDs, 'event', 'user');
     console.log('object', objects);
     invite({ variables: { objects: objects } })
       .then(() => {
         inviteRef.current.close();
-        const recipients = []
-        IDs.forEach(id => recipients.push({userId: id}))
-        console.log('recips', recipients)
+        const recipients = [];
+        IDs.forEach((id) => recipients.push({ userId: id }));
+        console.log('recips', recipients);
         sendNotifications({
           variables: {
             type: NotificationTypes.eventInvite,
             typeId: eventId,
-            recipients: recipients ,
+            recipients: recipients,
           },
         }).catch((e) => console.log(e));
       })
@@ -141,22 +157,26 @@ const EventScreen = ({ route }) => {
     modalRef.current.open();
   };
 
+
   const onDeleteEvent = () => {
     Alert.alert(
       'Permanently Delete this Event',
       'All event data will be erased, Users will not be notified. Reload the app to see changes.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => {
-          deleteEvent().catch(e=>console.log(e))
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteEvent().catch((e) => console.log(e));
             goBack();
-        } },
+          },
+        },
       ],
       { cancelable: true },
     );
-  }
+  };
 
-  console.log('attendees', data.event.attendees)
 
   return (
     <View style={styles.container}>
@@ -168,12 +188,12 @@ const EventScreen = ({ route }) => {
             <CircleBackIcon style={styles.circleBackIcon} />
             {isAdminData.user.isAdmin || isOwner ? (
               <View>
-              <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
-              <CircleEditIcon
-                style={styles.circleEditIcon}
-                onPress={onDeleteEvent}
-                icon={'trash-2'}
-              />
+                <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
+                <CircleEditIcon
+                  style={styles.circleEditIcon}
+                  onPress={onDeleteEvent}
+                  icon={'trash-2'}
+                />
               </View>
             ) : null}
           </View>
@@ -190,14 +210,19 @@ const EventScreen = ({ route }) => {
         eventId={eventId}
         inviteRef={inviteRef}
         initialIndex={tabIndex}
+        allAttendingRef={allAttendingRef}
+        allInvitedRef={allInvitedRef}
       />
       <SearchableFlatList
         ref={inviteRef}
         title={'friends'}
-        query={GET_USER_FRIENDS_EXCLUDING}
+        query={GET_USER_FRIENDS_NOT_ATTENDING_EVENT}
         hasImage={true}
-        variables={{ userId: authState.user.uid, excluding: data.event.attendees.map(a => a.userId) }}
-        setSelection={()=>{}}
+        variables={{
+          userId: authState.user.uid,
+          eventId: eventId,
+        }}
+        setSelection={() => {}}
         aliased={false}
         floatingButtonText={'Invite'}
         min={1}
@@ -207,6 +232,19 @@ const EventScreen = ({ route }) => {
         offset={70 + insets.top}
         floatingButtonOffset={70 + insets.bottom}
       />
+      <UsersBottomModal
+        query={GET_EVENT_ATTENDANCE}
+        variables={{ eventId: eventId, didAccept: true }}
+        type={'event'}
+        ref={allAttendingRef}
+      />
+      <UsersBottomModal
+        query={GET_EVENT_ATTENDANCE}
+        variables={{ eventId: eventId, didAccept: false }}
+        type={'event'}
+        ref={allInvitedRef}
+      />
+
       {isAdminData.user.isAdmin || isOwner ? (
         <NewEventModal
           ref={editRef}
