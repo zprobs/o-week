@@ -1025,14 +1025,14 @@ export const GET_DETAILED_GROUP = gql`
       name
       image
       description
-      members(where: { isOwner: { _eq: false } }, limit: 25) {
+      members(where: { isOwner: { _eq: false } }, limit: 20) {
         user {
           id
           image
           name
         }
       }
-      owners: members(where: { isOwner: { _eq: true } }, limit: 25) {
+      owners: members(where: { isOwner: { _eq: true } }, limit: 20) {
         user {
           id
           image
@@ -1071,6 +1071,21 @@ export const GET_GROUP_MEMBERS = gql`
     }
   }
 `;
+
+export const GET_GROUP_MEMBERS_PAGINATED = gql`
+   query getGroupMembersPaginated($groupId: uuid!, $offset: Int!, $isOwner: Boolean! ) {
+       group(id: $groupId) {
+           id
+           members(where: {isOwner: {_eq: $isOwner}} limit: 20, offset: $offset) {
+               user {
+                   id
+                   name
+                   image
+               }
+           }
+       }
+   } 
+`
 
 export const UPDATE_GROUP = gql`
   mutation updateGroup($id: uuid!, $data: group_set_input!) {

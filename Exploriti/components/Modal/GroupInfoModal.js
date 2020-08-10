@@ -39,7 +39,7 @@ const WIDTH = Dimensions.get('window').width;
  * @param isMember {boolean} true if the user is a member and can call / message the group
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
  */
-const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
+const GroupInfoModal = React.forwardRef(({ groupId, isMember, allLeadersRef, allMembersRef }, ref) => {
   const navigation = useNavigation();
   const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
     variables: { id: groupId },
@@ -164,7 +164,9 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
           </View>
         ) : null}
 
-        <Text style={styles.sectionText}>Description</Text>
+        <View style={styles.sectionView}>
+          <Text style={styles.sectionText}>Description</Text>
+        </View>
         <Text style={styles.descriptionText}>{data.group.description}</Text>
 
         {data.group.trophies.length > 0 ? (
@@ -192,47 +194,48 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
 
   const Members = () => {
     if (loading || error) return null;
-    const {
-      data: members,
-      loading: loadingMembers,
-      error: errorMembers,
-    } = useQuery(GET_USERS_BY_ID, {
-      variables: { _in: data.group.members.map((member) => member.user.id) },
-    });
-    const {
-      data: leaders,
-      loading: loadingLeaders,
-      error: errorLeaders,
-    } = useQuery(GET_USERS_BY_ID, {
-      variables: { _in: data.group.owners.map((owner) => owner.user.id) },
-    });
 
-    if (errorMembers) {
-      processWarning(errorMembers, 'Server Error')
-    }
+    const leaders = data.group.owners.map(o => o.user);
+    const members = data.group.members.map(m => m.user);
 
-    if (errorLeaders) {
-      processWarning(errorLeaders, 'Server Error')
-    }
-
-    if (loadingMembers || errorMembers || loadingLeaders || errorLeaders)
-      return null;
     return (
       <>
-        {leaders.users.length > 0 ? (
+        {leaders.length > 0 ? (
           <>
-            <Text style={styles.sectionText}>Leaders</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Leaders</Text>
+              {
+                leaders.length > 20 ?(
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allLeadersRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null
+              }
+            </View>
             <HorizontalUserList
-              data={leaders.users}
+              data={leaders}
               style={{ marginTop: 10 }}
             />
           </>
         ) : null}
-        {members.users.length > 0 ? (
+        {members.length > 0 ? (
           <>
-            <Text style={styles.sectionText}>Members</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Members</Text>
+              {
+                members.length > 20 ?(
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allMembersRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null
+              }
+            </View>
             <HorizontalUserList
-              data={members.users}
+              data={members}
               style={{ marginTop: 10 }}
             />
           </>
@@ -303,12 +306,26 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
 });
 
 const styles = StyleSheet.create({
+  sectionView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   sectionText: {
     ...FontSizes.Label,
     ...FontWeights.Bold,
     color: colours.text03,
-    marginTop: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 25,
+    marginBottom: 5,
+  },
+  seeAllText: {
+    ...FontSizes.Body,
+    ...FontWeights.Regular,
+    color: ThemeStatic.lightBlue,
+  },
+  seeAllButton: {
+    marginHorizontal: 25,
+    marginLeft: 'auto',
   },
   contactContainer: {
     flexDirection: 'row',

@@ -14,10 +14,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
-import { CHECK_USER_ADMIN, GET_GROUP_IMAGE_NAME, GET_USER_GROUPS } from '../../graphql';
+import {
+  CHECK_USER_ADMIN,
+  GET_EVENT_ATTENDANCE,
+  GET_GROUP_IMAGE_NAME,
+  GET_GROUP_MEMBERS_PAGINATED,
+  GET_USER_GROUPS,
+} from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
+import UsersBottomModal from '../Modal/UsersBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -32,6 +39,8 @@ const HEIGHT = Dimensions.get('window').height;
 const GroupScreen = ({ route }) => {
   const modalRef = useRef();
   const editRef = useRef();
+  const allLeadersRef = useRef();
+  const allMembersRef = useRef();
   const creatEventRef = useRef();
   const { groupId } = route.params;
   const { authState, setAuthState } = useContext(AuthContext);
@@ -106,7 +115,19 @@ const GroupScreen = ({ route }) => {
           </LinearGradient>
         </View>
       </ImageBackground>
-      <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember} />
+      <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember} allLeadersRef={allLeadersRef} allMembersRef={allMembersRef}  />
+      <UsersBottomModal
+        query={GET_GROUP_MEMBERS_PAGINATED}
+        variables={{ groupId: groupId, isOwner: true  }}
+        type={'group'}
+        ref={allLeadersRef}
+      />
+      <UsersBottomModal
+        query={GET_GROUP_MEMBERS_PAGINATED}_
+        variables={{ groupId: groupId, isOwner: false }}
+        type={'group'}
+        ref={allMembersRef}
+      />
       {isAdminData.user.isAdmin || isOwner ? (
         <>
           <GroupEditModal

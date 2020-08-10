@@ -66,6 +66,12 @@ const UsersBottomModal = React.forwardRef(
       } `;
       if (userData) data = userData.event.attendees;
       keyExtractor = (item) => item.user.id;
+    } else if (type === 'group') {
+      heading = 'Group Members';
+      subHeading = `Users who ${
+        variables.isOwner ? 'lead this group' : 'are in this group'
+      } `;
+      if (userData) data = userData.group.members;
     }
 
     const listEmptyComponent = () => (
@@ -81,7 +87,7 @@ const UsersBottomModal = React.forwardRef(
 
       if (type === 'friends') {
         user = item.friend;
-      } else if (type === 'event') {
+      } else if (type === 'event' || type === 'group') {
         user = item.user;
       } else {
         user = item;
@@ -146,6 +152,16 @@ const UsersBottomModal = React.forwardRef(
                     ]
                   }
                 };
+              case 'group':
+                return {
+                  group: {
+                    ...prev.group,
+                    members: [
+                      ...prev.group.members,
+                      ...fetchMoreResult.group.members
+                    ]
+                  }
+                }
               default:
                 return null
             }
