@@ -22,11 +22,21 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_EVENT_ACCEPTED,
   CONFIRM_EVENT_INVITE,
+  DETAILED_EVENT_FRAGMENT,
+  DETAILED_USER_FRAGMENT,
+  GET_CURRENT_USER,
   GET_DETAILED_EVENT,
+  GET_DETAILED_USER,
+  GET_EVENT_ATTENDANCE, GET_USER_FRIENDS_NOT_ATTENDING_EVENT,
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import { AuthContext, processError, processWarning, refreshToken } from '../../context';
+import {
+  AuthContext,
+  processError,
+  processWarning,
+  refreshToken,
+} from '../../context';
 import images from '../../assets/images';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -42,16 +52,18 @@ const WIDTH = Dimensions.get('window').width;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
 const EventInfoModal = React.forwardRef(
-  ({ eventId, inviteRef, initialIndex, allAttendingRef, allInvitedRef }, ref) => {
+  (
+    { eventId, inviteRef, initialIndex, allAttendingRef, allInvitedRef },
+    ref,
+  ) => {
     const { authState, setAuthState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
 
     if (error) {
-      processError(error, 'Server Error')
+      processError(error, 'Server Error');
     }
-
 
     const Tabs = () => {
       const [index, setIndex] = useState(initialIndex);
@@ -101,7 +113,6 @@ const EventInfoModal = React.forwardRef(
     };
 
     const Details = () => {
-
       const [isSelected, setIsSelected] = useState(false);
 
       const {
@@ -111,53 +122,181 @@ const EventInfoModal = React.forwardRef(
       } = useQuery(CHECK_USER_EVENT_ACCEPTED, {
         variables: { eventId: eventId, userId: authState.user.uid },
       });
-      const [signUp, { loading: signUpLoading, error: signUpError }] = useMutation(
-        SIGN_UP_USER_FOR_EVENT,
-        {
-          variables: { eventId: eventId, userId: authState.user.uid },
+      const [
+        signUp,
+        { loading: signUpLoading, error: signUpError },
+      ] = useMutation(SIGN_UP_USER_FOR_EVENT, {
+        variables: { eventId: eventId, userId: authState.user.uid },
+        update: (cache) => {
+          try {
+            const user = cache.readFragment({
+              fragment: DETAILED_USER_FRAGMENT,
+              id: `user:${authState.user.uid}`,
+            });
+
+            const event = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+            console.log('user, event', user);
+            console.log(event);
+            console.log('length', event.attendees.length);
+            event.attendees = [
+              {
+                __typename: 'attendee',
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  name: user.name,
+                  image: user.image,
+                },
+              },
+              ...event.attendees,
+            ];
+            console.log('length', event.attendees.length);
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+            // updating the fact that this user has accepted this event
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [
+                    {
+                      __typename: 'userEvent',
+                      didAccept: true,
+                      eventId: eventId,
+                    },
+                  ],
+                },
+              },
+            });
+          } catch (e) {
+            console.log(e);
+          }
         },
-      );
+      });
       const [
         confirm,
         { loading: confirmLoading, error: confirmError },
       ] = useMutation(CONFIRM_EVENT_INVITE, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        // todo: update cache properly
-        refetchQueries: [
-          {
-            query: CHECK_USER_EVENT_ACCEPTED,
-            variables: { eventId: eventId, userId: authState.user.uid },
+        update: cache => {
+          try {
+
+            const user = cache.readFragment({
+              fragment: DETAILED_USER_FRAGMENT,
+              id: `user:${authState.user.uid}`,
+            });
+
+            const event = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+
+            console.log('length', event.invited.length);
+            event.invited = event.invited.filter(a => a.user.id !== authState.user.uid)
+            console.log('length', event.invited.length);
+
+            event.attendees = [
+              {
+                __typename: 'attendee',
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  name: user.name,
+                  image: user.image,
+                },
+              },
+              ...event.attendees,
+            ];
+
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [
+                    {
+                      __typename: 'userEvent',
+                      didAccept: true,
+                      eventId: eventId,
+                    },
+                  ],
+                },
+              },
+            });
+
+          } catch (e) {
+            console.log(e);
           }
-        ],
+        }
       });
       const [
         remove,
         { loading: removeLoading, error: removeError },
       ] = useMutation(REMOVE_USER_FROM_EVENT, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        refetchQueries: [
-          {
-            query: CHECK_USER_EVENT_ACCEPTED,
-            variables: { eventId: eventId, userId: authState.user.uid },
+        update: cache => {
+          try {
+            const  event  = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+            console.log('length', event.attendees.length);
+            event.attendees = event.attendees.filter(a => a.user.id !== authState.user.uid)
+            console.log('length', event.attendees.length);
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+            // updating the fact that this user has accepted this event
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [],
+                },
+              },
+            });
+          } catch (e) {
+            console.log(e)
           }
-        ],
-        awaitRefetchQueries: true
+        }
       });
 
       if (acceptError) {
-        processWarning(acceptError, 'Server Error')
+        processWarning(acceptError, 'Server Error');
       }
 
       if (signUpError) {
-        processError(signUpError, 'Could not join Event')
+        processError(signUpError, 'Could not join Event');
       }
 
       if (confirmError) {
-        processError(confirmError, 'Could not join Event')
+        processError(confirmError, 'Could not join Event');
       }
 
       if (removeError) {
-        processError(removeError, 'Cannot cancel RSVP')
+        processError(removeError, 'Cannot cancel RSVP');
       }
 
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
@@ -237,7 +376,9 @@ const EventInfoModal = React.forwardRef(
                   height={32}
                   borderRadius={16}
                 />
-                <Text style={styles.iconLabel}>Vanier College Council Event</Text>
+                <Text style={styles.iconLabel}>
+                  Vanier College Council Event
+                </Text>
               </View>
             ) : null}
             <View style={styles.iconView}>
@@ -308,14 +449,14 @@ const EventInfoModal = React.forwardRef(
           {going.length > 0 ? (
             <>
               <View style={styles.sectionView}>
-              <Text style={styles.sectionText}>Going</Text>
-                {
-                  going.length > 20 ? (
-                    <TouchableOpacity style={styles.seeAllButton} onPress={allAttendingRef.current.open}>
-                      <Text style={styles.seeAllText} >See All</Text>
-                    </TouchableOpacity>
-                  ) : null
-                }
+                <Text style={styles.sectionText}>Going</Text>
+                {going.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allAttendingRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null}
               </View>
               <HorizontalUserList data={going} style={{ marginBottom: 15 }} />
             </>
@@ -323,16 +464,14 @@ const EventInfoModal = React.forwardRef(
           {invited.length > 0 ? (
             <>
               <View style={styles.sectionView}>
-              <Text style={styles.sectionText}>
-                Invited
-              </Text>
-              {
-                invited.length > 20 ? (
-                  <TouchableOpacity style={styles.seeAllButton} onPress={allInvitedRef.current.open}>
-                    <Text style={styles.seeAllText} >See All</Text>
+                <Text style={styles.sectionText}>Invited</Text>
+                {invited.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allInvitedRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
                   </TouchableOpacity>
-                ) : null
-              }
+                ) : null}
               </View>
 
               <HorizontalUserList data={invited} />
@@ -494,7 +633,7 @@ const styles = StyleSheet.create({
     ...FontWeights.Bold,
     color: colours.text03,
     marginHorizontal: 25,
-    marginBottom: 5
+    marginBottom: 5,
   },
   seeAllText: {
     ...FontSizes.Body,
@@ -621,7 +760,6 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 20,
   },
-
 });
 
 export default EventInfoModal;

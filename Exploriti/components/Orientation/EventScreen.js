@@ -17,7 +17,10 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   ALL_USERS_PAGINATION_TEST,
   CHECK_USER_ADMIN,
+  CHECK_USER_EVENT_ACCEPTED,
   DELETE_EVENT,
+  DETAILED_EVENT_FRAGMENT,
+  DETAILED_USER_FRAGMENT,
   GET_EVENT,
   GET_EVENT_ATTENDANCE,
   GET_USER_FRIENDS,
@@ -131,7 +134,55 @@ const EventScreen = ({ route }) => {
     setTabIndex(1);
     const objects = graphqlify_relationship(eventId, IDs, 'event', 'user');
     console.log('object', objects);
-    invite({ variables: { objects: objects } })
+    invite({
+      variables: { objects: objects },
+      update: (cache) => {
+        try {
+          const { user } = cache.readQuery({
+            query: GET_USER_FRIENDS_NOT_ATTENDING_EVENT,
+            variables: { userId: authState.user.uid, eventId: eventId },
+          });
+
+          const event = cache.readFragment({
+            fragment: DETAILED_EVENT_FRAGMENT,
+            id: `event:${eventId}`,
+          });
+          console.log('user, event', user);
+          console.log(event);
+
+          const newInvites = [];
+          user.friends.forEach((f) => {
+            if (IDs.includes(f.friend.id)) {
+              newInvites.push({
+                __typename: 'attendee',
+                user: {
+                  __typename: 'user',
+                  id: f.friend.id,
+                  name: f.friend.name,
+                  image: f.friend.image,
+                },
+              })
+            }
+          });
+
+          console.log('newInvites length', newInvites.length);
+          console.log('length', event.invited.length);
+          event.invited = [
+            ...newInvites,
+            ...event.invited,
+          ];
+          console.log('length', event.invited.length);
+          cache.writeFragment({
+            fragment: DETAILED_EVENT_FRAGMENT,
+            id: `event:${eventId}`,
+            data: { ...event },
+          });
+
+        } catch (e) {
+          console.log(e);
+        }
+      },
+    })
       .then(() => {
         inviteRef.current.close();
         const recipients = [];
@@ -157,7 +208,6 @@ const EventScreen = ({ route }) => {
     modalRef.current.open();
   };
 
-
   const onDeleteEvent = () => {
     Alert.alert(
       'Permanently Delete this Event',
@@ -176,7 +226,6 @@ const EventScreen = ({ route }) => {
       { cancelable: true },
     );
   };
-
 
   return (
     <View style={styles.container}>

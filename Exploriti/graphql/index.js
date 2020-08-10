@@ -662,7 +662,6 @@ export const DETAILED_EVENT_FRAGMENT = gql`
         id
         name
       }
-      didAccept
     }
     attendees_aggregate {
       aggregate {
@@ -675,7 +674,6 @@ export const DETAILED_EVENT_FRAGMENT = gql`
         id
         name
       }
-      didAccept
     }
   }
 `;

@@ -39,6 +39,7 @@ const ScheduleCarousel = () => {
     variables: {
       userId: authState.user.uid,
     },
+    fetchPolicy: 'cache-and-network',
   });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
