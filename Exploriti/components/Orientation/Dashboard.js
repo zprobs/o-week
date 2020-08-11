@@ -24,7 +24,8 @@ import {
   TitlePlaceholder,
   SayHiPlaceholder,
 } from '../Placeholders/DashboardPlaceholder';
-import { showMessage } from 'react-native-flash-message';
+import { checkNotifications, requestNotifications } from 'react-native-permissions';
+
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -40,6 +41,12 @@ export default function Dashboard() {
   const insets = useSafeArea();
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
+  });
+
+  checkNotifications().then(({status, settings}) => {
+    if (status === "denied") {
+      requestNotifications(['alert', 'sound'])
+    }
   });
 
   const listData = useMemo(
