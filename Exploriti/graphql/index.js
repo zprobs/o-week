@@ -1009,7 +1009,7 @@ export const GET_ALL_GROUP_IDS = gql`
 `;
 
 export const GET_ORIENTATION_GROUPS = gql`
-  query getAllGroups {
+  query getOrientationGroups {
     groups(where: { unsubscribable: { _eq: true } }) {
       id
       name
@@ -1097,6 +1097,23 @@ export const UPDATE_GROUP = gql`
     }
   }
 `;
+
+export const INSERT_USER_GROUPS = gql`
+    mutation insertUserGroups($objects: [userGroup_insert_input!]!) {
+        insert_userGroup(objects: $objects) {
+            affected_rows
+        }
+    }
+
+`
+
+export const DELETE_USER_GROUPS = gql`
+    mutation deletetUserGroups($groupId: uuid!, $_in: [String!]!) {
+        delete_userGroup(where: {userId: {_in: $_in}, groupId: {_eq: $groupId}}) {
+            affected_rows
+        }
+    }
+`
 
 export const GET_GROUP_EVENTS = gql`
   query getGroupEvents($id: uuid!) {
@@ -1187,6 +1204,16 @@ export const SEARCH_USERS = gql`
       name
     }
   }
+`;
+
+export const SEARCH_USERS_IN_GROUP = gql`
+    query searchUsers($query: String!, $limit: Int = 25, $groupId: uuid!) {
+        users(where: {_and: [{name: {_ilike: $query}}, {member: {groupId: {_eq: $groupId }}}]}, limit: $limit) {
+            id
+            image
+            name
+        }
+    }
 `;
 
 export const AWARD_TROPHIES = gql`

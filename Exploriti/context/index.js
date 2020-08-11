@@ -305,7 +305,7 @@ export const NotificationTypes = {
   eventInvite: 'eventInvite',
   newEvent: 'newEvent',
   eventTimeChange: 'eventTimeChange',
-
+  trophyAwarded: 'trophyAwarded',
 };
 
 export const yearsData = [

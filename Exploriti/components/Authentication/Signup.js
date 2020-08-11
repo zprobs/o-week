@@ -251,7 +251,7 @@ export default function Signup({ navigation }) {
     const { email, password, name } = values;
 
     console.log('e, p, n', email, password, name);
-    const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', email ) : image;
+    const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', email + Math.random() ) : image;
 
     firebase
       .auth()

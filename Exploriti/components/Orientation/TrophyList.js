@@ -24,6 +24,7 @@ const TrophyList = ({ data, style }) => {
       horizontal={true}
       style={{ ...style, flexGrow: 0 }}
       ListHeaderComponent={Header}
+      showsHorizontalScrollIndicator={false}
     />
   );
 };

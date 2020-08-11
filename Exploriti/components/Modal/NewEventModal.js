@@ -431,7 +431,7 @@ const NewEventModal = React.forwardRef(
             )}
 
             <ButtonColour
-              label="Done"
+              label="Save"
               title="done"
               onPress={editMode ? onUpdate : onDone}
               loading={isUploading}

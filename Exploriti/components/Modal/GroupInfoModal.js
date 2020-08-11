@@ -171,7 +171,9 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember, allLeadersRef, all
 
         {data.group.trophies.length > 0 ? (
           <>
-            <Text style={styles.sectionText}>Leaderboard</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Leaderboard</Text>
+            </View>
             <RankCard
               style={{ margin: 25, marginBottom: 5 }}
               onPress={() => navigation.navigate('Leaderboard')}
@@ -180,7 +182,9 @@ const GroupInfoModal = React.forwardRef(({ groupId, isMember, allLeadersRef, all
               teamTag={'Group A'}
               points={data.group.trophies_aggregate.aggregate.sum.score}
             />
-            <Text style={styles.sectionText}>Trophies</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Trophies</Text>
+            </View>
             <TrophyList
               style={{ marginVertical: 25, marginBottom: 5 }}
               data={data.group.trophies}

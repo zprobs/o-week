@@ -134,6 +134,7 @@ const GroupScreen = ({ route }) => {
             ref={editRef}
             groupId={group.id}
             onClose={onCloseEdit}
+            SFLOffset={100}
           />
           <NewEventModal
             ref={creatEventRef}
