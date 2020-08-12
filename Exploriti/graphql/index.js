@@ -281,13 +281,13 @@ export const GET_USERS_WHERE = gql`
 `;
 
 export const GET_USERS_BY_ID = gql`
-    query getUsersById($_in: [String!]!, $offset: Int = 0) {
-        users(where: { id: { _in: $_in }} offset: $offset ) {
-            id
-            image
-            name
-        }
+  query getUsersById($_in: [String!]!, $offset: Int = 0) {
+    users(where: { id: { _in: $_in } }, offset: $offset) {
+      id
+      image
+      name
     }
+  }
 `;
 
 export const GET_USER_BY_ID = gql`
@@ -556,7 +556,7 @@ export const NEW_CHAT = gql`
   mutation newChat(
     $participants: userChat_arr_rel_insert_input!
     $image: String!
-      $name: String
+    $name: String
   ) {
     createChat(object: { users: $participants, image: $image, name: $name }) {
       ...DetailedChat
@@ -1011,7 +1011,7 @@ export const GET_ALL_GROUP_IDS = gql`
 
 export const GET_ORIENTATION_GROUPS = gql`
   query getOrientationGroups {
-    groups(where: { unsubscribable: { _eq: true } }) {
+    groups(where: { groupType: { _eq: "orientation" } }) {
       id
       name
       image
@@ -1058,12 +1058,13 @@ export const GET_DETAILED_GROUP = gql`
         }
       }
       unsubscribable
-        phone
-        groupChats {
-            chat {
-               ...DetailedChat
-            }
-  }
+        groupType
+      phone
+      groupChats {
+        chat {
+          ...DetailedChat
+        }
+      }
     }
   }
   ${DETAILED_CHAT}
@@ -1081,19 +1082,27 @@ export const GET_GROUP_MEMBERS = gql`
 `;
 
 export const GET_GROUP_MEMBERS_PAGINATED = gql`
-   query getGroupMembersPaginated($groupId: uuid!, $offset: Int!, $isOwner: Boolean! ) {
-       group(id: $groupId) {
-           id
-           members(where: {isOwner: {_eq: $isOwner}} limit: 20, offset: $offset) {
-               user {
-                   id
-                   name
-                   image
-               }
-           }
-       }
-   } 
-`
+  query getGroupMembersPaginated(
+    $groupId: uuid!
+    $offset: Int!
+    $isOwner: Boolean!
+  ) {
+    group(id: $groupId) {
+      id
+      members(
+        where: { isOwner: { _eq: $isOwner } }
+        limit: 20
+        offset: $offset
+      ) {
+        user {
+          id
+          name
+          image
+        }
+      }
+    }
+  }
+`;
 
 export const UPDATE_GROUP = gql`
   mutation updateGroup($id: uuid!, $data: group_set_input!) {
@@ -1107,21 +1116,22 @@ export const UPDATE_GROUP = gql`
 `;
 
 export const INSERT_USER_GROUPS = gql`
-    mutation insertUserGroups($objects: [userGroup_insert_input!]!) {
-        insert_userGroup(objects: $objects) {
-            affected_rows
-        }
+  mutation insertUserGroups($objects: [userGroup_insert_input!]!) {
+    insert_userGroup(objects: $objects) {
+      affected_rows
     }
-
-`
+  }
+`;
 
 export const DELETE_USER_GROUPS = gql`
-    mutation deletetUserGroups($groupId: uuid!, $_in: [String!]!) {
-        delete_userGroup(where: {userId: {_in: $_in}, groupId: {_eq: $groupId}}) {
-            affected_rows
-        }
+  mutation deletetUserGroups($groupId: uuid!, $_in: [String!]!) {
+    delete_userGroup(
+      where: { userId: { _in: $_in }, groupId: { _eq: $groupId } }
+    ) {
+      affected_rows
     }
-`
+  }
+`;
 
 export const GET_GROUP_EVENTS = gql`
   query getGroupEvents($id: uuid!) {
@@ -1152,20 +1162,20 @@ export const CREATE_GROUP = gql`
 `;
 
 export const INSERT_GROUP_CHAT = gql`
-    mutation InsertGroupChat($chatId: Int!, $groupId: uuid!) {
-        insert_groupChats_one(object: {chatId: $chatId, groupId: $groupId}) {
-            group {
-                id
-                groupChats {
-                    chat {
-                        ...DetailedChat
-                    }
-                }
-            }
+  mutation InsertGroupChat($chatId: Int!, $groupId: uuid!) {
+    insert_groupChats_one(object: { chatId: $chatId, groupId: $groupId }) {
+      group {
+        id
+        groupChats {
+          chat {
+            ...DetailedChat
+          }
         }
+      }
     }
-    ${DETAILED_CHAT}
-`
+  }
+  ${DETAILED_CHAT}
+`;
 
 export const CREATE_EVENT = gql`
   mutation createEvent($data: event_insert_input!) {
@@ -1225,13 +1235,21 @@ export const SEARCH_USERS = gql`
 `;
 
 export const SEARCH_USERS_IN_GROUP = gql`
-    query searchUsers($query: String!, $limit: Int = 25, $groupId: uuid!) {
-        users(where: {_and: [{name: {_ilike: $query}}, {member: {groupId: {_eq: $groupId }}}]}, limit: $limit) {
-            id
-            image
-            name
-        }
+  query searchUsers($query: String!, $limit: Int = 25, $groupId: uuid!) {
+    users(
+      where: {
+        _and: [
+          { name: { _ilike: $query } }
+          { member: { groupId: { _eq: $groupId } } }
+        ]
+      }
+      limit: $limit
+    ) {
+      id
+      image
+      name
     }
+  }
 `;
 
 export const AWARD_TROPHIES = gql`
@@ -1295,25 +1313,49 @@ export const UNBLOCK_USER = gql`
 `;
 
 export const REPORT_USER = gql`
-    mutation ReportUser($reporter: String!, $reported: String!) {
-        insert_report(objects: {reporter: $reporter, reported: $reported}) {
-            affected_rows
-        }
+  mutation ReportUser($reporter: String!, $reported: String!) {
+    insert_report(objects: { reporter: $reporter, reported: $reported }) {
+      affected_rows
     }
-`
+  }
+`;
 
 export const REPORT_CHAT = gql`
-    mutation ReportChat($reporter: String!, $chat: Int!) {
-        insert_report(objects: {reporter: $reporter, chat: $chat}) {
-            affected_rows
-        }
+  mutation ReportChat($reporter: String!, $chat: Int!) {
+    insert_report(objects: { reporter: $reporter, chat: $chat }) {
+      affected_rows
     }
-`
+  }
+`;
 
 export const REPORT_BUG = gql`
-    mutation reportBug($description: String!, $reporter: String!) {
-        insert_bug(objects: {description: $description, reporter: $reporter}) {
-            affected_rows
+  mutation reportBug($description: String!, $reporter: String!) {
+    insert_bug(objects: { description: $description, reporter: $reporter }) {
+      affected_rows
+    }
+  }
+`;
+
+export const SET_TOKEN = gql`
+  mutation setToken($id: String!, $token: String!) {
+    updateUser(pk_columns: { id: $id }, _set: { notificationToken: $token }) {
+      id
+    }
+  }
+`;
+
+export const GET_LEADERBOARD = gql`
+    query getLeaderBoard {
+        groups(where: {groupType: {_eq: "orientation"}}, order_by: {trophies_aggregate: {sum: {score: desc}}} limit: 25) {
+            id
+            name
+            trophies_aggregate {
+                aggregate {
+                    sum {
+                        score
+                    }
+                }
+            }
         }
     }
 `

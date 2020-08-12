@@ -18,7 +18,7 @@ import { split } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
-import { ApolloProvider, useQuery } from '@apollo/react-hooks';
+import { ApolloProvider, useMutation, useQuery } from '@apollo/react-hooks';
 import Schedule from './components/Schedule';
 import MyProfile from './components/MyProfile';
 import Orientation from './components/Orientation';
@@ -32,7 +32,7 @@ import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
 import { AuthContext, ReloadContext, refreshToken } from './context';
 import Error from './components/ReusableComponents/Error';
-import { GET_CURRENT_USER } from './graphql';
+import { GET_CURRENT_USER, SET_TOKEN } from './graphql';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
 import AnimatedTabBar from '@gorhom/animated-tabbar';
@@ -43,6 +43,8 @@ import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
+import messaging from '@react-native-firebase/messaging';
+
 
 
 const Tab = createBottomTabNavigator();
@@ -55,6 +57,15 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+async function saveTokenToDatabase(token) {
+  // Assume user is already signed in
+   const {authState} = useContext(AuthContext);
+   const [setToken] = useMutation(SET_TOKEN);
+
+   setToken({variables: {id: authState.user.uid, token: token}}).then(()=>console.log('saved', token));
+
 }
 
 const tabStyles = {
@@ -121,6 +132,20 @@ const MainStack = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
+
+  useEffect(() => {
+    // Get the device token
+    messaging()
+      .getToken()
+      .then(token => {
+        return saveTokenToDatabase(token);
+      });
+
+    // Listen to whether the token changes
+    return messaging().onTokenRefresh(token => {
+      saveTokenToDatabase(token);
+    });
+  }, []);
 
   if (loading) {
     return <Loading />;

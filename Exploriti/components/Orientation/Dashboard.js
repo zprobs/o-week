@@ -29,6 +29,17 @@ import messaging from '@react-native-firebase/messaging';
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
+
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
  * @returns The UI view for Dashboard
@@ -42,16 +53,7 @@ export default function Dashboard() {
     variables: { id: authState.user.uid },
   });
 
-  async function requestUserPermission() {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
-  }
+  requestUserPermission();
 
   const listData = useMemo(
     () => [

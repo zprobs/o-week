@@ -19,7 +19,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_CHAT_BY_ID,
   GET_DETAILED_GROUP,
-  GET_EVENTS_BY_ID,
+  GET_EVENTS_BY_ID, GET_LEADERBOARD,
   GET_USERS_BY_ID, INSERT_GROUP_CHAT, NEW_CHAT,
 } from '../../graphql';
 import EventCard from '../ReusableComponents/EventCard';
@@ -27,7 +27,7 @@ import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { showMessage } from 'react-native-flash-message';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { AuthContext, processWarning, rankData, refreshToken } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -101,8 +101,9 @@ const GroupInfoModal = React.forwardRef(
 
     const Overview = () => {
 
+      const {data: scoreData, loading: scoreLoading, error: scoreError} = useQuery(GET_LEADERBOARD);
 
-      if (loading) return null;
+      if (loading || scoreLoading || scoreError || error ) return null;
 
       const {
         _id: chatId,
@@ -112,6 +113,8 @@ const GroupInfoModal = React.forwardRef(
         numMessages,
         messages,
       } = data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
+
+      const rank = scoreData.groups.findIndex(g => g.id === groupId);
 
       return (
         <>
@@ -168,10 +171,10 @@ const GroupInfoModal = React.forwardRef(
               </View>
               <RankCard
                 style={{ margin: 25, marginBottom: 5 }}
-                onPress={() => navigation.navigate('Leaderboard')}
-                rank={'3rd'}
+                onPress={() => navigation.navigate('Leaderboard', {groupId})}
+                rank={rankData[rank]}
                 gold={true}
-                teamTag={'Group A'}
+                team={data.group.name}
                 points={data.group.trophies_aggregate.aggregate.sum.score}
               />
               <View style={styles.sectionView}>

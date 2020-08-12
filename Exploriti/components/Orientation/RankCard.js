@@ -23,36 +23,42 @@ const HEIGHT = Dimensions.get('window').height;
  * @param rank {string} the rank, ex: "1st" or "3rd"
  * @param gold {boolean} background color. true = gold, false  = white
  * @param points {int}
- * @param teamTag {string}
+ * @param team {string}
  * @returns {*}
  * @constructor
  */
 
-const RankCard = ({ style, onPress, rank, gold, points, teamTag }) => {
+const RankCard = ({ style, onPress, rank, gold, points, team }) => {
   const Content = () => (
     <>
       <View style={styles(gold).ring} />
-      <View style={styles(gold).row}>
+      <View style={[styles(gold).row]}>
         <Text style={styles(gold).place}>{rank}</Text>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ marginRight: 22 }}>
-            <Text style={styles(gold).label}>Team Tag</Text>
-            <Text style={styles(gold).text}>{teamTag}</Text>
+          <View style={{ position: 'absolute', left: 160, right: 20, top: 20, bottom: 20 }}>
+            <View style={{ flexDirection:'column'}}>
+            <Text style={styles(gold).label}>Team</Text>
+            <Text style={styles(gold).text}>{team}</Text>
           </View>
+          <View style={{height:10}}/>
           <View>
             <Text style={styles(gold).label}>Points</Text>
             <Text style={styles(gold).text}>{points.toLocaleString()}</Text>
           </View>
         </View>
       </View>
-      <View style={styles(gold).moreInfo}>
-        <Text style={styles(gold).moreInfoText}>MORE INFO</Text>
-        <Icon
-          name={'chevron-right'}
-          color={gold ? colours.white : '#000'}
-          size={16}
-        />
-      </View>
+      {
+        onPress ? (
+          <View style={styles(gold).moreInfo}>
+            <Text style={styles(gold).moreInfoText}>MORE INFO</Text>
+            <Icon
+              name={'chevron-right'}
+              color={gold ? colours.white : '#000'}
+              size={16}
+            />
+          </View>
+        ) : null
+      }
+
     </>
   );
 
@@ -83,11 +89,11 @@ const styles = (gold) =>
     },
     ring: {
       position: 'absolute',
-      top: -20,
+      top: -25,
       left: -100,
-      height: '130%',
-      width: '70%',
-      borderRadius: WIDTH * 0.7,
+      height: 200,
+      width: 240,
+      borderRadius: 100,
       borderWidth: 18,
       borderColor: gold ? colours.white : '#000',
       borderStyle: 'solid',
@@ -96,12 +102,13 @@ const styles = (gold) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       padding: 20,
-      alignItems: 'center',
+      height: '100%'
     },
     place: {
-      ...FontSizes.SuperHeading,
+      fontSize: 38,
       ...FontWeights.Bold,
       color: gold ? colours.white : '#000',
+      alignSelf: 'center'
     },
     label: {
       ...FontWeights.Bold,
