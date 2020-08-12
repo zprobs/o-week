@@ -17,7 +17,9 @@ import {
   CREATE_GROUP,
   DELETE_USER_GROUPS,
   GET_DETAILED_GROUP,
+  INSERT_GROUP_CHAT,
   INSERT_USER_GROUPS,
+  NEW_CHAT,
   NULL,
   SEARCH_USERS,
   SEARCH_USERS_IN_GROUP,
@@ -61,6 +63,9 @@ const GroupEditModal = React.forwardRef(
     const [kickUsers, { error: kickUsersError }] = useMutation(
       DELETE_USER_GROUPS,
     );
+
+    const [insertGroupChat] = useMutation(INSERT_GROUP_CHAT);
+    const [newChat] = useMutation(NEW_CHAT, {});
 
     const [editableName, setEditableName] = useState('');
     const [editableImage, setEditableImage] = useState(getDefaultImage());
@@ -189,7 +194,6 @@ const GroupEditModal = React.forwardRef(
         }).then(() => setKickedUsers([]));
       }
 
-
       if (Object.keys(fields).length !== 0) {
         updateGroup({
           variables: { id: groupId, data: fields },
@@ -208,15 +212,6 @@ const GroupEditModal = React.forwardRef(
     const onCreate = async () => {
       setIsUploading(true);
       const fields = {};
-      fields.description = editableDescription;
-      fields.name = editableName;
-      fields.email = authState.user.email;
-      fields.groupType = selectedIndex === 1 ? 'group' : 'orientation';
-      const members = [];
-      newLeaders.forEach((l) => members.push({ userId: l, isOwner: true }));
-      newMembers.forEach((m) => members.push({ userId: m, isOwner: false }));
-      fields.members = { data: members };
-      fields.unsubscribable = selectedIndex === 0;
 
       if (imageSelection) {
         fields.image = await saveImage(
@@ -229,16 +224,53 @@ const GroupEditModal = React.forwardRef(
         fields.image = editableImage;
       }
 
+      const members = [];
+      const chatMembers = [];
+      newLeaders.forEach((l) => {
+        members.push({ userId: l, isOwner: true });
+        chatMembers.push({ userId: l });
+      });
+      newMembers.forEach((m) => {
+        members.push({ userId: m, isOwner: false });
+        chatMembers.push({ userId: m });
+      });
+
+      fields.description = editableDescription;
+      fields.name = editableName;
+      fields.email = authState.user.email;
+      fields.groupType = selectedIndex === 1 ? 'group' : 'orientation';
+      fields.members = { data: members };
+      fields.unsubscribable = selectedIndex === 0;
+
+      const groupResult = await createGroup({
+        variables: { object: fields },
+      });
+      console.log('onCompleted', groupResult);
+
+      const chatResult = await newChat({
+        variables: {
+          participants: { data: chatMembers },
+          image: fields.image,
+          name: editableName,
+        },
+      });
+
+      console.log('chatResult', chatResult)
+
+      const { _id: chatId } = chatResult.data.createChat;
+
+      insertGroupChat({
+        variables: { groupId: groupResult.data.createGroup.id, chatId: chatId },
+      });
+
       showMessage({
         message: 'You may have to restart the app to see the new group',
         type: 'info',
         icon: 'auto',
       });
 
-      createGroup({ variables: { object: fields } }).then(() => {
-        setIsUploading(false);
-        ref.current.close();
-      });
+      setIsUploading(false);
+      ref.current.close();
     };
 
     if (loading) console.log('should not see loading group');

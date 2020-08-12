@@ -18,7 +18,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import { UNSUBSCRIBE_FROM_CHAT, DELETE_CHAT } from '../../graphql';
+import { UNSUBSCRIBE_FROM_CHAT, DELETE_CHAT, UPDATE_MESSAGE_SEEN } from '../../graphql';
 import gql from 'graphql-tag';
 
 const {
@@ -95,6 +95,7 @@ const MessageCard = ({
   };
 
   const isHighlighted = senderId !== authState.user.uid && !seen;
+
 
   const setSeenAndNavigate = () => {
     navigation.navigate('Conversation', {

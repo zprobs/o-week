@@ -556,8 +556,9 @@ export const NEW_CHAT = gql`
   mutation newChat(
     $participants: userChat_arr_rel_insert_input!
     $image: String!
+      $name: String
   ) {
-    createChat(object: { users: $participants, image: $image }) {
+    createChat(object: { users: $participants, image: $image, name: $name }) {
       ...DetailedChat
     }
   }
@@ -1057,8 +1058,15 @@ export const GET_DETAILED_GROUP = gql`
         }
       }
       unsubscribable
+        phone
+        groupChats {
+            chat {
+               ...DetailedChat
+            }
+  }
     }
   }
+  ${DETAILED_CHAT}
 `;
 
 export const GET_GROUP_MEMBERS = gql`
@@ -1134,20 +1142,30 @@ export const CREATE_GROUP = gql`
       id
       image
       name
-      members_aggregate {
-        aggregate {
-          count
-        }
-      }
-      members(limit: 3, where: { isOwner: { _eq: false } }) {
+      members {
         user {
           id
-          image
         }
       }
     }
   }
 `;
+
+export const INSERT_GROUP_CHAT = gql`
+    mutation InsertGroupChat($chatId: Int!, $groupId: uuid!) {
+        insert_groupChats_one(object: {chatId: $chatId, groupId: $groupId}) {
+            group {
+                id
+                groupChats {
+                    chat {
+                        ...DetailedChat
+                    }
+                }
+            }
+        }
+    }
+    ${DETAILED_CHAT}
+`
 
 export const CREATE_EVENT = gql`
   mutation createEvent($data: event_insert_input!) {
