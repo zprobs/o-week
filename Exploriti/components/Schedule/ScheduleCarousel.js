@@ -176,33 +176,32 @@ const ScheduleCarousel = () => {
     <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
       {isFocused ? <StatusBar barStyle="light-content" /> : null}
       <ScrollView bounces={false}>
+        <View style={styles.header}>
+          <View style={{ minWidth: '65%' }}>
+            <Animated.Text style={{ ...styles.dayText, opacity: titleOpacity }}>
+              {title()}
+            </Animated.Text>
+
+            <Text style={styles.dateText}>{pageDate()}</Text>
+          </View>
+          <Icon
+            size={32}
+            name={'calendar'}
+            color={'white'}
+            onPress={() => {
+              if (data) {
+                navigation.navigate('Calendar', {
+                  myCalendars: data.user.member,
+                });
+              }
+            }}
+          />
+        </View>
+
         {loading ? (
           <SchedulePlaceholder />
         ) : (
           <>
-            <View style={styles.header}>
-              <View style={{ minWidth: '65%' }}>
-                <Animated.Text
-                  style={{ ...styles.dayText, opacity: titleOpacity }}>
-                  {title()}
-                </Animated.Text>
-
-                <Text style={styles.dateText}>{pageDate()}</Text>
-              </View>
-              <Icon
-                size={32}
-                name={'calendar'}
-                color={'white'}
-                onPress={() => {
-                  if (data) {
-                    navigation.navigate('Calendar', {
-                      myCalendars: data.user.member,
-                    });
-                  }
-                }}
-              />
-            </View>
-
             <Carousel
               ref={carouselRef}
               data={scheduleData}

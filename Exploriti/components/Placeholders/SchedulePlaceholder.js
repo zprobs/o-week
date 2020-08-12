@@ -21,18 +21,8 @@ const { colours } = Theme.light;
 const SchedulePlaceholder = () => {
   const insets = useSafeArea;
   return (
-    <View>
+    <View style={{ paddingTop: 2 }}>
       <Placeholder Animation={Shine}>
-        <View style={{ paddingTop: 78, paddingLeft: 45 }}>
-          <PlaceholderLine width={65} height={40} noMargin />
-          <PlaceholderLine
-            width={50}
-            height={20}
-            style={{ marginTop: 20 }}
-            noMargin
-          />
-        </View>
-
         <View>
           <View style={styles.event}>
             <EventCard />
