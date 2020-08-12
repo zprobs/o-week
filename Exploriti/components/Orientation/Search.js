@@ -132,6 +132,7 @@ export default function Search() {
             placeholder="Search for users, groups or events..."
             hideBackground={true}
             ref={searchRef}
+            onSearchButtonPress={()=>searchRef.current.blur()}
           />
         </View>
       </View>

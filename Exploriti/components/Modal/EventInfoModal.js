@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  Button,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -21,15 +22,19 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_EVENT_ACCEPTED,
   CONFIRM_EVENT_INVITE,
+  DETAILED_EVENT_FRAGMENT,
+  DETAILED_USER_FRAGMENT,
   GET_DETAILED_EVENT,
-  GET_EVENT_ATTENDANCE,
-  GET_EVENT_INVITED,
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import { AuthContext, processError, processWarning, refreshToken } from '../../context';
-import { showMessage } from 'react-native-flash-message';
-import {acc} from "react-native-reanimated";
+import {
+  AuthContext,
+  processError,
+  processWarning,
+  refreshToken,
+} from '../../context';
+import images from '../../assets/images';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -44,14 +49,17 @@ const WIDTH = Dimensions.get('window').width;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
  */
 const EventInfoModal = React.forwardRef(
-  ({ eventId, inviteRef, initialIndex }, ref) => {
+  (
+    { eventId, inviteRef, initialIndex, allAttendingRef, allInvitedRef },
+    ref,
+  ) => {
     const { authState, setAuthState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
 
     if (error) {
-      processError(error, 'Server Error')
+      processError(error, 'Server Error');
     }
 
     const Tabs = () => {
@@ -102,7 +110,6 @@ const EventInfoModal = React.forwardRef(
     };
 
     const Details = () => {
-
       const [isSelected, setIsSelected] = useState(false);
 
       const {
@@ -112,64 +119,181 @@ const EventInfoModal = React.forwardRef(
       } = useQuery(CHECK_USER_EVENT_ACCEPTED, {
         variables: { eventId: eventId, userId: authState.user.uid },
       });
-      const [signUp, { loading: signUpLoading, error: signUpError }] = useMutation(
-        SIGN_UP_USER_FOR_EVENT,
-        {
-          variables: { eventId: eventId, userId: authState.user.uid },
+      const [
+        signUp,
+        { loading: signUpLoading, error: signUpError },
+      ] = useMutation(SIGN_UP_USER_FOR_EVENT, {
+        variables: { eventId: eventId, userId: authState.user.uid },
+        update: (cache) => {
+          try {
+            const user = cache.readFragment({
+              fragment: DETAILED_USER_FRAGMENT,
+              id: `user:${authState.user.uid}`,
+            });
+
+            const event = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+            console.log('user, event', user);
+            console.log(event);
+            console.log('length', event.attendees.length);
+            event.attendees = [
+              {
+                __typename: 'attendee',
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  name: user.name,
+                  image: user.image,
+                },
+              },
+              ...event.attendees,
+            ];
+            console.log('length', event.attendees.length);
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+            // updating the fact that this user has accepted this event
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [
+                    {
+                      __typename: 'userEvent',
+                      didAccept: true,
+                      eventId: eventId,
+                    },
+                  ],
+                },
+              },
+            });
+          } catch (e) {
+            console.log(e);
+          }
         },
-      );
+      });
       const [
         confirm,
         { loading: confirmLoading, error: confirmError },
       ] = useMutation(CONFIRM_EVENT_INVITE, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        refetchQueries: [
-          {
-            query: GET_EVENT_ATTENDANCE,
-            variables: { eventId: eventId },
-          },
-          {
-            query: CHECK_USER_EVENT_ACCEPTED,
-            variables: { eventId: eventId, userId: authState.user.uid },
-          },
-          {
-            query: GET_EVENT_INVITED,
-            variables: { eventId: eventId },
-          },
-        ],
+        update: cache => {
+          try {
+
+            const user = cache.readFragment({
+              fragment: DETAILED_USER_FRAGMENT,
+              id: `user:${authState.user.uid}`,
+            });
+
+            const event = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+
+            console.log('length', event.invited.length);
+            event.invited = event.invited.filter(a => a.user.id !== authState.user.uid)
+            console.log('length', event.invited.length);
+
+            event.attendees = [
+              {
+                __typename: 'attendee',
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  name: user.name,
+                  image: user.image,
+                },
+              },
+              ...event.attendees,
+            ];
+
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [
+                    {
+                      __typename: 'userEvent',
+                      didAccept: true,
+                      eventId: eventId,
+                    },
+                  ],
+                },
+              },
+            });
+
+          } catch (e) {
+            console.log(e);
+          }
+        }
       });
       const [
         remove,
         { loading: removeLoading, error: removeError },
       ] = useMutation(REMOVE_USER_FROM_EVENT, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        refetchQueries: [
-          {
-            query: GET_EVENT_ATTENDANCE,
-            variables: { eventId: eventId },
-          },
-          {
-            query: CHECK_USER_EVENT_ACCEPTED,
-            variables: { eventId: eventId, userId: authState.user.uid },
-          },
-        ],
-        awaitRefetchQueries: true
+        update: cache => {
+          try {
+            const  event  = cache.readFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+            });
+            console.log('length', event.attendees.length);
+            event.attendees = event.attendees.filter(a => a.user.id !== authState.user.uid)
+            console.log('length', event.attendees.length);
+            cache.writeFragment({
+              fragment: DETAILED_EVENT_FRAGMENT,
+              id: `event:${eventId}`,
+              data: { ...event },
+            });
+            // updating the fact that this user has accepted this event
+            cache.writeQuery({
+              query: CHECK_USER_EVENT_ACCEPTED,
+              variables: { eventId: eventId, userId: authState.user.uid },
+              data: {
+                user: {
+                  __typename: 'user',
+                  id: authState.user.uid,
+                  events: [],
+                },
+              },
+            });
+          } catch (e) {
+            console.log(e)
+          }
+        }
       });
 
       if (acceptError) {
-        processWarning(acceptError, 'Server Error')
+        processWarning(acceptError, 'Server Error');
       }
 
       if (signUpError) {
-        processError(signUpError, 'Could not join Event')
+        processError(signUpError, 'Could not join Event');
       }
 
       if (confirmError) {
-        processError(confirmError, 'Could not join Event')
+        processError(confirmError, 'Could not join Event');
       }
 
       if (removeError) {
-        processError(removeError, 'Cannot cancel RSVP')
+        processError(removeError, 'Cannot cancel RSVP');
       }
 
       const isInvited = acceptData ? acceptData.user.events.length > 0 : false;
@@ -243,16 +367,15 @@ const EventInfoModal = React.forwardRef(
             {data.event.isOfficial ? (
               <View style={styles.iconView}>
                 <Image
-                  source={{
-                    uri:
-                      'https://www.iedp.com/media/1699/rotman-circle-blue.png',
-                  }}
+                  source={images.logo}
                   style={styles.icon}
                   width={32}
                   height={32}
                   borderRadius={16}
                 />
-                <Text style={styles.iconLabel}>Rotman Event</Text>
+                <Text style={styles.iconLabel}>
+                  Vanier College Council Event
+                </Text>
               </View>
             ) : null}
             <View style={styles.iconView}>
@@ -290,7 +413,9 @@ const EventInfoModal = React.forwardRef(
                 <Text style={styles.iconLabel}>{data.event.location}</Text>
               </View>
             ) : null}
-            <Text style={styles.sectionText}>Description</Text>
+            <View style={styles.sectionView}>
+              <Text style={styles.sectionText}>Description</Text>
+            </View>
             <Text style={styles.descriptionText}>{data.event.description}</Text>
           </View>
         </>
@@ -320,15 +445,32 @@ const EventInfoModal = React.forwardRef(
           />
           {going.length > 0 ? (
             <>
-              <Text style={styles.sectionText}>Going</Text>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Going</Text>
+                {going.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allAttendingRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
               <HorizontalUserList data={going} style={{ marginBottom: 15 }} />
             </>
           ) : null}
           {invited.length > 0 ? (
             <>
-              <Text style={{ ...styles.sectionText, marginTop: 0 }}>
-                Invited
-              </Text>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Invited</Text>
+                {invited.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allInvitedRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+
               <HorizontalUserList data={invited} />
             </>
           ) : null}
@@ -478,13 +620,26 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
   },
+  sectionView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   sectionText: {
     ...FontSizes.Label,
     ...FontWeights.Bold,
     color: colours.text03,
-    marginTop: 20,
     marginHorizontal: 25,
     marginBottom: 5,
+  },
+  seeAllText: {
+    ...FontSizes.Body,
+    ...FontWeights.Regular,
+    color: ThemeStatic.lightBlue,
+  },
+  seeAllButton: {
+    marginHorizontal: 25,
+    marginLeft: 'auto',
   },
   descriptionText: {
     ...FontSizes.Body,

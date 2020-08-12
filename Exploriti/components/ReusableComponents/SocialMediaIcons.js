@@ -99,7 +99,7 @@ function toLink(type, value) {
       if (result) {
         Linking.openURL(link).catch((e) => console.log(e));
       } else {
-        linkError(null, 'Profile');
+        linkError('', 'Profile');
       }
     })
     .catch((error) => {

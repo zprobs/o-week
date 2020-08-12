@@ -1,10 +1,11 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
   Dimensions,
   View,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -14,12 +15,12 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_CHAT_BY_ID,
   GET_DETAILED_GROUP,
   GET_EVENTS_BY_ID,
-  GET_USERS_BY_ID,
+  GET_USERS_BY_ID, INSERT_GROUP_CHAT, NEW_CHAT,
 } from '../../graphql';
 import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
@@ -39,269 +40,278 @@ const WIDTH = Dimensions.get('window').width;
  * @param isMember {boolean} true if the user is a member and can call / message the group
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
  */
-const GroupInfoModal = React.forwardRef(({ groupId, isMember }, ref) => {
-  const navigation = useNavigation();
-  const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
-    variables: { id: groupId },
-  });
-  const { authState, setAuthState } = useContext(AuthContext);
-
-  if (error) {
-    processWarning(error, 'Server Error')
-  }
-
-  const Tabs = () => {
-    const [index, setIndex] = useState(0);
-    const [routes] = useState([
-      { key: 'first', title: 'Overview' },
-      { key: 'second', title: 'Members' },
-      { key: 'third', title: 'Events' },
-    ]);
-
-    const renderScene = SceneMap({
-      first: Overview,
-      second: Members,
-      third: Events,
+const GroupInfoModal = React.forwardRef(
+  ({ groupId, isMember, allLeadersRef, allMembersRef }, ref) => {
+    const navigation = useNavigation();
+    const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
+      variables: { id: groupId },
     });
+    const { authState, setAuthState } = useContext(AuthContext);
 
-    const renderTabBar = (props) => {
+    if (error) {
+      processWarning(error, 'Server Error');
+    }
+
+    const Tabs = () => {
+      const [index, setIndex] = useState(0);
+      const [routes] = useState([
+        { key: 'first', title: 'Overview' },
+        { key: 'second', title: 'Members' },
+        { key: 'third', title: 'Events' },
+      ]);
+
+      const renderScene = SceneMap({
+        first: Overview,
+        second: Members,
+        third: Events,
+      });
+
+      const renderTabBar = (props) => {
+        return (
+          <TabBar
+            {...props}
+            indicatorStyle={{
+              backgroundColor: ThemeStatic.gold,
+              width: '16.66%',
+              marginLeft: WIDTH * 0.083,
+            }}
+            style={styles.tabBar}
+            renderLabel={({ route, color }) => (
+              <Text style={{ ...styles.tabText, color: color }}>
+                {route.title}
+              </Text>
+            )}
+            activeColor={ThemeStatic.gold}
+            inactiveColor={colours.text03}
+          />
+        );
+      };
+
       return (
-        <TabBar
-          {...props}
-          indicatorStyle={{
-            backgroundColor: ThemeStatic.gold,
-            width: '16.66%',
-            marginLeft: WIDTH * 0.083,
-          }}
-          style={styles.tabBar}
-          renderLabel={({ route, color }) => (
-            <Text style={{ ...styles.tabText, color: color }}>
-              {route.title}
-            </Text>
-          )}
-          activeColor={ThemeStatic.gold}
-          inactiveColor={colours.text03}
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: WIDTH }}
+          renderTabBar={renderTabBar}
+          swipeEnabled={false}
         />
       );
     };
 
-    return (
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: WIDTH }}
-        renderTabBar={renderTabBar}
-        swipeEnabled={false}
-      />
-    );
-  };
-
-  const Overview = () => {
-    // temp for the demo
-    const chat = groupId === 'ce945810-eb4a-47c6-83d4-5e642ac2d6c7' ? 182 : 181;
-    const {
-      loading: chatLoading,
-      error: chatError,
-      data: chatData,
-    } = useQuery(GET_CHAT_BY_ID, { variables: { id: chat } });
-    if (loading || chatLoading) return null;
-
-    if (chatError) {
-      processWarning(chatError, 'Server Error')
-      return null
-    }
+    const Overview = () => {
 
 
-    const {
-      _id: chatId,
-      image,
-      name,
-      participants,
-      numMessages,
-      messages,
-    } =  chatData.chat;
+      if (loading) return null;
 
-    return (
-      <>
-        {isMember ? (
-          <View style={styles.contactContainer}>
-            <View style={styles.contactView}>
-              <Icon name={'phone'} size={18} style={styles.contactIcon} />
-              <Text style={styles.contactText}>Call</Text>
+      const {
+        _id: chatId,
+        image,
+        name,
+        participants,
+        numMessages,
+        messages,
+      } = data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
+
+      return (
+        <>
+          {isMember ? (
+            <View style={styles.contactContainer}>
+              {data.group.phone ? (
+                <TouchableOpacity
+                  style={styles.contactView}
+                  onPress={() => {
+                    Linking.openURL(`tel:${data.group.phone}`);
+                  }}>
+                  <Icon name={'phone'} size={18} style={styles.contactIcon} />
+                  <Text style={styles.contactText}>Call</Text>
+                </TouchableOpacity>
+              ) : null}
+
+              <TouchableOpacity
+                style={styles.contactView}
+                onPress={() => {
+                  if (chatId) {
+                    navigation.navigate('Messages', {
+                      screen: 'Conversation',
+                      params: {
+                        chatId,
+                        image,
+                        name,
+                        participants,
+                        numMessages,
+                        messages,
+                      },
+                      initial: false,
+                    });
+                  }
+                }}>
+                <Icon
+                  name={'message-square'}
+                  size={18}
+                  style={styles.contactIcon}
+                />
+                <Text style={styles.contactText}>Chat</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.contactView}>
-              <Icon name={'video'} size={18} style={styles.contactIcon} />
-              <Text style={styles.contactText}>Video</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.contactView}
-              onPress={() => {
-                navigation.navigate('Messages', {
-                  screen: 'Conversation',
-                  params: {
-                    chatId,
-                    image,
-                    name,
-                    participants,
-                    numMessages,
-                    messages,
-                  },
-                });
-              }}>
-              <Icon
-                name={'message-square'}
-                size={18}
-                style={styles.contactIcon}
-              />
-              <Text style={styles.contactText}>Chat</Text>
-            </TouchableOpacity>
+          ) : null}
+
+          <View style={styles.sectionView}>
+            <Text style={styles.sectionText}>Description</Text>
           </View>
-        ) : null}
+          <Text style={styles.descriptionText}>{data.group.description}</Text>
 
-        {data.group.trophies.length > 0 ? (
-          <>
-            <Text style={styles.sectionText}>Leaderboard</Text>
-            <RankCard
-              style={{ margin: 25, marginBottom: 5 }}
-              onPress={() => navigation.navigate('Leaderboard')}
-              rank={'3rd'}
-              gold={true}
-              teamTag={'Group A'}
-              points={data.group.trophies_aggregate.aggregate.sum.score}
-            />
-            <Text style={styles.sectionText}>Trophies</Text>
-            <TrophyList
-              style={{ marginVertical: 25, marginBottom: 5 }}
-              data={data.group.trophies}
-            />
-          </>
-        ) : null}
-        <Text style={styles.sectionText}>Description</Text>
-        <Text style={styles.descriptionText}>{data.group.description}</Text>
-      </>
-    );
-  };
-
-  const Members = () => {
-    if (loading || error) return null;
-    const {
-      data: members,
-      loading: loadingMembers,
-      error: errorMembers,
-    } = useQuery(GET_USERS_BY_ID, {
-      variables: { _in: data.group.members.map((member) => member.user.id) },
-    });
-    const {
-      data: leaders,
-      loading: loadingLeaders,
-      error: errorLeaders,
-    } = useQuery(GET_USERS_BY_ID, {
-      variables: { _in: data.group.owners.map((owner) => owner.user.id) },
-    });
-
-    if (errorMembers) {
-      processWarning(errorMembers, 'Server Error')
-    }
-
-    if (errorLeaders) {
-      processWarning(errorLeaders, 'Server Error')
-    }
-
-    if (loadingMembers || errorMembers || loadingLeaders || errorLeaders)
-      return null;
-    return (
-      <>
-        {leaders.users.length > 0 ? (
-          <>
-            <Text style={styles.sectionText}>Leaders</Text>
-            <HorizontalUserList
-              data={leaders.users}
-              style={{ marginTop: 10 }}
-            />
-          </>
-        ) : null}
-        {members.users.length > 0 ? (
-          <>
-            <Text style={styles.sectionText}>Members</Text>
-            <HorizontalUserList
-              data={members.users}
-              style={{ marginTop: 10 }}
-            />
-          </>
-        ) : null}
-      </>
-    );
-  };
-
-  const Events = () => {
-    if (loading || error) return null;
-    const {
-      loading: eventsLoading,
-      data: eventsData,
-      error: eventsError,
-    } = useQuery(GET_EVENTS_BY_ID, {
-      variables: { _in: data.group.events.map((event) => event.event.id) },
-    });
-
-    if (eventsLoading || eventsError) return null;
-    if (eventsError) {
-      processWarning(eventsError, 'Server Error')
-    }
-
-    if (eventsData.events.length > 0) {
-      return (
-        <View style={styles.eventContainer}>
-          {eventsData.events.map((event) => {
-            return (
-              <EventCard
-                startDate={event.startDate}
-                name={event.name}
-                style={{ width: '100%', alignItems: 'center' }}
-                image={event.image}
-                key={event.id}
-                count={event.attendees_aggregate.aggregate.count}
-                description={event.description}
-                userImages={event.attendees.map(
-                  (attendee) => attendee.user.image,
-                )}
-                id={event.id}
-                longDate={true}
-                hosts={event.hosts}
+          {data.group.trophies.length > 0 ? (
+            <>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Leaderboard</Text>
+              </View>
+              <RankCard
+                style={{ margin: 25, marginBottom: 5 }}
+                onPress={() => navigation.navigate('Leaderboard')}
+                rank={'3rd'}
+                gold={true}
+                teamTag={'Group A'}
+                points={data.group.trophies_aggregate.aggregate.sum.score}
               />
-            );
-          })}
-        </View>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Trophies</Text>
+              </View>
+              <TrophyList
+                style={{ marginVertical: 25, marginBottom: 5 }}
+                data={data.group.trophies}
+              />
+            </>
+          ) : null}
+        </>
       );
-    } else {
-      return (
-        <ImgBanner Img={EmptyFeed} placeholder="No Events yet" spacing={0} />
-      );
-    }
-  };
+    };
 
-  return (
-    <Modalize
-      ref={ref}
-      scrollViewProps={{
-        showsVerticalScrollIndicator: false,
-        bounces: false,
-      }}
-      alwaysOpen={HEIGHT * 0.47}
-      modalTopOffset={110}
-      rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
-      <Tabs />
-    </Modalize>
-  );
-});
+    const Members = () => {
+      if (loading || error) return null;
+
+      const leaders = data.group.owners.map((o) => o.user);
+      const members = data.group.members.map((m) => m.user);
+
+      return (
+        <>
+          {leaders.length > 0 ? (
+            <>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Leaders</Text>
+                {leaders.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allLeadersRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+              <HorizontalUserList data={leaders} style={{ marginTop: 10 }} />
+            </>
+          ) : null}
+          {members.length > 0 ? (
+            <>
+              <View style={styles.sectionView}>
+                <Text style={styles.sectionText}>Members</Text>
+                {members.length > 20 ? (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={allMembersRef.current.open}>
+                    <Text style={styles.seeAllText}>See All</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+              <HorizontalUserList data={members} style={{ marginTop: 10 }} />
+            </>
+          ) : null}
+        </>
+      );
+    };
+
+    const Events = () => {
+      if (loading || error) return null;
+      const {
+        loading: eventsLoading,
+        data: eventsData,
+        error: eventsError,
+      } = useQuery(GET_EVENTS_BY_ID, {
+        variables: { _in: data.group.events.map((event) => event.event.id) },
+      });
+
+      if (eventsLoading || eventsError) return null;
+      if (eventsError) {
+        processWarning(eventsError, 'Server Error');
+      }
+
+      if (eventsData.events.length > 0) {
+        return (
+          <View style={styles.eventContainer}>
+            {eventsData.events.map((event) => {
+              return (
+                <EventCard
+                  startDate={event.startDate}
+                  name={event.name}
+                  style={{ width: '100%', alignItems: 'center' }}
+                  image={event.image}
+                  key={event.id}
+                  count={event.attendees_aggregate.aggregate.count}
+                  description={event.description}
+                  userImages={event.attendees.map(
+                    (attendee) => attendee.user.image,
+                  )}
+                  id={event.id}
+                  longDate={true}
+                  hosts={event.hosts}
+                />
+              );
+            })}
+          </View>
+        );
+      } else {
+        return (
+          <ImgBanner Img={EmptyFeed} placeholder="No Events yet" spacing={0} />
+        );
+      }
+    };
+
+    return (
+      <Modalize
+        ref={ref}
+        scrollViewProps={{
+          showsVerticalScrollIndicator: false,
+          bounces: false,
+        }}
+        alwaysOpen={HEIGHT * 0.47}
+        modalTopOffset={110}
+        rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
+        <Tabs />
+      </Modalize>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
+  sectionView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
   sectionText: {
     ...FontSizes.Label,
     ...FontWeights.Bold,
     color: colours.text03,
-    marginTop: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 25,
+    marginBottom: 5,
+  },
+  seeAllText: {
+    ...FontSizes.Body,
+    ...FontWeights.Regular,
+    color: ThemeStatic.lightBlue,
+  },
+  seeAllButton: {
+    marginHorizontal: 25,
+    marginLeft: 'auto',
   },
   contactContainer: {
     flexDirection: 'row',
@@ -314,7 +324,10 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
+    marginHorizontal: 15,
+    flex: 1,
   },
   contactText: {
     ...FontWeights.Regular,

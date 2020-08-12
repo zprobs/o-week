@@ -200,8 +200,6 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
           fragment: userFriendsFragment,
         });
 
-        console.log('friends', friends);
-
         if (friends) {
           let newFriend = {
             __typename: 'friend',
@@ -307,8 +305,6 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
     variables: { userId: authState.user.uid },
   });
 
-  if (friendsData) console.log('friendsData', friendsData.user.friends);
-
   if (newChatError) {
     processError(newChatError, 'Cannot create Chat')
   }
@@ -333,7 +329,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   let friendInteraction = () => {
     return undefined;
   };
-
+  // todo: find out if they are friends with query logic
   if (friendsData) {
     const isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
@@ -373,7 +369,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
       requestsData.user.friendRequestsReceived.length !== 0
     ) {
       content = (
-        <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
+        <Text  style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
       );
       friendInteraction = () => confirmRequest();
     } else if (

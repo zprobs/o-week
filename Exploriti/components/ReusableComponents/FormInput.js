@@ -22,6 +22,8 @@ const FormInput = React.forwardRef(
       placeholder,
       value,
       onChangeText,
+      onBlur,
+      touched,
       multiline,
       label,
       error,
@@ -29,13 +31,16 @@ const FormInput = React.forwardRef(
     },
     ref,
   ) => {
+
+    const isValid = !touched || !error;
+
     return (
       <>
-        <Text style={styles().labelTextStyle}>{label}</Text>
+        <Text style={styles.labelTextStyle}>{`${label} ${isValid ? '' : `(${error})`}`}</Text>
         <TextInput
           ref={ref}
           autoCapitalize="none"
-          style={styles().textStyle}
+          style={styles.textStyle}
           activeLineWidth={0}
           placeholder={placeholder}
           placeholderTextColor={colours.text02}
@@ -44,13 +49,14 @@ const FormInput = React.forwardRef(
           multiline={multiline || false}
           returnKeyType={multiline ? 'default' : 'done'}
           maxLength={characterRestriction}
+          onBlur={onBlur}
         />
       </>
     );
   },
 );
 
-const styles = () =>
+const styles =
   StyleSheet.create({
     labelTextStyle: {
       ...FontWeights.Regular,

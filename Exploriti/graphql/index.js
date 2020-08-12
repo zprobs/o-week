@@ -40,19 +40,55 @@ export const GET_DETAILED_USER = gql`
   ${DETAILED_USER_FRAGMENT}
 `;
 
-export const GET_NOTIFICATIONS = gql`
-  query getNotifications($id: String!) {
-    user(id: $id) {
+export const NOTIFICATION_SUBSCRIPTION_FRAG = gql`
+  fragment notificationSubcriptionFrag on user {
+    notifications(order_by: { timestamp: desc }, limit: 60) {
       id
-      notifications(order_by: { timestamp: desc }) {
-        id
-        timestamp
-        type
-        typeId
-        seen
-      }
+      timestamp
+      type
+      typeId
+      seen
     }
   }
+`;
+
+export const GET_NOTIFICATIONS = gql`
+  subscription getNotifications($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationSubcriptionFrag
+    }
+  }
+  ${NOTIFICATION_SUBSCRIPTION_FRAG}
+`;
+
+export const NOTIFICATION_FRAG = gql`
+  fragment notificationFrag on user {
+    notifications(where: { seen: { _eq: false } }, limit: 1000) {
+      id
+      seen
+    }
+  }
+`;
+
+export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
+  query getUnreadNotificationsCount($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationFrag
+    }
+  }
+  ${NOTIFICATION_FRAG}
+`;
+
+export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
+  subscription getUnreadNotificationsCount($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationFrag
+    }
+  }
+  ${NOTIFICATION_FRAG}
 `;
 
 export const SEE_NOTIFICATION = gql`
@@ -66,18 +102,22 @@ export const SEE_NOTIFICATION = gql`
   }
 `;
 
+export const SEE_ALL_NOTIFICATIONS = gql`
+  mutation seeAllNotifications($id: String!) {
+    update_notification(
+      where: { userNotifications: { userId: { _eq: $id } } }
+      _set: { seen: true }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
       isAdmin
-      notifications(order_by: { timestamp: desc }) {
-        id
-        timestamp
-        type
-        typeId
-        seen
-      }
       member {
         isOwner
         group {
@@ -193,6 +233,24 @@ export const SEND_NOTIFICATION = gql`
   }
 `;
 
+export const SEND_NOTIFICATIONS = gql`
+  mutation sendNotifications(
+    $recipients: [userNotification_insert_input!]!
+    $type: String!
+    $typeId: String!
+  ) {
+    sendNotification(
+      object: {
+        type: $type
+        typeId: $typeId
+        userNotifications: { data: $recipients }
+      }
+    ) {
+      id
+    }
+  }
+`;
+
 export const SIGN_UP = gql`
   mutation SIGN_UP($data: user_insert_input!) {
     createUser(object: $data) {
@@ -222,24 +280,14 @@ export const GET_USERS_WHERE = gql`
   }
 `;
 
-export const GET_PAGINATED_USERS = gql`
-  query GET_PAGINATED_USERS($limit: Int!) {
-    users(limit: $limit) {
-      id
-      name
-      image
-    }
-  }
-`;
-
 export const GET_USERS_BY_ID = gql`
-  query getUsersById($_in: [String!]!) {
-    users(where: { id: { _in: $_in } }) {
-      id
-      image
-      name
+    query getUsersById($_in: [String!]!, $offset: Int = 0) {
+        users(where: { id: { _in: $_in }} offset: $offset ) {
+            id
+            image
+            name
+        }
     }
-  }
 `;
 
 export const GET_USER_BY_ID = gql`
@@ -272,10 +320,28 @@ export const GET_PROGRAMS = gql`
 `;
 
 export const GET_USER_FRIENDS = gql`
-  query getFriends($userId: String!) {
+  query getFriends($userId: String!, $offset: Int!) {
     user(id: $userId) {
       id
-      friends {
+      friends(limit: 20, offset: $offset) {
+        friend {
+          id
+          image
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_USER_FRIENDS_NOT_ATTENDING_EVENT = gql`
+  query getFriendsNotAttendingEvent($userId: String!, $eventId: uuid!) {
+    user(id: $userId) {
+      id
+      friends(
+        where: { friend: { _not: { events: { eventId: { _eq: $eventId } } } } }
+        limit: 150
+      ) {
         friend {
           id
           image
@@ -293,19 +359,6 @@ export const GET_USER_FRIENDS_ID = gql`
       friends {
         friend {
           id
-        }
-      }
-    }
-  }
-`;
-
-export const GET_USER_FRIENDS_AGGREGATE = gql`
-  query getUserFriendsAggregate($id: String!) {
-    user(id: $id) {
-      id
-      friends_aggregate {
-        aggregate {
-          count
         }
       }
     }
@@ -421,31 +474,17 @@ export const DETAILED_CHAT = gql`
   ${MESSAGE_FRAGMENT}
 `;
 
-// export const GET_CHATS = gql`
-//   subscription getChats($user: String!) {
-//     chats(
-//       limit: 15
-//       order_by: { messages_aggregate: { max: { date: desc } } }
-//       where: {
-//         _and: [{ participants: { id: { _eq: $user } } }, { messages: {} }]
-//       }
-//     ) {
-//       ...DetailedChat
-//     }
-//   }
-//   ${DETAILED_CHAT}
-// `;
-
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
     user(id: $user) {
       id
       userChats(
-        limit: 15
+        limit: 20
         order_by: { chat: { messages_aggregate: { max: { date: desc } } } }
         where: { chat: { messages: {} } }
       ) {
         seen
+        _id: chatId
         chat {
           ...DetailedChat
         }
@@ -463,6 +502,7 @@ export const GET_UNREAD_CHAT_COUNT = gql`
         where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
       ) {
         chatId
+        _id: chatId
         seen
       }
     }
@@ -492,6 +532,7 @@ export const SEARCH_CHATS = gql`
             ]
           }
         }
+        limit: 25
       ) {
         chat {
           ...DetailedChat
@@ -515,8 +556,9 @@ export const NEW_CHAT = gql`
   mutation newChat(
     $participants: userChat_arr_rel_insert_input!
     $image: String!
+      $name: String
   ) {
-    createChat(object: { users: $participants, image: $image }) {
+    createChat(object: { users: $participants, image: $image, name: $name }) {
       ...DetailedChat
     }
   }
@@ -536,6 +578,18 @@ export const DELETE_CHAT = gql`
   mutation deleteChat($chatId: Int!) {
     deleteChat(id: $chatId) {
       id
+    }
+  }
+`;
+
+export const UPDATE_CHAT = gql`
+  mutation updateChat($id: Int!, $_set: chat_set_input!) {
+    update_chat(where: { id: { _eq: $id } }, _set: $_set) {
+      returning {
+        id
+        image
+        name
+      }
     }
   }
 `;
@@ -603,32 +657,23 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     endDate
     isOfficial
     website
-    attendees(where: { didAccept: { _eq: true } }) {
+    attendees(where: { didAccept: { _eq: true } }, limit: 20) {
       user {
         image
         id
         name
       }
-      didAccept
     }
     attendees_aggregate {
       aggregate {
         count
       }
     }
-    invited: attendees(where: { didAccept: { _eq: false } }) {
+    invited: attendees(where: { didAccept: { _eq: false } }, limit: 20) {
       user {
         image
         id
         name
-      }
-      didAccept
-    }
-    invited_aggregate: attendees_aggregate(
-      where: { didAccept: { _eq: false } }
-    ) {
-      aggregate {
-        count
       }
     }
   }
@@ -641,29 +686,6 @@ export const GET_DETAILED_EVENT = gql`
     }
   }
   ${DETAILED_EVENT_FRAGMENT}
-`;
-
-export const GET_ALL_EVENTS = gql`
-  query GetAllEvents {
-    events {
-      id
-      image
-      name
-      startDate
-      endDate
-      attendees(limit: 3) {
-        user {
-          id
-          image
-        }
-      }
-      attendees_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
 `;
 
 export const UPDATE_CALENDARS = gql`
@@ -687,6 +709,23 @@ export const UPDATE_CALENDARS = gql`
           }
           onCalendar
         }
+      }
+    }
+  }
+`;
+
+const EVENT_ATTENDANCE_FRAGMENT = gql`
+  fragment EventAttendance on event {
+    id
+    attendees(where: { didAccept: { _eq: true } }, limit: 3) {
+      user {
+        image
+        id
+      }
+    }
+    attendees_aggregate {
+      aggregate {
+        count
       }
     }
   }
@@ -723,22 +762,13 @@ export const GET_SCHEDULED_EVENTS = gql`
       name
       startDate
       description
-      attendees(limit: 3) {
-        user {
-          id
-          image
-        }
-      }
-      attendees_aggregate {
-        aggregate {
-          count
-        }
-      }
+      ...EventAttendance
       hosts {
         groupId
       }
     }
   }
+  ${EVENT_ATTENDANCE_FRAGMENT}
 `;
 
 export const GET_EVENTS_BY_ID = gql`
@@ -806,6 +836,14 @@ export const UPDATE_EVENT = gql`
   }
 `;
 
+export const DELETE_EVENT = gql`
+  mutation deleteEvent($id: uuid!) {
+    deleteEvent(id: $id) {
+      id
+    }
+  }
+`;
+
 export const CHECK_USER_EVENT_ACCEPTED = gql`
   query CheckUserEventAccepted($eventId: uuid!, $userId: String!) {
     user(id: $userId) {
@@ -818,62 +856,27 @@ export const CHECK_USER_EVENT_ACCEPTED = gql`
   }
 `;
 
-const EVENT_ATTENDANCE_FRAGMENT = gql`
-  fragment EventAttendance on event {
-    id
-    attendees(where: { didAccept: { _eq: true } }) {
-      user {
-        image
-        id
-        name
-      }
-      didAccept
-    }
-    attendees_aggregate {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-const EVENT_INVITED_FRAGMENT = gql`
-  fragment EventInvited on event {
-    invited: attendees(where: { didAccept: { _eq: false } }) {
-      user {
-        image
-        id
-        name
-      }
-      didAccept
-    }
-    invited_aggregate: attendees_aggregate(
-      where: { didAccept: { _eq: false } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
 export const GET_EVENT_ATTENDANCE = gql`
-  query GetEventAttendance($eventId: uuid!) {
-    event(id: $eventId) {
-      ...EventAttendance
-    }
-  }
-  ${EVENT_ATTENDANCE_FRAGMENT}
-`;
-
-export const GET_EVENT_INVITED = gql`
-  query GetEventAttendance($eventId: uuid!) {
+  query GetEventAttendance(
+    $eventId: uuid!
+    $didAccept: Boolean!
+    $offset: Int!
+  ) {
     event(id: $eventId) {
       id
-      ...EventInvited
+      attendees(
+        where: { didAccept: { _eq: $didAccept } }
+        limit: 20
+        offset: $offset
+      ) {
+        user {
+          id
+          name
+          image
+        }
+      }
     }
   }
-  ${EVENT_INVITED_FRAGMENT}
 `;
 
 export const GET_EVENT_IMAGE_CARD = gql`
@@ -896,19 +899,8 @@ export const SIGN_UP_USER_FOR_EVENT = gql`
       userId
       eventId
       didAccept
-      event {
-        ...EventAttendance
-      }
-      user {
-        id
-        events(where: { event: { id: { _eq: $eventId } } }) {
-          didAccept
-          eventId
-        }
-      }
     }
   }
-  ${EVENT_ATTENDANCE_FRAGMENT}
 `;
 
 export const INVITE_USER_TO_EVENT = gql`
@@ -917,26 +909,6 @@ export const INVITE_USER_TO_EVENT = gql`
       object: { didAccept: false, eventId: $eventId, userId: $userId }
     ) {
       userId
-      eventId
-      didAccept
-      event {
-        id
-        invited: attendees(where: { didAccept: { _eq: false } }) {
-          user {
-            image
-            id
-            name
-          }
-          didAccept
-        }
-        invited_aggregate: attendees_aggregate(
-          where: { didAccept: { _eq: false } }
-        ) {
-          aggregate {
-            count
-          }
-        }
-      }
     }
   }
 `;
@@ -944,28 +916,7 @@ export const INVITE_USER_TO_EVENT = gql`
 export const INVITE_USERS_TO_EVENT = gql`
   mutation inviteUsersToEvent($objects: [userEvent_insert_input!]!) {
     signUpUsersForEvent(objects: $objects) {
-      returning {
-        eventId
-        userId
-        event {
-          id
-          invited: attendees(where: { didAccept: { _eq: false } }) {
-            user {
-              image
-              id
-              name
-            }
-            didAccept
-          }
-          invited_aggregate: attendees_aggregate(
-            where: { didAccept: { _eq: false } }
-          ) {
-            aggregate {
-              count
-            }
-          }
-        }
-      }
+      affected_rows
     }
   }
 `;
@@ -1049,7 +1000,7 @@ export const GET_ALL_GROUPS = gql`
     }
   }
 `;
-
+//todo: don't do this, use backend for this
 export const GET_ALL_GROUP_IDS = gql`
   query getAllGroupIds {
     groups {
@@ -1059,7 +1010,7 @@ export const GET_ALL_GROUP_IDS = gql`
 `;
 
 export const GET_ORIENTATION_GROUPS = gql`
-  query getAllGroups {
+  query getOrientationGroups {
     groups(where: { unsubscribable: { _eq: true } }) {
       id
       name
@@ -1075,14 +1026,14 @@ export const GET_DETAILED_GROUP = gql`
       name
       image
       description
-      members(where: { isOwner: { _eq: false } }) {
+      members(where: { isOwner: { _eq: false } }, limit: 20) {
         user {
           id
           image
           name
         }
       }
-      owners: members(where: { isOwner: { _eq: true } }) {
+      owners: members(where: { isOwner: { _eq: true } }, limit: 20) {
         user {
           id
           image
@@ -1101,14 +1052,48 @@ export const GET_DETAILED_GROUP = gql`
           }
         }
       }
-      events {
+      events(limit: 50, order_by: { event: { startDate: desc } }) {
         event {
           id
         }
       }
+      unsubscribable
+        phone
+        groupChats {
+            chat {
+               ...DetailedChat
+            }
+  }
+    }
+  }
+  ${DETAILED_CHAT}
+`;
+
+export const GET_GROUP_MEMBERS = gql`
+  query getGroupMembers($groupId: uuid!) {
+    group(id: $groupId) {
+      id
+      members {
+        userId
+      }
     }
   }
 `;
+
+export const GET_GROUP_MEMBERS_PAGINATED = gql`
+   query getGroupMembersPaginated($groupId: uuid!, $offset: Int!, $isOwner: Boolean! ) {
+       group(id: $groupId) {
+           id
+           members(where: {isOwner: {_eq: $isOwner}} limit: 20, offset: $offset) {
+               user {
+                   id
+                   name
+                   image
+               }
+           }
+       }
+   } 
+`
 
 export const UPDATE_GROUP = gql`
   mutation updateGroup($id: uuid!, $data: group_set_input!) {
@@ -1121,11 +1106,28 @@ export const UPDATE_GROUP = gql`
   }
 `;
 
+export const INSERT_USER_GROUPS = gql`
+    mutation insertUserGroups($objects: [userGroup_insert_input!]!) {
+        insert_userGroup(objects: $objects) {
+            affected_rows
+        }
+    }
+
+`
+
+export const DELETE_USER_GROUPS = gql`
+    mutation deletetUserGroups($groupId: uuid!, $_in: [String!]!) {
+        delete_userGroup(where: {userId: {_in: $_in}, groupId: {_eq: $groupId}}) {
+            affected_rows
+        }
+    }
+`
+
 export const GET_GROUP_EVENTS = gql`
   query getGroupEvents($id: uuid!) {
     group(id: $id) {
       id
-      events {
+      events(limit: 50, order_by: { event: { startDate: desc } }) {
         event {
           id
         }
@@ -1140,20 +1142,30 @@ export const CREATE_GROUP = gql`
       id
       image
       name
-      members_aggregate {
-        aggregate {
-          count
-        }
-      }
-      members(limit: 3, where: { isOwner: { _eq: false } }) {
+      members {
         user {
           id
-          image
         }
       }
     }
   }
 `;
+
+export const INSERT_GROUP_CHAT = gql`
+    mutation InsertGroupChat($chatId: Int!, $groupId: uuid!) {
+        insert_groupChats_one(object: {chatId: $chatId, groupId: $groupId}) {
+            group {
+                id
+                groupChats {
+                    chat {
+                        ...DetailedChat
+                    }
+                }
+            }
+        }
+    }
+    ${DETAILED_CHAT}
+`
 
 export const CREATE_EVENT = gql`
   mutation createEvent($data: event_insert_input!) {
@@ -1212,6 +1224,16 @@ export const SEARCH_USERS = gql`
   }
 `;
 
+export const SEARCH_USERS_IN_GROUP = gql`
+    query searchUsers($query: String!, $limit: Int = 25, $groupId: uuid!) {
+        users(where: {_and: [{name: {_ilike: $query}}, {member: {groupId: {_eq: $groupId }}}]}, limit: $limit) {
+            id
+            image
+            name
+        }
+    }
+`;
+
 export const AWARD_TROPHIES = gql`
   mutation awardTrophies($objects: [groupTrophy_insert_input!]!) {
     awardTrophies(objects: $objects) {
@@ -1227,6 +1249,74 @@ export const BAN_USER = gql`
     }
   }
 `;
+
+export const CHECK_USER_BLOCKED = gql`
+  query checkUserBlocked($blockedId: String!, $blockerId: String!) {
+    block(
+      where: { blockedId: { _eq: $blockedId }, blockerId: { _eq: $blockerId } }
+    ) {
+      blockedId
+      blockerId
+    }
+  }
+`;
+
+export const GET_USER_BLOCKS = gql`
+  query getUserBlocks($id: String!) {
+    user(id: $id) {
+      id
+      blocker {
+        userByBlockedid {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const BLOCK_USER = gql`
+  mutation blockUser($blockedId: String!, $blockerId: String!) {
+    blockUser(object: { blockedId: $blockedId, blockerId: $blockerId }) {
+      blockedId
+      blockerId
+    }
+  }
+`;
+
+export const UNBLOCK_USER = gql`
+  mutation unBlockUser($blockedId: String!, $blockerId: String!) {
+    unblockUser(
+      where: { blockedId: { _eq: $blockedId }, blockerId: { _eq: $blockerId } }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const REPORT_USER = gql`
+    mutation ReportUser($reporter: String!, $reported: String!) {
+        insert_report(objects: {reporter: $reporter, reported: $reported}) {
+            affected_rows
+        }
+    }
+`
+
+export const REPORT_CHAT = gql`
+    mutation ReportChat($reporter: String!, $chat: Int!) {
+        insert_report(objects: {reporter: $reporter, chat: $chat}) {
+            affected_rows
+        }
+    }
+`
+
+export const REPORT_BUG = gql`
+    mutation reportBug($description: String!, $reporter: String!) {
+        insert_bug(objects: {description: $description, reporter: $reporter}) {
+            affected_rows
+        }
+    }
+`
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

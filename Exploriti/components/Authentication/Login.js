@@ -7,7 +7,7 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-  Alert,
+  Alert, Linking,
 } from 'react-native';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -22,6 +22,7 @@ import Svg, { Path } from 'react-native-svg';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { linkError } from '../ReusableComponents/SocialMediaIcons';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -165,7 +166,21 @@ export default function Login({ navigation }) {
         </Formik>
 
         <TouchableOpacity style={styles.touchable}>
-          <Text style={styles.forgot}>Forgot your password?</Text>
+          <TouchableOpacity onPress={()=>{
+            Linking.canOpenURL('https://www.arravon.com/verification')
+              .then((result) => {
+                if (result) {
+                  Linking.openURL('https://www.arravon.com/verification').catch((e) => console.log(e));
+                } else {
+                  linkError('', 'Reset Password');
+                }
+              })
+              .catch((error) => {
+                linkError(error, 'Reset Password');
+              });
+          }}>
+            <Text style={styles.forgot}>Forgot your password?</Text>
+          </TouchableOpacity>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
     </LinearGradient>

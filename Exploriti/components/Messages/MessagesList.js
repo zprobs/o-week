@@ -55,6 +55,8 @@ export default function MessagesList() {
 
     let image;
 
+    if (participants.length === 1) return null;
+
     if (participants.length === 2) {
       image = participants.filter(user=>user.id !== authState.user.uid)[0].image;
     } else {
@@ -203,7 +205,7 @@ export default function MessagesList() {
         title={'friends'}
         query={GET_USER_FRIENDS}
         hasImage={true}
-        variables={{ userId: authState.user.uid }}
+        variables={{ userId: authState.user.uid, offset: 0 }}
         setSelection={setFriendsSelection}
         aliased={false}
         floatingButtonText={'Next'}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,52 +9,105 @@ import {
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import ModalHeader from './ModalHeader';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import {
+  BLOCK_USER,
+  CHECK_USER_BLOCKED,
+  GET_USER_FRIENDS_ID,
+  REPORT_USER,
+  UNBLOCK_USER,
+} from '../../graphql';
+import { AuthContext, processError, processWarning } from '../../context';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
 /**
  * Modal for displaying extra options. Currently setup for user options
+ * @param id {string} the id of user who can be reported or blocked
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}
  */
-const OptionsBottomModal = React.forwardRef(
-  ({ data, title, selectedData, setData }, ref) => {
-    return (
-      <Modalize
-        ref={ref}
-        scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        modalStyle={styles.container}
-        adjustToContentHeight>
-        <ModalHeader heading="Options" subHeading="Tell us what you think" />
-        <View style={styles.content}>
+const OptionsBottomModal = React.forwardRef(({ id }, ref) => {
+  console.log('optionsID', id);
+
+  const { authState } = useContext(AuthContext);
+  const [reportUser, { error: reportError }] = useMutation(REPORT_USER, {
+    variables: { reported: id, reporter: authState.user.uid },
+    onCompleted: () => {
+      showMessage({
+        message: 'Report Submitted',
+        description:
+          'Thank you for letting us know. We will examine this user as soon as possible',
+        autoHide: true,
+        duration: 4000,
+        type: 'success',
+        icon: 'auto',
+      });
+    },
+  });
+
+  if (reportError) processError(reportError, 'Report cannot be submitted');
+
+  const variables = { blockerId: authState.user.uid, blockedId: id };
+  const options = {
+    variables: variables,
+    refetchQueries: [{ query: CHECK_USER_BLOCKED, variables: variables }],
+  };
+
+  const [block, { error: blockError }] = useMutation(BLOCK_USER, options);
+  const [unBlock, { error: unBlockError }] = useMutation(UNBLOCK_USER, options);
+  const [
+    checkBlocked,
+    { data, loading, error },
+  ] = useLazyQuery(CHECK_USER_BLOCKED, {
+    variables: variables,
+    fetchPolicy: 'cache-and-network',
+  });
+
+  if (error) processWarning(error, 'Server Error');
+  if (unBlockError) processError(unBlockError, 'Could not unblock user');
+  if (blockError) processError(blockError, 'Could not block user');
+
+  const isBlocked = data && data.block.length > 0;
+
+  return (
+    <Modalize
+      ref={ref}
+      scrollViewProps={{ showsVerticalScrollIndicator: false }}
+      modalStyle={styles.container}
+      onOpen={checkBlocked}
+      adjustToContentHeight>
+      <ModalHeader heading="Options" subHeading="Tell us what you think" />
+      <View style={styles.content}>
+        {isBlocked ? (
+          <Option
+            label="Un Block"
+            iconName="plus-circle"
+            color={ThemeStatic.black}
+            onPress={unBlock}
+          />
+        ) : (
           <Option
             label="Block"
-            iconName="close-o"
+            iconName="x-circle"
             color={ThemeStatic.delete}
-            onPress={() => console.log('Blocked')}
+            onPress={block}
           />
-          <Option
-            label="Report"
-            iconName="tag"
-            color={ThemeStatic.delete}
-            onPress={() => console.log('Reported')}
-          />
-          <Option
-            label="Share Profile"
-            iconName={Platform.select({
-              ios: 'share-apple',
-              android: 'share-google',
-            })}
-            color={ThemeStatic.black}
-            onPress={() => console.log('Share')}
-          />
-        </View>
-      </Modalize>
-    );
-  },
-);
+        )}
+
+        <Option
+          label="Report"
+          iconName="flag"
+          color={ThemeStatic.delete}
+          onPress={reportUser}
+        />
+      </View>
+    </Modalize>
+  );
+});
 
 const Option = ({ label, iconName, onPress, children, color }) => {
   if (children)
@@ -93,7 +146,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   label: {
-    ...FontWeights.Light,
+    ...FontWeights.Regular,
     ...FontSizes.Body,
     marginLeft: 10,
   },

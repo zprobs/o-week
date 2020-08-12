@@ -7,9 +7,7 @@ import { Theme } from '../../theme/Colours';
 import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { GET_USER_FRIENDS, GET_USERS_BY_ID } from '../../graphql';
-import { showMessage } from 'react-native-flash-message';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { processWarning } from '../../context';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 const { colours } = Theme.light;
@@ -19,46 +17,61 @@ const window05 = window * 0.05;
 /**
  * List modal of users
  * @param name {string} the name of user other than the current user. Do not include if current user
- * @param userId {string} userId of the user
+ * @param type {string} The type of data to be expected. One of : friends ,chat, group, event
  * @param data What is shown in the Flatlist. An array of Strings representing userIds
  * @param type {string} Type = Friends when the component is rendering the users that a user is friends with
  * @param onPress {function} an optional onPress() for if you don't want to navigate to profile
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const UsersBottomModal = React.forwardRef(
-  ({ name, userId, type, onPress, idArray }, ref) => {
+  ({ name, type, onPress, query, variables, onClose }, ref) => {
     // use Lazy Query so that it is not executed unless opened
     const [
       getUsers,
-      { data: userData, loading, error, called },
-    ] = useLazyQuery(GET_USER_FRIENDS, { variables: { userId: userId }, skip: idArray });
+      { data: userData, loading, error, called, fetchMore },
+    ] = useLazyQuery(query, { variables: { ...variables, offset: 0 } });
 
-    const [getUsersByID, {data: arrayData, error: arrayError, called: arrayCalled}] = useLazyQuery(GET_USERS_BY_ID, {variables: {_in: idArray}, skip: userId})
+    const insets = useSafeArea();
 
-    const insets = useSafeArea()
-
+    console.log('userDara', userData)
 
     if (error) {
-        processWarning(error, 'Server Error')
-     }
+      processWarning(error, 'Server Error');
+    }
 
     let heading;
     let subHeading;
 
-    if (type === 'Friends') {
+    let keyExtractor = (item) => item.id;
+    let data = [];
+
+    if (type === 'friends') {
       heading = 'Friends';
       if (name) {
         subHeading = `People ${name} is friends with`;
       } else {
         subHeading = 'People you are friends with';
       }
-    } else if (type === 'invite') {
-      heading = 'Invite';
-      subHeading = 'Invite someone you know';
+      keyExtractor = (item) => item.friend.id;
+      if (userData) data = userData.user.friends;
     } else if (type === 'chat') {
-      heading = 'Chat Participants'
+      heading = 'Chat Participants';
       subHeading = `Members of ${name ? name : 'this chat'}`;
-      console.log(subHeading)
+      keyExtractor = (item) => item.id;
+      if (userData) data = userData.users;
+    } else if (type === 'event') {
+      heading = 'Event Attendees';
+      subHeading = `Users who ${
+        variables.didAccept ? 'will be attending' : 'have been invited'
+      } `;
+      if (userData) data = userData.event.attendees;
+      keyExtractor = (item) => item.user.id;
+    } else if (type === 'group') {
+      heading = 'Group Members';
+      subHeading = `Users who ${
+        variables.isOwner ? 'lead this group' : 'are in this group'
+      } `;
+      if (userData) data = userData.group.members;
     }
 
     const listEmptyComponent = () => (
@@ -70,8 +83,18 @@ const UsersBottomModal = React.forwardRef(
     );
 
     const renderItem = ({ item }) => {
-      console.log('item', item)
-      const { id, image, name } = userId ? item.friend : item;
+      let user;
+
+      if (type === 'friends') {
+        user = item.friend;
+      } else if (type === 'event' || type === 'group') {
+        user = item.user;
+      } else {
+        user = item;
+      }
+
+      const { id, image, name } = user;
+
       return (
         <UserCard
           userId={id}
@@ -87,18 +110,64 @@ const UsersBottomModal = React.forwardRef(
     const header = () => (
       <ModalHeader heading={heading} subHeading={subHeading} />
     );
-    const listContainer = styles.listContainer;
 
     const onOpen = () => {
-      console.log('onOpen', idArray, arrayCalled)
-      if (idArray) {
-        if (!arrayCalled) getUsersByID();
-      } else if (userId) {
-        if (!called) getUsers();
-      }
-    }
+      if (!called) getUsers();
+    };
 
-    console.log('arrayData', arrayData)
+    const onEndReached = () => {
+        console.log('onEndReached data', data.length)
+        fetchMore({
+          variables: {
+            ...variables,
+            offset: data.length,
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            console.log('fetchMore', fetchMoreResult);
+            if (!fetchMoreResult) return prev;
+
+            console.log('prev', prev);
+
+
+            switch (type) {
+              case 'chat':
+                return { users: [...prev.users, ...fetchMoreResult.users] };
+              case 'friends':
+                return {
+                  user: {
+                    ...prev.user,
+                    friends: [
+                      ...prev.user.friends,
+                      ...fetchMoreResult.user.friends,
+                    ],
+                  },
+                };
+              case 'event':
+                return {
+                  event: {
+                    ...prev.event,
+                    attendees: [
+                      ...prev.event.attendees,
+                      ...fetchMoreResult.event.attendees
+                    ]
+                  }
+                };
+              case 'group':
+                return {
+                  group: {
+                    ...prev.group,
+                    members: [
+                      ...prev.group.members,
+                      ...fetchMoreResult.group.members
+                    ]
+                  }
+                }
+              default:
+                return null
+            }
+          },
+        });
+      }
 
     return (
       <Modalize
@@ -106,15 +175,19 @@ const UsersBottomModal = React.forwardRef(
         modalStyle={styles.container}
         flatListProps={{
           showsVerticalScrollIndicator: false,
-          data: userId ? userData ? userData.user.friends : null : arrayData ? arrayData.users : null ,
+          data: data,
           ListEmptyComponent: listEmptyComponent,
-          keyExtractor: userId ? item => item.friend.id : item => item.id,
-          style: {flex: 1, marginBottom: 70 + insets.bottom},
+          keyExtractor: keyExtractor,
+          style: { flex: 1, marginBottom: 70 + insets.bottom },
           renderItem: renderItem,
           ListHeaderComponent: header,
           bounces: false,
+          onEndReachedThreshold: 0.5,
+          initialNumToRender: 18,
+          onEndReached: onEndReached
         }}
         onOpen={onOpen}
+        onClose={onClose}
         disableScrollIfPossible={true}
       />
     );

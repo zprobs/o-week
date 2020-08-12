@@ -84,7 +84,7 @@ const SearchableFlatList = React.forwardRef(
 
     const {data: QueryData, loading, error} = useQuery(verifiedQuery, {
       skip: query == undefined || (serverSearch && searchQuery === ''),
-      variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
+      variables: serverSearch ? { query: `%${searchQuery}%`, ...variables } : variables,
     });
 
     if (error) {
@@ -231,6 +231,7 @@ const SearchableFlatList = React.forwardRef(
           hideBackground={true}
           showsCancelButton={false}
           showsCancelButtonWhileEditing={false}
+          onSearchButtonPress={()=>inputRef.current.blur()}
         />
       );
     }, [title, setSearchQuery]);

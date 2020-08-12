@@ -14,7 +14,7 @@ import UserInteractions from './UserInteractions';
 import ProfileCard from './ProfileCard';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_DETAILED_USER } from '../../graphql';
+import { GET_DETAILED_USER, GET_USER_FRIENDS } from '../../graphql';
 import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
@@ -57,7 +57,7 @@ export default function Profile({ route }) {
   });
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Could not load Profile')
   }
 
   if (loading)
@@ -72,7 +72,6 @@ export default function Profile({ route }) {
         <ProfilePlaceholder hasInteractions={!isCurrentUser} />
       </View>
     );
-  if (error) return <Error e={error} />;
   const description = data.user.description;
   const name = data.user.name;
   const image =
@@ -132,9 +131,10 @@ export default function Profile({ route }) {
       </SafeAreaView>
       <UsersBottomModal
         ref={usersBottomModalRef}
-        type="Friends"
+        type="friends"
+        query={GET_USER_FRIENDS}
+        variables={{userId: userId}}
         name={isCurrentUser ? null : name}
-        userId={userId}
       />
       <GroupBottomModal
         ref={groupBottomModalRef}
@@ -158,7 +158,7 @@ export default function Profile({ route }) {
           />
         </>
       ) : (
-        <OptionsBottomModal ref={optionsBottomModalRef} />
+        <OptionsBottomModal ref={optionsBottomModalRef} id={userId} />
       )}
     </View>
   );

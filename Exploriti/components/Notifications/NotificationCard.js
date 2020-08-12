@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -9,55 +9,99 @@ import {
 } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
-import { parseTimeElapsed } from '../../context';
+import { AuthContext, parseTimeElapsed } from '../../context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_EVENT_IMAGE_NAME,
-  GET_USER_BY_ID,
+  GET_USER_BY_ID, NOTIFICATION_FRAG, NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
+import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
+import images from '../../assets/images';
+import gql from "graphql-tag";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * Card for Notification list. Supports all notification types
+ * @param image {string}
+ * @param localImage An image stored within the app in the images file. Exclusive with image which is an image from the internet
+ * @param title {string}
+ * @param titleLast {boolean} if true, the bold title will appear after the message
+ * @param message {string}
+ * @param timestamp {string}
+ * @param id {int}
+ * @param seen {boolean}
+ * @param nav
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const NotificationCard = ({
   image,
+  localImage,
   title,
+  titleLast,
   message,
   timestamp,
   id,
   seen,
   nav,
 }) => {
+  const {authState} = useContext(AuthContext);
   const [seeNotification] = useMutation(SEE_NOTIFICATION, {
     variables: { id: id },
-  });
-  const [isSeen, setIsSeen] = useState(seen);
+    update: (cache) => {
 
-  console.log('seen', seen);
+      try {
+
+        const { notifications } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: NOTIFICATION_FRAG,
+        });
+
+        const newNotifications = notifications.filter((n) => n.id !== id);
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: NOTIFICATION_FRAG,
+          data: { __typename: 'user', notifications: newNotifications },
+        });
+
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  });
+
+  const [wasTapped, setWasTapped] = useState(false)
+
 
   const onPress = () => {
-    if (!isSeen) {
-      setIsSeen(true);
+    if (!seen) {
+      setWasTapped(true)
       seeNotification();
     }
     nav && nav();
   };
 
+  console.log('seen', seen)
+
   return (
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: isSeen ? colours.placeholder : colours.base },
+        { backgroundColor: seen ? colours.placeholder : wasTapped ? colours.placeholder : colours.base },
       ]}
       onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: image }} style={styles.image} />
+        <Image source={localImage ? localImage : { uri: image }} style={styles.image} />
         <View style={styles.textContainer}>
           <Text style={styles.message}>
+            {titleLast ? `${message} `  : null}
+
             <Text style={{ ...FontWeights.Bold }}>{title}</Text>
-            {` ${message}`}
+            {titleLast ? null :` ${message}`}
           </Text>
         </View>
       </View>
@@ -68,21 +112,25 @@ const NotificationCard = ({
   );
 };
 
-const LoadingNotificationCard = () => <Text>Loading...</Text>;
 
-const ErrorNotificationsCard = ({ error }) => (
-  <Text>{`Error: ${error.message}`}</Text>
-);
+const LoadingNotificationCard = () => (
+  <Placeholder Animation={Shine}>
+  <View style={styles.container}>
+    <View style={styles.image}>
+      <PlaceholderMedia size={40} color={colours.placeholder} isRound />
+    </View>
+      <PlaceholderLine width={90} style={{alignSelf: 'center'}}  />
+  </View>
+  </Placeholder>
+)
 
 export const SystemNotificationCard = ({ item }) => {
   return (
     <NotificationCard
-      title={'System'}
+      title={''}
       message={'Welcome to the App'}
       timestamp={item.timestamp}
-      image={
-        'https://banner2.cleanpng.com/20180714/hpt/kisspng-computer-software-computer-icons-system-integratio-b2c-5b4ab6436b7241.1214688515316229794401.jpg'
-      }
+      localImage={images.logo}
       id={item.id}
       seen={item.seen}
     />
@@ -96,11 +144,7 @@ export const UserNotificationCard = ({ item, message }) => {
   const navigation = useNavigation();
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.user)
-    return (
-      <ErrorNotificationsCard
-        error={error ? error : { message: 'no users found' }}
-      />
-    );
+    return null
   const nav = () => {
     navigation.push('Profile', { userId: item.typeId });
   };
@@ -117,18 +161,14 @@ export const UserNotificationCard = ({ item, message }) => {
   );
 };
 
-export const EventNotificationCard = ({ item, message }) => {
+export const EventNotificationCard = ({ item, message, titleLast }) => {
   const { loading, data, error } = useQuery(GET_EVENT_IMAGE_NAME, {
     variables: { id: item.typeId },
   });
   const navigation = useNavigation();
-  if (loading) return <LoadingNotificationCard />;
+  if (loading) return <LoadingNotificationCard />
   if (error || !data.event)
-    return (
-      <ErrorNotificationsCard
-        error={error ? error : { message: 'Could not find event' }}
-      />
-    );
+    return null
   const nav = () => {
     navigation.push('EventScreen', { eventId: item.typeId });
   };
@@ -136,6 +176,7 @@ export const EventNotificationCard = ({ item, message }) => {
     <NotificationCard
       timestamp={item.timestamp}
       title={data.event.name}
+      titleLast={titleLast}
       message={message}
       image={data.event.image}
       id={item.id}
