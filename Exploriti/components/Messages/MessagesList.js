@@ -55,6 +55,8 @@ export default function MessagesList() {
 
     let image;
 
+    if (participants.length === 1) return null;
+
     if (participants.length === 2) {
       image = participants.filter(user=>user.id !== authState.user.uid)[0].image;
     } else {

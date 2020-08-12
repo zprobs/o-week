@@ -17,7 +17,7 @@ import ImagePicker from 'react-native-image-crop-picker/index';
 import { AuthContext, processError, saveImage } from '../../context';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation } from '@apollo/react-hooks';
-import { DETAILED_CHAT, UNSUBSCRIBE_FROM_CHAT, UPDATE_CHAT } from '../../graphql';
+import { DETAILED_CHAT, REPORT_CHAT, REPORT_USER, UNSUBSCRIBE_FROM_CHAT, UPDATE_CHAT } from '../../graphql';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import gql from 'graphql-tag';
@@ -38,12 +38,28 @@ const ChatOptionsModal = React.forwardRef(
     const [imageSelection, setImageSelection] = useState();
     const [isUploading, setIsUploading] = useState(false);
     const { authState } = useContext(AuthContext);
+    const [reportChat, { error: reportError }] = useMutation(REPORT_CHAT, {
+      variables: { chat: id, reporter: authState.user.uid },
+      onCompleted: () => {
+        showMessage({
+          message: 'Report Submitted',
+          description:
+            'Thank you for letting us know. We will examine this as soon as possible',
+          autoHide: true,
+          duration: 4000,
+          type: 'success',
+          icon: 'auto',
+        });
+      },
+    });
 
     const [updateChat, { error }] = useMutation(UPDATE_CHAT);
 
     if (error) {
       processError(error, 'Could not update Chat');
     }
+
+    if (reportError) processError(reportError, 'Could not report chat')
 
     const changeImage = () => {
       ImagePicker.openPicker({
@@ -59,16 +75,6 @@ const ChatOptionsModal = React.forwardRef(
         .catch((result) => console.log(result));
     };
 
-    const report = () => {
-      showMessage({
-        message: 'Report Submitted',
-        description: 'This chat has been submitted for review. You may leave the chat by swiping left in the Messages List screen',
-        autoHide: true,
-        duration: 4500,
-        type: 'success',
-        icon: 'auto'
-      });
-    }
 
     const onDone = async (values) => {
       setIsUploading(true);
@@ -166,7 +172,7 @@ const ChatOptionsModal = React.forwardRef(
                   colour={colours.placeholder}
                   containerStyle={styles.button}
                   label={'Report Chat'}
-                  onPress={report}
+                  onPress={reportChat}
                 />
 
               </>

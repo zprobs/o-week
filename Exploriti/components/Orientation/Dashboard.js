@@ -24,8 +24,7 @@ import {
   TitlePlaceholder,
   SayHiPlaceholder,
 } from '../Placeholders/DashboardPlaceholder';
-import { checkNotifications, requestNotifications } from 'react-native-permissions';
-
+import messaging from '@react-native-firebase/messaging';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -43,11 +42,16 @@ export default function Dashboard() {
     variables: { id: authState.user.uid },
   });
 
-  checkNotifications().then(({status, settings}) => {
-    if (status === "denied") {
-      requestNotifications(['alert', 'sound'])
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
     }
-  });
+  }
 
   const listData = useMemo(
     () => [

@@ -1276,6 +1276,30 @@ export const UNBLOCK_USER = gql`
   }
 `;
 
+export const REPORT_USER = gql`
+    mutation ReportUser($reporter: String!, $reported: String!) {
+        insert_report(objects: {reporter: $reporter, reported: $reported}) {
+            affected_rows
+        }
+    }
+`
+
+export const REPORT_CHAT = gql`
+    mutation ReportChat($reporter: String!, $chat: Int!) {
+        insert_report(objects: {reporter: $reporter, chat: $chat}) {
+            affected_rows
+        }
+    }
+`
+
+export const REPORT_BUG = gql`
+    mutation reportBug($description: String!, $reporter: String!) {
+        insert_bug(objects: {description: $description, reporter: $reporter}) {
+            affected_rows
+        }
+    }
+`
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}
