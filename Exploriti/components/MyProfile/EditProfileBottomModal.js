@@ -17,8 +17,6 @@ import RadioButtonFlatList from '../Modal/RadioButtonFlatList';
 import {
   AuthContext,
   processError,
-  processWarning,
-  refreshToken,
   saveImage,
   yearsData,
   yearToInt,
@@ -27,16 +25,16 @@ import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   GET_INTERESTS,
   GET_PROGRAMS,
-  GET_USER_INTERESTS,
   UPDATE_USER,
   UPDATE_USER_INTERESTS,
   UPDATE_USER_PROGRAMS,
 } from '../../graphql';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { showMessage } from 'react-native-flash-message';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 /**
  * Modal for editing the logged in users data
@@ -49,30 +47,25 @@ import { showMessage } from 'react-native-flash-message';
  */
 const EditProfileBottomModal = React.forwardRef(
   ({ image, name, programs, description, year }, ref) => {
-    const { authState, setAuthState } = useContext(AuthContext);
-    const [updateUser, {error: updateError}] = useMutation(UPDATE_USER);
-    const [updateInterests, {interestError}] = useMutation(UPDATE_USER_INTERESTS);
-    const [updatePrograms, {programError}] = useMutation(UPDATE_USER_PROGRAMS);
-    const headerHeight = useHeaderHeight();
-    // only call query when modal has been opened
-    const [getInterests, { called, loading, data, error }] = useLazyQuery(
-      GET_USER_INTERESTS,
-      {
-        variables: { id: authState.user.uid },
-      },
+    const { authState } = useContext(AuthContext);
+    const [updateUser, { error: updateError }] = useMutation(UPDATE_USER);
+    const [updateInterests, { interestError }] = useMutation(
+      UPDATE_USER_INTERESTS,
     );
+    const [updatePrograms, { programError }] = useMutation(
+      UPDATE_USER_PROGRAMS,
+    );
+    const headerHeight = useHeaderHeight();
     const [editableImage, setEditableImage] = useState(image);
     const [imageSelection, setImageSelection] = useState();
-    const [editableName, setEditableName] = useState(name);
     const [editableYear, setEditableYear] = useState(year);
-    const [editablePrograms, setEditablePrograms] = useState();
+    const [editablePrograms, setEditablePrograms] = useState([]);
     const [programsSelection, setProgramsSelection] = useState();
     const [editableInterests, setEditableInterests] = useState([]); // A string array of interest titles
     const [interestsSelection, setInterestsSelection] = useState(); // A string array of numbers which are interest IDs
-    const [editableDescription, setEditableDescription] = useState(description);
     const [isUploading, setIsUploading] = useState(false);
-    const insets = useSafeArea()
-
+    const [wasOpened, setWasOpened] = useState(false);
+    const insets = useSafeArea();
     const yearRef = useRef();
     const programRef = useRef();
     const interestRef = useRef();
@@ -81,24 +74,20 @@ const EditProfileBottomModal = React.forwardRef(
     const onProgramRef = () => programRef.current.open();
     const onInterestRef = () => interestRef.current.open();
 
-    if (error) {
-        processWarning(error, 'Server Error')
-    }
-
     if (updateError) {
-        processError(updateError, 'Cannot Update Profile')
+      processError(updateError, 'Cannot Update Profile');
     }
 
     if (interestError) {
-      processError(interestError, 'Cannot Update Profile')
+      processError(interestError, 'Cannot Update Profile');
     }
 
     if (programError) {
-      processError(programError, 'Cannot Update Profile')
+      processError(programError, 'Cannot Update Profile');
     }
 
     const programTitle = () => {
-      if (programsSelection) {
+      if (programsSelection && programsSelection.length > 0) {
         if (editablePrograms[0] == undefined) editablePrograms.shift();
         return editablePrograms.join(', ');
       }
@@ -106,11 +95,11 @@ const EditProfileBottomModal = React.forwardRef(
     };
 
     const interestTitle = () => {
-      if (!called || loading || error || !interestsSelection) {
-        return 'Change Interests';
+      if (interestsSelection && interestsSelection.length > 0) {
+        if (editableInterests[0] == undefined) editableInterests.shift();
+        return editableInterests.join(', ');
       }
-      if (editableInterests[0] == undefined) editableInterests.shift();
-      return editableInterests.join(', ');
+      return 'Change Interest';
     };
 
     const yearTitle = () => {
@@ -120,29 +109,12 @@ const EditProfileBottomModal = React.forwardRef(
       return editableYear;
     };
 
-    const initialInterestSelection = () => {
-      const map = new Map();
-      if (data && !error && data.user && data.user.interests)
-        data.user.interests.map((item) =>
-          map.set(item.interest, true),
-        );
-      return map;
-    };
-
-    const initialProgramSelection = () => {
-      const map = new Map();
-      programs.map((userProgram) =>
-        map.set(userProgram.program.id.toString(), true),
-      );
-      return map;
-    };
-
     const changeImage = () => {
       ImagePicker.openPicker({
         width: 300,
         height: 400,
         cropping: true,
-        cropperCircleOverlay: true
+        cropperCircleOverlay: true,
       })
         .then((selectedImage) => {
           setEditableImage(selectedImage.path);
@@ -151,12 +123,13 @@ const EditProfileBottomModal = React.forwardRef(
         .catch((result) => console.log(result));
     };
 
-    const onDone = async () => {
+    const onDone = async (values) => {
+      console.log('name, desc', values.name, values.description);
       setIsUploading(true);
       const fields = {};
-      if (editableName !== name) fields.name = editableName;
-      if (editableDescription !== description)
-        fields.description = editableDescription;
+      if (values.name !== name) fields.name = values.name;
+      if (values.description !== description)
+        fields.description = values.description;
       if (editableYear !== year) {
         fields.year = yearToInt(editableYear);
       }
@@ -186,7 +159,12 @@ const EditProfileBottomModal = React.forwardRef(
       }
 
       if (imageSelection) {
-        fields.image = await saveImage(imageSelection, image, 'profile', authState.user.uid);
+        fields.image = await saveImage(
+          imageSelection,
+          image,
+          'profile',
+          authState.user.uid,
+        );
       }
 
       if (Object.keys(fields).length !== 0) {
@@ -213,7 +191,7 @@ const EditProfileBottomModal = React.forwardRef(
           modalTopOffset={headerHeight + 100}
           adjustToContentHeight
           tapGestureEnabled={false}
-          onOpen={getInterests}>
+          onOpen={() => setWasOpened(true)}>
           <View style={{ paddingHorizontal: 20 }}>
             <ModalHeader
               heading="Edit profile"
@@ -234,52 +212,73 @@ const EditProfileBottomModal = React.forwardRef(
                 </TouchableOpacity>
               </ImageBackground>
 
-              <FormInput
-                ref={null}
-                label="Name"
-                value={editableName}
-                onChangeText={setEditableName}
-              />
-              <FormInput
-                ref={null}
-                label="Description"
-                placeholder="example: hey, I am a student"
-                value={editableDescription}
-                onChangeText={setEditableDescription}
-                multiline
-                characterRestriction={200}
-              />
-              <View style={{ height: 4 }} />
-              <Selection
-                title={programTitle()}
-                onPress={onProgramRef}
-                accent={true}
-                style={styles.selections}
-              />
-              <View style={{ height: 8 }} />
-              <Selection
-                title={yearTitle()}
-                onPress={onYearRef}
-                accent={true}
-                style={styles.selections}
-              />
-              <View style={{ height: 8 }} />
-              <Selection
-                title={interestTitle()}
-                onPress={onInterestRef}
-                accent={true}
-                style={styles.selections}
-              />
+              <Formik
+                initialValues={{ name: name, description: description }}
+                validationSchema={EditProfileSchema}
+                onSubmit={(values) => onDone(values)}>
+                {({
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  errors,
+                  touched,
+                }) => (
+                  <>
+                    <FormInput
+                      ref={null}
+                      value={values.name}
+                      onChangeText={handleChange('name')}
+                      label={'Name'}
+                      error={errors.name}
+                      touched={touched.name}
+                      onBlur={handleBlur('name')}
+                    />
+                    <FormInput
+                      ref={null}
+                      label="Description"
+                      placeholder="example: hey, I am a student"
+                      value={values.description}
+                      onChangeText={handleChange('description')}
+                      multiline
+                      error={errors.description}
+                      touched={touched.description}
+                      onBlur={handleBlur('description')}
+                    />
+                    <View style={{ height: 4 }} />
+                    <Selection
+                      title={programTitle()}
+                      onPress={onProgramRef}
+                      accent={true}
+                      style={styles.selections}
+                    />
+                    <View style={{ height: 8 }} />
+                    <Selection
+                      title={yearTitle()}
+                      onPress={onYearRef}
+                      accent={true}
+                      style={styles.selections}
+                    />
+                    <View style={{ height: 8 }} />
+                    <Selection
+                      title={interestTitle()}
+                      onPress={onInterestRef}
+                      accent={true}
+                      style={styles.selections}
+                    />
 
-              <ButtonColour
-                label="Done"
-                title="done"
-                onPress={onDone}
-                loading={isUploading}
-                containerStyle={styles.doneButton}
-                colour={ThemeStatic.accent}
-                light={true}
-              />
+                    <ButtonColour
+                      label="Done"
+                      title="done"
+                      onPress={handleSubmit}
+                      loading={isUploading}
+                      containerStyle={styles.doneButton}
+                      colour={ThemeStatic.accent}
+                      light={true}
+                    />
+                  </>
+                )}
+              </Formik>
             </View>
           </View>
           <RadioButtonFlatList
@@ -290,44 +289,38 @@ const EditProfileBottomModal = React.forwardRef(
             setData={setEditableYear}
           />
         </Modalize>
-        {
-          // only render the SearchableFlatList once the modal has been opened and data has been received so that initialSelection does not have to change.
-
-          data ? (
-            <>
-              <SearchableFlatList
-                ref={programRef}
-                title={'programs'}
-                query={called ? GET_PROGRAMS : undefined}
-                setData={setEditablePrograms}
-                data={called ? null : ['default']}
-                setSelection={setProgramsSelection}
-                initialSelection={initialProgramSelection()}
-                aliased={false}
-                max={4}
-                min={1}
-                floatingButtonText={'Done'}
-                floatingButtonOffset={70 + insets.bottom}
-                offset={headerHeight + 70}
-              />
-              <SearchableFlatList
-                ref={interestRef}
-                title={'interests'}
-                query={called ? GET_INTERESTS : undefined}
-                data={called ? null : ['default']}
-                setData={setEditableInterests}
-                setSelection={setInterestsSelection}
-                initialSelection={initialInterestSelection()}
-                aliased={false}
-                max={5}
-                min={1}
-                offset={headerHeight + 70}
-                floatingButtonText={'Done'}
-                floatingButtonOffset={70 + insets.bottom}
-              />
-            </>
-          ) : null
-        }
+        {wasOpened ? (
+          <>
+            <SearchableFlatList
+              ref={programRef}
+              title={'programs'}
+              query={wasOpened ? GET_PROGRAMS : undefined}
+              setData={setEditablePrograms}
+              data={wasOpened ? null : ['default']}
+              setSelection={setProgramsSelection}
+              aliased={false}
+              max={4}
+              min={1}
+              floatingButtonText={'Done'}
+              floatingButtonOffset={70 + insets.bottom}
+              offset={headerHeight + 70}
+            />
+            <SearchableFlatList
+              ref={interestRef}
+              title={'interests'}
+              query={wasOpened ? GET_INTERESTS : undefined}
+              data={wasOpened ? null : ['default']}
+              setData={setEditableInterests}
+              setSelection={setInterestsSelection}
+              aliased={false}
+              max={5}
+              min={1}
+              offset={headerHeight + 70}
+              floatingButtonText={'Done'}
+              floatingButtonOffset={70 + insets.bottom}
+            />
+          </>
+        ) : null}
       </>
     );
   },
@@ -366,6 +359,11 @@ const styles = StyleSheet.create({
   doneButton: {
     marginVertical: 20,
   },
+});
+
+const EditProfileSchema = Yup.object().shape({
+  name: Yup.string().required('Required').max(60),
+  description: Yup.string().max(400),
 });
 
 export default EditProfileBottomModal;

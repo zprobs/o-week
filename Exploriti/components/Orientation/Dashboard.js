@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
 } from 'react-native';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -25,10 +24,21 @@ import {
   TitlePlaceholder,
   SayHiPlaceholder,
 } from '../Placeholders/DashboardPlaceholder';
-import { showMessage } from 'react-native-flash-message';
+import messaging from '@react-native-firebase/messaging';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
+
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
 
 /**
  * Dashboard is the main view where the user can see what is important and what they need to know for the near future
@@ -42,6 +52,8 @@ export default function Dashboard() {
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
+
+  requestUserPermission();
 
   const listData = useMemo(
     () => [
@@ -98,7 +110,7 @@ export default function Dashboard() {
 
     return (
       <>
-        <View style={{ marginHorizontal: 25, paddingTop: insets.top }}>
+        <View style={{ marginHorizontal: 25}}>
           {loading ? (
             <TitlePlaceholder />
           ) : (
@@ -179,6 +191,7 @@ export default function Dashboard() {
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
+        style={{marginTop: insets.top }}
       />
     </View>
   );

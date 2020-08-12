@@ -30,13 +30,15 @@ const AdminConsole = () => {
   const announcementRef = useRef();
   const banUserRef = useRef();
   const trophyRef = useRef();
-  const [selected, setSelected] = useState();
+  const [groupSelected, setGroupSelected] = useState();
+  const [userSelected, setUserSelected] = useState();
   const [isAwardTrophies, setIsAwardTrophies] = useState(false); // award trophies and edit orientation group share searchable flatlist so this will differentiate which was tapped
-  const isCreateGroup = useRef(false); // similar to trophies one group edit modal for edit orientation group and create orientation group
+  const [isCreateGroup, setIsCreateGroup] = useState(false); // similar to trophies one group edit modal for edit orientation group and create orientation group
 
   const [banUser, { data: banData, error: banError }] = useMutation(BAN_USER);
 
-  console.log('selected (AC)', selected);
+  console.log('groupSelected (AC)', groupSelected);
+  console.log('userSelected (AC)', userSelected);
 
   const openTrophyModal = () => {
     groupListRef.current.close();
@@ -44,39 +46,29 @@ const AdminConsole = () => {
   };
 
   const openGroupEditModal = () => {
-    isCreateGroup.current = false;
+    setIsCreateGroup(false);
     groupListRef.current.close();
     groupEditRef.current.open();
   };
 
-  const openCreateOrientationGroupModal = () => {
-    isCreateGroup.current = true;
+  const openCreateGroupModal = () => {
+    setIsCreateGroup(true);
     groupEditRef.current.open();
   };
 
   const openBanUserAlert = ({user}) => {
+    console.log('user', user)
+    console.log('user sleected', userSelected)
     Alert.alert(
       'This ban is irreversible',
-      'If you ban this user, all their data will be deleted and they will not be able to sign up again with their current email address.',
+      'If you ban this user, all their data will be deleted and they will not be able to sign up again with their current email address. Restart the app to see changes.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Ban',
           onPress: () =>
             banUser({
-              variables: { id: selected[0] },
-              update: (cache) => {
-                const { users } = cache.readQuery({
-                  query: GET_ALL_USERS,
-                });
-                const newUsers = users.filter(
-                  (element) => element.id !== selected[0],
-                );
-                cache.writeQuery({
-                  query: GET_ALL_USERS,
-                  data: { users: newUsers },
-                });
-              },
+              variables: { id: userSelected[0] },
             }),
         },
       ],
@@ -99,7 +91,7 @@ const AdminConsole = () => {
               setIsAwardTrophies(false);
               groupListRef.current.open();
             }}>
-            <Text style={styles.buttonText}>Edit Orientation Group</Text>
+            <Text style={styles.buttonText}>Edit Group</Text>
           </TouchableOpacity>
         </View>
 
@@ -109,9 +101,9 @@ const AdminConsole = () => {
             onPress={() => banUserRef.current.open()}>
             <Text style={styles.buttonText}>Ban User</Text>
           </TouchableOpacity>
-          <View style={[styles.button, { backgroundColor: '#6118c4' }]}>
-            <Text style={styles.buttonText}>Create Orientation Group</Text>
-          </View>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#6118c4' }]} onPress={openCreateGroupModal}>
+            <Text style={styles.buttonText}>Create Group</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.row}>
@@ -135,19 +127,20 @@ const AdminConsole = () => {
         ref={groupListRef}
         title={'groups'}
         offset={80}
-        setSelection={setSelected}
+        setSelection={setGroupSelected}
         floatingButtonText={'Next'}
         onPress={isAwardTrophies ? openTrophyModal : openGroupEditModal}
         clearOnClose={true}
         max={isAwardTrophies ? undefined : 1}
         min={1}
       />
-      <GiveTrophyModal ref={trophyRef} selected={selected} />
+      <GiveTrophyModal ref={trophyRef} selected={groupSelected} />
       <NewEventModal ref={newEventRef} />
       <GroupEditModal
         ref={groupEditRef}
-        groupId={selected ? selected[0] : null}
-        create={isCreateGroup.current}
+        groupId={groupSelected ? groupSelected[0] : null}
+        create={isCreateGroup}
+        SFLOffset={0}
       />
       <SearchableFlatList
         query={SEARCH_USERS}
@@ -155,7 +148,7 @@ const AdminConsole = () => {
         ref={banUserRef}
         title={'users'}
         offset={80}
-        setSelection={setSelected}
+        setSelection={setUserSelected}
         floatingButtonText={'Permanently Ban'}
         onPress={openBanUserAlert}
         clearOnClose={true}

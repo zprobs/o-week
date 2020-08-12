@@ -164,6 +164,155 @@ input Boolean_comparison_exp {
   _nin: [Boolean!]
 }
 
+# columns and relationships of "bug"
+type bug {
+  description: String!
+  reporter: String!
+  time: timestamptz!
+}
+
+# aggregated selection of "bug"
+type bug_aggregate {
+  aggregate: bug_aggregate_fields
+  nodes: [bug!]!
+}
+
+# aggregate fields of "bug"
+type bug_aggregate_fields {
+  count(columns: [bug_select_column!], distinct: Boolean): Int
+  max: bug_max_fields
+  min: bug_min_fields
+}
+
+# order by aggregate values of table "bug"
+input bug_aggregate_order_by {
+  count: order_by
+  max: bug_max_order_by
+  min: bug_min_order_by
+}
+
+# input type for inserting array relation for remote table "bug"
+input bug_arr_rel_insert_input {
+  data: [bug_insert_input!]!
+  on_conflict: bug_on_conflict
+}
+
+# Boolean expression to filter rows from the table "bug". All fields are combined with a logical 'AND'.
+input bug_bool_exp {
+  _and: [bug_bool_exp]
+  _not: bug_bool_exp
+  _or: [bug_bool_exp]
+  description: String_comparison_exp
+  reporter: String_comparison_exp
+  time: timestamptz_comparison_exp
+}
+
+# unique or primary key constraints on table "bug"
+enum bug_constraint {
+  # unique or primary key constraint
+  bug_pkey
+}
+
+# input type for inserting data into table "bug"
+input bug_insert_input {
+  description: String
+  reporter: String
+  time: timestamptz
+}
+
+# aggregate max on columns
+type bug_max_fields {
+  description: String
+  reporter: String
+  time: timestamptz
+}
+
+# order by max() on columns of table "bug"
+input bug_max_order_by {
+  description: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# aggregate min on columns
+type bug_min_fields {
+  description: String
+  reporter: String
+  time: timestamptz
+}
+
+# order by min() on columns of table "bug"
+input bug_min_order_by {
+  description: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# response of any mutation on the table "bug"
+type bug_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [bug!]!
+}
+
+# input type for inserting object relation for remote table "bug"
+input bug_obj_rel_insert_input {
+  data: bug_insert_input!
+  on_conflict: bug_on_conflict
+}
+
+# on conflict condition type for table "bug"
+input bug_on_conflict {
+  constraint: bug_constraint!
+  update_columns: [bug_update_column!]!
+  where: bug_bool_exp
+}
+
+# ordering options when selecting data from "bug"
+input bug_order_by {
+  description: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# primary key columns input for table: "bug"
+input bug_pk_columns_input {
+  reporter: String!
+}
+
+# select columns of table "bug"
+enum bug_select_column {
+  # column name
+  description
+
+  # column name
+  reporter
+
+  # column name
+  time
+}
+
+# input type for updating data in table "bug"
+input bug_set_input {
+  description: String
+  reporter: String
+  time: timestamptz
+}
+
+# update columns of table "bug"
+enum bug_update_column {
+  # column name
+  description
+
+  # column name
+  reporter
+
+  # column name
+  time
+}
+
 # columns and relationships of "chat"
 type chat {
   id: Int!
@@ -2157,6 +2306,42 @@ type group {
   ): jsonb!
 
   # An array relationship
+  groupChats(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): [groupChats!]!
+
+  # An aggregated array relationship
+  groupChats_aggregate(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): groupChats_aggregate!
+
+  # An array relationship
   groupTrophies(
     # distinct select on columns
     distinct_on: [groupTrophy_select_column!]
@@ -2235,6 +2420,7 @@ type group {
     where: userGroup_bool_exp
   ): userGroup_aggregate!
   name: String!
+  phone: String
 
   # An array relationship
   questions(
@@ -2424,6 +2610,7 @@ input group_bool_exp {
   email: String_comparison_exp
   events: groupEvent_bool_exp
   gallery: jsonb_comparison_exp
+  groupChats: groupChats_bool_exp
   groupTrophies: groupTrophy_bool_exp
   groupType: String_comparison_exp
   id: uuid_comparison_exp
@@ -2431,6 +2618,7 @@ input group_bool_exp {
   links: jsonb_comparison_exp
   members: userGroup_bool_exp
   name: String_comparison_exp
+  phone: String_comparison_exp
   questions: groupQuestion_bool_exp
   reviews: review_bool_exp
   tags: groupInterest_bool_exp
@@ -2473,6 +2661,7 @@ input group_insert_input {
   email: String
   events: groupEvent_arr_rel_insert_input
   gallery: jsonb
+  groupChats: groupChats_arr_rel_insert_input
   groupTrophies: groupTrophy_arr_rel_insert_input
   groupType: String
   id: uuid
@@ -2480,6 +2669,7 @@ input group_insert_input {
   links: jsonb
   members: userGroup_arr_rel_insert_input
   name: String
+  phone: String
   questions: groupQuestion_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
   tags: groupInterest_arr_rel_insert_input
@@ -2495,6 +2685,7 @@ type group_max_fields {
   id: uuid
   image: String
   name: String
+  phone: String
   website: String
 }
 
@@ -2506,6 +2697,7 @@ input group_max_order_by {
   id: order_by
   image: order_by
   name: order_by
+  phone: order_by
   website: order_by
 }
 
@@ -2517,6 +2709,7 @@ type group_min_fields {
   id: uuid
   image: String
   name: String
+  phone: String
   website: String
 }
 
@@ -2528,6 +2721,7 @@ input group_min_order_by {
   id: order_by
   image: order_by
   name: order_by
+  phone: order_by
   website: order_by
 }
 
@@ -2559,6 +2753,7 @@ input group_order_by {
   email: order_by
   events_aggregate: groupEvent_aggregate_order_by
   gallery: order_by
+  groupChats_aggregate: groupChats_aggregate_order_by
   groupTrophies_aggregate: groupTrophy_aggregate_order_by
   groupType: order_by
   id: order_by
@@ -2566,6 +2761,7 @@ input group_order_by {
   links: order_by
   members_aggregate: userGroup_aggregate_order_by
   name: order_by
+  phone: order_by
   questions_aggregate: groupQuestion_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
   tags_aggregate: groupInterest_aggregate_order_by
@@ -2612,6 +2808,9 @@ enum group_select_column {
   name
 
   # column name
+  phone
+
+  # column name
   unsubscribable
 
   # column name
@@ -2628,6 +2827,7 @@ input group_set_input {
   image: String
   links: jsonb
   name: String
+  phone: String
   unsubscribable: Boolean
   website: String
 }
@@ -2659,10 +2859,253 @@ enum group_update_column {
   name
 
   # column name
+  phone
+
+  # column name
   unsubscribable
 
   # column name
   website
+}
+
+# Made by Zach. Fix if wrong
+#
+#
+# columns and relationships of "groupChats"
+#
+type groupChats {
+  chatId: Int!
+  groupId: uuid!
+}
+
+# aggregated selection of "groupChats"
+type groupChats_aggregate {
+  aggregate: groupChats_aggregate_fields
+  nodes: [groupChats!]!
+}
+
+# aggregate fields of "groupChats"
+type groupChats_aggregate_fields {
+  avg: groupChats_avg_fields
+  count(columns: [groupChats_select_column!], distinct: Boolean): Int
+  max: groupChats_max_fields
+  min: groupChats_min_fields
+  stddev: groupChats_stddev_fields
+  stddev_pop: groupChats_stddev_pop_fields
+  stddev_samp: groupChats_stddev_samp_fields
+  sum: groupChats_sum_fields
+  var_pop: groupChats_var_pop_fields
+  var_samp: groupChats_var_samp_fields
+  variance: groupChats_variance_fields
+}
+
+# order by aggregate values of table "groupChats"
+input groupChats_aggregate_order_by {
+  avg: groupChats_avg_order_by
+  count: order_by
+  max: groupChats_max_order_by
+  min: groupChats_min_order_by
+  stddev: groupChats_stddev_order_by
+  stddev_pop: groupChats_stddev_pop_order_by
+  stddev_samp: groupChats_stddev_samp_order_by
+  sum: groupChats_sum_order_by
+  var_pop: groupChats_var_pop_order_by
+  var_samp: groupChats_var_samp_order_by
+  variance: groupChats_variance_order_by
+}
+
+# input type for inserting array relation for remote table "groupChats"
+input groupChats_arr_rel_insert_input {
+  data: [groupChats_insert_input!]!
+  on_conflict: groupChats_on_conflict
+}
+
+# aggregate avg on columns
+type groupChats_avg_fields {
+  chatId: Float
+}
+
+# order by avg() on columns of table "groupChats"
+input groupChats_avg_order_by {
+  chatId: order_by
+}
+
+# Boolean expression to filter rows from the table "groupChats". All fields are combined with a logical 'AND'.
+input groupChats_bool_exp {
+  _and: [groupChats_bool_exp]
+  _not: groupChats_bool_exp
+  _or: [groupChats_bool_exp]
+  chatId: Int_comparison_exp
+  groupId: uuid_comparison_exp
+}
+
+# unique or primary key constraints on table "groupChats"
+enum groupChats_constraint {
+  # unique or primary key constraint
+  groupChats_pkey
+}
+
+# input type for incrementing integer column in table "groupChats"
+input groupChats_inc_input {
+  chatId: Int
+}
+
+# input type for inserting data into table "groupChats"
+input groupChats_insert_input {
+  chatId: Int
+  groupId: uuid
+}
+
+# aggregate max on columns
+type groupChats_max_fields {
+  chatId: Int
+  groupId: uuid
+}
+
+# order by max() on columns of table "groupChats"
+input groupChats_max_order_by {
+  chatId: order_by
+  groupId: order_by
+}
+
+# aggregate min on columns
+type groupChats_min_fields {
+  chatId: Int
+  groupId: uuid
+}
+
+# order by min() on columns of table "groupChats"
+input groupChats_min_order_by {
+  chatId: order_by
+  groupId: order_by
+}
+
+# response of any mutation on the table "groupChats"
+type groupChats_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [groupChats!]!
+}
+
+# input type for inserting object relation for remote table "groupChats"
+input groupChats_obj_rel_insert_input {
+  data: groupChats_insert_input!
+  on_conflict: groupChats_on_conflict
+}
+
+# on conflict condition type for table "groupChats"
+input groupChats_on_conflict {
+  constraint: groupChats_constraint!
+  update_columns: [groupChats_update_column!]!
+  where: groupChats_bool_exp
+}
+
+# ordering options when selecting data from "groupChats"
+input groupChats_order_by {
+  chatId: order_by
+  groupId: order_by
+}
+
+# primary key columns input for table: "groupChats"
+input groupChats_pk_columns_input {
+  chatId: Int!
+  groupId: uuid!
+}
+
+# select columns of table "groupChats"
+enum groupChats_select_column {
+  # column name
+  chatId
+
+  # column name
+  groupId
+}
+
+# input type for updating data in table "groupChats"
+input groupChats_set_input {
+  chatId: Int
+  groupId: uuid
+}
+
+# aggregate stddev on columns
+type groupChats_stddev_fields {
+  chatId: Float
+}
+
+# order by stddev() on columns of table "groupChats"
+input groupChats_stddev_order_by {
+  chatId: order_by
+}
+
+# aggregate stddev_pop on columns
+type groupChats_stddev_pop_fields {
+  chatId: Float
+}
+
+# order by stddev_pop() on columns of table "groupChats"
+input groupChats_stddev_pop_order_by {
+  chatId: order_by
+}
+
+# aggregate stddev_samp on columns
+type groupChats_stddev_samp_fields {
+  chatId: Float
+}
+
+# order by stddev_samp() on columns of table "groupChats"
+input groupChats_stddev_samp_order_by {
+  chatId: order_by
+}
+
+# aggregate sum on columns
+type groupChats_sum_fields {
+  chatId: Int
+}
+
+# order by sum() on columns of table "groupChats"
+input groupChats_sum_order_by {
+  chatId: order_by
+}
+
+# update columns of table "groupChats"
+enum groupChats_update_column {
+  # column name
+  chatId
+
+  # column name
+  groupId
+}
+
+# aggregate var_pop on columns
+type groupChats_var_pop_fields {
+  chatId: Float
+}
+
+# order by var_pop() on columns of table "groupChats"
+input groupChats_var_pop_order_by {
+  chatId: order_by
+}
+
+# aggregate var_samp on columns
+type groupChats_var_samp_fields {
+  chatId: Float
+}
+
+# order by var_samp() on columns of table "groupChats"
+input groupChats_var_samp_order_by {
+  chatId: order_by
+}
+
+# aggregate variance on columns
+type groupChats_variance_fields {
+  chatId: Float
+}
+
+# order by variance() on columns of table "groupChats"
+input groupChats_variance_order_by {
+  chatId: order_by
 }
 
 # columns and relationships of "groupEvent"
@@ -4317,6 +4760,15 @@ type mutation_root {
   # delete single row from the table: "block"
   delete_block_by_pk(blockedId: String!, blockerId: String!): block
 
+  # delete data from the table: "bug"
+  delete_bug(
+    # filter the rows which have to be deleted
+    where: bug_bool_exp!
+  ): bug_mutation_response
+
+  # delete single row from the table: "bug"
+  delete_bug_by_pk(reporter: String!): bug
+
   # delete data from the table: "chat"
   delete_chat(
     # filter the rows which have to be deleted
@@ -4352,6 +4804,15 @@ type mutation_root {
     # filter the rows which have to be deleted
     where: group_bool_exp!
   ): group_mutation_response
+
+  # delete data from the table: "groupChats"
+  delete_groupChats(
+    # filter the rows which have to be deleted
+    where: groupChats_bool_exp!
+  ): groupChats_mutation_response
+
+  # delete single row from the table: "groupChats"
+  delete_groupChats_by_pk(chatId: Int!, groupId: uuid!): groupChats
 
   # delete data from the table: "groupEvent"
   delete_groupEvent(
@@ -4418,6 +4879,12 @@ type mutation_root {
 
   # delete single row from the table: "question"
   delete_question_by_pk(id: Int!): question
+
+  # delete data from the table: "report"
+  delete_report(
+    # filter the rows which have to be deleted
+    where: report_bool_exp!
+  ): report_mutation_response
 
   # delete data from the table: "review"
   delete_review(
@@ -4488,6 +4955,24 @@ type mutation_root {
     on_conflict: block_on_conflict
   ): block_mutation_response
 
+  # insert data into the table: "bug"
+  insert_bug(
+    # the rows to be inserted
+    objects: [bug_insert_input!]!
+
+    # on conflict condition
+    on_conflict: bug_on_conflict
+  ): bug_mutation_response
+
+  # insert a single row into the table: "bug"
+  insert_bug_one(
+    # the row to be inserted
+    object: bug_insert_input!
+
+    # on conflict condition
+    on_conflict: bug_on_conflict
+  ): bug
+
   # insert data into the table: "chat"
   insert_chat(
     # the rows to be inserted
@@ -4541,6 +5026,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: group_on_conflict
   ): group_mutation_response
+
+  # insert data into the table: "groupChats"
+  insert_groupChats(
+    # the rows to be inserted
+    objects: [groupChats_insert_input!]!
+
+    # on conflict condition
+    on_conflict: groupChats_on_conflict
+  ): groupChats_mutation_response
+
+  # insert a single row into the table: "groupChats"
+  insert_groupChats_one(
+    # the row to be inserted
+    object: groupChats_insert_input!
+
+    # on conflict condition
+    on_conflict: groupChats_on_conflict
+  ): groupChats
 
   # insert data into the table: "groupEvent"
   insert_groupEvent(
@@ -4640,6 +5143,18 @@ type mutation_root {
     # on conflict condition
     on_conflict: question_on_conflict
   ): question
+
+  # insert data into the table: "report"
+  insert_report(
+    # the rows to be inserted
+    objects: [report_insert_input!]!
+  ): report_mutation_response
+
+  # insert a single row into the table: "report"
+  insert_report_one(
+    # the row to be inserted
+    object: report_insert_input!
+  ): report
 
   # insert data into the table: "review"
   insert_review(
@@ -4937,6 +5452,22 @@ type mutation_root {
     pk_columns: block_pk_columns_input!
   ): block
 
+  # update data of the table: "bug"
+  update_bug(
+    # sets the columns of the filtered rows to the given values
+    _set: bug_set_input
+
+    # filter the rows which have to be updated
+    where: bug_bool_exp!
+  ): bug_mutation_response
+
+  # update single row of the table: "bug"
+  update_bug_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: bug_set_input
+    pk_columns: bug_pk_columns_input!
+  ): bug
+
   # update data of the table: "chat"
   update_chat(
     # increments the integer columns with given value of the filtered values
@@ -5062,6 +5593,28 @@ type mutation_root {
     # filter the rows which have to be updated
     where: group_bool_exp!
   ): group_mutation_response
+
+  # update data of the table: "groupChats"
+  update_groupChats(
+    # increments the integer columns with given value of the filtered values
+    _inc: groupChats_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: groupChats_set_input
+
+    # filter the rows which have to be updated
+    where: groupChats_bool_exp!
+  ): groupChats_mutation_response
+
+  # update single row of the table: "groupChats"
+  update_groupChats_by_pk(
+    # increments the integer columns with given value of the filtered values
+    _inc: groupChats_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: groupChats_set_input
+    pk_columns: groupChats_pk_columns_input!
+  ): groupChats
 
   # update data of the table: "groupEvent"
   update_groupEvent(
@@ -5280,6 +5833,18 @@ type mutation_root {
     _set: question_set_input
     pk_columns: question_pk_columns_input!
   ): question
+
+  # update data of the table: "report"
+  update_report(
+    # increments the integer columns with given value of the filtered values
+    _inc: report_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: report_set_input
+
+    # filter the rows which have to be updated
+    where: report_bool_exp!
+  ): report_mutation_response
 
   # update data of the table: "review"
   update_review(
@@ -6117,6 +6682,45 @@ type query_root {
   # fetch data from the table: "block" using primary key columns
   block_by_pk(blockedId: String!, blockerId: String!): block
 
+  # fetch data from the table: "bug"
+  bug(
+    # distinct select on columns
+    distinct_on: [bug_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [bug_order_by!]
+
+    # filter the rows returned
+    where: bug_bool_exp
+  ): [bug!]!
+
+  # fetch aggregated fields from the table: "bug"
+  bug_aggregate(
+    # distinct select on columns
+    distinct_on: [bug_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [bug_order_by!]
+
+    # filter the rows returned
+    where: bug_bool_exp
+  ): bug_aggregate!
+
+  # fetch data from the table: "bug" using primary key columns
+  bug_by_pk(reporter: String!): bug
+
   # fetch data from the table: "chat" using primary key columns
   chat(id: Int!): chat
 
@@ -6404,6 +7008,45 @@ type query_root {
 
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
+
+  # fetch data from the table: "groupChats"
+  groupChats(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): [groupChats!]!
+
+  # fetch aggregated fields from the table: "groupChats"
+  groupChats_aggregate(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): groupChats_aggregate!
+
+  # fetch data from the table: "groupChats" using primary key columns
+  groupChats_by_pk(chatId: Int!, groupId: uuid!): groupChats
 
   # fetch data from the table: "groupEvent"
   groupEvent(
@@ -6773,6 +7416,42 @@ type query_root {
     # filter the rows returned
     where: question_bool_exp
   ): [question!]!
+
+  # fetch data from the table: "report"
+  report(
+    # distinct select on columns
+    distinct_on: [report_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [report_order_by!]
+
+    # filter the rows returned
+    where: report_bool_exp
+  ): [report!]!
+
+  # fetch aggregated fields from the table: "report"
+  report_aggregate(
+    # distinct select on columns
+    distinct_on: [report_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [report_order_by!]
+
+    # filter the rows returned
+    where: report_bool_exp
+  ): report_aggregate!
 
   # fetch data from the table: "review"
   review(
@@ -7547,6 +8226,236 @@ input question_variance_order_by {
   id: order_by
 }
 
+# columns and relationships of "report"
+type report {
+  chat: Int
+  reported: String
+  reporter: String!
+  time: timestamptz!
+}
+
+# aggregated selection of "report"
+type report_aggregate {
+  aggregate: report_aggregate_fields
+  nodes: [report!]!
+}
+
+# aggregate fields of "report"
+type report_aggregate_fields {
+  avg: report_avg_fields
+  count(columns: [report_select_column!], distinct: Boolean): Int
+  max: report_max_fields
+  min: report_min_fields
+  stddev: report_stddev_fields
+  stddev_pop: report_stddev_pop_fields
+  stddev_samp: report_stddev_samp_fields
+  sum: report_sum_fields
+  var_pop: report_var_pop_fields
+  var_samp: report_var_samp_fields
+  variance: report_variance_fields
+}
+
+# order by aggregate values of table "report"
+input report_aggregate_order_by {
+  avg: report_avg_order_by
+  count: order_by
+  max: report_max_order_by
+  min: report_min_order_by
+  stddev: report_stddev_order_by
+  stddev_pop: report_stddev_pop_order_by
+  stddev_samp: report_stddev_samp_order_by
+  sum: report_sum_order_by
+  var_pop: report_var_pop_order_by
+  var_samp: report_var_samp_order_by
+  variance: report_variance_order_by
+}
+
+# input type for inserting array relation for remote table "report"
+input report_arr_rel_insert_input {
+  data: [report_insert_input!]!
+}
+
+# aggregate avg on columns
+type report_avg_fields {
+  chat: Float
+}
+
+# order by avg() on columns of table "report"
+input report_avg_order_by {
+  chat: order_by
+}
+
+# Boolean expression to filter rows from the table "report". All fields are combined with a logical 'AND'.
+input report_bool_exp {
+  _and: [report_bool_exp]
+  _not: report_bool_exp
+  _or: [report_bool_exp]
+  chat: Int_comparison_exp
+  reported: String_comparison_exp
+  reporter: String_comparison_exp
+  time: timestamptz_comparison_exp
+}
+
+# input type for incrementing integer column in table "report"
+input report_inc_input {
+  chat: Int
+}
+
+# input type for inserting data into table "report"
+input report_insert_input {
+  chat: Int
+  reported: String
+  reporter: String
+  time: timestamptz
+}
+
+# aggregate max on columns
+type report_max_fields {
+  chat: Int
+  reported: String
+  reporter: String
+  time: timestamptz
+}
+
+# order by max() on columns of table "report"
+input report_max_order_by {
+  chat: order_by
+  reported: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# aggregate min on columns
+type report_min_fields {
+  chat: Int
+  reported: String
+  reporter: String
+  time: timestamptz
+}
+
+# order by min() on columns of table "report"
+input report_min_order_by {
+  chat: order_by
+  reported: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# response of any mutation on the table "report"
+type report_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [report!]!
+}
+
+# input type for inserting object relation for remote table "report"
+input report_obj_rel_insert_input {
+  data: report_insert_input!
+}
+
+# ordering options when selecting data from "report"
+input report_order_by {
+  chat: order_by
+  reported: order_by
+  reporter: order_by
+  time: order_by
+}
+
+# select columns of table "report"
+enum report_select_column {
+  # column name
+  chat
+
+  # column name
+  reported
+
+  # column name
+  reporter
+
+  # column name
+  time
+}
+
+# input type for updating data in table "report"
+input report_set_input {
+  chat: Int
+  reported: String
+  reporter: String
+  time: timestamptz
+}
+
+# aggregate stddev on columns
+type report_stddev_fields {
+  chat: Float
+}
+
+# order by stddev() on columns of table "report"
+input report_stddev_order_by {
+  chat: order_by
+}
+
+# aggregate stddev_pop on columns
+type report_stddev_pop_fields {
+  chat: Float
+}
+
+# order by stddev_pop() on columns of table "report"
+input report_stddev_pop_order_by {
+  chat: order_by
+}
+
+# aggregate stddev_samp on columns
+type report_stddev_samp_fields {
+  chat: Float
+}
+
+# order by stddev_samp() on columns of table "report"
+input report_stddev_samp_order_by {
+  chat: order_by
+}
+
+# aggregate sum on columns
+type report_sum_fields {
+  chat: Int
+}
+
+# order by sum() on columns of table "report"
+input report_sum_order_by {
+  chat: order_by
+}
+
+# aggregate var_pop on columns
+type report_var_pop_fields {
+  chat: Float
+}
+
+# order by var_pop() on columns of table "report"
+input report_var_pop_order_by {
+  chat: order_by
+}
+
+# aggregate var_samp on columns
+type report_var_samp_fields {
+  chat: Float
+}
+
+# order by var_samp() on columns of table "report"
+input report_var_samp_order_by {
+  chat: order_by
+}
+
+# aggregate variance on columns
+type report_variance_fields {
+  chat: Float
+}
+
+# order by variance() on columns of table "report"
+input report_variance_order_by {
+  chat: order_by
+}
+
 # columns and relationships of "review"
 type review {
   author: String!
@@ -7919,6 +8828,45 @@ type subscription_root {
   # fetch data from the table: "block" using primary key columns
   block_by_pk(blockedId: String!, blockerId: String!): block
 
+  # fetch data from the table: "bug"
+  bug(
+    # distinct select on columns
+    distinct_on: [bug_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [bug_order_by!]
+
+    # filter the rows returned
+    where: bug_bool_exp
+  ): [bug!]!
+
+  # fetch aggregated fields from the table: "bug"
+  bug_aggregate(
+    # distinct select on columns
+    distinct_on: [bug_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [bug_order_by!]
+
+    # filter the rows returned
+    where: bug_bool_exp
+  ): bug_aggregate!
+
+  # fetch data from the table: "bug" using primary key columns
+  bug_by_pk(reporter: String!): bug
+
   # fetch data from the table: "chat" using primary key columns
   chat(id: Int!): chat
 
@@ -8206,6 +9154,45 @@ type subscription_root {
 
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
+
+  # fetch data from the table: "groupChats"
+  groupChats(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): [groupChats!]!
+
+  # fetch aggregated fields from the table: "groupChats"
+  groupChats_aggregate(
+    # distinct select on columns
+    distinct_on: [groupChats_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [groupChats_order_by!]
+
+    # filter the rows returned
+    where: groupChats_bool_exp
+  ): groupChats_aggregate!
+
+  # fetch data from the table: "groupChats" using primary key columns
+  groupChats_by_pk(chatId: Int!, groupId: uuid!): groupChats
 
   # fetch data from the table: "groupEvent"
   groupEvent(
@@ -8575,6 +9562,42 @@ type subscription_root {
     # filter the rows returned
     where: question_bool_exp
   ): [question!]!
+
+  # fetch data from the table: "report"
+  report(
+    # distinct select on columns
+    distinct_on: [report_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [report_order_by!]
+
+    # filter the rows returned
+    where: report_bool_exp
+  ): [report!]!
+
+  # fetch aggregated fields from the table: "report"
+  report_aggregate(
+    # distinct select on columns
+    distinct_on: [report_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [report_order_by!]
+
+    # filter the rows returned
+    where: report_bool_exp
+  ): report_aggregate!
 
   # fetch data from the table: "review"
   review(

@@ -77,6 +77,12 @@ target 'Exploriti' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  # Notification Pods
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
+
   target 'ExploritiTests' do
     inherit! :complete
     # Pods for testing

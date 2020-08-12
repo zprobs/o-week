@@ -69,7 +69,7 @@ const SearchableFlatList = React.forwardRef(
     const [unfilteredList, setUnfilteredList] = useState(data ? data : []);
     const [filteredList, setFilteredList] = useState(unfilteredList);
     const debounceQuery = useDebounce(serverSearch ? null : searchQuery, 300);
-    const [inputRef, setInputFocus] = useFocus();
+    const inputRef = useRef();
     const [selected, setSelected] = useState(new Map());
     const [count, setCount] = useState(0);
     // used to prevent the interests from being queried right away when visiting MyProfile
@@ -80,11 +80,13 @@ const SearchableFlatList = React.forwardRef(
     const [buttonIsShowing, setButtonIsShowing] = useState(false);
     const [keyboardHeight] = useKeyboard();
 
+    console.log('btn show', buttonIsShowing);
+
 
 
     const {data: QueryData, loading, error} = useQuery(verifiedQuery, {
       skip: query == undefined || (serverSearch && searchQuery === ''),
-      variables: serverSearch ? { query: `%${searchQuery}%` } : variables,
+      variables: serverSearch ? { query: `%${searchQuery}%`, ...variables } : variables,
     });
 
     if (error) {
@@ -231,6 +233,7 @@ const SearchableFlatList = React.forwardRef(
           hideBackground={true}
           showsCancelButton={false}
           showsCancelButtonWhileEditing={false}
+          onSearchButtonPress={()=>inputRef.current.blur()}
         />
       );
     }, [title, setSearchQuery]);
@@ -244,9 +247,10 @@ const SearchableFlatList = React.forwardRef(
               opacity,
               transform: [{ translateY: floatingOffset }],
 
-              bottom: floatingButtonOffset
+              bottom: keyboardHeight === 0 ? 0 : floatingButtonOffset
                 ? keyboardHeight - floatingButtonOffset
-                : keyboardHeight,
+                : keyboardHeight
+
             },
           ]}>
             <ButtonColour
@@ -293,7 +297,6 @@ const SearchableFlatList = React.forwardRef(
             ListHeaderComponent: search,
           }}
           tapGestureEnabled={false}
-          onOpened={setInputFocus}
           onClose={onClose}
           modalTopOffset={offset}
           FloatingComponent={renderFloatingComponent}

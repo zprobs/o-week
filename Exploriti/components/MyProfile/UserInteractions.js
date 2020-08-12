@@ -329,7 +329,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   let friendInteraction = () => {
     return undefined;
   };
-
+  // todo: find out if they are friends with query logic
   if (friendsData) {
     const isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
@@ -369,7 +369,7 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
       requestsData.user.friendRequestsReceived.length !== 0
     ) {
       content = (
-        <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
+        <Text  style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
       );
       friendInteraction = () => confirmRequest();
     } else if (

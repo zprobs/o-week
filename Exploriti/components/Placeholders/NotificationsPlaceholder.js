@@ -16,27 +16,29 @@ const { colours } = Theme.light;
  * @constructor
  */
 
-const NotificationsPlaceholder = () => {
-  const NotificationsCard = () => {
-    return (
-      <View style={styles.cardPlaceholder}>
-        <View style={styles.imagePlaceholder}>
-          <PlaceholderMedia size={40} color={colours.placeholder} isRound />
-        </View>
-        <View style={styles.infoPlaceholder}>
-          <PlaceholderLine width={90} style={styles.line} />
-        </View>
+export const LoadingNotificationsCard = () => {
+  return (
+    <View style={styles.cardPlaceholder}>
+      <View style={styles.imagePlaceholder}>
+        <PlaceholderMedia size={40} color={colours.placeholder} isRound />
       </View>
-    );
-  };
+      <View style={styles.infoPlaceholder}>
+        <PlaceholderLine width={90} style={styles.line} />
+      </View>
+    </View>
+  );
+};
+
+const NotificationsPlaceholder = () => {
+
   return (
     <View style={styles.container}>
       <Placeholder Animation={Shine}>
-        <NotificationsCard />
-        <NotificationsCard />
-        <NotificationsCard />
-        <NotificationsCard />
-        <NotificationsCard />
+        <LoadingNotificationsCard />
+        <LoadingNotificationsCard />
+        <LoadingNotificationsCard />
+        <LoadingNotificationsCard />
+        <LoadingNotificationsCard />
       </Placeholder>
     </View>
   );
