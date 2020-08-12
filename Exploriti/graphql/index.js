@@ -987,6 +987,7 @@ export const GET_GROUP_IMAGE_NAME = gql`
       id
       name
       image
+        groupType
     }
   }
 `;

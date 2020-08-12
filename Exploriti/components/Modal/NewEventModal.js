@@ -44,7 +44,7 @@ const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
 /**
- * Modal for creating an event accessable only by Leaders through the Group page
+ * Modal for creating an event accessible only by Leaders through the Group page
  * @param groupId {string} the host of the event
  * @param onClose {function} a method executed onClose
  * @param groupName {string} The name of host group
@@ -53,7 +53,7 @@ const { FontWeights, FontSizes } = Fonts;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly groupName?: *, readonly onClose?: *}> & React.RefAttributes<unknown>>}
  */
 const NewEventModal = React.forwardRef(
-  ({ groupId, onClose, groupName, editMode, eventId }, ref) => {
+  ({ groupId, onClose, groupName, editMode, eventId, isOfficial }, ref) => {
     const [
       createEvent,
       { error: createEventError},
@@ -87,6 +87,8 @@ const NewEventModal = React.forwardRef(
     const [showEndDate, setShowEndDate] = useState(false);
     const [minimumDate] = useState(new Date(Date.now() - 86400000));
     const { authState, setAuthState } = useContext(AuthContext);
+
+    console.log('startDate', startDate);
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -151,6 +153,7 @@ const NewEventModal = React.forwardRef(
       fields.website = website;
       fields.startDate = startDate;
       fields.endDate = endDate;
+      fields.isOfficial = isOfficial;
       let userIDs = [];
       if (groupId) {
         fields.hosts = { data: [{ groupId: groupId }] };

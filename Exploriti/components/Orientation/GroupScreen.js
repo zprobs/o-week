@@ -66,6 +66,7 @@ const GroupScreen = ({ route }) => {
     return null
   }
 
+
   const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter(
     (membership) => membership.group.id === groupId,
   ) : [];
@@ -141,6 +142,7 @@ const GroupScreen = ({ route }) => {
             groupId={group.id}
             onClose={onCloseEdit}
             groupName={group.name}
+            isOfficial={group.groupType === 'admin'}
           />
         </>
       ) : null}

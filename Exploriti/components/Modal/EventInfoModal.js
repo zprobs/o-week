@@ -485,6 +485,8 @@ const EventInfoModal = React.forwardRef(
       let minutes, hours, days, weeks, timeString;
       let happeningNow = false;
       const total = Date.parse(data.event.startDate) - Date.parse(now);
+      console.log('total', total)
+      console.log('startDate', new Date(data.event.startDate) );
       if (total < 0) {
         const endTotal = Date.parse(data.event.endDate) - Date.parse(now);
         if (endTotal < 0) {
@@ -513,7 +515,9 @@ const EventInfoModal = React.forwardRef(
         days = Math.floor(total / (1000 * 60 * 60 * 24));
         weeks = Math.floor(total / (1000 * 60 * 60 * 24 * 7));
 
-        if (weeks) {
+        if (minutes < 1) {
+          timeString = 'Starting just now';
+        } else if (weeks) {
           const singleOrPlural = weeks === 1 ? 'week' : 'weeks';
           timeString = `Starting in ${weeks} ${singleOrPlural}`;
         } else if (days) {
