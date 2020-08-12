@@ -132,8 +132,8 @@ android {
         applicationId "com.exploriti"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
         vectorDrawables.useSupportLibrary = true // added for Image Picker
         multiDexEnabled true
     }
@@ -148,9 +148,9 @@ android {
     signingConfigs {
         release {
             storeFile file('exploriti-android.keystore')
-            storePassword 'zacharyattackary'
+            storePassword 'GlkUs-WKAl-aOie-dP'
             keyAlias 'exploriti-android'
-            keyPassword 'zacharyattackary'
+            keyPassword 'GlkUs-WKAl-aOie-dP'
         }
         debug {
             storeFile file('debug.keystore')
