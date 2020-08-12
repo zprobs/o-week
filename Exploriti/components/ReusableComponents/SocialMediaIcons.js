@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS } from '../../graphql';
+import images from '../../assets/images';
 
 /**
  * Icons that display a users social media links. Used in Profile. Max 6
@@ -45,7 +46,7 @@ const SocialMediaIcons = ({ id }) => {
 const Icon = ({ type, value }) => {
   return (
     <TouchableOpacity onPress={() => toLink(type, value)}>
-      <Image source={{ uri: imgSource(type) }} style={styles.image} />
+      <Image source={imgSource(type)} style={styles.image} />
     </TouchableOpacity>
   );
 };
@@ -53,19 +54,19 @@ const Icon = ({ type, value }) => {
 function imgSource(type) {
   switch (parseInt(type)) {
     case 1:
-      return 'https://img.icons8.com/fluent/48/000000/facebook-new.png';
+      return images.facebook;
     case 2:
-      return 'https://img.icons8.com/fluent/48/000000/instagram-new.png';
+      return images.instagram;
     case 3:
-      return 'https://img.icons8.com/color/48/000000/linkedin-circled.png';
+      return images.linkedin;
     case 4:
-      return 'https://img.icons8.com/color/48/000000/snapchat-circled-logo.png';
+      return images.snapchat;
     case 5:
-      return 'https://img.icons8.com/color/48/000000/twitter-circled.png';
+      return images.twitter;
     case 6:
-      return 'https://cdn141.picsart.com/305061469080211.png';
+      return images.tiktok;
     default:
-      return 'https://img.icons8.com/fluent/48/000000/facebook-new.png';
+      return images.logo;
   }
 }
 
