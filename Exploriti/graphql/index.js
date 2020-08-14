@@ -1361,6 +1361,15 @@ export const GET_LEADERBOARD = gql`
     }
 `
 
+export const GET_RANDOM_USERS = gql`
+    query getRandomUsers($userId: String!) {
+        getrandomusers(args: {userid: $userId}) {
+            id
+            image
+        }
+    }
+`
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}

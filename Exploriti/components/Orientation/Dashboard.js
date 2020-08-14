@@ -12,7 +12,7 @@ import { AuthContext, processWarning, refreshToken } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_CURRENT_USER, GET_USERS_WHERE } from '../../graphql';
+import { GET_CURRENT_USER, GET_RANDOM_USERS, GET_USERS_WHERE } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/Feather';
 import SectionHeader from '../ReusableComponents/SectionHeader';
@@ -99,14 +99,16 @@ export default function Dashboard() {
       data: sayHiData,
       loading: sayHiLoading,
       error: sayHiError,
-    } = useQuery(GET_USERS_WHERE, {
-      variables: { _nin: authState.user.uid },
+    } = useQuery(GET_RANDOM_USERS, {
+      variables: { userId: authState.user.uid },
     });
     let count = 0;
 
     if (sayHiError) {
       processWarning(sayHiError, 'Server Error')
     }
+
+    console.log('randoms', sayHiData)
 
     return (
       <>
@@ -128,7 +130,7 @@ export default function Dashboard() {
           {sayHiLoading ? (
             <SayHiPlaceholder />
           ) : sayHiData ? (
-            sayHiData.users.map((user) => {
+            sayHiData.getrandomusers.map((user) => {
               count++;
               return (
                 <TouchableOpacity
