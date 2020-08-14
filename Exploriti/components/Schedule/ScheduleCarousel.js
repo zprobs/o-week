@@ -43,6 +43,7 @@ const ScheduleCarousel = () => {
   });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
+  const [max, setMax] = useState(0)
   const [titleOpacity] = useState(new Animated.Value(1));
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
@@ -66,6 +67,7 @@ const ScheduleCarousel = () => {
     let i = 0;
     let array = [];
     let date = undefined;
+    let max = 0; // used to compute the max number of events per day and size the carousel accordingly
     data.events.forEach((event) => {
       if (notOnCalendar.includes(event.hosts[0].groupId)) return;
       const thisDate = new Date(event.startDate);
@@ -78,6 +80,8 @@ const ScheduleCarousel = () => {
         array.push(event);
       } else {
         scheduleData[i] = array;
+        if (array.length > max) max = array.length
+        console.log('max', max)
         i++;
         array = [];
         array.push(event);
@@ -86,8 +90,7 @@ const ScheduleCarousel = () => {
     });
     // one more time to catch the last day which isn't handled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
-    // to trigger a rerender to display the title date
-    setIndex(0);
+    setMax(max)
   }, [data]);
 
   if (error) {
@@ -211,7 +214,7 @@ const ScheduleCarousel = () => {
               renderItem={renderItem}
               sliderWidth={WIDTH}
               itemWidth={ITEM_WIDTH}
-              containerCustomStyle={styles.carousel}
+              containerCustomStyle={[styles.carousel, {height: 100 + (180*max)}]}
               removeClippedSubviews={false}
               onBeforeSnapToItem={onSwipe}
             />
@@ -245,7 +248,6 @@ const styles = StyleSheet.create({
   slide: {},
   carousel: {
     marginTop: 30,
-    height: HEIGHT,
   },
 });
 

@@ -225,7 +225,7 @@ export default function App() {
   const link = ApolloLink.from([
     onError(({ networkError }) => {
       console.log('error code', networkError)
-      if (networkError && networkError.statusCode === 401) refreshToken(authState.user, setAuthState);
+      if (networkError && networkError.originalError && networkError.originalError.error && networkError.originalError.error.includes('JWT')) refreshToken(authState.user, setAuthState);
     }),
     split(
       ({ query }) => {
