@@ -6,7 +6,7 @@ import { ThemeStatic } from '../../theme/Colours';
 
 const CustomSend = (sendProps) => (
   <Send {...sendProps} containerStyle={styles.container}>
-    <Icon name="sc-telegram" size={20} color={ThemeStatic.accent} />
+    <Icon name="sc-telegram" size={28} color={ThemeStatic.accent} />
   </Send>
 );
 

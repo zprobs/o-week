@@ -60,7 +60,7 @@ export default function SettingsList() {
         <ListItem
           name={'Terms Of Service'}
           icon={'archive'}
-          link={'https://www.arravon.com/terms-of-service'}
+          link={'https://www.arravon.com/termsofuse'}
         />
         <ListItem
           name={'Our Company'}

@@ -38,6 +38,7 @@ const Badge = ({ animatedFocus }) => {
     variables: { id: authState.user.uid },
     pollInterval: 3000,
   });
+
   const badgeCount = data ? data.user.userChats.length : 0;
 
   return <BadgeView animatedFocus={animatedFocus} badgeCount={badgeCount} />;

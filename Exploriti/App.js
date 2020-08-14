@@ -44,6 +44,8 @@ import ScheduleSVG from './assets/svg/ScheduleSVG';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import messaging from '@react-native-firebase/messaging';
+import { onError } from 'apollo-link-error';
+import { ApolloLink } from 'apollo-link';
 
 
 
@@ -219,14 +221,21 @@ export default function App() {
     },
   });
 
-  const link = split(
-    ({ query }) => {
-      const { kind, operation } = getMainDefinition(query);
-      return kind === 'OperationDefinition' && operation === 'subscription';
-    },
-    wsLink,
-    httpLink,
-  );
+
+  const link = ApolloLink.from([
+    onError(({ networkError }) => {
+      console.log('error code', networkError)
+      if (networkError.statusCode === 401) refreshToken(authState.user, setAuthState);
+    }),
+    split(
+      ({ query }) => {
+        const { kind, operation } = getMainDefinition(query);
+        return kind === 'OperationDefinition' && operation === 'subscription';
+      },
+      wsLink,
+      httpLink,
+    )
+  ])
 
   const client = new ApolloClient({
     link,

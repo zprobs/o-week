@@ -78,6 +78,52 @@ const MessageCard = ({
 
   const [deleteChat] = useMutation(DELETE_CHAT, {variables: {chatId: chatId}})
 
+  const [setSeen] = useMutation(UPDATE_MESSAGE_SEEN, {
+    variables: {
+      chatId: chatId,
+      participants: [authState.user.uid],
+      seen: true,
+    },
+    update: (cache) => {
+      const frag = gql`
+          fragment usersChats on user {
+              userChats(
+                  where: {
+                      _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }]
+                  }
+              ) {
+                  chatId
+                  seen
+              }
+          }
+      `;
+
+      try {
+        const { userChats } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+        });
+
+        console.log('userChats', userChats);
+        console.log('chatID', chatId);
+
+        const newChats = userChats.filter((e) => e.chatId !== chatId);
+
+        console.log('newChats', newChats);
+
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+          data: { __typename: 'user', userChats: newChats },
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  });
+
+  const hasSetSeen = useRef(false);
+
   const useValue = (value) => useConst(() => new Value(value));
   const useClock = () => useConst(() => new Clock());
 
@@ -96,6 +142,12 @@ const MessageCard = ({
 
   const isHighlighted = senderId !== authState.user.uid && !seen;
 
+  console.log('msg seen', seen, chatId);
+
+  if (senderId === authState.user.uid && !seen && !hasSetSeen.current) {
+    hasSetSeen.current = true;
+    setSeen();
+  }
 
   const setSeenAndNavigate = () => {
     navigation.navigate('Conversation', {

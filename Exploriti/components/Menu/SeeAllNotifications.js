@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Button } from 'react-native';
+import { Button, Platform, View } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import { NOTIFICATION_FRAG, NOTIFICATION_SUBSCRIPTION_FRAG, SEE_ALL_NOTIFICATIONS } from '../../graphql';
 import { AuthContext } from '../../context';
@@ -41,7 +41,11 @@ const SeeAllNotifications = () => {
     },
   });
 
-  return <Button title={'Set All Seen'} onPress={seeAll} />;
+  return (
+    <View style={Platform.OS === 'android' ? {marginRight: 5} : null}>
+      <Button title={'Set All Seen'} onPress={seeAll}  />
+    </View>
+  )
 };
 
 export default SeeAllNotifications

@@ -369,9 +369,6 @@ const EventInfoModal = React.forwardRef(
                 <Image
                   source={images.logo}
                   style={styles.icon}
-                  width={32}
-                  height={32}
-                  borderRadius={16}
                 />
                 <Text style={styles.iconLabel}>
                   Vanier College Council Event
@@ -662,6 +659,9 @@ const styles = StyleSheet.create({
   icon: {
     marginHorizontal: 12,
     marginVertical: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16
   },
   iconLabel: {
     ...FontWeights.Bold,

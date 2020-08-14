@@ -1,12 +1,24 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { AuthContext, processError, processWarning } from '../../context';
 import {
   useMutation,
   useSubscription,
   useLazyQuery,
 } from '@apollo/react-hooks';
-import { Text, StyleSheet, SafeAreaView, Keyboard, StatusBar, View, Platform } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  Keyboard,
+  StatusBar,
+  View,
+  Platform,
+} from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { Theme } from '../../theme/Colours';
@@ -19,7 +31,8 @@ import CustomInputToolbar from './CustomInputToolbar';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
   GET_EARLIER_MESSAGES,
-  GET_NEW_MESSAGES,  GET_USERS_BY_ID,
+  GET_NEW_MESSAGES,
+  GET_USERS_BY_ID,
   SEND_MESSAGE,
   UPDATE_MESSAGE_SEEN,
 } from '../../graphql';
@@ -47,7 +60,7 @@ const Conversation = () => {
     messages: initialMessages,
     isHighlighted: notSeen,
     chatName,
-    image
+    image,
   } = route.params;
   const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
@@ -67,7 +80,7 @@ const Conversation = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [messageOffset, setMessageOffset] = useState(initialMessages.length);
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
-  const [nameState, setNameState] = useState(name)
+  const [nameState, setNameState] = useState(name);
   const [loadEarlier, setLoadEarlier] = useState(messageOffset < numMessages);
   const didSetFirst = useRef(false);
   const usersRef = useRef();
@@ -75,7 +88,6 @@ const Conversation = () => {
   const numToLoad = 5;
 
   const isFocused = useIsFocused();
-
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
@@ -87,14 +99,14 @@ const Conversation = () => {
       if (didSetFirst.current) {
         if (!newMessage) {
           goBack();
-          return null
+          return null;
         }
         if (newMessage.user._id !== authState.user.uid) {
           setMessages(
             GiftedChat.append(messages, subscriptionData.data.messages),
           );
-          if (isFocused) setSeen()
         }
+        if (isFocused) setSeen();
       } else {
         didSetFirst.current = true;
       }
@@ -107,58 +119,59 @@ const Conversation = () => {
       participants: [authState.user.uid],
       seen: true,
     },
-      update: (cache) => {
-        const frag = gql`
-          fragment usersChats on user {
-            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
-              chatId
-              seen
+    update: (cache) => {
+      const frag = gql`
+        fragment usersChats on user {
+          userChats(
+            where: {
+              _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }]
             }
+          ) {
+            chatId
+            seen
           }
-        `;
-
-        try {
-          const { userChats } = cache.readFragment({
-            id: `user:${authState.user.uid}`,
-            fragment: frag,
-          });
-
-          console.log('userChats', userChats);
-          console.log('chatID', chatId);
-
-          const newChats = userChats.filter((e) => e.chatId !== chatId);
-
-
-          console.log('newChats', newChats);
-
-          cache.writeFragment({
-            id: `user:${authState.user.uid}`,
-            fragment: frag,
-            data: { __typename: 'user', userChats: newChats },
-          });
-        } catch (e) {
-          console.log(e);
         }
-      },
+      `;
+
+      try {
+        const { userChats } = cache.readFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+        });
+
+        console.log('userChats', userChats);
+        console.log('chatID', chatId);
+
+        const newChats = userChats.filter((e) => e.chatId !== chatId);
+
+        console.log('newChats', newChats);
+
+        cache.writeFragment({
+          id: `user:${authState.user.uid}`,
+          fragment: frag,
+          data: { __typename: 'user', userChats: newChats },
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  });
+
+  const hasSetSeen = useRef(false);
+
+  if (isFocused && notSeen && !hasSetSeen.current) {
+    hasSetSeen.current = true;
+    setSeen();
   }
 
-    );
-
-  const hasSetSeen = useRef(false)
-
-  if (isFocused && notSeen && !hasSetSeen.current ){
-    hasSetSeen.current = true
-    setSeen()
-  }
-
-  if (!isFocused) hasSetSeen.current = false
+  if (!isFocused) hasSetSeen.current = false;
 
   if (earlierError) {
-    processWarning(earlierError, 'Could not load messages')
+    processWarning(earlierError, 'Could not load messages');
   }
 
   if (sendError) {
-   processError(sendError, 'Could not send message')
+    processError(sendError, 'Could not send message');
   }
 
   const onSend = (updatedMessages) => {
@@ -176,11 +189,11 @@ const Conversation = () => {
         chatId: chatId,
         participants: participants
           .map((p) => p.id)
-          .filter(p => p.id !== authState.user.uid),
+          .filter((p) => p.id !== authState.user.uid),
         seen: false,
       },
     }).catch((e) => console.log(e));
-    setSeen()
+    setSeen();
   };
 
   const loadEarlierMessages = () => {
@@ -211,9 +224,9 @@ const Conversation = () => {
 
   const handleOptionsPress = () => {
     optionsRef.current && optionsRef.current.open();
-  }
+  };
 
-  console.log('part', participants)
+  console.log('part', participants);
 
   // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
   // const transform = transformMessages(messages);
@@ -221,7 +234,7 @@ const Conversation = () => {
     <GiftedChat
       // alignTop={false}
       scrollToBottom
-      isKeyboardInternallyHandled={ Platform.OS !== 'android'}
+      isKeyboardInternallyHandled={Platform.OS !== 'android'}
       alwaysShowSend
       isLoadingEarlier={isLoadingEarlier}
       onLoadEarlier={loadEarlierMessages}
@@ -250,16 +263,34 @@ const Conversation = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackHeader title={nameState} titleStyle={styles.headerTitleStyle} IconRight={()=><OptionsIcon onPress={handleOptionsPress}/>} onTitlePress={handleTitlePress}  />
+      <GoBackHeader
+        title={nameState}
+        titleStyle={styles.headerTitleStyle}
+        IconRight={() => <OptionsIcon onPress={handleOptionsPress} />}
+        onTitlePress={handleTitlePress}
+      />
       {content}
-      <UsersBottomModal type={'chat'} name={chatName} query={GET_USERS_BY_ID} variables={{_in: participants.map(p => p.id)}} ref={usersRef} />
-      {
-        participants.length > 2 ? (
-          <ChatOptionsModal id={chatId} prevName={nameState} prevImage={image} ref={optionsRef} setName={setNameState} />
-        ) : (
-          <OptionsBottomModal id={participants.find(p => p.id !== authState.user.uid).id} ref={optionsRef} />
-        )
-      }
+      <UsersBottomModal
+        type={'chat'}
+        name={chatName}
+        query={GET_USERS_BY_ID}
+        variables={{ _in: participants.map((p) => p.id) }}
+        ref={usersRef}
+      />
+      {participants.length > 2 ? (
+        <ChatOptionsModal
+          id={chatId}
+          prevName={nameState}
+          prevImage={image}
+          ref={optionsRef}
+          setName={setNameState}
+        />
+      ) : (
+        <OptionsBottomModal
+          id={participants.find((p) => p.id !== authState.user.uid).id}
+          ref={optionsRef}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -271,7 +302,7 @@ const styles = StyleSheet.create({
   },
   headerTitleStyle: {
     marginLeft: 0,
-    maxWidth: '85%'
+    maxWidth: '85%',
   },
 });
 

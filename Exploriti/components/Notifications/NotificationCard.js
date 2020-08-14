@@ -170,7 +170,7 @@ export const EventNotificationCard = ({ item, message, titleLast }) => {
   if (error || !data.event)
     return null
   const nav = () => {
-    navigation.push('EventScreen', { eventId: item.typeId });
+    navigation.navigate('EventScreen', { eventId: item.typeId });
   };
   return (
     <NotificationCard

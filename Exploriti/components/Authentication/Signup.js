@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
-  Animated,
+  Animated, Linking,
 } from 'react-native';
 import SegmentedControl from '@react-native-community/segmented-control';
 import Fonts from '../../theme/Fonts';
@@ -40,6 +40,7 @@ import { Formik } from 'formik';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Yup from 'yup';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { linkError } from '../ReusableComponents/SocialMediaIcons';
 
 const { FontWeights, FontSizes } = Fonts;
 const height = Dimensions.get('window').height;
@@ -200,7 +201,10 @@ export default function Signup({ navigation }) {
       width: 300,
       height: 400,
       cropping: true,
-      cropperCircleOverlay: true
+      cropperCircleOverlay: true,
+      cropperStatusBarColor: '#F6C60F',
+      cropperToolbarColor: 'white',
+      cropperToolbarTitle: 'Crop Image',
     })
       .then((selectedImage) => {
         setImage(selectedImage.path);
@@ -234,12 +238,40 @@ export default function Signup({ navigation }) {
   function nextPage(values) {
     console.log('nextPAgeValues', values);
     if (page === 4) {
-      submit(values);
+      viewTermsOfUse(values);
     } else {
       setPage(page + 1);
       flip_Animation(true);
       scrollViewRef.current.scrollTo({ x: width * page, y: 0, animated: true });
     }
+  }
+
+  function viewTermsOfUse(values) {
+    Alert.alert(
+      'Accept our Terms of Use',
+      'By continuing to use this application you accept our terms of use',
+      [{
+        text: 'View',
+        onPress: () => Linking.canOpenURL('https://www.arravon.com/termsofuse')
+          .then((result) => {
+            if (result) {
+              Linking.openURL('https://www.arravon.com/termsofuse').catch((e) => console.log(e));
+            } else {
+              linkError('', 'Link');
+            }
+          })
+          .catch((error) => {
+            linkError(error, 'Link');
+          })
+      },
+        {
+          text: 'Refuse',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'destructive'
+        },
+        { text: 'I Accept', onPress: () => submit(values)}],
+      { cancelable: true },
+    );
   }
 
   async function submit(values) {
@@ -489,7 +521,7 @@ export default function Signup({ navigation }) {
                       <View>
                         <Text style={styles.title}>Finish Signing Up</Text>
                         <Text style={styles.caption}>
-                          Your YorkU Hub account is ready to be created. Just
+                          Your account is ready to be created. Just
                           add a profile picture and get started.
                         </Text>
                       </View>
@@ -504,6 +536,7 @@ export default function Signup({ navigation }) {
                               styles.caption,
                               {
                                 paddingTop: 10,
+                                paddingBottom: 10,
                                 ...FontWeights.Bold,
                                 color: ThemeStatic.white,
                               },

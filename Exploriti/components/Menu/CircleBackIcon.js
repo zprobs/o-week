@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import { useNavigation } from '@react-navigation/native';
 
@@ -14,18 +14,19 @@ import { useNavigation } from '@react-navigation/native';
 const CircleBackIcon = ({ onPress, style }) => {
   const navigation = useNavigation();
   return (
-    <View style={{ ...styles.container, ...style }}>
+    <TouchableOpacity
+      style={{ ...styles.container, ...style }}
+      onPress={() => {
+        if (onPress) onPress();
+        navigation.goBack();
+      }}>
       <Icon
         name={'arrow-left'}
         color={'#000'}
         size={23}
         style={{ marginTop: 3 }}
-        onPress={() => {
-          if (onPress) onPress();
-          navigation.goBack();
-        }}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 
