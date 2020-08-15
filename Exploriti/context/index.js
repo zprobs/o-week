@@ -62,7 +62,7 @@ export function refreshToken(user, setAuthState) {
           .then((result) => {
             console.log(result);
             if (result.claims['https://hasura.io/jwt/claims']) {
-              setAuthState({ status: 'in', user, token });
+              setAuthState({ status: 'in', user });
               return token;
             }
             const endpoint =
@@ -78,7 +78,7 @@ export function refreshToken(user, setAuthState) {
           }),
       ).catch(e => console.log('caught', e))
       .then((token) => {
-        setAuthState({ status: 'in', user, token });
+        setAuthState({ status: 'in', user });
       })
       .catch(console.error);
 
@@ -92,6 +92,26 @@ export function refreshToken(user, setAuthState) {
       icon: 'warning'
     });
   }
+}
+
+export function restartWebsockets (wsClient) {
+  // Copy current operations
+  const operations = Object.assign({}, wsClient.operations)
+
+  // Close connection
+  wsClient.close(true)
+
+  // Open a new one
+  wsClient.connect()
+
+  // Push all current operations to the new connection
+  Object.keys(operations).forEach(id => {
+    wsClient.sendMessage(
+      id,
+      MessageTypes.GQL_START,
+      operations[id].options
+    )
+  })
 }
 
 export function yearToInt(year: String) {

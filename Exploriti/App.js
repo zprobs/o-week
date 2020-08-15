@@ -17,6 +17,7 @@ import ApolloClient from 'apollo-client';
 import { split } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
+import { setContext } from 'apollo-link-context';
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloProvider, useMutation, useQuery } from '@apollo/react-hooks';
 import Schedule from './components/Schedule';
@@ -46,8 +47,7 @@ import FlashMessage, { showMessage } from 'react-native-flash-message';
 import messaging from '@react-native-firebase/messaging';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
-import {useNavigation} from '@react-navigation/native'
-
+import { useNavigation } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -60,8 +60,6 @@ if (
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-
 
 const tabStyles = {
   labelStyle: {
@@ -123,6 +121,7 @@ const AuthStack = () => {
 
 const MainStack = () => {
   const { authState } = useContext(AuthContext);
+  const [setToken] = useMutation(SET_TOKEN);
 
   console.log('authState', authState);
 
@@ -132,22 +131,22 @@ const MainStack = () => {
 
   async function saveTokenToDatabase(token) {
     // Assume user is already signed in
-    const {authState} = useContext(AuthContext);
-    const [setToken] = useMutation(SET_TOKEN);
 
-    setToken({variables: {id: authState.user.uid, token: token}}).then(()=>console.log('saved', token));
+    setToken({ variables: { id: authState.user.uid, token: token } }).then(() =>
+      console.log('saved', token),
+    );
   }
 
   useEffect(() => {
     // Get the device token
     messaging()
       .getToken()
-      .then(token => {
+      .then((token) => {
         return saveTokenToDatabase(token);
       });
 
     // Listen to whether the token changes
-    return messaging().onTokenRefresh(token => {
+    return messaging().onTokenRefresh((token) => {
       saveTokenToDatabase(token);
     });
   }, []);
@@ -179,14 +178,13 @@ const MainStack = () => {
 };
 
 const HomeScreen = () => {
-
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
-    messaging().onNotificationOpenedApp(remoteMessage => {
+    messaging().onNotificationOpenedApp((remoteMessage) => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage.notification,
@@ -198,7 +196,7 @@ const HomeScreen = () => {
     // Check whether an initial notification is available
     messaging()
       .getInitialNotification()
-      .then(remoteMessage => {
+      .then((remoteMessage) => {
         if (remoteMessage) {
           console.log(
             'Notification caused app to open from quit state:',
@@ -210,7 +208,7 @@ const HomeScreen = () => {
       });
   }, []);
 
-  if (loading) return  <Loading/>
+  if (loading) return <Loading />;
 
   return (
     <Tab.Navigator
@@ -230,40 +228,51 @@ export default function App() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-          refreshToken(user, setAuthState);
+        refreshToken(user, setAuthState);
       } else {
         setAuthState({ status: 'out' });
       }
     });
   }, []);
 
-  const headers =
-    authState.status === 'in'
-      ? { Authorization: `Bearer ${authState.token}` }
-      : {};
-
   const httpLink = new HttpLink({
     uri: 'https://exploriti-backend.herokuapp.com/v1/graphql',
-    headers,
   });
 
   const wsLink = new WebSocketLink({
     uri: 'wss://exploriti-backend.herokuapp.com/v1alpha1/graphql',
     options: {
       reconnect: true,
-      connectionParams: {
-        headers,
+      connectionParams: async () => {
+        console.log('web socket fetching token')
+        const token = await firebase.auth().currentUser.getIdToken();
+        return {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',
+          },
+        };
       },
     },
   });
 
+  const authLink = setContext((_, { headers }) => {
+    //it will always get unexpired version of the token
+    return firebase
+      .auth()
+      .currentUser.getIdToken()
+      .then((token) => {
+        console.log('token', token);
+        return {
+          headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : '',
+          },
+        };
+      });
+  });
 
   const link = ApolloLink.from([
-    onError((error) => {
-      console.log('error code', error)
-      console.log('graphQL Error', error.graphQLErrors)
-      if (error.graphQLErrors && error.graphQLErrors[0].message && error.graphQLErrors[0].message.includes('JWT')) refreshToken(authState.user, setAuthState);
-    }),
+    authLink,
     split(
       ({ query }) => {
         const { kind, operation } = getMainDefinition(query);
@@ -271,8 +280,8 @@ export default function App() {
       },
       wsLink,
       httpLink,
-    )
-  ])
+    ),
+  ]);
 
   const client = new ApolloClient({
     link,
