@@ -51,6 +51,7 @@ export const graphqlify_relationship = (constant, list, constantTerm, listTerm) 
 }
 
 export function refreshToken(user, setAuthState) {
+  console.log('refresh Token starting function')
   try {
     return user
       .getIdToken(true)
@@ -116,11 +117,6 @@ export function yearToInt(year: String) {
  */
 export function processWarning(error, message) {
   console.log(error)
-  const {authState, setAuthState} = useContext(AuthContext);
-    if (error.message.includes('JWTExpired')){
-      console.log('refreshing Token')
-        refreshToken(authState.user, setAuthState);
-    } else  {
       showMessage({
         message: message,
         description: error.message,
@@ -128,7 +124,6 @@ export function processWarning(error, message) {
         type: 'warning',
         icon: 'warning'
       });
-    }
 }
 
 /**
@@ -137,10 +132,6 @@ export function processWarning(error, message) {
  * @param message {string}
  */
 export function processError(error, message) {
-  const {authState, setAuthState} = useContext(AuthContext);
-  if (error.message.includes('JWTExpired') || error.message.includes('Network error')){
-    refreshToken(authState.user, setAuthState);
-  } else  {
     showMessage({
       message: message,
       description: error.message,
@@ -148,7 +139,6 @@ export function processError(error, message) {
       type: 'danger',
       icon: 'danger'
     });
-  }
 }
 
 /**

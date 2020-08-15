@@ -91,6 +91,7 @@ const ScheduleCarousel = () => {
     // one more time to catch the last day which isn't handled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
     setMax(max)
+    setIndex(0) // to reload the title
   }, [data]);
 
   if (error) {

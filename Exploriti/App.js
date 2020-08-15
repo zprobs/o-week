@@ -46,7 +46,7 @@ import FlashMessage, { showMessage } from 'react-native-flash-message';
 import messaging from '@react-native-firebase/messaging';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
-
+import {useNavigation} from '@react-navigation/native'
 
 
 const Tab = createBottomTabNavigator();
@@ -131,6 +131,8 @@ const AuthStack = () => {
 const MainStack = () => {
   const { authState } = useContext(AuthContext);
 
+  console.log('authState', authState);
+
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
@@ -176,6 +178,39 @@ const MainStack = () => {
 };
 
 const HomeScreen = () => {
+
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+      console.log('remote msg data', remoteMessage.data);
+      //navigation.navigate(remoteMessage.data.type);
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return  <Loading/>
+
   return (
     <Tab.Navigator
       tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}>
@@ -223,9 +258,10 @@ export default function App() {
 
 
   const link = ApolloLink.from([
-    onError(({ networkError }) => {
-      console.log('error code', networkError)
-      if (networkError && networkError.originalError && networkError.originalError.error && networkError.originalError.error.includes('JWT')) refreshToken(authState.user, setAuthState);
+    onError((error) => {
+      console.log('error code', error)
+      console.log('graphQL Error', error.graphQLErrors)
+      if (error.graphQLErrors && error.graphQLErrors[0].message && error.graphQLErrors[0].message.includes('JWT')) refreshToken(authState.user, setAuthState);
     }),
     split(
       ({ query }) => {
