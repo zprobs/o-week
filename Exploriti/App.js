@@ -61,14 +61,7 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-async function saveTokenToDatabase(token) {
-  // Assume user is already signed in
-   const {authState} = useContext(AuthContext);
-   const [setToken] = useMutation(SET_TOKEN);
 
-   setToken({variables: {id: authState.user.uid, token: token}}).then(()=>console.log('saved', token));
-
-}
 
 const tabStyles = {
   labelStyle: {
@@ -136,6 +129,14 @@ const MainStack = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
+
+  async function saveTokenToDatabase(token) {
+    // Assume user is already signed in
+    const {authState} = useContext(AuthContext);
+    const [setToken] = useMutation(SET_TOKEN);
+
+    setToken({variables: {id: authState.user.uid, token: token}}).then(()=>console.log('saved', token));
+  }
 
   useEffect(() => {
     // Get the device token
