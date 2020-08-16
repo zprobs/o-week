@@ -2,7 +2,7 @@ import * as React from 'react';
 import Animated from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useContext } from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { GET_UNREAD_CHAT_COUNT } from '../../graphql';
 import { AuthContext } from '../../context';
 import { BadgeView } from './MyProfileSVG';
@@ -34,9 +34,8 @@ const MessagesSVG = ({ color, size, animatedFocus }) => {
 
 const Badge = ({ animatedFocus }) => {
   const { authState } = useContext(AuthContext);
-  const { data } = useQuery(GET_UNREAD_CHAT_COUNT, {
+  const { data } = useSubscription(GET_UNREAD_CHAT_COUNT, {
     variables: { id: authState.user.uid },
-    pollInterval: 3000,
   });
 
   const badgeCount = data ? data.user.userChats.length : 0;

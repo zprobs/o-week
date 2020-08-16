@@ -64,7 +64,7 @@ export const GET_NOTIFICATIONS = gql`
 
 export const NOTIFICATION_FRAG = gql`
   fragment notificationFrag on user {
-    notifications(where: { seen: { _eq: false } }, limit: 1000) {
+    notifications(where: { seen: { _eq: false } }, limit: 400) {
       id
       seen
     }
@@ -72,13 +72,23 @@ export const NOTIFICATION_FRAG = gql`
 `;
 
 export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
-  query getUnreadNotificationsCount($id: String!) {
+  subscription getUnreadNotificationsCountSub($id: String!) {
     user(id: $id) {
       id
       ...notificationFrag
     }
   }
   ${NOTIFICATION_FRAG}
+`;
+
+export const GET_UNREAD_NOTIFICATIONS_COUNT_QUERY = gql`
+    query getUnreadNotificationsCountQuery($id: String!) {
+        user(id: $id) {
+            id
+            ...notificationFrag
+        }
+    }
+    ${NOTIFICATION_FRAG}
 `;
 
 export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
@@ -495,18 +505,16 @@ export const GET_CHATS = gql`
 `;
 
 export const GET_UNREAD_CHAT_COUNT = gql`
-  query getUnreadChatCount($id: String!) {
-    user(id: $id) {
-      id
-      userChats(
-        where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
-      ) {
-        chatId
-        _id: chatId
-        seen
-      }
+    subscription getUnreadChatCount($id: String!) {
+        user(id: $id) {
+            id
+            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
+                chatId
+                _id: chatId
+                seen
+            }
+        }
     }
-  }
 `;
 
 export const SEARCH_CHATS = gql`

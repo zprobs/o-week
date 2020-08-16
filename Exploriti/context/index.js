@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
 import { Keyboard } from 'react-native';
-import firebase from "@react-native-firebase/app";
+import firebase from '@react-native-firebase/app';
 import { showMessage } from 'react-native-flash-message';
 
 /**
@@ -39,19 +39,24 @@ export const graphqlify = (list, idType) => {
  * @param listTerm {string} name of the list type Ex: user
  * @returns {[]}
  */
-export const graphqlify_relationship = (constant, list, constantTerm, listTerm) => {
+export const graphqlify_relationship = (
+  constant,
+  list,
+  constantTerm,
+  listTerm,
+) => {
   const data = [];
   for (const index in list) {
     const inner = {};
-    inner[constantTerm + "Id"] = constant;
-    inner[listTerm + "Id"] = list[index];
+    inner[constantTerm + 'Id'] = constant;
+    inner[listTerm + 'Id'] = list[index];
     data.push(inner);
   }
   return data;
-}
+};
 
 export function refreshToken(user, setAuthState) {
-  console.log('refresh Token starting function')
+  console.log('refresh Token starting function');
   try {
     return user
       .getIdToken(true)
@@ -76,12 +81,12 @@ export function refreshToken(user, setAuthState) {
               });
             });
           }),
-      ).catch(e => console.log('caught', e))
+      )
+      .catch((e) => console.log('caught', e))
       .then((token) => {
         setAuthState({ status: 'in', user });
       })
       .catch(console.error);
-
   } catch (e) {
     console.log('failed to refresh');
     showMessage({
@@ -89,29 +94,25 @@ export function refreshToken(user, setAuthState) {
       description: e.message,
       autoHide: false,
       type: 'warning',
-      icon: 'warning'
+      icon: 'warning',
     });
   }
 }
 
-export function restartWebsockets (wsClient) {
+export function restartWebsockets(wsClient) {
   // Copy current operations
-  const operations = Object.assign({}, wsClient.operations)
+  const operations = Object.assign({}, wsClient.operations);
 
   // Close connection
-  wsClient.close(true)
+  wsClient.close(true);
 
   // Open a new one
-  wsClient.connect()
+  wsClient.connect();
 
   // Push all current operations to the new connection
-  Object.keys(operations).forEach(id => {
-    wsClient.sendMessage(
-      id,
-      MessageTypes.GQL_START,
-      operations[id].options
-    )
-  })
+  Object.keys(operations).forEach((id) => {
+    wsClient.sendMessage(id, MessageTypes.GQL_START, operations[id].options);
+  });
 }
 
 export function yearToInt(year: String) {
@@ -125,7 +126,7 @@ export function yearToInt(year: String) {
     case 'Fourth Year':
       return 4;
     case 'Year 5+':
-      return 5
+      return 5;
     default:
       return 6;
   }
@@ -136,14 +137,14 @@ export function yearToInt(year: String) {
  * @param message {string}
  */
 export function processWarning(error, message) {
-  console.log(error)
-      showMessage({
-        message: message,
-        description: error.message,
-        autoHide: false,
-        type: 'warning',
-        icon: 'warning'
-      });
+  console.log(error);
+  showMessage({
+    message: message,
+    description: error.message,
+    autoHide: false,
+    type: 'warning',
+    icon: 'warning',
+  });
 }
 
 /**
@@ -152,13 +153,13 @@ export function processWarning(error, message) {
  * @param message {string}
  */
 export function processError(error, message) {
-    showMessage({
-      message: message,
-      description: error.message,
-      autoHide: false,
-      type: 'danger',
-      icon: 'danger'
-    });
+  showMessage({
+    message: message,
+    description: error.message,
+    autoHide: false,
+    type: 'danger',
+    icon: 'danger',
+  });
 }
 
 /**
@@ -172,7 +173,8 @@ export const parseTimeElapsed = (utcTime: string) => {
 
   let difference = timeNow - actionTime;
 
-  if (difference < 1000) return {readableTime: 'just now', parsedTime: 'just now'}
+  if (difference < 1000)
+    return { readableTime: 'just now', parsedTime: 'just now' };
 
   const secondsInMs = 1000;
   const minutesInMs = secondsInMs * 60;
@@ -247,10 +249,10 @@ const defaultImages = [
  * @returns {Promise<R>}
  */
 export const saveImage = (image, previous = null, type, id) => {
-  console.log(image, previous)
+  console.log(image, previous);
   const { path } = image;
-  const filename = `${type}/${id}`
-  console.log('filename', filename)
+  const filename = `${type}/${id}`;
+  console.log('filename', filename);
   const storageReference = storage().ref(filename);
 
   if (previous && !defaultImages.includes(previous)) {
@@ -317,6 +319,50 @@ export const NotificationTypes = {
   eventTimeChange: 'eventTimeChange',
   trophyAwarded: 'trophyAwarded',
 };
+
+/**
+ * funtion used to decipher incoming notifications from firebase and configure the initial routes accordingly
+ * @param type {string} one of NotificationTypes
+ * @param typeId {string}
+ */
+export function notificationToRoute( type, typeId ) {
+  let tab, params;
+  console.log('type typeID', type, typeId)
+  if (
+    type === NotificationTypes.sendFriendRequest ||
+    type === NotificationTypes.confirmFriendRequest
+  ) {
+    tab = 'Orientation';
+    params = {
+      screen: 'Profile',
+      params: {
+        userId: typeId,
+      },
+      initial: false,
+    };
+  } else if (
+    type === NotificationTypes.newEvent ||
+    type === NotificationTypes.eventInvite ||
+    type === NotificationTypes.eventTimeChange
+  ) {
+    tab = 'Orientation';
+    params = {
+      screen: 'EventScreen',
+      params: {
+        eventId: typeId,
+      },
+      initial: false,
+    };
+  } else {
+    tab = 'MyProfile';
+    params = { screen: 'Notifications' };
+  }
+
+  return {
+    tab,
+    params,
+  };
+}
 
 export const yearsData = [
   'First Year',
@@ -687,4 +733,25 @@ export const timeZoneData = [
   'Africa/Johannesburg',
 ];
 
-export const rankData = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '16th', '17th', '18th', '19th', '20th']
+export const rankData = [
+  '1st',
+  '2nd',
+  '3rd',
+  '4th',
+  '5th',
+  '6th',
+  '7th',
+  '8th',
+  '9th',
+  '10th',
+  '11th',
+  '12th',
+  '13th',
+  '14th',
+  '15th',
+  '16th',
+  '17th',
+  '18th',
+  '19th',
+  '20th',
+];

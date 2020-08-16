@@ -2,8 +2,8 @@ import React, { useContext, useRef } from 'react';
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from '../../context';
-import { useQuery } from '@apollo/react-hooks';
-import { GET_UNREAD_NOTIFICATIONS_COUNT } from '../../graphql';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
+import { GET_UNREAD_NOTIFICATIONS_COUNT, GET_UNREAD_NOTIFICATIONS_COUNT_QUERY } from '../../graphql';
 import { interpolate } from "react-native-reanimated";
 import { Text, View } from 'react-native';
 
@@ -14,10 +14,8 @@ import { Text, View } from 'react-native';
 export const NotificationsIcon = ({white}) => {
 
   const {authState} = useContext(AuthContext)
-  const {data} = useQuery(GET_UNREAD_NOTIFICATIONS_COUNT, {variables: {id: authState.user.uid }, fetchPolicy: 'cache-only'})
+  const {data} = useQuery(GET_UNREAD_NOTIFICATIONS_COUNT_QUERY, {variables: {id: authState.user.uid }, fetchPolicy: 'cache-only'})
   const badgeCount = data ? data.user.notifications.length : 0
-
-
 
   const navigation = useNavigation();
   return (

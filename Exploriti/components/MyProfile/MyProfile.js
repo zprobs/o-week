@@ -8,6 +8,7 @@ import { NotificationsIcon } from '../Menu/NotificationsIcon';
 import Notifications from '../Notifications';
 import EventScreen from '../Orientation/EventScreen';
 import SeeAllNotifications from '../Menu/SeeAllNotifications';
+import { useRoute } from '@react-navigation/native';
 const Stack = createStackNavigator();
 
 /**

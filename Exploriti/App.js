@@ -31,7 +31,13 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Landing from './components/Authentication';
 import Loading from './components/Authentication/Loading';
-import { AuthContext, ReloadContext, refreshToken } from './context';
+import {
+  AuthContext,
+  ReloadContext,
+  refreshToken,
+  NotificationTypes,
+  notificationToRoute,
+} from './context';
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER, SET_TOKEN } from './graphql';
 import Messages from './components/Messages';
@@ -179,10 +185,10 @@ const MainStack = () => {
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState('Orientation');
 
   useEffect(() => {
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+    // Assume a message-notification contains a "type" property in the data payloadof the screen to open
 
     messaging().onNotificationOpenedApp((remoteMessage) => {
       console.log(
@@ -190,7 +196,12 @@ const HomeScreen = () => {
         remoteMessage.notification,
       );
       console.log('remote msg data', remoteMessage.data);
-      //navigation.navigate(remoteMessage.data.type);
+      const { tab, params } = notificationToRoute(
+        remoteMessage.data.notificationType,
+        remoteMessage.data.typeId,
+      );
+      console.log('tab params', tab, params);
+      navigation.navigate(tab, params);
     });
 
     // Check whether an initial notification is available
@@ -202,21 +213,24 @@ const HomeScreen = () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
-          setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+          setInitialRoute('MyProfile');
         }
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <Loading />;
 
   return (
     <Tab.Navigator
-      tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}>
+      tabBar={(props) => <AnimatedTabBar tabs={tabs} {...props} />}
+      initialRouteName={initialRoute}>
       <Tab.Screen name="Orientation" component={Orientation} />
       <Tab.Screen name="Schedule" component={Schedule} />
       <Tab.Screen name="Messages" component={Messages} />
-      <Tab.Screen name="MyProfile" component={MyProfile} />
+      <Tab.Screen
+        name="MyProfile"
+        component={MyProfile}
+      />
     </Tab.Navigator>
   );
 };
@@ -244,7 +258,7 @@ export default function App() {
     options: {
       reconnect: true,
       connectionParams: async () => {
-        console.log('web socket fetching token')
+        console.log('web socket fetching token');
         const token = await firebase.auth().currentUser.getIdToken();
         return {
           headers: {

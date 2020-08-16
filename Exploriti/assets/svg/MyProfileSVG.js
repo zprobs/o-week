@@ -3,7 +3,7 @@ import Animated, { interpolate } from 'react-native-reanimated';
 import Svg, { G, Path, Circle } from 'react-native-svg';
 import { useContext } from 'react';
 import { AuthContext } from '../../context';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { GET_UNREAD_NOTIFICATIONS_COUNT } from '../../graphql';
 import { Text } from 'react-native';
 
@@ -40,9 +40,8 @@ const MyProfileSVG = ({ color, size, animatedFocus }) => {
 
 const Badge = ({ animatedFocus }) => {
   const { authState } = useContext(AuthContext);
-  const { data } = useQuery(GET_UNREAD_NOTIFICATIONS_COUNT, {
+  const { data } = useSubscription(GET_UNREAD_NOTIFICATIONS_COUNT, {
     variables: { id: authState.user.uid },
-    pollInterval: 5000,
   });
   const badgeCount = data ? data.user.notifications.length : 0;
 

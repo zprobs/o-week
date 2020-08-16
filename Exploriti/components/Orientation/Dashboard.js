@@ -186,7 +186,7 @@ export default function Dashboard() {
   return (
     <View style={styles.container}>
       <SectionList
-        bounces
+        bounces={true}
         sections={listData}
         keyExtractor={(item, index) => item + index}
         renderItem={renderItem}
