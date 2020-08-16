@@ -99,22 +99,6 @@ export function refreshToken(user, setAuthState) {
   }
 }
 
-export function restartWebsockets(wsClient) {
-  // Copy current operations
-  const operations = Object.assign({}, wsClient.operations);
-
-  // Close connection
-  wsClient.close(true);
-
-  // Open a new one
-  wsClient.connect();
-
-  // Push all current operations to the new connection
-  Object.keys(operations).forEach((id) => {
-    wsClient.sendMessage(id, MessageTypes.GQL_START, operations[id].options);
-  });
-}
-
 export function yearToInt(year: String) {
   switch (year) {
     case 'First Year':
