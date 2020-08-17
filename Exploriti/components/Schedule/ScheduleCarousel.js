@@ -206,7 +206,7 @@ const ScheduleCarousel = () => {
         </View>
 
         {loading ? (
-          <SchedulePlaceholder />
+         null
         ) : (
           <>
             <Carousel
