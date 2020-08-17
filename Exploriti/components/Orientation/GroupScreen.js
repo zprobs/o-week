@@ -61,7 +61,7 @@ const GroupScreen = ({ route }) => {
 
   if (loading) {
     console.log('groupScreen Loading');
-    return null;
+    return <ImageBackgroundPlaceholder/>;
   }
 
   if (error) {
@@ -96,10 +96,6 @@ const GroupScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ImageBackgroundPlaceholder />
-      ) : (
-        <>
           <ImageBackground
             source={{ uri: group.image }}
             style={styles.backgroundImage}>
@@ -127,9 +123,6 @@ const GroupScreen = ({ route }) => {
               </LinearGradient>
             </View>
           </ImageBackground>
-        </>
-      )}
-
       <GroupInfoModal
         ref={modalRef}
         groupId={group.id}
@@ -181,14 +174,17 @@ const styles = StyleSheet.create({
     height: HEIGHT * 0.44,
   },
   header: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     height: HEIGHT * 0.44,
     alignItems: 'flex-start',
   },
   icons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0
   },
   circleBackIcon: {
     marginTop: 45,
@@ -203,6 +199,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     width: '100%',
+    flexDirection: 'row',
   },
   title: {
     ...FontWeights.Bold,
