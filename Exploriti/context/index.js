@@ -302,6 +302,7 @@ export const NotificationTypes = {
   newEvent: 'newEvent',
   eventTimeChange: 'eventTimeChange',
   trophyAwarded: 'trophyAwarded',
+  message: 'message',
 };
 
 /**
@@ -337,7 +338,12 @@ export function notificationToRoute( type, typeId ) {
       },
       initial: false,
     };
-  } else {
+  } else if (type === NotificationTypes.message) {
+    tab = 'Messages';
+    params = null;
+  }
+
+  else {
     tab = 'MyProfile';
     params = { screen: 'Notifications' };
   }

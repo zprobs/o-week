@@ -141,9 +141,6 @@ const MainStack = () => {
     setToken({ variables: { id: authState.user.uid, token: token } }).then(() =>
       console.log('saved', token),
     );
-    const endpoint =
-      'https://us-central1-exploriti-rotman.cloudfunctions.net/subscribeToAll';
-    fetch(`${endpoint}?token=${token}`).then((res) => {console.log('added to all', res)})
   }
 
   useEffect(() => {
@@ -216,9 +213,8 @@ const HomeScreen = () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
-          setInitialRoute('MyProfile');
+          if (remoteMessage.data.notificationType === NotificationTypes.message) setInitialRoute('Messages');
         }
-        setLoading(false);
       });
   }, []);
 
