@@ -44,6 +44,7 @@ import { showMessage } from 'react-native-flash-message';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import {ImageBackgroundPlaceholder} from '../Placeholders/ImageBackgroundPlaceholder';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -161,23 +162,19 @@ const EventScreen = ({ route }) => {
                   name: f.friend.name,
                   image: f.friend.image,
                 },
-              })
+              });
             }
           });
 
           console.log('newInvites length', newInvites.length);
           console.log('length', event.invited.length);
-          event.invited = [
-            ...newInvites,
-            ...event.invited,
-          ];
+          event.invited = [...newInvites, ...event.invited];
           console.log('length', event.invited.length);
           cache.writeFragment({
             fragment: DETAILED_EVENT_FRAGMENT,
             id: `event:${eventId}`,
             data: { ...event },
           });
-
         } catch (e) {
           console.log(e);
         }
@@ -229,31 +226,42 @@ const EventScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: data.event.image }}
-        style={styles.backgroundImage}>
-        <View style={styles.header}>
-          <View style={styles.icons}>
-            <CircleBackIcon style={styles.circleBackIcon} />
-            {isAdminData.user.isAdmin || isOwner ? (
-              <View>
-                <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
-                <CircleEditIcon
-                  style={styles.circleEditIcon}
-                  onPress={onDeleteEvent}
-                  icon={'trash-2'}
-                />
+      {loading ? (
+        <ImageBackgroundPlaceholder />
+      ) : (
+        <>
+          <ImageBackground
+            source={{ uri: data.event.image }}
+            style={styles.backgroundImage}>
+            <View style={styles.header}>
+              <View style={styles.icons}>
+                <CircleBackIcon style={styles.circleBackIcon} />
+                {isAdminData.user.isAdmin || isOwner ? (
+                  <View>
+                    <CircleEditIcon
+                      style={styles.circleEditIcon}
+                      onPress={edit}
+                    />
+                    <CircleEditIcon
+                      style={styles.circleEditIcon}
+                      onPress={onDeleteEvent}
+                      icon={'trash-2'}
+                    />
+                  </View>
+                ) : null}
               </View>
-            ) : null}
-          </View>
-          <LinearGradient
-            colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
-            style={styles.titleContainer}>
-            <Text style={styles.title}>{data.event.name}</Text>
-            <Text style={styles.date}>{`${month} ${day} ${parsedYear}`}</Text>
-          </LinearGradient>
-        </View>
-      </ImageBackground>
+              <LinearGradient
+                colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
+                style={styles.titleContainer}>
+                <Text style={styles.title}>{data.event.name}</Text>
+                <Text
+                  style={styles.date}>{`${month} ${day} ${parsedYear}`}</Text>
+              </LinearGradient>
+            </View>
+          </ImageBackground>
+        </>
+      )}
+
       <EventInfoModal
         ref={modalRef}
         eventId={eventId}

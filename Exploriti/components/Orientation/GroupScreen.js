@@ -25,6 +25,7 @@ import NewEventModal from '../Modal/NewEventModal';
 import { AuthContext, processWarning, refreshToken } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 import UsersBottomModal from '../Modal/UsersBottomModal';
+import { ImageBackgroundPlaceholder } from '../Placeholders/ImageBackgroundPlaceholder';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -53,23 +54,26 @@ const GroupScreen = ({ route }) => {
     fetchPolicy: 'cache-only',
   });
 
-  const {data: isAdminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}, fetchPolicy: 'cache-only'})
+  const { data: isAdminData } = useQuery(CHECK_USER_ADMIN, {
+    variables: { id: authState.user.uid },
+    fetchPolicy: 'cache-only',
+  });
 
   if (loading) {
     console.log('groupScreen Loading');
     return null;
   }
 
-
   if (error) {
-    processWarning(error, 'Server Error')
-    return null
+    processWarning(error, 'Server Error');
+    return null;
   }
 
-
-  const filteredMemberships = isOwnerData ? isOwnerData.user.member.filter(
-    (membership) => membership.group.id === groupId,
-  ) : [];
+  const filteredMemberships = isOwnerData
+    ? isOwnerData.user.member.filter(
+        (membership) => membership.group.id === groupId,
+      )
+    : [];
 
   const isMember = filteredMemberships.length > 0;
   const isOwner = isMember && filteredMemberships[0].isOwner === true;
@@ -92,39 +96,56 @@ const GroupScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: group.image }}
-        style={styles.backgroundImage}>
-        <View style={styles.header}>
-          <View style={styles.icons}>
-            <CircleBackIcon style={styles.circleBackIcon} />
-            {isAdminData.user.isAdmin || isOwner ? (
-              <View>
-                <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
-                <CircleEditIcon
-                  style={styles.circleEditIcon}
-                  onPress={createEvent}
-                  icon={'calendar'}
-                />
+      {loading ? (
+        <ImageBackgroundPlaceholder />
+      ) : (
+        <>
+          <ImageBackground
+            source={{ uri: group.image }}
+            style={styles.backgroundImage}>
+            <View style={styles.header}>
+              <View style={styles.icons}>
+                <CircleBackIcon style={styles.circleBackIcon} />
+                {isAdminData.user.isAdmin || isOwner ? (
+                  <View>
+                    <CircleEditIcon
+                      style={styles.circleEditIcon}
+                      onPress={edit}
+                    />
+                    <CircleEditIcon
+                      style={styles.circleEditIcon}
+                      onPress={createEvent}
+                      icon={'calendar'}
+                    />
+                  </View>
+                ) : null}
               </View>
-            ) : null}
-          </View>
-          <LinearGradient
-            colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
-            style={styles.titleContainer}>
-            <Text style={styles.title}>{group.name}</Text>
-          </LinearGradient>
-        </View>
-      </ImageBackground>
-      <GroupInfoModal ref={modalRef} groupId={group.id} isMember={isMember} allLeadersRef={allLeadersRef} allMembersRef={allMembersRef}  />
+              <LinearGradient
+                colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
+                style={styles.titleContainer}>
+                <Text style={styles.title}>{group.name}</Text>
+              </LinearGradient>
+            </View>
+          </ImageBackground>
+        </>
+      )}
+
+      <GroupInfoModal
+        ref={modalRef}
+        groupId={group.id}
+        isMember={isMember}
+        allLeadersRef={allLeadersRef}
+        allMembersRef={allMembersRef}
+      />
       <UsersBottomModal
         query={GET_GROUP_MEMBERS_PAGINATED}
-        variables={{ groupId: groupId, isOwner: true  }}
+        variables={{ groupId: groupId, isOwner: true }}
         type={'group'}
         ref={allLeadersRef}
       />
       <UsersBottomModal
-        query={GET_GROUP_MEMBERS_PAGINATED}_
+        query={GET_GROUP_MEMBERS_PAGINATED}
+        _
         variables={{ groupId: groupId, isOwner: false }}
         type={'group'}
         ref={allMembersRef}
