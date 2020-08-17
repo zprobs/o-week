@@ -176,28 +176,15 @@ const Conversation = () => {
 
   const onSend = (updatedMessages) => {
     const [updatedMessage] = updatedMessages;
-    const userIds = participants.map((p) => p.id).filter((p) => p.id !== authState.user.uid)
+    const userIds = participants
+      .map((p) => p.id)
+      .filter((p) => p.id !== authState.user.uid);
     sendMessage({
       variables: {
         chatId: chatId,
         senderId: updatedMessage.user._id,
         body: updatedMessage.text,
       },
-    }).then(()=>{
-      const endpoint =
-        'https://us-central1-exploriti-rotman.cloudfunctions.net/sendMessageNotification';
-      const thisUser = participants.find(p => p.id === authState.user.uid ).name;
-      console.log('thisUser', thisUser);
-      let userIdsArray = ''
-      userIds.forEach((id, index) => {
-        if (index === 0) {
-          userIdsArray = `users=${id}`;
-        } else {
-          userIdsArray = userIdsArray.concat(`&users=${id}`);
-        }
-      })
-      console.log('userIdsArray', userIdsArray);
-      fetch(`${endpoint}?chatId=${chatId}&name=${thisUser}&message=${updatedMessage.text}&users=${userIdsArray}`).then((res) => {console.log('sent msg not', res)})
     });
     setMessages(GiftedChat.append(messages, updatedMessages));
     updateMessageSeen({
