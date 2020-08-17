@@ -6,9 +6,8 @@ import { Theme } from '../../theme/Colours';
 const { FontSizes } = Fonts;
 const { colours } = Theme.light;
 
-function SettingsSwitch({ title }) {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+function SettingsSwitch({ title, isEnabled, setIsEnabled }) {
+  const toggleSwitch = () => setIsEnabled(!isEnabled);
   return (
     <View style={styles.viewStyle}>
       <View style={styles.settingItemViewStyle}>
@@ -38,7 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    margin: 15,
+    marginVertical: 15,
   },
   settingItemTextStyle: {
     ...FontSizes.Body,

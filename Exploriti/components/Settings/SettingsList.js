@@ -54,7 +54,7 @@ export default function SettingsList() {
         <ListItem
           destination={'Messages & Invitations'}
           icon={'sc-telegram'}
-          name={'Messages & Invitations'}
+          name={'Messages'}
         />
 
         <ListItem

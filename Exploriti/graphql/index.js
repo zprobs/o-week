@@ -494,6 +494,7 @@ export const GET_CHATS = gql`
         where: { chat: { messages: {} } }
       ) {
         seen
+          muted
         _id: chatId
         chat {
           ...DetailedChat
@@ -1374,6 +1375,34 @@ export const GET_RANDOM_USERS = gql`
         getrandomusers(args: {userid: $userId}) {
             id
             image
+        }
+    }
+`
+
+export const MUTE_CHAT = gql`
+    mutation MyMutation($chatId: Int!, $userId: String!, $muted: Boolean!) {
+        update_userChat(where: {chatId: {_eq: $chatId}, userId: {_eq: $userId}}, _set: {muted: $muted}) {
+            affected_rows
+        }
+    }
+`
+
+export const GET_NOTIFICATION_SETTINGS = gql`
+    query user($id: String!) {
+        user(id: $id) {
+            id
+            muteMessages
+            muteEvents
+            muteGroups
+        }
+    }
+`
+
+export const GET_MESSAGE_SETTINGS = gql`
+    query user($id: String!) {
+        user(id: $id) {
+            id
+            onlyFriendsCanMessage 
         }
     }
 `

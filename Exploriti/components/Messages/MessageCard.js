@@ -65,7 +65,8 @@ const MessageCard = ({
   time,
   isOnline,
   onSwipe,
-  chatName
+  chatName,
+  muted
 }) => {
   const HEIGHT = 65;
   const { authState } = useContext(AuthContext);
@@ -158,7 +159,8 @@ const MessageCard = ({
       numMessages,
       messages,
       isHighlighted,
-      chatName
+      chatName,
+      muted
     });
   };
 

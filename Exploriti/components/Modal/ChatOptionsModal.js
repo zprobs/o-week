@@ -17,11 +17,19 @@ import ImagePicker from 'react-native-image-crop-picker/index';
 import { AuthContext, processError, saveImage } from '../../context';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation } from '@apollo/react-hooks';
-import { DETAILED_CHAT, REPORT_CHAT, REPORT_USER, UNSUBSCRIBE_FROM_CHAT, UPDATE_CHAT } from '../../graphql';
+import {
+  DETAILED_CHAT,
+  MUTE_CHAT,
+  REPORT_CHAT,
+  REPORT_USER,
+  UNSUBSCRIBE_FROM_CHAT,
+  UPDATE_CHAT,
+} from '../../graphql';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import gql from 'graphql-tag';
 import { showMessage } from 'react-native-flash-message';
+import SettingsSwitch from '../ReusableComponents/SettingsSwitch';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -33,10 +41,11 @@ const { colours } = Theme.light;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly image?: *, readonly id?: *, readonly name?: *}> & React.RefAttributes<unknown>>}
  */
 const ChatOptionsModal = React.forwardRef(
-  ({ prevImage, prevName, id, setName }, ref) => {
+  ({ prevImage, prevName, id, setName, muted }, ref) => {
     const [image, setImage] = useState(prevImage);
     const [imageSelection, setImageSelection] = useState();
     const [isUploading, setIsUploading] = useState(false);
+    const [isMuted, setIsMuted] = useState(muted);
     const { authState } = useContext(AuthContext);
     const [reportChat, { error: reportError }] = useMutation(REPORT_CHAT, {
       variables: { chat: id, reporter: authState.user.uid },
@@ -54,12 +63,14 @@ const ChatOptionsModal = React.forwardRef(
     });
 
     const [updateChat, { error }] = useMutation(UPDATE_CHAT);
+    const [muteChat, { error: muteChatError }] = useMutation(MUTE_CHAT);
 
     if (error) {
       processError(error, 'Could not update Chat');
     }
 
-    if (reportError) processError(reportError, 'Could not report chat')
+    if (reportError) processError(reportError, 'Could not report chat');
+    if (muteChatError) processError(muteChatError, 'Could not mute chat');
 
     const changeImage = () => {
       ImagePicker.openPicker({
@@ -75,29 +86,29 @@ const ChatOptionsModal = React.forwardRef(
         .catch((result) => console.log(result));
     };
 
-
     const onDone = async (values) => {
       setIsUploading(true);
       const fields = {};
       if (imageSelection) {
-        fields.image = await saveImage(
-          imageSelection,
-          prevImage,
-          'chat',
-          id,
-        );
+        fields.image = await saveImage(imageSelection, prevImage, 'chat', id);
       }
       const { name } = values;
       if (name !== prevName) {
         fields.name = name;
       }
 
+      if (isMuted !== muted) {
+        muteChat({
+          variables: { userId: authState.user.uid, chatId: id, muted: isMuted },
+        });
+      }
+
       if (Object.keys(fields).length !== 0) {
         updateChat({
           variables: { id: id, _set: fields },
-          update: proxy => {
+          update: (proxy) => {
             setName(name);
-          }
+          },
         })
           .then(() => {
             setIsUploading(false);
@@ -135,6 +146,12 @@ const ChatOptionsModal = React.forwardRef(
             </TouchableOpacity>
           </ImageBackground>
 
+          <SettingsSwitch
+            title={'Mute Notifications'}
+            isEnabled={isMuted}
+            setIsEnabled={setIsMuted}
+          />
+
           <Formik
             initialValues={{ name: prevName }}
             validationSchema={ChatNameSchema}
@@ -158,7 +175,7 @@ const ChatOptionsModal = React.forwardRef(
                 />
 
                 <ButtonColour
-                  label="Done"
+                  label="Save"
                   title="done"
                   onPress={handleSubmit}
                   loading={isUploading}
@@ -174,7 +191,6 @@ const ChatOptionsModal = React.forwardRef(
                   label={'Report Chat'}
                   onPress={reportChat}
                 />
-
               </>
             )}
           </Formik>

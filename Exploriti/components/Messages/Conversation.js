@@ -61,6 +61,7 @@ const Conversation = () => {
     isHighlighted: notSeen,
     chatName,
     image,
+    muted,
   } = route.params;
   const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
@@ -285,6 +286,7 @@ const Conversation = () => {
           prevImage={image}
           ref={optionsRef}
           setName={setNameState}
+          muted={muted}
         />
       ) : (
         <OptionsBottomModal

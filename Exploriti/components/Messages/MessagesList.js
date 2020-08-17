@@ -44,7 +44,7 @@ export default function MessagesList() {
   );
 
   const renderItem = ({ item }) => {
-    const {seen, chat} = item
+    const {seen, chat, muted} = item
     const {
       _id: chatId,
       participants,
@@ -86,6 +86,7 @@ export default function MessagesList() {
         seen={seen}
         senderId={senderId}
         chatName={chatName}
+        muted={muted}
       />
     );
   };
