@@ -18,6 +18,7 @@ export const DETAILED_USER_FRAGMENT = gql`
     }
     image
     year
+      onlyFriendsCanMessage
     member_aggregate {
       aggregate {
         count

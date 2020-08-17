@@ -987,6 +987,307 @@ input chatUserView_variance_order_by {
   year: order_by
 }
 
+# Made by Zach, might be bad
+#
+#
+# columns and relationships of "comment"
+#
+type comment {
+  authorId: String!
+  id: Int!
+  postId: Int!
+  text: String!
+  time: timestamptz!
+}
+
+# aggregated selection of "comment"
+type comment_aggregate {
+  aggregate: comment_aggregate_fields
+  nodes: [comment!]!
+}
+
+# aggregate fields of "comment"
+type comment_aggregate_fields {
+  avg: comment_avg_fields
+  count(columns: [comment_select_column!], distinct: Boolean): Int
+  max: comment_max_fields
+  min: comment_min_fields
+  stddev: comment_stddev_fields
+  stddev_pop: comment_stddev_pop_fields
+  stddev_samp: comment_stddev_samp_fields
+  sum: comment_sum_fields
+  var_pop: comment_var_pop_fields
+  var_samp: comment_var_samp_fields
+  variance: comment_variance_fields
+}
+
+# order by aggregate values of table "comment"
+input comment_aggregate_order_by {
+  avg: comment_avg_order_by
+  count: order_by
+  max: comment_max_order_by
+  min: comment_min_order_by
+  stddev: comment_stddev_order_by
+  stddev_pop: comment_stddev_pop_order_by
+  stddev_samp: comment_stddev_samp_order_by
+  sum: comment_sum_order_by
+  var_pop: comment_var_pop_order_by
+  var_samp: comment_var_samp_order_by
+  variance: comment_variance_order_by
+}
+
+# input type for inserting array relation for remote table "comment"
+input comment_arr_rel_insert_input {
+  data: [comment_insert_input!]!
+  on_conflict: comment_on_conflict
+}
+
+# aggregate avg on columns
+type comment_avg_fields {
+  id: Float
+  postId: Float
+}
+
+# order by avg() on columns of table "comment"
+input comment_avg_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# Boolean expression to filter rows from the table "comment". All fields are combined with a logical 'AND'.
+input comment_bool_exp {
+  _and: [comment_bool_exp]
+  _not: comment_bool_exp
+  _or: [comment_bool_exp]
+  authorId: String_comparison_exp
+  id: Int_comparison_exp
+  postId: Int_comparison_exp
+  text: String_comparison_exp
+  time: timestamptz_comparison_exp
+}
+
+# unique or primary key constraints on table "comment"
+enum comment_constraint {
+  # unique or primary key constraint
+  comment_pkey
+}
+
+# input type for incrementing integer column in table "comment"
+input comment_inc_input {
+  id: Int
+  postId: Int
+}
+
+# input type for inserting data into table "comment"
+input comment_insert_input {
+  authorId: String
+  id: Int
+  postId: Int
+  text: String
+  time: timestamptz
+}
+
+# aggregate max on columns
+type comment_max_fields {
+  authorId: String
+  id: Int
+  postId: Int
+  text: String
+  time: timestamptz
+}
+
+# order by max() on columns of table "comment"
+input comment_max_order_by {
+  authorId: order_by
+  id: order_by
+  postId: order_by
+  text: order_by
+  time: order_by
+}
+
+# aggregate min on columns
+type comment_min_fields {
+  authorId: String
+  id: Int
+  postId: Int
+  text: String
+  time: timestamptz
+}
+
+# order by min() on columns of table "comment"
+input comment_min_order_by {
+  authorId: order_by
+  id: order_by
+  postId: order_by
+  text: order_by
+  time: order_by
+}
+
+# response of any mutation on the table "comment"
+type comment_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [comment!]!
+}
+
+# input type for inserting object relation for remote table "comment"
+input comment_obj_rel_insert_input {
+  data: comment_insert_input!
+  on_conflict: comment_on_conflict
+}
+
+# on conflict condition type for table "comment"
+input comment_on_conflict {
+  constraint: comment_constraint!
+  update_columns: [comment_update_column!]!
+  where: comment_bool_exp
+}
+
+# ordering options when selecting data from "comment"
+input comment_order_by {
+  authorId: order_by
+  id: order_by
+  postId: order_by
+  text: order_by
+  time: order_by
+}
+
+# primary key columns input for table: "comment"
+input comment_pk_columns_input {
+  id: Int!
+}
+
+# select columns of table "comment"
+enum comment_select_column {
+  # column name
+  authorId
+
+  # column name
+  id
+
+  # column name
+  postId
+
+  # column name
+  text
+
+  # column name
+  time
+}
+
+# input type for updating data in table "comment"
+input comment_set_input {
+  authorId: String
+  id: Int
+  postId: Int
+  text: String
+  time: timestamptz
+}
+
+# aggregate stddev on columns
+type comment_stddev_fields {
+  id: Float
+  postId: Float
+}
+
+# order by stddev() on columns of table "comment"
+input comment_stddev_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# aggregate stddev_pop on columns
+type comment_stddev_pop_fields {
+  id: Float
+  postId: Float
+}
+
+# order by stddev_pop() on columns of table "comment"
+input comment_stddev_pop_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# aggregate stddev_samp on columns
+type comment_stddev_samp_fields {
+  id: Float
+  postId: Float
+}
+
+# order by stddev_samp() on columns of table "comment"
+input comment_stddev_samp_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# aggregate sum on columns
+type comment_sum_fields {
+  id: Int
+  postId: Int
+}
+
+# order by sum() on columns of table "comment"
+input comment_sum_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# update columns of table "comment"
+enum comment_update_column {
+  # column name
+  authorId
+
+  # column name
+  id
+
+  # column name
+  postId
+
+  # column name
+  text
+
+  # column name
+  time
+}
+
+# aggregate var_pop on columns
+type comment_var_pop_fields {
+  id: Float
+  postId: Float
+}
+
+# order by var_pop() on columns of table "comment"
+input comment_var_pop_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# aggregate var_samp on columns
+type comment_var_samp_fields {
+  id: Float
+  postId: Float
+}
+
+# order by var_samp() on columns of table "comment"
+input comment_var_samp_order_by {
+  id: order_by
+  postId: order_by
+}
+
+# aggregate variance on columns
+type comment_variance_fields {
+  id: Float
+  postId: Float
+}
+
+# order by variance() on columns of table "comment"
+input comment_variance_order_by {
+  id: order_by
+  postId: order_by
+}
+
 type ConfirmFriendRequestOutput {
   recipient: String!
 }
@@ -2260,6 +2561,10 @@ input friendView_variance_order_by {
   year: order_by
 }
 
+input getrandomusers_args {
+  userid: String
+}
+
 # columns and relationships of "group"
 type group {
   description: String
@@ -2874,7 +3179,12 @@ enum group_update_column {
 # columns and relationships of "groupChats"
 #
 type groupChats {
+  # An object relationship
+  chat: chat!
   chatId: Int!
+
+  # An object relationship
+  group: group!
   groupId: uuid!
 }
 
@@ -2935,7 +3245,9 @@ input groupChats_bool_exp {
   _and: [groupChats_bool_exp]
   _not: groupChats_bool_exp
   _or: [groupChats_bool_exp]
+  chat: chat_bool_exp
   chatId: Int_comparison_exp
+  group: group_bool_exp
   groupId: uuid_comparison_exp
 }
 
@@ -2952,7 +3264,9 @@ input groupChats_inc_input {
 
 # input type for inserting data into table "groupChats"
 input groupChats_insert_input {
+  chat: chat_obj_rel_insert_input
   chatId: Int
+  group: group_obj_rel_insert_input
   groupId: uuid
 }
 
@@ -3004,7 +3318,9 @@ input groupChats_on_conflict {
 
 # ordering options when selecting data from "groupChats"
 input groupChats_order_by {
+  chat: chat_order_by
   chatId: order_by
+  group: group_order_by
   groupId: order_by
 }
 
@@ -4292,6 +4608,242 @@ input jsonb_comparison_exp {
   _nin: [jsonb!]
 }
 
+# columns and relationships of "like"
+type like {
+  postId: Int!
+  userId: String!
+}
+
+# aggregated selection of "like"
+type like_aggregate {
+  aggregate: like_aggregate_fields
+  nodes: [like!]!
+}
+
+# aggregate fields of "like"
+type like_aggregate_fields {
+  avg: like_avg_fields
+  count(columns: [like_select_column!], distinct: Boolean): Int
+  max: like_max_fields
+  min: like_min_fields
+  stddev: like_stddev_fields
+  stddev_pop: like_stddev_pop_fields
+  stddev_samp: like_stddev_samp_fields
+  sum: like_sum_fields
+  var_pop: like_var_pop_fields
+  var_samp: like_var_samp_fields
+  variance: like_variance_fields
+}
+
+# order by aggregate values of table "like"
+input like_aggregate_order_by {
+  avg: like_avg_order_by
+  count: order_by
+  max: like_max_order_by
+  min: like_min_order_by
+  stddev: like_stddev_order_by
+  stddev_pop: like_stddev_pop_order_by
+  stddev_samp: like_stddev_samp_order_by
+  sum: like_sum_order_by
+  var_pop: like_var_pop_order_by
+  var_samp: like_var_samp_order_by
+  variance: like_variance_order_by
+}
+
+# input type for inserting array relation for remote table "like"
+input like_arr_rel_insert_input {
+  data: [like_insert_input!]!
+  on_conflict: like_on_conflict
+}
+
+# aggregate avg on columns
+type like_avg_fields {
+  postId: Float
+}
+
+# order by avg() on columns of table "like"
+input like_avg_order_by {
+  postId: order_by
+}
+
+# Boolean expression to filter rows from the table "like". All fields are combined with a logical 'AND'.
+input like_bool_exp {
+  _and: [like_bool_exp]
+  _not: like_bool_exp
+  _or: [like_bool_exp]
+  postId: Int_comparison_exp
+  userId: String_comparison_exp
+}
+
+# unique or primary key constraints on table "like"
+enum like_constraint {
+  # unique or primary key constraint
+  like_pkey
+}
+
+# input type for incrementing integer column in table "like"
+input like_inc_input {
+  postId: Int
+}
+
+# input type for inserting data into table "like"
+input like_insert_input {
+  postId: Int
+  userId: String
+}
+
+# aggregate max on columns
+type like_max_fields {
+  postId: Int
+  userId: String
+}
+
+# order by max() on columns of table "like"
+input like_max_order_by {
+  postId: order_by
+  userId: order_by
+}
+
+# aggregate min on columns
+type like_min_fields {
+  postId: Int
+  userId: String
+}
+
+# order by min() on columns of table "like"
+input like_min_order_by {
+  postId: order_by
+  userId: order_by
+}
+
+# response of any mutation on the table "like"
+type like_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [like!]!
+}
+
+# input type for inserting object relation for remote table "like"
+input like_obj_rel_insert_input {
+  data: like_insert_input!
+  on_conflict: like_on_conflict
+}
+
+# on conflict condition type for table "like"
+input like_on_conflict {
+  constraint: like_constraint!
+  update_columns: [like_update_column!]!
+  where: like_bool_exp
+}
+
+# ordering options when selecting data from "like"
+input like_order_by {
+  postId: order_by
+  userId: order_by
+}
+
+# primary key columns input for table: "like"
+input like_pk_columns_input {
+  postId: Int!
+  userId: String!
+}
+
+# select columns of table "like"
+enum like_select_column {
+  # column name
+  postId
+
+  # column name
+  userId
+}
+
+# input type for updating data in table "like"
+input like_set_input {
+  postId: Int
+  userId: String
+}
+
+# aggregate stddev on columns
+type like_stddev_fields {
+  postId: Float
+}
+
+# order by stddev() on columns of table "like"
+input like_stddev_order_by {
+  postId: order_by
+}
+
+# aggregate stddev_pop on columns
+type like_stddev_pop_fields {
+  postId: Float
+}
+
+# order by stddev_pop() on columns of table "like"
+input like_stddev_pop_order_by {
+  postId: order_by
+}
+
+# aggregate stddev_samp on columns
+type like_stddev_samp_fields {
+  postId: Float
+}
+
+# order by stddev_samp() on columns of table "like"
+input like_stddev_samp_order_by {
+  postId: order_by
+}
+
+# aggregate sum on columns
+type like_sum_fields {
+  postId: Int
+}
+
+# order by sum() on columns of table "like"
+input like_sum_order_by {
+  postId: order_by
+}
+
+# update columns of table "like"
+enum like_update_column {
+  # column name
+  postId
+
+  # column name
+  userId
+}
+
+# aggregate var_pop on columns
+type like_var_pop_fields {
+  postId: Float
+}
+
+# order by var_pop() on columns of table "like"
+input like_var_pop_order_by {
+  postId: order_by
+}
+
+# aggregate var_samp on columns
+type like_var_samp_fields {
+  postId: Float
+}
+
+# order by var_samp() on columns of table "like"
+input like_var_samp_order_by {
+  postId: order_by
+}
+
+# aggregate variance on columns
+type like_variance_fields {
+  postId: Float
+}
+
+# order by variance() on columns of table "like"
+input like_variance_order_by {
+  postId: order_by
+}
+
 # columns and relationships of "message"
 type message {
   body: String!
@@ -4775,6 +5327,15 @@ type mutation_root {
     where: chat_bool_exp!
   ): chat_mutation_response
 
+  # delete data from the table: "comment"
+  delete_comment(
+    # filter the rows which have to be deleted
+    where: comment_bool_exp!
+  ): comment_mutation_response
+
+  # delete single row from the table: "comment"
+  delete_comment_by_pk(id: Int!): comment
+
   # delete data from the table: "event"
   delete_event(
     # filter the rows which have to be deleted
@@ -4847,6 +5408,15 @@ type mutation_root {
   # delete single row from the table: "interest"
   delete_interest_by_pk(name: String!): interest
 
+  # delete data from the table: "like"
+  delete_like(
+    # filter the rows which have to be deleted
+    where: like_bool_exp!
+  ): like_mutation_response
+
+  # delete single row from the table: "like"
+  delete_like_by_pk(postId: Int!, userId: String!): like
+
   # delete data from the table: "message"
   delete_message(
     # filter the rows which have to be deleted
@@ -4861,6 +5431,15 @@ type mutation_root {
     # filter the rows which have to be deleted
     where: notification_bool_exp!
   ): notification_mutation_response
+
+  # delete data from the table: "post"
+  delete_post(
+    # filter the rows which have to be deleted
+    where: post_bool_exp!
+  ): post_mutation_response
+
+  # delete single row from the table: "post"
+  delete_post_by_pk(id: Int!): post
 
   # delete data from the table: "program"
   delete_program(
@@ -4982,6 +5561,24 @@ type mutation_root {
     on_conflict: chat_on_conflict
   ): chat_mutation_response
 
+  # insert data into the table: "comment"
+  insert_comment(
+    # the rows to be inserted
+    objects: [comment_insert_input!]!
+
+    # on conflict condition
+    on_conflict: comment_on_conflict
+  ): comment_mutation_response
+
+  # insert a single row into the table: "comment"
+  insert_comment_one(
+    # the row to be inserted
+    object: comment_insert_input!
+
+    # on conflict condition
+    on_conflict: comment_on_conflict
+  ): comment
+
   # insert data into the table: "event"
   insert_event(
     # the rows to be inserted
@@ -5090,6 +5687,24 @@ type mutation_root {
     on_conflict: interest_on_conflict
   ): interest
 
+  # insert data into the table: "like"
+  insert_like(
+    # the rows to be inserted
+    objects: [like_insert_input!]!
+
+    # on conflict condition
+    on_conflict: like_on_conflict
+  ): like_mutation_response
+
+  # insert a single row into the table: "like"
+  insert_like_one(
+    # the row to be inserted
+    object: like_insert_input!
+
+    # on conflict condition
+    on_conflict: like_on_conflict
+  ): like
+
   # insert data into the table: "message"
   insert_message(
     # the rows to be inserted
@@ -5107,6 +5722,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: notification_on_conflict
   ): notification_mutation_response
+
+  # insert data into the table: "post"
+  insert_post(
+    # the rows to be inserted
+    objects: [post_insert_input!]!
+
+    # on conflict condition
+    on_conflict: post_on_conflict
+  ): post_mutation_response
+
+  # insert a single row into the table: "post"
+  insert_post_one(
+    # the row to be inserted
+    object: post_insert_input!
+
+    # on conflict condition
+    on_conflict: post_on_conflict
+  ): post
 
   # insert data into the table: "program"
   insert_program(
@@ -5490,6 +6123,28 @@ type mutation_root {
     pk_columns: chat_pk_columns_input!
   ): chat
 
+  # update data of the table: "comment"
+  update_comment(
+    # increments the integer columns with given value of the filtered values
+    _inc: comment_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: comment_set_input
+
+    # filter the rows which have to be updated
+    where: comment_bool_exp!
+  ): comment_mutation_response
+
+  # update single row of the table: "comment"
+  update_comment_by_pk(
+    # increments the integer columns with given value of the filtered values
+    _inc: comment_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: comment_set_input
+    pk_columns: comment_pk_columns_input!
+  ): comment
+
   # update data of the table: "event"
   update_event(
     # append existing jsonb value of filtered columns with new jsonb value
@@ -5746,6 +6401,28 @@ type mutation_root {
     pk_columns: interest_pk_columns_input!
   ): interest
 
+  # update data of the table: "like"
+  update_like(
+    # increments the integer columns with given value of the filtered values
+    _inc: like_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: like_set_input
+
+    # filter the rows which have to be updated
+    where: like_bool_exp!
+  ): like_mutation_response
+
+  # update single row of the table: "like"
+  update_like_by_pk(
+    # increments the integer columns with given value of the filtered values
+    _inc: like_inc_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: like_set_input
+    pk_columns: like_pk_columns_input!
+  ): like
+
   # update data of the table: "message"
   update_message(
     # increments the integer columns with given value of the filtered values
@@ -5789,6 +6466,60 @@ type mutation_root {
     _set: notification_set_input
     pk_columns: notification_pk_columns_input!
   ): notification
+
+  # update data of the table: "post"
+  update_post(
+    # append existing jsonb value of filtered columns with new jsonb value
+    _append: post_append_input
+
+    # delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    _delete_at_path: post_delete_at_path_input
+
+    # delete the array element with specified index (negative integers count from
+    # the end). throws an error if top level container is not an array
+    _delete_elem: post_delete_elem_input
+
+    # delete key/value pair or string element. key/value pairs are matched based on their key value
+    _delete_key: post_delete_key_input
+
+    # increments the integer columns with given value of the filtered values
+    _inc: post_inc_input
+
+    # prepend existing jsonb value of filtered columns with new jsonb value
+    _prepend: post_prepend_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: post_set_input
+
+    # filter the rows which have to be updated
+    where: post_bool_exp!
+  ): post_mutation_response
+
+  # update single row of the table: "post"
+  update_post_by_pk(
+    # append existing jsonb value of filtered columns with new jsonb value
+    _append: post_append_input
+
+    # delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    _delete_at_path: post_delete_at_path_input
+
+    # delete the array element with specified index (negative integers count from
+    # the end). throws an error if top level container is not an array
+    _delete_elem: post_delete_elem_input
+
+    # delete key/value pair or string element. key/value pairs are matched based on their key value
+    _delete_key: post_delete_key_input
+
+    # increments the integer columns with given value of the filtered values
+    _inc: post_inc_input
+
+    # prepend existing jsonb value of filtered columns with new jsonb value
+    _prepend: post_prepend_input
+
+    # sets the columns of the filtered rows to the given values
+    _set: post_set_input
+    pk_columns: post_pk_columns_input!
+  ): post
 
   # update data of the table: "program"
   update_program(
@@ -6340,6 +7071,186 @@ input notification_variance_order_by {
   id: order_by
 }
 
+# columns and relationships of "notificationTokenView"
+type notificationTokenView {
+  notificationId: Int
+  notificationToken: String
+  userId: String
+}
+
+# aggregated selection of "notificationTokenView"
+type notificationTokenView_aggregate {
+  aggregate: notificationTokenView_aggregate_fields
+  nodes: [notificationTokenView!]!
+}
+
+# aggregate fields of "notificationTokenView"
+type notificationTokenView_aggregate_fields {
+  avg: notificationTokenView_avg_fields
+  count(columns: [notificationTokenView_select_column!], distinct: Boolean): Int
+  max: notificationTokenView_max_fields
+  min: notificationTokenView_min_fields
+  stddev: notificationTokenView_stddev_fields
+  stddev_pop: notificationTokenView_stddev_pop_fields
+  stddev_samp: notificationTokenView_stddev_samp_fields
+  sum: notificationTokenView_sum_fields
+  var_pop: notificationTokenView_var_pop_fields
+  var_samp: notificationTokenView_var_samp_fields
+  variance: notificationTokenView_variance_fields
+}
+
+# order by aggregate values of table "notificationTokenView"
+input notificationTokenView_aggregate_order_by {
+  avg: notificationTokenView_avg_order_by
+  count: order_by
+  max: notificationTokenView_max_order_by
+  min: notificationTokenView_min_order_by
+  stddev: notificationTokenView_stddev_order_by
+  stddev_pop: notificationTokenView_stddev_pop_order_by
+  stddev_samp: notificationTokenView_stddev_samp_order_by
+  sum: notificationTokenView_sum_order_by
+  var_pop: notificationTokenView_var_pop_order_by
+  var_samp: notificationTokenView_var_samp_order_by
+  variance: notificationTokenView_variance_order_by
+}
+
+# aggregate avg on columns
+type notificationTokenView_avg_fields {
+  notificationId: Float
+}
+
+# order by avg() on columns of table "notificationTokenView"
+input notificationTokenView_avg_order_by {
+  notificationId: order_by
+}
+
+# Boolean expression to filter rows from the table "notificationTokenView". All fields are combined with a logical 'AND'.
+input notificationTokenView_bool_exp {
+  _and: [notificationTokenView_bool_exp]
+  _not: notificationTokenView_bool_exp
+  _or: [notificationTokenView_bool_exp]
+  notificationId: Int_comparison_exp
+  notificationToken: String_comparison_exp
+  userId: String_comparison_exp
+}
+
+# aggregate max on columns
+type notificationTokenView_max_fields {
+  notificationId: Int
+  notificationToken: String
+  userId: String
+}
+
+# order by max() on columns of table "notificationTokenView"
+input notificationTokenView_max_order_by {
+  notificationId: order_by
+  notificationToken: order_by
+  userId: order_by
+}
+
+# aggregate min on columns
+type notificationTokenView_min_fields {
+  notificationId: Int
+  notificationToken: String
+  userId: String
+}
+
+# order by min() on columns of table "notificationTokenView"
+input notificationTokenView_min_order_by {
+  notificationId: order_by
+  notificationToken: order_by
+  userId: order_by
+}
+
+# ordering options when selecting data from "notificationTokenView"
+input notificationTokenView_order_by {
+  notificationId: order_by
+  notificationToken: order_by
+  userId: order_by
+}
+
+# select columns of table "notificationTokenView"
+enum notificationTokenView_select_column {
+  # column name
+  notificationId
+
+  # column name
+  notificationToken
+
+  # column name
+  userId
+}
+
+# aggregate stddev on columns
+type notificationTokenView_stddev_fields {
+  notificationId: Float
+}
+
+# order by stddev() on columns of table "notificationTokenView"
+input notificationTokenView_stddev_order_by {
+  notificationId: order_by
+}
+
+# aggregate stddev_pop on columns
+type notificationTokenView_stddev_pop_fields {
+  notificationId: Float
+}
+
+# order by stddev_pop() on columns of table "notificationTokenView"
+input notificationTokenView_stddev_pop_order_by {
+  notificationId: order_by
+}
+
+# aggregate stddev_samp on columns
+type notificationTokenView_stddev_samp_fields {
+  notificationId: Float
+}
+
+# order by stddev_samp() on columns of table "notificationTokenView"
+input notificationTokenView_stddev_samp_order_by {
+  notificationId: order_by
+}
+
+# aggregate sum on columns
+type notificationTokenView_sum_fields {
+  notificationId: Int
+}
+
+# order by sum() on columns of table "notificationTokenView"
+input notificationTokenView_sum_order_by {
+  notificationId: order_by
+}
+
+# aggregate var_pop on columns
+type notificationTokenView_var_pop_fields {
+  notificationId: Float
+}
+
+# order by var_pop() on columns of table "notificationTokenView"
+input notificationTokenView_var_pop_order_by {
+  notificationId: order_by
+}
+
+# aggregate var_samp on columns
+type notificationTokenView_var_samp_fields {
+  notificationId: Float
+}
+
+# order by var_samp() on columns of table "notificationTokenView"
+input notificationTokenView_var_samp_order_by {
+  notificationId: order_by
+}
+
+# aggregate variance on columns
+type notificationTokenView_variance_fields {
+  notificationId: Float
+}
+
+# order by variance() on columns of table "notificationTokenView"
+input notificationTokenView_variance_order_by {
+  notificationId: order_by
+}
+
 # column ordering options
 enum order_by {
   # in the ascending order, nulls last
@@ -6359,6 +7270,433 @@ enum order_by {
 
   # in the descending order, nulls last
   desc_nulls_last
+}
+
+# Made by Zach so correct if not right
+#
+#
+# columns and relationships of "post"
+#
+type post {
+  authorId: String!
+
+  # An array relationship
+  comments(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): [comment!]!
+
+  # An aggregated array relationship
+  comments_aggregate(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): comment_aggregate!
+  groupId: uuid!
+  id: Int!
+  images(
+    # JSON select path
+    path: String
+  ): jsonb
+
+  # An array relationship
+  likes(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): [like!]!
+
+  # An aggregated array relationship
+  likes_aggregate(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): like_aggregate!
+  links(
+    # JSON select path
+    path: String
+  ): jsonb
+  text: String!
+  time: timestamptz!
+
+  # An object relationship
+  user: user!
+}
+
+# aggregated selection of "post"
+type post_aggregate {
+  aggregate: post_aggregate_fields
+  nodes: [post!]!
+}
+
+# aggregate fields of "post"
+type post_aggregate_fields {
+  avg: post_avg_fields
+  count(columns: [post_select_column!], distinct: Boolean): Int
+  max: post_max_fields
+  min: post_min_fields
+  stddev: post_stddev_fields
+  stddev_pop: post_stddev_pop_fields
+  stddev_samp: post_stddev_samp_fields
+  sum: post_sum_fields
+  var_pop: post_var_pop_fields
+  var_samp: post_var_samp_fields
+  variance: post_variance_fields
+}
+
+# order by aggregate values of table "post"
+input post_aggregate_order_by {
+  avg: post_avg_order_by
+  count: order_by
+  max: post_max_order_by
+  min: post_min_order_by
+  stddev: post_stddev_order_by
+  stddev_pop: post_stddev_pop_order_by
+  stddev_samp: post_stddev_samp_order_by
+  sum: post_sum_order_by
+  var_pop: post_var_pop_order_by
+  var_samp: post_var_samp_order_by
+  variance: post_variance_order_by
+}
+
+# append existing jsonb value of filtered columns with new jsonb value
+input post_append_input {
+  images: jsonb
+  links: jsonb
+}
+
+# input type for inserting array relation for remote table "post"
+input post_arr_rel_insert_input {
+  data: [post_insert_input!]!
+  on_conflict: post_on_conflict
+}
+
+# aggregate avg on columns
+type post_avg_fields {
+  id: Float
+}
+
+# order by avg() on columns of table "post"
+input post_avg_order_by {
+  id: order_by
+}
+
+# Boolean expression to filter rows from the table "post". All fields are combined with a logical 'AND'.
+input post_bool_exp {
+  _and: [post_bool_exp]
+  _not: post_bool_exp
+  _or: [post_bool_exp]
+  authorId: String_comparison_exp
+  comments: comment_bool_exp
+  groupId: uuid_comparison_exp
+  id: Int_comparison_exp
+  images: jsonb_comparison_exp
+  likes: like_bool_exp
+  links: jsonb_comparison_exp
+  text: String_comparison_exp
+  time: timestamptz_comparison_exp
+  user: user_bool_exp
+}
+
+# unique or primary key constraints on table "post"
+enum post_constraint {
+  # unique or primary key constraint
+  post_pkey
+}
+
+# delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+input post_delete_at_path_input {
+  images: [String]
+  links: [String]
+}
+
+# delete the array element with specified index (negative integers count from the
+# end). throws an error if top level container is not an array
+input post_delete_elem_input {
+  images: Int
+  links: Int
+}
+
+# delete key/value pair or string element. key/value pairs are matched based on their key value
+input post_delete_key_input {
+  images: String
+  links: String
+}
+
+# input type for incrementing integer column in table "post"
+input post_inc_input {
+  id: Int
+}
+
+# input type for inserting data into table "post"
+input post_insert_input {
+  authorId: String
+  comments: comment_arr_rel_insert_input
+  groupId: uuid
+  id: Int
+  images: jsonb
+  likes: like_arr_rel_insert_input
+  links: jsonb
+  text: String
+  time: timestamptz
+  user: user_obj_rel_insert_input
+}
+
+# aggregate max on columns
+type post_max_fields {
+  authorId: String
+  groupId: uuid
+  id: Int
+  text: String
+  time: timestamptz
+}
+
+# order by max() on columns of table "post"
+input post_max_order_by {
+  authorId: order_by
+  groupId: order_by
+  id: order_by
+  text: order_by
+  time: order_by
+}
+
+# aggregate min on columns
+type post_min_fields {
+  authorId: String
+  groupId: uuid
+  id: Int
+  text: String
+  time: timestamptz
+}
+
+# order by min() on columns of table "post"
+input post_min_order_by {
+  authorId: order_by
+  groupId: order_by
+  id: order_by
+  text: order_by
+  time: order_by
+}
+
+# response of any mutation on the table "post"
+type post_mutation_response {
+  # number of affected rows by the mutation
+  affected_rows: Int!
+
+  # data of the affected rows by the mutation
+  returning: [post!]!
+}
+
+# input type for inserting object relation for remote table "post"
+input post_obj_rel_insert_input {
+  data: post_insert_input!
+  on_conflict: post_on_conflict
+}
+
+# on conflict condition type for table "post"
+input post_on_conflict {
+  constraint: post_constraint!
+  update_columns: [post_update_column!]!
+  where: post_bool_exp
+}
+
+# ordering options when selecting data from "post"
+input post_order_by {
+  authorId: order_by
+  comments_aggregate: comment_aggregate_order_by
+  groupId: order_by
+  id: order_by
+  images: order_by
+  likes_aggregate: like_aggregate_order_by
+  links: order_by
+  text: order_by
+  time: order_by
+  user: user_order_by
+}
+
+# primary key columns input for table: "post"
+input post_pk_columns_input {
+  id: Int!
+}
+
+# prepend existing jsonb value of filtered columns with new jsonb value
+input post_prepend_input {
+  images: jsonb
+  links: jsonb
+}
+
+# select columns of table "post"
+enum post_select_column {
+  # column name
+  authorId
+
+  # column name
+  groupId
+
+  # column name
+  id
+
+  # column name
+  images
+
+  # column name
+  links
+
+  # column name
+  text
+
+  # column name
+  time
+}
+
+# input type for updating data in table "post"
+input post_set_input {
+  authorId: String
+  groupId: uuid
+  id: Int
+  images: jsonb
+  links: jsonb
+  text: String
+  time: timestamptz
+}
+
+# aggregate stddev on columns
+type post_stddev_fields {
+  id: Float
+}
+
+# order by stddev() on columns of table "post"
+input post_stddev_order_by {
+  id: order_by
+}
+
+# aggregate stddev_pop on columns
+type post_stddev_pop_fields {
+  id: Float
+}
+
+# order by stddev_pop() on columns of table "post"
+input post_stddev_pop_order_by {
+  id: order_by
+}
+
+# aggregate stddev_samp on columns
+type post_stddev_samp_fields {
+  id: Float
+}
+
+# order by stddev_samp() on columns of table "post"
+input post_stddev_samp_order_by {
+  id: order_by
+}
+
+# aggregate sum on columns
+type post_sum_fields {
+  id: Int
+}
+
+# order by sum() on columns of table "post"
+input post_sum_order_by {
+  id: order_by
+}
+
+# update columns of table "post"
+enum post_update_column {
+  # column name
+  authorId
+
+  # column name
+  groupId
+
+  # column name
+  id
+
+  # column name
+  images
+
+  # column name
+  links
+
+  # column name
+  text
+
+  # column name
+  time
+}
+
+# aggregate var_pop on columns
+type post_var_pop_fields {
+  id: Float
+}
+
+# order by var_pop() on columns of table "post"
+input post_var_pop_order_by {
+  id: order_by
+}
+
+# aggregate var_samp on columns
+type post_var_samp_fields {
+  id: Float
+}
+
+# order by var_samp() on columns of table "post"
+input post_var_samp_order_by {
+  id: order_by
+}
+
+# aggregate variance on columns
+type post_variance_fields {
+  id: Float
+}
+
+# order by variance() on columns of table "post"
+input post_variance_order_by {
+  id: order_by
 }
 
 # columns and relationships of "program"
@@ -6796,6 +8134,45 @@ type query_root {
     where: chat_bool_exp
   ): [chat!]!
 
+  # fetch data from the table: "comment"
+  comment(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): [comment!]!
+
+  # fetch aggregated fields from the table: "comment"
+  comment_aggregate(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): comment_aggregate!
+
+  # fetch data from the table: "comment" using primary key columns
+  comment_by_pk(id: Int!): comment
+
   # fetch data from the table: "event" using primary key columns
   event(id: uuid!): event
 
@@ -7005,6 +8382,48 @@ type query_root {
     # filter the rows returned
     where: groupTrophy_bool_exp
   ): [groupTrophy!]!
+
+  # execute function "getrandomusers" which returns "user"
+  getrandomusers(
+    # input parameters for function "getrandomusers"
+    args: getrandomusers_args!
+
+    # distinct select on columns
+    distinct_on: [user_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [user_order_by!]
+
+    # filter the rows returned
+    where: user_bool_exp
+  ): [user!]!
+
+  # execute function "getrandomusers" and query aggregates on result of table type "user"
+  getrandomusers_aggregate(
+    # input parameters for function "getrandomusers"
+    args: getrandomusers_args!
+
+    # distinct select on columns
+    distinct_on: [user_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [user_order_by!]
+
+    # filter the rows returned
+    where: user_bool_exp
+  ): user_aggregate!
 
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
@@ -7261,6 +8680,45 @@ type query_root {
     where: interest_bool_exp
   ): [interest!]!
 
+  # fetch data from the table: "like"
+  like(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): [like!]!
+
+  # fetch aggregated fields from the table: "like"
+  like_aggregate(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): like_aggregate!
+
+  # fetch data from the table: "like" using primary key columns
+  like_by_pk(postId: Int!, userId: String!): like
+
   # fetch data from the table: "message" using primary key columns
   message(id: Int!): message
 
@@ -7300,6 +8758,45 @@ type query_root {
     where: message_bool_exp
   ): [message!]!
 
+  # fetch data from the table: "notification" using primary key columns
+  notification(id: Int!): notification
+
+  # fetch data from the table: "notificationTokenView"
+  notificationTokenView(
+    # distinct select on columns
+    distinct_on: [notificationTokenView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [notificationTokenView_order_by!]
+
+    # filter the rows returned
+    where: notificationTokenView_bool_exp
+  ): [notificationTokenView!]!
+
+  # fetch aggregated fields from the table: "notificationTokenView"
+  notificationTokenView_aggregate(
+    # distinct select on columns
+    distinct_on: [notificationTokenView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [notificationTokenView_order_by!]
+
+    # filter the rows returned
+    where: notificationTokenView_bool_exp
+  ): notificationTokenView_aggregate!
+
   # fetch aggregated fields from the table: "notification"
   notification_aggregate(
     # distinct select on columns
@@ -7318,9 +8815,6 @@ type query_root {
     where: notification_bool_exp
   ): notification_aggregate!
 
-  # fetch data from the table: "notification" using primary key columns
-  notification_by_pk(id: Int!): notification
-
   # fetch data from the table: "notification"
   notifications(
     # distinct select on columns
@@ -7338,6 +8832,45 @@ type query_root {
     # filter the rows returned
     where: notification_bool_exp
   ): [notification!]!
+
+  # fetch data from the table: "post"
+  post(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): [post!]!
+
+  # fetch aggregated fields from the table: "post"
+  post_aggregate(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): post_aggregate!
+
+  # fetch data from the table: "post" using primary key columns
+  post_by_pk(id: Int!): post
 
   # fetch data from the table: "program" using primary key columns
   program(name: String!): program
@@ -8942,6 +10475,45 @@ type subscription_root {
     where: chat_bool_exp
   ): [chat!]!
 
+  # fetch data from the table: "comment"
+  comment(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): [comment!]!
+
+  # fetch aggregated fields from the table: "comment"
+  comment_aggregate(
+    # distinct select on columns
+    distinct_on: [comment_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [comment_order_by!]
+
+    # filter the rows returned
+    where: comment_bool_exp
+  ): comment_aggregate!
+
+  # fetch data from the table: "comment" using primary key columns
+  comment_by_pk(id: Int!): comment
+
   # fetch data from the table: "event" using primary key columns
   event(id: uuid!): event
 
@@ -9151,6 +10723,48 @@ type subscription_root {
     # filter the rows returned
     where: groupTrophy_bool_exp
   ): [groupTrophy!]!
+
+  # execute function "getrandomusers" which returns "user"
+  getrandomusers(
+    # input parameters for function "getrandomusers"
+    args: getrandomusers_args!
+
+    # distinct select on columns
+    distinct_on: [user_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [user_order_by!]
+
+    # filter the rows returned
+    where: user_bool_exp
+  ): [user!]!
+
+  # execute function "getrandomusers" and query aggregates on result of table type "user"
+  getrandomusers_aggregate(
+    # input parameters for function "getrandomusers"
+    args: getrandomusers_args!
+
+    # distinct select on columns
+    distinct_on: [user_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [user_order_by!]
+
+    # filter the rows returned
+    where: user_bool_exp
+  ): user_aggregate!
 
   # fetch data from the table: "group" using primary key columns
   group(id: uuid!): group
@@ -9407,6 +11021,45 @@ type subscription_root {
     where: interest_bool_exp
   ): [interest!]!
 
+  # fetch data from the table: "like"
+  like(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): [like!]!
+
+  # fetch aggregated fields from the table: "like"
+  like_aggregate(
+    # distinct select on columns
+    distinct_on: [like_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [like_order_by!]
+
+    # filter the rows returned
+    where: like_bool_exp
+  ): like_aggregate!
+
+  # fetch data from the table: "like" using primary key columns
+  like_by_pk(postId: Int!, userId: String!): like
+
   # fetch data from the table: "message" using primary key columns
   message(id: Int!): message
 
@@ -9446,6 +11099,45 @@ type subscription_root {
     where: message_bool_exp
   ): [message!]!
 
+  # fetch data from the table: "notification" using primary key columns
+  notification(id: Int!): notification
+
+  # fetch data from the table: "notificationTokenView"
+  notificationTokenView(
+    # distinct select on columns
+    distinct_on: [notificationTokenView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [notificationTokenView_order_by!]
+
+    # filter the rows returned
+    where: notificationTokenView_bool_exp
+  ): [notificationTokenView!]!
+
+  # fetch aggregated fields from the table: "notificationTokenView"
+  notificationTokenView_aggregate(
+    # distinct select on columns
+    distinct_on: [notificationTokenView_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [notificationTokenView_order_by!]
+
+    # filter the rows returned
+    where: notificationTokenView_bool_exp
+  ): notificationTokenView_aggregate!
+
   # fetch aggregated fields from the table: "notification"
   notification_aggregate(
     # distinct select on columns
@@ -9464,9 +11156,6 @@ type subscription_root {
     where: notification_bool_exp
   ): notification_aggregate!
 
-  # fetch data from the table: "notification" using primary key columns
-  notification_by_pk(id: Int!): notification
-
   # fetch data from the table: "notification"
   notifications(
     # distinct select on columns
@@ -9484,6 +11173,45 @@ type subscription_root {
     # filter the rows returned
     where: notification_bool_exp
   ): [notification!]!
+
+  # fetch data from the table: "post"
+  post(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): [post!]!
+
+  # fetch aggregated fields from the table: "post"
+  post_aggregate(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): post_aggregate!
+
+  # fetch data from the table: "post" using primary key columns
+  post_by_pk(id: Int!): post
 
   # fetch data from the table: "program" using primary key columns
   program(name: String!): program
@@ -10913,6 +12641,9 @@ type user {
     # filter the rows returned
     where: message_bool_exp
   ): message_aggregate!
+  muteEvents: Boolean!
+  muteGroups: Boolean!
+  muteMessages: Boolean!
   name: String!
   notificationToken: String
 
@@ -10951,6 +12682,7 @@ type user {
     # filter the rows returned
     where: userNotificationView_bool_exp
   ): userNotificationView_aggregate!
+  onlyFriendsCanMessage: Boolean!
 
   # An array relationship
   programs(
@@ -11214,9 +12946,13 @@ input user_bool_exp {
   links: jsonb_comparison_exp
   member: userGroup_bool_exp
   messages: message_bool_exp
+  muteEvents: Boolean_comparison_exp
+  muteGroups: Boolean_comparison_exp
+  muteMessages: Boolean_comparison_exp
   name: String_comparison_exp
   notificationToken: String_comparison_exp
   notifications: userNotificationView_bool_exp
+  onlyFriendsCanMessage: Boolean_comparison_exp
   programs: userProgram_bool_exp
   questions: question_bool_exp
   reviews: review_bool_exp
@@ -11272,8 +13008,12 @@ input user_insert_input {
   links: jsonb
   member: userGroup_arr_rel_insert_input
   messages: message_arr_rel_insert_input
+  muteEvents: Boolean
+  muteGroups: Boolean
+  muteMessages: Boolean
   name: String
   notificationToken: String
+  onlyFriendsCanMessage: Boolean
   programs: userProgram_arr_rel_insert_input
   questions: question_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
@@ -11376,9 +13116,13 @@ input user_order_by {
   links: order_by
   member_aggregate: userGroup_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
+  muteEvents: order_by
+  muteGroups: order_by
+  muteMessages: order_by
   name: order_by
   notificationToken: order_by
   notifications_aggregate: userNotificationView_aggregate_order_by
+  onlyFriendsCanMessage: order_by
   programs_aggregate: userProgram_aggregate_order_by
   questions_aggregate: question_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
@@ -11422,10 +13166,22 @@ enum user_select_column {
   links
 
   # column name
+  muteEvents
+
+  # column name
+  muteGroups
+
+  # column name
+  muteMessages
+
+  # column name
   name
 
   # column name
   notificationToken
+
+  # column name
+  onlyFriendsCanMessage
 
   # column name
   timezone
@@ -11443,8 +13199,12 @@ input user_set_input {
   image: String
   isAdmin: Boolean
   links: jsonb
+  muteEvents: Boolean
+  muteGroups: Boolean
+  muteMessages: Boolean
   name: String
   notificationToken: String
+  onlyFriendsCanMessage: Boolean
   timezone: String
   year: Int
 }
@@ -11513,10 +13273,22 @@ enum user_update_column {
   links
 
   # column name
+  muteEvents
+
+  # column name
+  muteGroups
+
+  # column name
+  muteMessages
+
+  # column name
   name
 
   # column name
   notificationToken
+
+  # column name
+  onlyFriendsCanMessage
 
   # column name
   timezone
@@ -11560,6 +13332,7 @@ type userChat {
   # An object relationship
   chat: chat!
   chatId: Int!
+  muted: Boolean!
   seen: Boolean!
 
   # An object relationship
@@ -11626,6 +13399,7 @@ input userChat_bool_exp {
   _or: [userChat_bool_exp]
   chat: chat_bool_exp
   chatId: Int_comparison_exp
+  muted: Boolean_comparison_exp
   seen: Boolean_comparison_exp
   user: user_bool_exp
   userId: String_comparison_exp
@@ -11646,6 +13420,7 @@ input userChat_inc_input {
 input userChat_insert_input {
   chat: chat_obj_rel_insert_input
   chatId: Int
+  muted: Boolean
   seen: Boolean
   user: user_obj_rel_insert_input
   userId: String
@@ -11701,6 +13476,7 @@ input userChat_on_conflict {
 input userChat_order_by {
   chat: chat_order_by
   chatId: order_by
+  muted: order_by
   seen: order_by
   user: user_order_by
   userId: order_by
@@ -11718,6 +13494,9 @@ enum userChat_select_column {
   chatId
 
   # column name
+  muted
+
+  # column name
   seen
 
   # column name
@@ -11727,6 +13506,7 @@ enum userChat_select_column {
 # input type for updating data in table "userChat"
 input userChat_set_input {
   chatId: Int
+  muted: Boolean
   seen: Boolean
   userId: String
 }
@@ -11775,6 +13555,9 @@ input userChat_sum_order_by {
 enum userChat_update_column {
   # column name
   chatId
+
+  # column name
+  muted
 
   # column name
   seen

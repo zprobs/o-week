@@ -98,6 +98,7 @@ export default function Profile({ route }) {
         navigation={useNavigation()}
         image={image}
         name={name}
+        onlyFriendsCanMessage={data.user.onlyFriendsCanMessage}
       />
     );
   };

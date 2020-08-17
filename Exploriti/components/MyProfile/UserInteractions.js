@@ -28,10 +28,11 @@ const { colours } = Theme.light;
  * @param navigation
  * @param image {string}
  * @param name {string} used for cache updates
+ * @param onlyFriendsCanMessage {boolean} if true then you can't message unless friends
  * @returns {*}
  * @constructor
  */
-const UserInteractions = ({ userId, navigation, image, name }) => {
+const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessage }) => {
   const { authState, setAuthState } = useContext(AuthContext);
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
@@ -326,12 +327,13 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   }
 
   let content;
+  let isFriend;
   let friendInteraction = () => {
     return undefined;
   };
   // todo: find out if they are friends with query logic
   if (friendsData) {
-    const isFriend = friendsData.user.friends.some((e) => {
+    isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
     });
     console.log('isFriend', isFriend)
@@ -387,13 +389,23 @@ const UserInteractions = ({ userId, navigation, image, name }) => {
   }
 
   const messageInteraction = async () => {
-    const friendsSelection = [userId, authState.user.uid];
-    newChat({
-      variables: {
-        participants: graphqlify(friendsSelection, 'user'),
-        image: image,
-      },
-    });
+    if (isFriend || !onlyFriendsCanMessage) {
+      const friendsSelection = [userId, authState.user.uid];
+      newChat({
+        variables: {
+          participants: graphqlify(friendsSelection, 'user'),
+          image: image,
+        },
+      });
+    } else {
+      showMessage({
+        message: 'Cannot send message',
+        description: 'This user does not allow non-friends to message them',
+        autoHide: true,
+        type: 'danger',
+        icon: 'auto',
+      });
+    }
   };
 
   return (
