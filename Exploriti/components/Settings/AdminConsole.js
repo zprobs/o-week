@@ -20,6 +20,7 @@ import GiveTrophyModal from '../Modal/GiveTrophyModal';
 import NewEventModal from '../Modal/NewEventModal';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useMutation } from '@apollo/react-hooks';
+import SendAnnouncementModal from '../Modal/SendAnnouncementModal';
 const { FontWeights, FontSizes } = Fonts;
 const { width } = Dimensions.get('window');
 
@@ -55,6 +56,10 @@ const AdminConsole = () => {
     setIsCreateGroup(true);
     groupEditRef.current.open();
   };
+
+  const openAnnouncementModal = () => {
+    announcementRef.current.open();
+  }
 
   const openBanUserAlert = ({user}) => {
     console.log('user', user)
@@ -107,9 +112,9 @@ const AdminConsole = () => {
         </View>
 
         <View style={styles.row}>
-          <View style={[styles.button, { backgroundColor: '#b040c2' }]}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#b040c2' }]} onPress={openAnnouncementModal}>
             <Text style={styles.buttonText}>Send Announcement</Text>
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#4118c4' }]}
             onPress={() => {
@@ -156,6 +161,9 @@ const AdminConsole = () => {
         min={1}
         serverSearch={true}
       />
+      <SendAnnouncementModal
+        ref={announcementRef}
+        />
     </>
   );
 };
