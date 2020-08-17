@@ -10,6 +10,7 @@ import {
 import { useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS } from '../../graphql';
 import images from '../../assets/images';
+import { showMessage } from 'react-native-flash-message';
 
 /**
  * Icons that display a users social media links. Used in Profile. Max 6
@@ -108,17 +109,14 @@ function toLink(type, value) {
     });
 }
 
-export function linkError(error, { title }) {
-  Alert.alert(
-    title + ' Unavailable.',
-    error.toString(),
-
-    {
-      text: 'Ok',
-      onPress: () => console.log('Cancel Pressed'),
-      style: 'default',
-    },
-  );
+export function linkError(error, title) {
+  showMessage({
+    message: `${title} Unavailable`,
+    description: error.toString(),
+    autoHide: true,
+    type: 'danger',
+    icon: 'danger',
+  })
 }
 
 const styles = StyleSheet.create({

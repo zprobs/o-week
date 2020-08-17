@@ -583,11 +583,11 @@ const EventInfoModal = React.forwardRef(
           if (result) {
             Linking.openURL(link).catch((e) => console.log(e));
           } else {
-            linkError(null, 'Video');
+            linkError('link invalid', 'Meeting');
           }
         })
         .catch((error) => {
-          linkError(error, 'Video');
+          linkError(error, 'Meeting');
         });
     };
 
