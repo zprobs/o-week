@@ -665,6 +665,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     endDate
     isOfficial
     website
+      isZoom
     attendees(where: { didAccept: { _eq: true } }, limit: 20) {
       user {
         image
@@ -695,6 +696,29 @@ export const GET_DETAILED_EVENT = gql`
   }
   ${DETAILED_EVENT_FRAGMENT}
 `;
+
+export const GET_EVENT_EDIT = gql`
+    query getEventEdit($id: uuid!) {
+        event(id: $id) {
+            description
+            id
+            image
+            location
+            name
+            startDate
+            endDate
+            isOfficial
+            website
+            isZoom
+            attendees {
+                user {
+                    id
+                }
+            }
+
+        }
+    }
+`
 
 export const UPDATE_CALENDARS = gql`
   mutation updateCalendars(

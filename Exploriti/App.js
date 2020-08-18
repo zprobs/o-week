@@ -258,6 +258,7 @@ export default function App() {
       reconnect: true,
       connectionParams: async () => {
         console.log('web socket fetching token');
+        if (authState.status !== "in")  return {}
         const token = await firebase.auth().currentUser.getIdToken();
         return {
           headers: {
@@ -270,18 +271,22 @@ export default function App() {
 
   const authLink = setContext((_, { headers }) => {
     //it will always get unexpired version of the token
-    return firebase
-      .auth()
-      .currentUser.getIdToken()
-      .then((token) => {
-        console.log('token', token);
-        return {
-          headers: {
-            ...headers,
-            authorization: token ? `Bearer ${token}` : '',
-          },
-        };
-      });
+    if (authState.status === "in") {
+      return firebase
+        .auth()
+        .currentUser.getIdToken()
+        .then((token) => {
+          console.log('token', token);
+          return {
+            headers: {
+              ...headers,
+              authorization: token ? `Bearer ${token}` : '',
+            },
+          };
+        });
+    } else return {
+      headers: {},
+    };
   });
 
   const link = ApolloLink.from([

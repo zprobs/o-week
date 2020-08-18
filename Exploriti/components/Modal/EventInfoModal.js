@@ -184,9 +184,8 @@ const EventInfoModal = React.forwardRef(
         { loading: confirmLoading, error: confirmError },
       ] = useMutation(CONFIRM_EVENT_INVITE, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        update: cache => {
+        update: (cache) => {
           try {
-
             const user = cache.readFragment({
               fragment: DETAILED_USER_FRAGMENT,
               id: `user:${authState.user.uid}`,
@@ -198,7 +197,9 @@ const EventInfoModal = React.forwardRef(
             });
 
             console.log('length', event.invited.length);
-            event.invited = event.invited.filter(a => a.user.id !== authState.user.uid)
+            event.invited = event.invited.filter(
+              (a) => a.user.id !== authState.user.uid,
+            );
             console.log('length', event.invited.length);
 
             event.attendees = [
@@ -237,25 +238,26 @@ const EventInfoModal = React.forwardRef(
                 },
               },
             });
-
           } catch (e) {
             console.log(e);
           }
-        }
+        },
       });
       const [
         remove,
         { loading: removeLoading, error: removeError },
       ] = useMutation(REMOVE_USER_FROM_EVENT, {
         variables: { eventId: eventId, userId: authState.user.uid },
-        update: cache => {
+        update: (cache) => {
           try {
-            const  event  = cache.readFragment({
+            const event = cache.readFragment({
               fragment: DETAILED_EVENT_FRAGMENT,
               id: `event:${eventId}`,
             });
             console.log('length', event.attendees.length);
-            event.attendees = event.attendees.filter(a => a.user.id !== authState.user.uid)
+            event.attendees = event.attendees.filter(
+              (a) => a.user.id !== authState.user.uid,
+            );
             console.log('length', event.attendees.length);
             cache.writeFragment({
               fragment: DETAILED_EVENT_FRAGMENT,
@@ -275,9 +277,9 @@ const EventInfoModal = React.forwardRef(
               },
             });
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
-        }
+        },
       });
 
       if (acceptError) {
@@ -366,10 +368,7 @@ const EventInfoModal = React.forwardRef(
           <View style={styles.container}>
             {data.event.isOfficial ? (
               <View style={styles.iconView}>
-                <Image
-                  source={images.logo}
-                  style={styles.icon}
-                />
+                <Image source={images.logo} style={styles.icon} />
                 <Text style={styles.iconLabel}>
                   Vanier College Council Event
                 </Text>
@@ -432,7 +431,6 @@ const EventInfoModal = React.forwardRef(
         invited.push(attendee.user);
       });
 
-
       return (
         <>
           <RSVPButton
@@ -483,8 +481,8 @@ const EventInfoModal = React.forwardRef(
       let minutes, hours, days, weeks, timeString;
       let happeningNow = false;
       const total = Date.parse(data.event.startDate) - Date.parse(now);
-      console.log('total', total)
-      console.log('startDate', new Date(data.event.startDate) );
+      console.log('total', total);
+      console.log('startDate', new Date(data.event.startDate));
       if (total < 0) {
         const endTotal = Date.parse(data.event.endDate) - Date.parse(now);
         if (endTotal < 0) {
@@ -545,7 +543,7 @@ const EventInfoModal = React.forwardRef(
             </View>
             <View style={{ marginLeft: 10 }}>
               <Text style={{ ...styles.iconLabel, color: colours.text01 }}>
-                Join Zoom Meeting
+                {data.event.isZoom ? 'Join Zoom Meeting' : 'Join Gather Game'}
               </Text>
               <Text style={styles.countdownText}>{timeString}</Text>
               {happeningNow ? <HappeningNow /> : null}
@@ -553,10 +551,17 @@ const EventInfoModal = React.forwardRef(
           </View>
           <TouchableOpacity onPress={openLink}>
             <Image
-              source={{
-                uri:
-                  'https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg',
-              }}
+              source={
+                data.event.isZoom
+                  ? {
+                      uri:
+                        'https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg',
+                    }
+                  : {
+                      uri:
+                        'https://techcrunch.com/wp-content/uploads/2020/03/getty-video-call-chat.jpg?w=1390&crop=1',
+                    }
+              }
               style={styles.eventImage}
             />
             <LinearGradient
@@ -662,7 +667,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: 32,
     height: 32,
-    borderRadius: 16
+    borderRadius: 16,
   },
   iconLabel: {
     ...FontWeights.Bold,

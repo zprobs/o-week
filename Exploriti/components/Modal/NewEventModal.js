@@ -19,7 +19,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
   CREATE_EVENT,
   GET_ALL_GROUP_IDS,
-  GET_DETAILED_EVENT,
+  GET_DETAILED_EVENT, GET_EVENT_EDIT,
   GET_GROUP_EVENTS,
   GET_GROUP_MEMBERS,
   SEND_NOTIFICATIONS,
@@ -38,6 +38,7 @@ import {
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import { showMessage } from 'react-native-flash-message';
+import SegmentedControl from '@react-native-community/segmented-control';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
@@ -61,7 +62,7 @@ const NewEventModal = React.forwardRef(
     const [updateEvent, { error: updateEventError }] = useMutation(
       UPDATE_EVENT,
     );
-    const [getEvent, { data, error }] = useLazyQuery(GET_DETAILED_EVENT, {
+    const [getEvent, { data, error }] = useLazyQuery(GET_EVENT_EDIT, {
       variables: { id: eventId },
     });
     const [getAllHosts, { data: hostsData, error: hostsError }] = useLazyQuery(
@@ -86,9 +87,11 @@ const NewEventModal = React.forwardRef(
     const [endDate, setEndDate] = useState(new Date());
     const [showEndDate, setShowEndDate] = useState(false);
     const [minimumDate] = useState(new Date(Date.now() - 86400000));
+    const [linkIndex, setLinkIndex] = useState(0)
     const { authState, setAuthState } = useContext(AuthContext);
 
-    console.log('startDate', startDate);
+    console.log('startDate', startDate.getTime());
+    if (data) console.log('event.startDate', new Date(data.event.startDate).getTime());
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -121,6 +124,7 @@ const NewEventModal = React.forwardRef(
         if (event.location.constructor !== Object) setLocation(event.location);
         setStartDate(new Date(event.startDate));
         setEndDate(new Date(event.endDate));
+        if (!event.isZoom) setLinkIndex(1);
       }
     }, [data]);
 
@@ -181,6 +185,7 @@ const NewEventModal = React.forwardRef(
         })
         fields.hosts = { data: IDs };
         fields.attendees = { data: userEvent_insert_input };
+        fields.isZoom = linkIndex === 0;
 
         console.log('Global event users', userIDs);
 
@@ -222,11 +227,14 @@ const NewEventModal = React.forwardRef(
       if (description !== event.description) fields.description = description;
       if (location !== event.location) fields.location = location;
       if (website !== event.website) fields.website = website;
-      if (startDate !== event.startDate) {
+      if (startDate.getTime() !== new Date(event.startDate).getTime()) {
         fields.startDate = startDate;
         startChanged = true;
       }
-      if (endDate !== event.endDate) fields.endDate = endDate;
+      if (endDate.getTime() !== new Date(event.endDate).getTime()) fields.endDate = endDate;
+      if (linkIndex === 0 && !event.isZoom || linkIndex === 1 && event.isZoom) fields.isZoom = linkIndex === 0;
+
+      console.log('fields', fields);
 
       if (Object.keys(fields).length !== 0) {
         updateEvent({
@@ -238,7 +246,6 @@ const NewEventModal = React.forwardRef(
             if (startChanged) {
               const IDs = data.event.attendees
                 .map((a) => a.user.id)
-                .concat(data.event.invited.map((i) => i.user.id));
               console.log('Id', IDs);
               const recipients = [];
               IDs.forEach((id) => recipients.push({ userId: id }));
@@ -394,13 +401,22 @@ const NewEventModal = React.forwardRef(
               characterRestriction={50}
             />
 
+            <SegmentedControl
+              values={['Zoom', 'Gather']}
+              selectedIndex={linkIndex}
+              onChange={(event) => {
+                setLinkIndex(event.nativeEvent.selectedSegmentIndex);
+              }}
+              style={styles.selector}
+            />
+
             <FormInput
               ref={null}
-              label="Zoom Link"
-              placeholder="example: https://us02web.zoom.us/j/8246295407?pwd=b2FEdF"
+              label={linkIndex === 0 ? "Zoom Link" : "Gather Link"}
+              placeholder={linkIndex === 0 ? "example: https://us02web.zoom.us/j/8246295407?pwd=b2FEdF" : "example: https://letsgather.app.link/UapAgGbE38"}
               value={website}
               onChangeText={setWebsite}
-              characterRestriction={150}
+              characterRestriction={190}
             />
 
             <Text style={styles.note}>
@@ -494,6 +510,9 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     marginHorizontal: 10,
   },
+  selector: {
+    marginVertical: 15
+  }
 });
 
 export default NewEventModal;

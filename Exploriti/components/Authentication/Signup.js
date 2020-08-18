@@ -55,7 +55,6 @@ const circleSize = width * 0.38;
  */
 export default function Signup({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [index, setIndex] = useState(0);
   const [programs, setPrograms] = useState([]);
   const [programsSelection, setProgramsSelection] = useState([]);
   const [year, setYear] = useState();
@@ -173,8 +172,7 @@ export default function Signup({ navigation }) {
     console.log('bottomBValues', values);
 
     if (page === 1) {
-      title =
-        index === 0 ? 'Continue as Student (1/4)' : 'Continue as Leader (1/4)';
+      title = 'Continue (1/4)';
     } else if (page === 2) {
       title = 'Continue (2/4)';
     } else if (page === 3) {
@@ -304,10 +302,8 @@ export default function Signup({ navigation }) {
           '6fd14b29-feaf-41fe-9165-ee9fce615ec2',
           'ce945810-eb4a-47c6-83d4-5e642ac2d6c7',
         ];
-        const orientationChats = [181, 182];
 
         userData.member = graphqlify(orientationGroups, 'group');
-        userData.userChats = graphqlify(orientationChats, 'chat');
 
         submitUser({ variables: { data: userData } })
           .then((result) => {
@@ -405,18 +401,6 @@ export default function Signup({ navigation }) {
                   <View style={styles.page}>
                     <View style={styles.form}>
                       <Text style={styles.title}>Create an Account</Text>
-                      <View>
-                        <Text style={styles.label}>I am a...</Text>
-                        <SegmentedControl
-                          values={['Student', 'Leader']}
-                          selectedIndex={index}
-                          onChange={(event) => {
-                            setIndex(event.nativeEvent.selectedSegmentIndex);
-                          }}
-                          style={styles.selector}
-                        />
-                      </View>
-
                       <TextLine
                         style={styles.textLine}
                         label={'Full Name'}
