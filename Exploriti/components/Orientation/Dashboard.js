@@ -130,25 +130,31 @@ export default function Dashboard() {
           {sayHiLoading ? (
             <SayHiPlaceholder />
           ) : sayHiData ? (
-            sayHiData.getrandomusers.map((user) => {
-              count++;
-              return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('Profile', { userId: user.id })
-                  }
-                  key={user.id}>
-                  <Image
-                    source={{ uri: user.image }}
-                    style={{
-                      ...styles.userImage,
-                      marginTop: count % 2 === 0 ? 16 : 0,
-                    }}
-                    key={user.id}
-                  />
-                </TouchableOpacity>
-              );
-            })
+            <>
+              {
+                sayHiData.getrandomusers.map((user) => {
+                  count++;
+                  return (
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate('Profile', { userId: user.id })
+                      }
+                      key={user.id}>
+                      <Image
+                        source={{ uri: user.image }}
+                        style={{
+                          ...styles.userImage,
+                          marginTop: count % 2 === 0 ? 16 : 0,
+                        }}
+                        key={user.id}
+                      />
+                    </TouchableOpacity>
+                  );
+                })
+              }
+              <View style={{width: 15}}/>
+            </>
+
           ) : null}
         </ScrollView>
 
@@ -238,9 +244,8 @@ const styles = StyleSheet.create({
   userScrollView: {
     marginBottom: 10,
     marginTop: 24,
-    width: '100%',
-    flexDirection: 'row',
-    paddingLeft: 15,
+    paddingHorizontal: 15,
+
   },
   userImage: {
     width: 66,
