@@ -68,13 +68,13 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       case 1:
         return 'https://www.facebook.com/';
       case 2:
-        return 'IG handle: ';
+        return '@ ';
       case 3:
         return 'https://www.linkedin.com/in/';
       case 4:
         return 'Snapchat User Name: ';
       case 5:
-        return 'Twitter handle: ';
+        return '@ ';
       case 6:
         return 'TikTok account: ';
       default:
