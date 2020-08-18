@@ -275,8 +275,6 @@ export const GET_ALL_USERS = gql`
   query GET_ALL_USERS {
     users {
       id
-      name
-      image
     }
   }
 `;

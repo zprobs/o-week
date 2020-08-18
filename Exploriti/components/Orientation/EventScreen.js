@@ -15,19 +15,14 @@ import EventInfoModal from '../Modal/EventInfoModal';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  ALL_USERS_PAGINATION_TEST,
   CHECK_USER_ADMIN,
-  CHECK_USER_EVENT_ACCEPTED,
   DELETE_EVENT,
   DETAILED_EVENT_FRAGMENT,
-  DETAILED_USER_FRAGMENT,
   GET_EVENT,
   GET_EVENT_ATTENDANCE,
-  GET_USER_FRIENDS,
   GET_USER_FRIENDS_NOT_ATTENDING_EVENT,
   GET_USER_GROUPS,
   INVITE_USERS_TO_EVENT,
-  SEND_NOTIFICATION,
   SEND_NOTIFICATIONS,
 } from '../../graphql';
 import {
@@ -40,7 +35,6 @@ import {
 } from '../../context';
 import CircleEditIcon from '../ReusableComponents/CircleEditIcon';
 import NewEventModal from '../Modal/NewEventModal';
-import { showMessage } from 'react-native-flash-message';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';

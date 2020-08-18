@@ -86,6 +86,8 @@ function toLink(type, value) {
         return 'instagram.com/';
       case 3:
         return 'linkedin.com/in/';
+      case 4:
+        return 'snapchat.com/add/'
       case 5:
         return 'twitter.com/';
       case 6:

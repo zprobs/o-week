@@ -128,7 +128,7 @@ export const SystemNotificationCard = ({ item }) => {
   return (
     <NotificationCard
       title={''}
-      message={'Welcome to the App'}
+      message={item.typeId}
       timestamp={item.timestamp}
       localImage={images.logo}
       id={item.id}

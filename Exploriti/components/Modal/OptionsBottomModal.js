@@ -98,6 +98,8 @@ const OptionsBottomModal = React.forwardRef(({ id }, ref) => {
           />
         )}
 
+        <View style={{height: 20}}/>
+
         <Option
           label="Report"
           iconName="flag"

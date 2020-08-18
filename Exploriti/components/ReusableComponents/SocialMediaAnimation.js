@@ -1054,7 +1054,6 @@ const styles = StyleSheet.create({
   viewBody: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'blue',
   },
 
   // Main content

@@ -12,7 +12,6 @@ import Fonts from '../../theme/Fonts';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import {
   BAN_USER,
-  GET_ALL_USERS,
   GET_ORIENTATION_GROUPS,
   SEARCH_USERS,
 } from '../../graphql';

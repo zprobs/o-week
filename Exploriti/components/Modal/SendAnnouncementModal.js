@@ -6,16 +6,41 @@ import { Theme, ThemeStatic } from '../../theme/Colours';
 import FormInput from '../ReusableComponents/FormInput';
 import Fonts from '../../theme/Fonts';
 import ButtonColour from '../ReusableComponents/ButtonColour';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import { GET_ALL_USERS, SEND_NOTIFICATIONS } from '../../graphql';
+import { NotificationTypes, processError } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 
 const SendAnnouncementModal = React.forwardRef(({onClose}, ref) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState('');
 
-  const onSend = () => {
+  const [getAllUsers, {error, loading, data}] = useLazyQuery(GET_ALL_USERS);
+  const [sendNotifications, {error: notifError}] = useMutation(SEND_NOTIFICATIONS);
+
+  if (error) processError(error, 'Cannot send message')
+  if (notifError) processError(notifError, 'Cannot send message')
+
+  const onSend = async () => {
     setIsUploading(true);
+
+    console.log('allUsers', data);
+
+    const userIds = [];
+    data.users.forEach(u => userIds.push({ userId: u.id }))
+
+    sendNotifications({
+      variables: {
+        type: NotificationTypes.system,
+        typeId: message,
+        recipients: userIds,
+      },
+    }).catch((e) => console.log(e));
+
     setIsUploading(false);
+    setMessage('');
+    ref.current.close();
 
   }
 
@@ -28,6 +53,7 @@ const SendAnnouncementModal = React.forwardRef(({onClose}, ref) => {
         bounces: false,
       }}
       modalTopOffset={110}
+      onOpen={getAllUsers}
       onClose={onClose}>
       <View style={styles.container}>
         <ModalHeader
@@ -47,7 +73,7 @@ const SendAnnouncementModal = React.forwardRef(({onClose}, ref) => {
           label={'Send'}
           colour={ThemeStatic.accent}
           onPress={onSend}
-          loading={isUploading}
+          loading={loading || isUploading}
           loadColour={'white'}
           light={true}
           containerStyle={{ marginVertical: 30 }}

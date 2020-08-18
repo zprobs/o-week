@@ -57,7 +57,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       case 5:
         return 'Twitter Page';
       case 6:
-        return 'Tik Tok account';
+        return 'TikTok Account';
       default:
         return 'Social Media';
     }
@@ -66,17 +66,17 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   const address = () => {
     switch (type) {
       case 1:
-        return 'www.facebook.com/';
+        return 'https://www.facebook.com/';
       case 2:
-        return 'www.instagram.com/';
+        return 'IG handle: ';
       case 3:
-        return 'www.linkedin.com/in/';
+        return 'https://www.linkedin.com/in/';
       case 4:
         return 'Snapchat User Name: ';
       case 5:
-        return 'www.twitter.com/';
+        return 'Twitter handle: ';
       case 6:
-        return 'www.tiktok.com/@';
+        return 'TikTok account: ';
       default:
         return '';
     }
@@ -101,7 +101,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
   const header = () => (
     <ModalHeader
       heading={'Add your ' + title()}
-      subHeading={ type === 2 ||type === 5 ? 'Enter your @ ' : 'Copy the exact address from the URL bar to create a link'}
+      subHeading={ type === 1 ||type === 3 ? 'Copy the exact address from the URL bar to create a link' : 'Enter your @'}
     />
   );
 
@@ -157,7 +157,7 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(({ type }, ref) => {
       onOpen={onOpen}>
       <View style={styles.inputBox}>
         <Text style={styles.url}>
-          {(type !== 4 ? 'https://' : '') + address()}
+          {address()}
         </Text>
         <TextInput
           style={styles.input}
