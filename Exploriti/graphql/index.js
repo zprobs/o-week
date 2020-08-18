@@ -1015,6 +1015,9 @@ export const GET_ALL_GROUP_IDS = gql`
     groups {
       id
     }
+      users {
+          id
+      }
   }
 `;
 

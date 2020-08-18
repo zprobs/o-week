@@ -432,6 +432,7 @@ const EventInfoModal = React.forwardRef(
         invited.push(attendee.user);
       });
 
+
       return (
         <>
           <RSVPButton
@@ -444,7 +445,7 @@ const EventInfoModal = React.forwardRef(
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Going</Text>
-                {going.length > 20 ? (
+                {going.length >= 20 ? (
                   <TouchableOpacity
                     style={styles.seeAllButton}
                     onPress={allAttendingRef.current.open}>
@@ -459,7 +460,7 @@ const EventInfoModal = React.forwardRef(
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Invited</Text>
-                {invited.length > 20 ? (
+                {invited.length >= 20 ? (
                   <TouchableOpacity
                     style={styles.seeAllButton}
                     onPress={allInvitedRef.current.open}>

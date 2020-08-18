@@ -155,11 +155,11 @@ const NewEventModal = React.forwardRef(
       fields.endDate = endDate;
       fields.isOfficial = isOfficial;
       let userIDs = [];
+      const userEvent_insert_input = [];
       if (groupId) {
         fields.hosts = { data: [{ groupId: groupId }] };
         if (membersError) processError(membersError, 'Could not notify users');
         else {
-          const userEvent_insert_input = [];
           membersData.group.members.forEach((m)=>{
             userIDs.push({userId: m.userId});
             userEvent_insert_input.push({ userId: m.userId, didAccept: false })
@@ -175,7 +175,15 @@ const NewEventModal = React.forwardRef(
         if (hostsError) return;
         const IDs = [];
         hostsData.groups.forEach((group) => IDs.push({ groupId: group.id }));
+        hostsData.users.forEach((user) => {
+          userIDs.push({ userId: user.id })
+          userEvent_insert_input.push({ userId: user.id, didAccept: false })
+        })
         fields.hosts = { data: IDs };
+        fields.attendees = { data: userEvent_insert_input };
+
+        console.log('Global event users', userIDs);
+
         console.log(fields.hosts);
       }
       const createEventData = await createEvent({

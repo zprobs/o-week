@@ -202,7 +202,7 @@ const GroupInfoModal = React.forwardRef(
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Leaders</Text>
-                {leaders.length > 20 ? (
+                {leaders.length >= 20 ? (
                   <TouchableOpacity
                     style={styles.seeAllButton}
                     onPress={allLeadersRef.current.open}>
@@ -217,7 +217,7 @@ const GroupInfoModal = React.forwardRef(
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Members</Text>
-                {members.length > 20 ? (
+                {members.length >= 20 ? (
                   <TouchableOpacity
                     style={styles.seeAllButton}
                     onPress={allMembersRef.current.open}>
