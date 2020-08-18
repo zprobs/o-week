@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
@@ -10,10 +10,10 @@ import Trophy from '../../assets/svg/trophy.svg';
 import Slider from '@react-native-community/slider';
 import Fonts from '../../theme/Fonts';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { useMutation } from '@apollo/react-hooks';
-import { AWARD_TROPHIES } from '../../graphql';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { AWARD_TROPHIES, GET_GROUPS_MEMBERS, SEND_NOTIFICATIONS } from '../../graphql';
 import { showMessage } from 'react-native-flash-message';
-import { processError } from '../../context';
+import { NotificationTypes, processError, processWarning } from '../../context';
 const { FontWeights, FontSizes } = Fonts;
 
 const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
@@ -21,12 +21,26 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [score, setScore] = useState(1);
+  const [isOpen, setIsOpen] = useState(false)
 
   const [award, {error}] = useMutation(AWARD_TROPHIES);
-
+  const [sendNotifications] = useMutation(SEND_NOTIFICATIONS);
+  const [getMembers, {data, loading, error: membersError}] = useLazyQuery(GET_GROUPS_MEMBERS)
   if (error) {
    processError(error, 'Cannot Award Trophy')
   }
+
+  console.log('members', data);
+
+
+  useEffect(()=>{
+    if (isOpen && selected) {
+      getMembers({variables: {groupIds: selected}})
+    }
+  }, [selected])
+
+
+  if (membersError) processWarning(membersError, "Network Error")
 
   const onDone = async () => {
     setIsUploading(true);
@@ -49,6 +63,24 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
         ref.current.close();
       })
       .catch((e) => console.log(e));
+    selected.forEach(id => {
+      const group = data.groups.find(g => g.id === id)
+      console.log('group', group);
+      let userIDs = [];
+      group.members.forEach(m => {
+        userIDs.push({userId: m.userId})
+      })
+      sendNotifications({
+        variables: {
+          type: NotificationTypes.trophyAwarded,
+          typeId: id,
+          recipients: userIDs,
+        },
+      });
+      userIDs = [];
+    })
+
+
   };
 
   return (
@@ -59,7 +91,11 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
         bounces: false,
       }}
       modalTopOffset={110}
-      onClose={onClose}>
+      onOpen={()=>setIsOpen(true)}
+      onClose={()=> {
+        setIsOpen(false);
+        onClose && onClose();
+      }}>
       <View style={{ paddingHorizontal: 20 }}>
         <ModalHeader
           heading="Award a Trophy"
@@ -104,7 +140,7 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
           label={'Award'}
           colour={ThemeStatic.accent}
           onPress={onDone}
-          loading={isUploading}
+          loading={loading || isUploading}
           loadColour={'white'}
           light={true}
           containerStyle={{ marginVertical: 30 }}

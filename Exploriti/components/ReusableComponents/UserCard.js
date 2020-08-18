@@ -25,7 +25,7 @@ const UserCard = ({ userId, groupId, image, name, onPress, style }) => {
   const options = userId ? { userId: userId } : { groupId: groupId };
 
   const navigateToProfile = () => {
-    navigation.push(destination, options);
+    navigation.navigate(destination, options);
   };
 
   return (

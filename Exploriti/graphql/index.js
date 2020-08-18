@@ -1093,6 +1093,17 @@ export const GET_GROUP_MEMBERS = gql`
   }
 `;
 
+export const GET_GROUPS_MEMBERS = gql`
+    query getGroupsMembers($groupIds: [uuid!]!) {
+        groups(where: {id: {_in: $groupIds }}) {
+            id
+            members {
+                userId
+            }
+        }
+    }
+`;
+
 export const GET_GROUP_MEMBERS_PAGINATED = gql`
   query getGroupMembersPaginated(
     $groupId: uuid!

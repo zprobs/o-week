@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     shadow: {
         shadowColor: "rgba(204, 204, 204, 0.5)",

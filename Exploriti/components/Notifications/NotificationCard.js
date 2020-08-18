@@ -20,6 +20,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
 import images from '../../assets/images';
 import gql from "graphql-tag";
+import Trophy from '../../assets/svg/trophy.svg';
+import LinearGradient from "react-native-linear-gradient";
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -35,6 +37,7 @@ const { colours } = Theme.light;
  * @param id {int}
  * @param seen {boolean}
  * @param nav
+ * @param SVG
  * @returns {JSX.Element}
  * @constructor
  */
@@ -48,6 +51,7 @@ const NotificationCard = ({
   id,
   seen,
   nav,
+  SVG
 }) => {
   const {authState} = useContext(AuthContext);
   const [seeNotification] = useMutation(SEE_NOTIFICATION, {
@@ -95,7 +99,10 @@ const NotificationCard = ({
       ]}
       onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={localImage ? localImage : { uri: image }} style={styles.image} />
+        {
+          SVG ? <SVG/> :
+            <Image source={localImage ? localImage : { uri: image }} style={styles.image} />
+        }
         <View style={styles.textContainer}>
           <Text style={styles.message}>
             {titleLast ? `${message} `  : null}
@@ -146,7 +153,7 @@ export const UserNotificationCard = ({ item, message }) => {
   if (error || !data.user)
     return null
   const nav = () => {
-    navigation.push('Profile', { userId: item.typeId });
+    navigation.navigate('Profile', { userId: item.typeId });
   };
   return (
     <NotificationCard
@@ -185,6 +192,34 @@ export const EventNotificationCard = ({ item, message, titleLast }) => {
     />
   );
 };
+
+
+export const TrophyNotificationCard = ({ item }) => {
+  const navigation = useNavigation();
+
+  const nav = () => {
+    navigation.navigate('GroupScreen', { groupId: item.typeId });
+  };
+
+  const SVG = () => (
+    <LinearGradient colors={['rgba(247,190,98,1)', 'rgba(244,167,6,1)']} style={[styles.image, {  alignItems: 'center', justifyContent: 'center',}]}>
+      <Trophy width={25} height={25} fill={'white'} />
+    </LinearGradient>
+  )
+
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={'A Trophy'}
+      message={'has been awarded to your group!'}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+      SVG={SVG}
+    />
+  );
+};
+
 
 const styles = StyleSheet.create({
   container: {

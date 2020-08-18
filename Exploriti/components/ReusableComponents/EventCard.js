@@ -177,7 +177,7 @@ export const EventCard = ({
                     <TouchableOpacity
                       style={styles.detailsButton}
                       onPress={() =>
-                        navigation.push('EventScreen', {
+                        navigation.navigate('EventScreen', {
                           eventId: id,
                         })
                       }>

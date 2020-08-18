@@ -135,7 +135,7 @@ export default function Dashboard() {
               return (
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.push('Profile', { userId: user.id })
+                    navigation.navigate('Profile', { userId: user.id })
                   }
                   key={user.id}>
                   <Image

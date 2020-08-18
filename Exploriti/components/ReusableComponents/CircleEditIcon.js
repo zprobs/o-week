@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 
 /**
@@ -13,14 +13,13 @@ import { ThemeStatic } from '../../theme/Colours';
  */
 const CircleEditIcon = ({ onPress, style, icon }) => {
   return (
-    <View style={{ ...styles.container, ...style }}>
+    <TouchableOpacity style={{ ...styles.container, ...style }} onPress={onPress}>
       <Icon
         name={icon ? icon : 'edit'}
         color={'#000'}
         size={23}
-        onPress={onPress}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

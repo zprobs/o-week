@@ -8,7 +8,7 @@ import { AuthContext, NotificationTypes, processWarning, refreshToken } from '..
 
 import {
   EventNotificationCard,
-  SystemNotificationCard,
+  SystemNotificationCard, TrophyNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
 import { showMessage } from 'react-native-flash-message';
@@ -72,6 +72,10 @@ export default function Notifications() {
             message={'A new event has been created: '}
             titleLast={true}
             />
+        )
+      case NotificationTypes.trophyAwarded:
+        return (
+          <TrophyNotificationCard item={item} />
         )
       default:
         return <SystemNotificationCard item={item} />

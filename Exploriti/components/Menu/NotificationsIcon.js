@@ -24,7 +24,7 @@ export const NotificationsIcon = ({white}) => {
       name="bell"
       size={32}
       color={ white ? 'white' : "#000"}
-      onPress={() => navigation.push("Notifications")}
+      onPress={() => navigation.navigate("Notifications")}
       style={{paddingRight: 12}}
     />
       {
