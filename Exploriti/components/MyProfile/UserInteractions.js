@@ -3,7 +3,7 @@ import { AuthContext, graphqlify, NotificationTypes, processError, processWarnin
 import gql from 'graphql-tag';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CHECK_FRIEND_REQUESTS,
+  CHECK_FRIEND_REQUESTS, CHECK_USER_ADMIN,
   CONFIRM_FRIEND_REQUEST,
   DELETE_FRIEND_REQUEST,
   GET_USER_FRIENDS,
@@ -29,10 +29,12 @@ const { colours } = Theme.light;
  * @param image {string}
  * @param name {string} used for cache updates
  * @param onlyFriendsCanMessage {boolean} if true then you can't message unless friends
+ * @param isLeader {boolean} affects weather leaders can message
+ * @param isAdmin {boolean} affects weather leaders can message
  * @returns {*}
  * @constructor
  */
-const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessage }) => {
+const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessage, isLeader, isAdmin }) => {
   const { authState, setAuthState } = useContext(AuthContext);
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
@@ -70,6 +72,8 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
   });
 
   const [sendNotification] = useMutation(SEND_NOTIFICATION);
+
+  const {data: adminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}})
 
   const [
     checkFriendRequests,
@@ -390,13 +394,23 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
 
   const messageInteraction = async () => {
     if (isFriend || !onlyFriendsCanMessage) {
-      const friendsSelection = [userId, authState.user.uid];
-      newChat({
-        variables: {
-          participants: graphqlify(friendsSelection, 'user'),
-          image: image,
-        },
-      });
+      if (adminData && adminData.user.isLeader && (!isLeader && !isAdmin)) {
+        showMessage({
+          message: 'Cannot send message',
+          description: 'As a leader you may not send private messages to students',
+          autoHide: true,
+          type: 'danger',
+          icon: 'auto',
+        });
+      } else {
+        const friendsSelection = [userId, authState.user.uid];
+        newChat({
+          variables: {
+            participants: graphqlify(friendsSelection, 'user'),
+            image: image,
+          },
+        });
+      }
     } else {
       showMessage({
         message: 'Cannot send message',

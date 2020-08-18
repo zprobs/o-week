@@ -19,6 +19,8 @@ export const DETAILED_USER_FRAGMENT = gql`
     image
     year
       onlyFriendsCanMessage
+      isLeader
+      isAdmin
     member_aggregate {
       aggregate {
         count
@@ -128,7 +130,6 @@ export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
       ...DetailedUser
-      isAdmin
       member {
         isOwner
         group {
@@ -145,6 +146,7 @@ export const CHECK_USER_ADMIN = gql`
     user(id: $id) {
       id
       isAdmin
+        isLeader
     }
   }
 `;
@@ -337,6 +339,8 @@ export const GET_USER_FRIENDS = gql`
           id
           image
           name
+            isLeader
+            isAdmin
         }
       }
     }
@@ -390,6 +394,7 @@ export const REMOVE_FRIEND = gql`
 export const CHECK_FRIEND_REQUESTS = gql`
   query checkFriendRequests($currentUser: String!, $otherUser: String!) {
     user(id: $currentUser) {
+        id
       friendRequestsSent(where: { recipient: { _eq: $otherUser } }) {
         date
       }

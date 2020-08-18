@@ -299,8 +299,7 @@ export default function Signup({ navigation }) {
         userData.image = imageURL;
 
         const orientationGroups = [
-          '6fd14b29-feaf-41fe-9165-ee9fce615ec2',
-          'ce945810-eb4a-47c6-83d4-5e642ac2d6c7',
+          'ad1560ef-9b37-4f93-838f-8f8a3e98b570',
         ];
 
         userData.member = graphqlify(orientationGroups, 'group');

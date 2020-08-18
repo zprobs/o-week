@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
-import { GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
+import { CHECK_USER_ADMIN, GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
 import { AuthContext, getDefaultImage, graphqlify, processError, processWarning, refreshToken } from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
@@ -32,6 +32,9 @@ export default function MessagesList() {
   const newMessageBottomModalRef = useRef();
   const headerHeight = useHeaderHeight();
   const insets = useSafeArea();
+  const { authState } = useContext(AuthContext);
+
+  const {data: adminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}})
 
 
   const IconRight = () => (
@@ -93,7 +96,6 @@ export default function MessagesList() {
 
 
 
-  const { authState, setAuthState } = useContext(AuthContext);
 
   const {
     data: chatsData,
@@ -159,21 +161,32 @@ export default function MessagesList() {
 
   const newConversation = (participants) => {
     if (participants.length !== 0) {
-      newChat({
-        variables: {
-          participants: graphqlify(
-            [
-              ...participants.map((participant) => participant.id),
-              authState.user.uid,
-            ],
-            'user',
-          ),
-          image:
-            participants.length === 1
-              ? participants[0].image
-              : getDefaultImage(),
-        },
-      });
+      if (participants.length === 1 && adminData && adminData.user.isLeader && !(participants[0].isLeader || participants[0].isAdmin)) {
+       // leaders cannot message students
+        showMessage({
+          message: 'Cannot send message',
+          description: 'As a leader you may not send private messages to students',
+          autoHide: true,
+          type: 'danger',
+          icon: 'auto',
+        });
+      } else {
+        newChat({
+          variables: {
+            participants: graphqlify(
+              [
+                ...participants.map((participant) => participant.id),
+                authState.user.uid,
+              ],
+              'user',
+            ),
+            image:
+              participants.length === 1
+                ? participants[0].image
+                : getDefaultImage(),
+          },
+        });
+      }
     }
   };
 

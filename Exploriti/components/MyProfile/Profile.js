@@ -99,6 +99,8 @@ export default function Profile({ route }) {
         image={image}
         name={name}
         onlyFriendsCanMessage={data.user.onlyFriendsCanMessage}
+        isAdmin={data.user.isAdmin}
+        isLeader={data.user.isLeader}
       />
     );
   };
