@@ -132,8 +132,8 @@ android {
         applicationId "com.exploriti"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.1"
+        versionCode 1
+        versionName "1.2"
         vectorDrawables.useSupportLibrary = true // added for Image Picker
         multiDexEnabled true
     }
