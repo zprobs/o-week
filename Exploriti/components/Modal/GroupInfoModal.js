@@ -15,19 +15,18 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
 import { useNavigation } from '@react-navigation/native';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import {
-  GET_CHAT_BY_ID,
   GET_DETAILED_GROUP,
-  GET_EVENTS_BY_ID, GET_LEADERBOARD,
-  GET_USERS_BY_ID, INSERT_GROUP_CHAT, NEW_CHAT,
+  GET_EVENTS_BY_ID, GET_GROUP_POSTS, GET_LEADERBOARD,
 } from '../../graphql';
 import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { showMessage } from 'react-native-flash-message';
-import { AuthContext, processWarning, rankData, refreshToken } from '../../context';
+import { AuthContext, processWarning, rankData } from '../../context';
+import EmptyPosts from '../../assets/svg/empty-likes.svg'
+import Post from '../ReusableComponents/Post';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -46,7 +45,7 @@ const GroupInfoModal = React.forwardRef(
     const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
       variables: { id: groupId },
     });
-    const { authState, setAuthState } = useContext(AuthContext);
+    const { authState } = useContext(AuthContext);
 
     if (error) {
       processWarning(error, 'Server Error');
@@ -55,14 +54,14 @@ const GroupInfoModal = React.forwardRef(
     const Tabs = () => {
       const [index, setIndex] = useState(0);
       const [routes] = useState([
-        { key: 'first', title: 'Overview' },
-        { key: 'second', title: 'Members' },
+        { key: 'first', title: 'Feed' },
+        { key: 'second', title: 'About' },
         { key: 'third', title: 'Events' },
       ]);
 
       const renderScene = SceneMap({
-        first: Overview,
-        second: Members,
+        first: Feed,
+        second: About,
         third: Events,
       });
 
@@ -99,7 +98,36 @@ const GroupInfoModal = React.forwardRef(
       );
     };
 
-    const Overview = () => {
+    const Feed = () => {
+
+      const {data: postData, loading: postsLoading, error: postsError} = useQuery(GET_GROUP_POSTS, {variables: {id: groupId}, fetchPolicy: 'cache-and-network'})
+
+      if (loading || error || postsLoading || postsError) return null;
+
+      const count = postData.group.posts_aggregate.aggregate.count;
+      const posts = [1, 2]
+
+      return (
+        <View style={{flex: 1, alignItems: 'center', paddingTop: 16}}>
+          <TouchableOpacity style={styles.postButton}>
+            <Icon name={'plus'} size={24} color={ThemeStatic.white}/>
+            <Text style={styles.postText}>Post Something</Text>
+          </TouchableOpacity>
+          {
+            count === 3 ? (
+              <ImgBanner Img={EmptyPosts} placeholder={'No Posts Yet'} spacing={0.01}/>
+            ) : (
+                posts.map((p, i) => (
+                  <Post item={p} index={i} />
+                ))
+            )
+          }
+        </View>
+      )
+
+    }
+
+    const About = () => {
 
       const {data: scoreData, loading: scoreLoading, error: scoreError} = useQuery(GET_LEADERBOARD);
 
@@ -115,6 +143,9 @@ const GroupInfoModal = React.forwardRef(
       } = data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
 
       const rank = scoreData.groups.findIndex(g => g.id === groupId);
+
+      const leaders = data.group.owners.map((o) => o.user);
+      const members = data.group.members.map((m) => m.user);
 
       return (
         <>
@@ -164,6 +195,38 @@ const GroupInfoModal = React.forwardRef(
           </View>
           <Text style={styles.descriptionText}>{data.group.description}</Text>
 
+          <>
+            {leaders.length > 0 ? (
+              <>
+                <View style={styles.sectionView}>
+                  <Text style={styles.sectionText}>Leaders</Text>
+                  {leaders.length >= 20 ? (
+                    <TouchableOpacity
+                      style={styles.seeAllButton}
+                      onPress={allLeadersRef.current.open}>
+                      <Text style={styles.seeAllText}>See All</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+                <HorizontalUserList data={leaders} style={{ marginTop: 10 }} />
+              </>
+            ) : null}
+            {members.length > 0 ? (
+              <>
+                <View style={styles.sectionView}>
+                  <Text style={styles.sectionText}>Members</Text>
+                  {members.length >= 20 ? (
+                    <TouchableOpacity
+                      style={styles.seeAllButton}
+                      onPress={allMembersRef.current.open}>
+                      <Text style={styles.seeAllText}>See All</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+                <HorizontalUserList data={members} style={{ marginTop: 10 }} />
+              </>
+            ) : null}
+          </>
           {data.group.trophies.length > 0 ? (
             <>
               <View style={styles.sectionView}>
@@ -184,48 +247,6 @@ const GroupInfoModal = React.forwardRef(
                 style={{ marginVertical: 25, marginBottom: 5 }}
                 data={data.group.trophies}
               />
-            </>
-          ) : null}
-        </>
-      );
-    };
-
-    const Members = () => {
-      if (loading || error) return null;
-
-      const leaders = data.group.owners.map((o) => o.user);
-      const members = data.group.members.map((m) => m.user);
-
-      return (
-        <>
-          {leaders.length > 0 ? (
-            <>
-              <View style={styles.sectionView}>
-                <Text style={styles.sectionText}>Leaders</Text>
-                {leaders.length >= 20 ? (
-                  <TouchableOpacity
-                    style={styles.seeAllButton}
-                    onPress={allLeadersRef.current.open}>
-                    <Text style={styles.seeAllText}>See All</Text>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-              <HorizontalUserList data={leaders} style={{ marginTop: 10 }} />
-            </>
-          ) : null}
-          {members.length > 0 ? (
-            <>
-              <View style={styles.sectionView}>
-                <Text style={styles.sectionText}>Members</Text>
-                {members.length >= 20 ? (
-                  <TouchableOpacity
-                    style={styles.seeAllButton}
-                    onPress={allMembersRef.current.open}>
-                    <Text style={styles.seeAllText}>See All</Text>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-              <HorizontalUserList data={members} style={{ marginTop: 10 }} />
             </>
           ) : null}
         </>
@@ -387,6 +408,24 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
   },
+  postButton: {
+    backgroundColor: ThemeStatic.gold,
+    width: 200,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    marginTop: 20
+  },
+  postText: {
+    ...FontWeights.Regular,
+    ...FontSizes.Body,
+    color: ThemeStatic.white,
+    marginVertical: 10,
+    marginLeft: 5
+  }
 });
 
 export default GroupInfoModal;

@@ -1106,10 +1106,74 @@ export const GET_DETAILED_GROUP = gql`
           ...DetailedChat
         }
       }
+        posts(limit: 4) {
+           id
+            user {
+                id
+                name
+                image
+            }
+            time
+            comments(limit: 3) {
+                user {
+                    id
+                    image
+                }
+            }
+            comments_aggregate {
+                aggregate {
+                    count
+                }
+            }
+            text
+            images
+            links
+        }
+        posts_aggregate {
+            aggregate {
+                count
+            }
+        }
     }
   }
   ${DETAILED_CHAT}
 `;
+
+export const GET_GROUP_POSTS = gql`
+    query getGroupPosts($id: uuid!) {
+        group(id: $id) {
+            id
+            posts(limit: 4) {
+                id
+                user {
+                    id
+                    name
+                    image
+                }
+                time
+                comments(limit: 3) {
+                    user {
+                        id
+                        image
+                    }
+                }
+                comments_aggregate {
+                    aggregate {
+                        count
+                    }
+                }
+                text
+                images
+                links
+            }
+            posts_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
+`
 
 export const GET_GROUP_MEMBERS = gql`
   query getGroupMembers($groupId: uuid!) {
