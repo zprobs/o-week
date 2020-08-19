@@ -258,14 +258,14 @@ export default function App() {
       reconnect: true,
       connectionParams: async () => {
         console.log('web socket fetching token');
-        if (authState.status !== "in")  return {}
+        if (authState.status !== "in") return {}
         const token = await firebase.auth().currentUser.getIdToken();
         return {
           headers: {
             Authorization: token ? `Bearer ${token}` : '',
           },
         };
-      },
+      }
     },
   });
 
