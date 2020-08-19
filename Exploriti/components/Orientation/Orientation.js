@@ -11,6 +11,8 @@ import Conversation from '../Messages/Conversation';
 import Search from './Search';
 import { useApolloClient } from '@apollo/react-hooks';
 import messaging from '@react-native-firebase/messaging';
+import { PostScreen } from '../ReusableComponents/Post';
+import Gallery from './Gallery';
 
 const Stack = createStackNavigator();
 
@@ -20,10 +22,6 @@ const Stack = createStackNavigator();
  * @constructor
  */
 export default function Orientation() {
-
-
-
-
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -39,7 +37,7 @@ export default function Orientation() {
           // />),
           // headerTitle: '',
           // headerStyle: { shadowColor: 'transparent', elevation: 0 },
-          headerShown: false
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -83,6 +81,16 @@ export default function Orientation() {
         options={{
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name={'PostScreen'}
+        options={{ headerTitle: '' }}
+        component={PostScreen}
+      />
+      <Stack.Screen
+        name={'Gallery'}
+        options={{ headerTitle: '' }}
+        component={Gallery}
       />
     </Stack.Navigator>
   );

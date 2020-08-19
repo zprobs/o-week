@@ -6,7 +6,7 @@
 
 
 export const ThemeStatic = {
-    accent: '#bf1330',
+    accent: '#0088cc',
     white: '#FFFFFF',
     black: '#000000',
     text01: '#000000',
@@ -36,7 +36,7 @@ export const Theme = {
     light: {
         type: 'light',
         colours: {
-            accent: '#bf1330',
+            accent: '#0088cc',
             base: '#FFFFFF',
             text01: '#000000',
             text02: '#BBBBBB',

@@ -1,14 +1,38 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  SafeAreaView,
+  TouchableOpacity,
+  Linking,
+  ScrollView,
+} from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/Feather';
 import { linkError } from './SocialMediaIcons';
 import { getHostnameFromRegex } from '../../context';
+import GoBackHeader from '../Menu/GoBackHeader';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
+
+const images = [
+  'https://i5.walmartimages.com/asr/a88dd17b-3897-403e-a314-dc2ae3e61608_1.eaa5d834ffadc9a21464041fb54ac156.jpeg',
+  'https://www.twoinchbrush.com/images/painting215.png',
+  'https://c4.wallpaperflare.com/wallpaper/470/96/902/lake-water-wallpaper-preview.jpg',
+  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+];
+
+const link =
+  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg';
 
 /**
  * Used in Group Feeds
@@ -19,6 +43,8 @@ const { colours } = Theme.light;
  */
 const Post = ({ item, index }) => {
   const isLeft = index % 2 === 0;
+
+  const navigation = useNavigation();
 
   const containerBorderRadius = {
     borderBottomRightRadius: isLeft ? 15 : 0,
@@ -31,71 +57,18 @@ const Post = ({ item, index }) => {
     paddingRight: isLeft ? 0 : 25,
   };
 
-  // const images = [
-  //   'https://i5.walmartimages.com/asr/a88dd17b-3897-403e-a314-dc2ae3e61608_1.eaa5d834ffadc9a21464041fb54ac156.jpeg',
-  //   'https://www.twoinchbrush.com/images/painting215.png',
-  //   'https://c4.wallpaperflare.com/wallpaper/470/96/902/lake-water-wallpaper-preview.jpg',
-  //   "https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg",
-  //   "https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg",
-  //   "https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg",
-  //   "https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg",
-  //
-  // ];
-
-  const images = [];
-
-  const link = "https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg"
-
-
   const hasContent = images.length !== 0 || link;
 
-  const renderImages = () => {
-    var imageComponents = [];
-    let i = 0;
-    while (i < images.length && i < 3) {
-      imageComponents.push(
-        <Image
-          key={i}
-          source={{ uri: images[i] }}
-          style={styles.galleryImage}
-        />,
-      );
-      i++;
-    }
-    if (images.length > 3) {
-      imageComponents.push(
-        <View
-          style={[
-            styles.galleryImage,
-            { backgroundColor: colours.text02, justifyContent: 'center' },
-          ]}
-          key={4}
-        >
-          <Text style={styles.moreImagesText}>{`+${images.length - 3}`}</Text>
-        </View>,
-      );
-    }
-
-    return <View style={styles.gallery}>{imageComponents}</View>;
-  };
-
-  const renderLink = () => {
-   const hostname = getHostnameFromRegex(link);
-
-    return (
-        <View style={styles.linkContainer}>
-          <Text style={styles.linkText}>{hostname ? hostname : 'External Link'}</Text>
-          <Icon size={20} color={ThemeStatic.gold} name={'chevron-right'}/>
-        </View>
-    )
-  }
-
-  console.log(renderImages());
-
   return (
-    <View style={{ ...styles.container, ...containerBorderRadius }}>
+    <TouchableOpacity
+      style={{ ...styles.container, ...containerBorderRadius }}
+      onPress={() => navigation.push('PostScreen', { post: item })}>
       <View style={styles.header}>
-        <View style={styles.user}>
+        <TouchableOpacity
+          style={styles.user}
+          onPress={() =>
+            navigation.navigate('Profile', { userId: item.user.id })
+          }>
           <Image
             source={{
               uri:
@@ -107,18 +80,166 @@ const Post = ({ item, index }) => {
             <Text style={styles.name}>Max</Text>
             <Text style={styles.time}>12m ago</Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <Icon color={ThemeStatic.gold} name={'message-square'} size={26} />
       </View>
-      <Text numberOfLines={hasContent ? (images.length > 0 ? 2 : 3) : 5} style={styles.body}>
+      <Text
+        numberOfLines={hasContent ? (images.length > 0 ? 2 : 3) : 5}
+        style={styles.body}>
         Contrary to popoular belief \I can type treallt reallt fast. so fast in
         fact that it exceeds my typing ability for handrwriting. Zoom zoom
-        little one. Extra linkes just to fill in the spacesssssss ss hello helll brons basfd
+        little one. Extra linkes just to fill in the spacesssssss ss hello helll
+        brons basfd
       </Text>
       {hasContent ? (
-        <View>{images.length > 0 ? renderImages() : renderLink()}</View>
+        <View>
+          {images.length > 0 ? renderImages(images) : renderLink(link)}
+        </View>
       ) : null}
-    </View>
+    </TouchableOpacity>
+  );
+};
+
+export const PostScreen = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { post } = route.params;
+
+  const comments = [1, 2, 3];
+
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: colours.placeholder,
+        paddingHorizontal: 10,
+      }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.user}
+            onPress={() =>
+              navigation.navigate('Profile', { userId: post.user.id })
+            }>
+            <Image
+              source={{
+                uri:
+                  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+              }}
+              style={styles.image}
+            />
+            <View>
+              <Text style={styles.name}>Max</Text>
+              <Text style={styles.time}>12m ago</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.body}>
+          Contrary to popoular belief \I can type treallt reallt fast. so fast
+          in fact that it exceeds my typing ability for handrwriting. Zoom zoom
+          little one. Extra linkes just to fill in the spacesssssss ss hello
+          helll brons basfd
+        </Text>
+        {renderImages(images)}
+        {renderLink(link)}
+        <View style={styles.line} />
+        <View style={[styles.postButton, { alignSelf: 'center' }]}>
+          <Icon name={'plus'} color={'white'} size={24} />
+          <Text style={styles.postText}>Add Comment</Text>
+        </View>
+        {comments.map((c, i) => (
+          <Comment comment={c} key={i} />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const Comment = ({ comment }) => {
+  return (
+    <>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.user}
+          onPress={() => navigation.navigate('Profile', { userId: '123' })}>
+          <Image
+            source={{
+              uri:
+                'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+            }}
+            style={styles.image}
+          />
+          <View>
+            <Text style={styles.name}>Lucas</Text>
+            <Text style={styles.time}>1m ago</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.body}>
+        This is a comment linkes just to fill in the spacesssssss ss hello helll
+        brons basfd linkes just to fill in the spacesssssss ss hello helll brons
+        basfd
+      </Text>
+    </>
+  );
+};
+
+const renderImages = (images) => {
+  const imageComponents = [];
+  const navigation = useNavigation();
+  let i = 0;
+  while (i < images.length && i < 3) {
+    imageComponents.push(
+      <Image key={i} source={{ uri: images[i] }} style={styles.galleryImage} />,
+    );
+    i++;
+  }
+  if (images.length > 3) {
+    imageComponents.push(
+      <View
+        style={[
+          styles.galleryImage,
+          { backgroundColor: colours.text02, justifyContent: 'center' },
+        ]}
+        key={4}>
+        <Text style={styles.moreImagesText}>{`+${images.length - 3}`}</Text>
+      </View>,
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      style={styles.gallery}
+      onPress={() => navigation.navigate('Gallery', { images: images })}>
+      {imageComponents}
+    </TouchableOpacity>
+  );
+};
+
+const renderLink = (link) => {
+  const hostname = getHostnameFromRegex(link);
+
+  const goToLink = () => {
+    Linking.canOpenURL(link)
+      .then((result) => {
+        if (result) {
+          Linking.openURL(link).catch((e) => console.log(e));
+        } else {
+          linkError('', 'Link');
+        }
+      })
+      .catch((error) => {
+        linkError(error, 'Link');
+      });
+  };
+
+  return (
+    <TouchableOpacity style={styles.linkContainer} onPress={goToLink}>
+      <Text style={styles.linkText}>
+        {hostname ? hostname : 'External Link'}
+      </Text>
+      <Icon size={20} color={ThemeStatic.gold} name={'chevron-right'} />
+    </TouchableOpacity>
   );
 };
 
@@ -169,6 +290,7 @@ const styles = StyleSheet.create({
   },
   gallery: {
     flexDirection: 'row',
+    alignSelf: 'flex-start',
     marginVertical: 7,
     marginHorizontal: 15,
   },
@@ -193,7 +315,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     paddingHorizontal: 12,
     alignSelf: 'flex-start',
-    marginTop: 10
+    marginTop: 10,
   },
   linkText: {
     ...FontSizes.Caption,
@@ -201,5 +323,27 @@ const styles = StyleSheet.create({
     color: ThemeStatic.gold,
     marginRight: 12,
   },
-
+  line: {
+    borderBottomColor: colours.text02,
+    borderBottomWidth: 0.5,
+    marginVertical: 15,
+  },
+  postButton: {
+    backgroundColor: ThemeStatic.gold,
+    width: 200,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    marginVertical: 20,
+  },
+  postText: {
+    ...FontWeights.Regular,
+    ...FontSizes.Body,
+    color: ThemeStatic.white,
+    marginVertical: 10,
+    marginLeft: 5,
+  },
 });

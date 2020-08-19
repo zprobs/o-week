@@ -10,6 +10,8 @@ import GroupScreen from '../Orientation/GroupScreen';
 import EventScreen from '../Orientation/EventScreen';
 import Calendar from './Calendar';
 import ScheduleCarousel from './ScheduleCarousel';
+import { PostScreen } from '../ReusableComponents/Post';
+import Gallery from '../Orientation/Gallery';
 
 const Stack = createStackNavigator();
 
@@ -65,6 +67,16 @@ export default function Schedule() {
         options={{
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name={'PostScreen'}
+        options={{ headerTitle: '' }}
+        component={PostScreen}
+      />
+      <Stack.Screen
+        name={'Gallery'}
+        options={{ headerTitle: '' }}
+        component={Gallery}
       />
     </Stack.Navigator>
   );

@@ -5,6 +5,8 @@ import Conversation from './Conversation';
 import Profile from '../MyProfile/Profile';
 import GroupScreen from '../Orientation/GroupScreen';
 import EventScreen from '../Orientation/EventScreen';
+import { PostScreen } from '../ReusableComponents/Post';
+import Gallery from '../Orientation/Gallery';
 
 const Stack = createStackNavigator();
 
@@ -38,18 +40,28 @@ export default function Messages() {
         }}
       />
       <Stack.Screen
-        name="Group"
+        name="GroupScreen"
         component={GroupScreen}
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="Event"
+        name="EventScreen"
         component={EventScreen}
         options={{
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name={'PostScreen'}
+        options={{ headerTitle: '' }}
+        component={PostScreen}
+      />
+      <Stack.Screen
+        name={'Gallery'}
+        options={{ headerTitle: '' }}
+        component={Gallery}
       />
     </Stack.Navigator>
   );
