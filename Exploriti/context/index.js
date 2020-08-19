@@ -99,6 +99,13 @@ export function refreshToken(user, setAuthState) {
   }
 }
 
+export const getHostnameFromRegex = (url) => {
+  // run against regex
+  const matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  // extract hostname (will be null if no match is found)
+  return matches && matches[1];
+}
+
 export function yearToInt(year: String) {
   switch (year) {
     case 'First Year':

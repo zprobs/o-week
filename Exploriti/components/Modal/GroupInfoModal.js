@@ -118,7 +118,7 @@ const GroupInfoModal = React.forwardRef(
               <ImgBanner Img={EmptyPosts} placeholder={'No Posts Yet'} spacing={0.01}/>
             ) : (
                 posts.map((p, i) => (
-                  <Post item={p} index={i} />
+                  <Post item={p} index={i} key={i} />
                 ))
             )
           }

@@ -1127,7 +1127,7 @@ export const GET_DETAILED_GROUP = gql`
             }
             text
             images
-            links
+            link
         }
         posts_aggregate {
             aggregate {
@@ -1164,7 +1164,7 @@ export const GET_GROUP_POSTS = gql`
                 }
                 text
                 images
-                links
+                link
             }
             posts_aggregate {
                 aggregate {
