@@ -1375,6 +1375,7 @@ type event {
   id: uuid!
   image: String!
   isOfficial: Boolean!
+  isZoom: Boolean!
   links(
     # JSON select path
     path: String
@@ -1471,6 +1472,7 @@ input event_bool_exp {
   id: uuid_comparison_exp
   image: String_comparison_exp
   isOfficial: Boolean_comparison_exp
+  isZoom: Boolean_comparison_exp
   links: jsonb_comparison_exp
   location: jsonb_comparison_exp
   name: String_comparison_exp
@@ -1521,6 +1523,7 @@ input event_insert_input {
   id: uuid
   image: String
   isOfficial: Boolean
+  isZoom: Boolean
   links: jsonb
   location: jsonb
   name: String
@@ -1610,6 +1613,7 @@ input event_order_by {
   id: order_by
   image: order_by
   isOfficial: order_by
+  isZoom: order_by
   links: order_by
   location: order_by
   name: order_by
@@ -1654,6 +1658,9 @@ enum event_select_column {
   isOfficial
 
   # column name
+  isZoom
+
+  # column name
   links
 
   # column name
@@ -1678,6 +1685,7 @@ input event_set_input {
   id: uuid
   image: String
   isOfficial: Boolean
+  isZoom: Boolean
   links: jsonb
   location: jsonb
   name: String
@@ -1707,6 +1715,9 @@ enum event_update_column {
 
   # column name
   isOfficial
+
+  # column name
+  isZoom
 
   # column name
   links
@@ -2728,6 +2739,42 @@ type group {
   phone: String
 
   # An array relationship
+  posts(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): [post!]!
+
+  # An aggregated array relationship
+  posts_aggregate(
+    # distinct select on columns
+    distinct_on: [post_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [post_order_by!]
+
+    # filter the rows returned
+    where: post_bool_exp
+  ): post_aggregate!
+
+  # An array relationship
   questions(
     # distinct select on columns
     distinct_on: [groupQuestion_select_column!]
@@ -2924,6 +2971,7 @@ input group_bool_exp {
   members: userGroup_bool_exp
   name: String_comparison_exp
   phone: String_comparison_exp
+  posts: post_bool_exp
   questions: groupQuestion_bool_exp
   reviews: review_bool_exp
   tags: groupInterest_bool_exp
@@ -2975,6 +3023,7 @@ input group_insert_input {
   members: userGroup_arr_rel_insert_input
   name: String
   phone: String
+  posts: post_arr_rel_insert_input
   questions: groupQuestion_arr_rel_insert_input
   reviews: review_arr_rel_insert_input
   tags: groupInterest_arr_rel_insert_input
@@ -3067,6 +3116,7 @@ input group_order_by {
   members_aggregate: userGroup_aggregate_order_by
   name: order_by
   phone: order_by
+  posts_aggregate: post_aggregate_order_by
   questions_aggregate: groupQuestion_aggregate_order_by
   reviews_aggregate: review_aggregate_order_by
   tags_aggregate: groupInterest_aggregate_order_by
@@ -12565,6 +12615,7 @@ type user {
     where: userInterest_bool_exp
   ): userInterest_aggregate!
   isAdmin: Boolean!
+  isLeader: Boolean!
   links(
     # JSON select path
     path: String
@@ -12943,6 +12994,7 @@ input user_bool_exp {
   image: String_comparison_exp
   interests: userInterest_bool_exp
   isAdmin: Boolean_comparison_exp
+  isLeader: Boolean_comparison_exp
   links: jsonb_comparison_exp
   member: userGroup_bool_exp
   messages: message_bool_exp
@@ -13005,6 +13057,7 @@ input user_insert_input {
   image: String
   interests: userInterest_arr_rel_insert_input
   isAdmin: Boolean
+  isLeader: Boolean
   links: jsonb
   member: userGroup_arr_rel_insert_input
   messages: message_arr_rel_insert_input
@@ -13113,6 +13166,7 @@ input user_order_by {
   image: order_by
   interests_aggregate: userInterest_aggregate_order_by
   isAdmin: order_by
+  isLeader: order_by
   links: order_by
   member_aggregate: userGroup_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
@@ -13163,6 +13217,9 @@ enum user_select_column {
   isAdmin
 
   # column name
+  isLeader
+
+  # column name
   links
 
   # column name
@@ -13198,6 +13255,7 @@ input user_set_input {
   id: String
   image: String
   isAdmin: Boolean
+  isLeader: Boolean
   links: jsonb
   muteEvents: Boolean
   muteGroups: Boolean
@@ -13268,6 +13326,9 @@ enum user_update_column {
 
   # column name
   isAdmin
+
+  # column name
+  isLeader
 
   # column name
   links
