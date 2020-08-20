@@ -12,6 +12,7 @@ import Calendar from './Calendar';
 import ScheduleCarousel from './ScheduleCarousel';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from '../Orientation/Gallery';
+import AllPosts from '../Orientation/AllPosts';
 
 const Stack = createStackNavigator();
 
@@ -77,6 +78,11 @@ export default function Schedule() {
         name={'Gallery'}
         options={{ headerTitle: '' }}
         component={Gallery}
+      />
+      <Stack.Screen
+        name={'AllPosts'}
+        options={{ headerTitle: '' }}
+        component={AllPosts}
       />
     </Stack.Navigator>
   );

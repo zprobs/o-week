@@ -69,16 +69,16 @@ if (
 
 const tabStyles = {
   labelStyle: {
-    color: '#bf1330',
+    color: '#0088cc',
   },
   background: {
-    activeColor: 'rgba(191, 19, 48, 0.35)',
-    inactiveColor: 'rgba(191, 19, 48, 0)',
+    activeColor: 'rgba(0, 136, 204, 0.33)',
+    inactiveColor: 'rgba(0, 136, 204, 0)',
   },
 };
 
 const iconColor = {
-  activeColor: '#bf1330',
+  activeColor: '#0088cc',
   inactiveColor: 'rgba(0,0,0,1)',
 };
 
@@ -213,11 +213,11 @@ const HomeScreen = () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
-          if (remoteMessage.data.notificationType === NotificationTypes.message) setInitialRoute('Messages');
+          if (remoteMessage.data.notificationType === NotificationTypes.message)
+            setInitialRoute('Messages');
         }
       });
   }, []);
-
 
   return (
     <Tab.Navigator
@@ -226,10 +226,7 @@ const HomeScreen = () => {
       <Tab.Screen name="Orientation" component={Orientation} />
       <Tab.Screen name="Schedule" component={Schedule} />
       <Tab.Screen name="Messages" component={Messages} />
-      <Tab.Screen
-        name="MyProfile"
-        component={MyProfile}
-      />
+      <Tab.Screen name="MyProfile" component={MyProfile} />
     </Tab.Navigator>
   );
 };
@@ -258,20 +255,20 @@ export default function App() {
       reconnect: true,
       connectionParams: async () => {
         console.log('web socket fetching token');
-        if (authState.status !== "in") return {}
+        if (authState.status !== 'in') return {};
         const token = await firebase.auth().currentUser.getIdToken();
         return {
           headers: {
             Authorization: token ? `Bearer ${token}` : '',
           },
         };
-      }
+      },
     },
   });
 
   const authLink = setContext((_, { headers }) => {
     //it will always get unexpired version of the token
-    if (authState.status === "in") {
+    if (authState.status === 'in') {
       return firebase
         .auth()
         .currentUser.getIdToken()
@@ -284,9 +281,10 @@ export default function App() {
             },
           };
         });
-    } else return {
-      headers: {},
-    };
+    } else
+      return {
+        headers: {},
+      };
   });
 
   const link = ApolloLink.from([

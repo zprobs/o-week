@@ -13,6 +13,7 @@ import { useApolloClient } from '@apollo/react-hooks';
 import messaging from '@react-native-firebase/messaging';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from './Gallery';
+import AllPosts from './AllPosts';
 
 const Stack = createStackNavigator();
 
@@ -92,6 +93,12 @@ export default function Orientation() {
         options={{ headerTitle: '' }}
         component={Gallery}
       />
+      <Stack.Screen
+        name={'AllPosts'}
+        options={{ headerTitle: '' }}
+        component={AllPosts}
+      />
+
     </Stack.Navigator>
   );
 }

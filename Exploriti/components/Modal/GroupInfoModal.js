@@ -5,7 +5,7 @@ import {
   Dimensions,
   View,
   TouchableOpacity,
-  Linking,
+  Linking, Button,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -105,7 +105,8 @@ const GroupInfoModal = React.forwardRef(
       if (loading || error || postsLoading || postsError) return null;
 
       const count = postData.group.posts_aggregate.aggregate.count;
-      const posts = [1, 2]
+      const posts = [1, 2, 3, 4]
+      const aggregate = 6;
 
       return (
         <View style={{flex: 1, alignItems: 'center', paddingTop: 16}}>
@@ -121,6 +122,13 @@ const GroupInfoModal = React.forwardRef(
                   <Post item={p} index={i} key={i} />
                 ))
             )
+          }
+          {
+            aggregate > 4 ? (
+              <View style={styles.sectionView}>
+              <Button title={'See All'} onPress={()=>navigation.navigate('AllPosts', {groupId: groupId})}/>
+              </View>
+            ) : null
           }
         </View>
       )

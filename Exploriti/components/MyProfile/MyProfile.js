@@ -11,6 +11,7 @@ import SeeAllNotifications from '../Menu/SeeAllNotifications';
 import { useRoute } from '@react-navigation/native';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from '../Orientation/Gallery';
+import AllPosts from '../Orientation/AllPosts';
 const Stack = createStackNavigator();
 
 /**
@@ -68,6 +69,11 @@ export default function MyProfile() {
         name={'Gallery'}
         options={{ headerTitle: '' }}
         component={Gallery}
+      />
+      <Stack.Screen
+        name={'AllPosts'}
+        options={{ headerTitle: '' }}
+        component={AllPosts}
       />
     </Stack.Navigator>
   );
