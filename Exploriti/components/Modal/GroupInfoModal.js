@@ -5,7 +5,8 @@ import {
   Dimensions,
   View,
   TouchableOpacity,
-  Linking, Button,
+  Linking,
+  Button,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -18,15 +19,18 @@ import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/react-hooks';
 import {
   GET_DETAILED_GROUP,
-  GET_EVENTS_BY_ID, GET_GROUP_POSTS, GET_LEADERBOARD,
+  GET_EVENTS_BY_ID,
+  GET_GROUP_POSTS,
+  GET_LEADERBOARD,
 } from '../../graphql';
 import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { AuthContext, processWarning, rankData } from '../../context';
-import EmptyPosts from '../../assets/svg/empty-likes.svg'
+import EmptyPosts from '../../assets/svg/empty-likes.svg';
 import Post from '../ReusableComponents/Post';
+import LoadingDots from '../ReusableComponents/LoadingDots';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -99,58 +103,70 @@ const GroupInfoModal = React.forwardRef(
     };
 
     const Feed = () => {
+      const {
+        data: postData,
+        loading: postsLoading,
+        error: postsError,
+      } = useQuery(GET_GROUP_POSTS, {
+        variables: { groupId: groupId },
+        fetchPolicy: 'cache-and-network',
+      });
 
-      const {data: postData, loading: postsLoading, error: postsError} = useQuery(GET_GROUP_POSTS, {variables: {id: groupId}, fetchPolicy: 'cache-and-network'})
-
-      if (loading || error || postsLoading || postsError) return null;
-
-      const count = postData.group.posts_aggregate.aggregate.count;
-      const posts = [1, 2, 3, 4]
-      const aggregate = 6;
-
-      return (
-        <View style={{flex: 1, alignItems: 'center', paddingTop: 16}}>
-          <TouchableOpacity style={styles.postButton}>
-            <Icon name={'plus'} size={24} color={ThemeStatic.white}/>
-            <Text style={styles.postText}>Post Something</Text>
-          </TouchableOpacity>
-          {
-            count === 3 ? (
-              <ImgBanner Img={EmptyPosts} placeholder={'No Posts Yet'} spacing={0.01}/>
-            ) : (
-                posts.map((p, i) => (
-                  <Post item={p} index={i} key={i} />
-                ))
-            )
-          }
-          {
-            aggregate > 4 ? (
-              <View style={styles.sectionView}>
-              <Button title={'See All'} onPress={()=>navigation.navigate('AllPosts', {groupId: groupId})}/>
-              </View>
-            ) : null
-          }
-        </View>
+      if (loading || postsLoading) return (
+       <TabLoading/>
       )
 
-    }
+      if ( error  || postsError) return null;
+
+      const count = postData.group.posts_aggregate.aggregate.count;
+      const posts = postData.group.posts;
+
+      return (
+        <View style={{ flex: 1, alignItems: 'center', paddingTop: 16 }}>
+          <TouchableOpacity
+            style={styles.postButton}
+            onPress={() =>
+              navigation.navigate('Create Post', { groupId: groupId })
+            }>
+            <Icon name={'plus'} size={24} color={ThemeStatic.white} />
+            <Text style={styles.postText}>Post Something</Text>
+          </TouchableOpacity>
+          {count === 0 ? (
+            <ImgBanner
+              Img={EmptyPosts}
+              placeholder={'No Posts Yet'}
+              spacing={0.01}
+            />
+          ) : (
+            posts.map((p, i) => <Post item={p} index={i} key={i} />)
+          )}
+          {count > 4 ? (
+            <View style={styles.sectionView}>
+              <Button
+                title={'See All'}
+                onPress={() =>
+                  navigation.navigate('AllPosts', { groupId: groupId })
+                }
+              />
+            </View>
+          ) : null}
+        </View>
+      );
+    };
 
     const About = () => {
-
-      const {data: scoreData, loading: scoreLoading, error: scoreError} = useQuery(GET_LEADERBOARD);
-
-      if (loading || scoreLoading || scoreError || error ) return null;
-
       const {
-        _id: chatId,
-        image,
-        name,
-        participants,
-        numMessages,
-        messages,
-      } = data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
+        data: scoreData,
+        loading: scoreLoading,
+        error: scoreError,
+      } = useQuery(GET_LEADERBOARD);
 
-      const rank = scoreData.groups.findIndex(g => g.id === groupId);
+      if (loading || scoreLoading || scoreError || error) return null;
+
+      const { _id: chatId, image, name, participants, numMessages, messages } =
+        data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
+
+      const rank = scoreData.groups.findIndex((g) => g.id === groupId);
 
       const leaders = data.group.owners.map((o) => o.user);
       const members = data.group.members.map((m) => m.user);
@@ -242,7 +258,7 @@ const GroupInfoModal = React.forwardRef(
               </View>
               <RankCard
                 style={{ margin: 25, marginBottom: 5 }}
-                onPress={() => navigation.navigate('Leaderboard', {groupId})}
+                onPress={() => navigation.navigate('Leaderboard', { groupId })}
                 rank={rankData[rank]}
                 gold={true}
                 team={data.group.name}
@@ -322,6 +338,12 @@ const GroupInfoModal = React.forwardRef(
     );
   },
 );
+
+const TabLoading = () => (
+  <View style={{marginTop: 30, width: '100%', flex: 1, height: 100}}>
+    <LoadingDots/>
+  </View>
+)
 
 const styles = StyleSheet.create({
   sectionView: {
@@ -425,15 +447,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     flexDirection: 'row',
-    marginTop: 20
+    marginTop: 20,
   },
   postText: {
     ...FontWeights.Regular,
     ...FontSizes.Body,
     color: ThemeStatic.white,
     marginVertical: 10,
-    marginLeft: 5
-  }
+    marginLeft: 5,
+  },
 });
 
 export default GroupInfoModal;

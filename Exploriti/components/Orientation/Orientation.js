@@ -14,6 +14,7 @@ import messaging from '@react-native-firebase/messaging';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from './Gallery';
 import AllPosts from './AllPosts';
+import CreatePost from './CreatePost';
 
 const Stack = createStackNavigator();
 
@@ -98,7 +99,7 @@ export default function Orientation() {
         options={{ headerTitle: '' }}
         component={AllPosts}
       />
-
+      <Stack.Screen name={'Create Post'} component={CreatePost} />
     </Stack.Navigator>
   );
 }

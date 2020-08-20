@@ -14,25 +14,12 @@ import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/Feather';
 import { linkError } from './SocialMediaIcons';
-import { getHostnameFromRegex } from '../../context';
+import { getHostnameFromRegex, parseTimeElapsed } from '../../context';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
-
-const images = [
-  'https://i5.walmartimages.com/asr/a88dd17b-3897-403e-a314-dc2ae3e61608_1.eaa5d834ffadc9a21464041fb54ac156.jpeg',
-  'https://www.twoinchbrush.com/images/painting215.png',
-  'https://c4.wallpaperflare.com/wallpaper/470/96/902/lake-water-wallpaper-preview.jpg',
-  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
-  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
-  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
-  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
-];
-
-const link =
-  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg';
 
 /**
  * Used in Group Feeds
@@ -42,9 +29,10 @@ const link =
  * @constructor
  */
 const Post = ({ item, index }) => {
-  const isLeft = index % 2 === 0;
-
   const navigation = useNavigation();
+
+  const { images, link, text, user, time } = item;
+  const isLeft = index % 2 === 0;
 
   const containerBorderRadius = {
     borderBottomRightRadius: isLeft ? 15 : 0,
@@ -57,7 +45,7 @@ const Post = ({ item, index }) => {
     paddingRight: isLeft ? 0 : 25,
   };
 
-  const hasContent = images.length !== 0 || link;
+  const hasContent = (images && images.length !== 0) || link;
 
   return (
     <TouchableOpacity
@@ -67,33 +55,30 @@ const Post = ({ item, index }) => {
         <TouchableOpacity
           style={styles.user}
           onPress={() =>
-            navigation.navigate('Profile', { userId: item.user.id })
+            navigation.navigate('Profile', { userId: user.id })
           }>
           <Image
             source={{
               uri:
-                'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+                user.image,
             }}
             style={styles.image}
           />
           <View>
-            <Text style={styles.name}>Max</Text>
-            <Text style={styles.time}>12m ago</Text>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.time}>{parseTimeElapsed(time).readableTime}</Text>
           </View>
         </TouchableOpacity>
         <Icon color={ThemeStatic.gold} name={'message-square'} size={26} />
       </View>
       <Text
-        numberOfLines={hasContent ? (images.length > 0 ? 2 : 3) : 5}
+        numberOfLines={hasContent ? (images && images.length > 0 ? 2 : 3) : 5}
         style={styles.body}>
-        Contrary to popoular belief \I can type treallt reallt fast. so fast in
-        fact that it exceeds my typing ability for handrwriting. Zoom zoom
-        little one. Extra linkes just to fill in the spacesssssss ss hello helll
-        brons basfd
+        {text}
       </Text>
       {hasContent ? (
         <View>
-          {images.length > 0 ? renderImages(images) : renderLink(link)}
+          {images && images.length > 0 ? renderImages(images) : renderLink(link)}
         </View>
       ) : null}
     </TouchableOpacity>
@@ -104,6 +89,8 @@ export const PostScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { post } = route.params;
+  const { images, link, text, user, time } = post;
+
 
   const comments = [1, 2, 3];
 
@@ -119,29 +106,26 @@ export const PostScreen = () => {
           <TouchableOpacity
             style={styles.user}
             onPress={() =>
-              navigation.navigate('Profile', { userId: post.user.id })
+              navigation.navigate('Profile', { userId: user.id })
             }>
             <Image
               source={{
                 uri:
-                  'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+                  user.image,
               }}
               style={styles.image}
             />
             <View>
-              <Text style={styles.name}>Max</Text>
-              <Text style={styles.time}>12m ago</Text>
+              <Text style={styles.name}>{user.name}</Text>
+              <Text style={styles.time}>{parseTimeElapsed(time).readableTime}</Text>
             </View>
           </TouchableOpacity>
         </View>
         <Text style={styles.body}>
-          Contrary to popoular belief \I can type treallt reallt fast. so fast
-          in fact that it exceeds my typing ability for handrwriting. Zoom zoom
-          little one. Extra linkes just to fill in the spacesssssss ss hello
-          helll brons basfd
+          {text}
         </Text>
-        {renderImages(images)}
-        {renderLink(link)}
+        {images && images.length > 0 && renderImages(images)}
+        {link && renderLink(link)}
         <View style={styles.line} />
         <View style={[styles.postButton, { alignSelf: 'center' }]}>
           <Icon name={'plus'} color={'white'} size={24} />

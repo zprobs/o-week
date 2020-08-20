@@ -1060,6 +1060,32 @@ export const GET_ORIENTATION_GROUPS = gql`
   }
 `;
 
+export const POST_FRAGMENT = gql`
+    fragment postFragment on post {
+        id
+        user {
+            id
+            name
+            image
+        }
+        time
+        comments(limit: 3) {
+            user {
+                id
+                image
+            }
+        }
+        comments_aggregate {
+            aggregate {
+                count
+            }
+        }
+        text
+        images
+        link 
+    }
+`
+
 export const GET_DETAILED_GROUP = gql`
   query getDetailedGroup($id: uuid!) {
     group(id: $id) {
@@ -1106,28 +1132,8 @@ export const GET_DETAILED_GROUP = gql`
           ...DetailedChat
         }
       }
-        posts(limit: 4) {
-           id
-            user {
-                id
-                name
-                image
-            }
-            time
-            comments(limit: 3) {
-                user {
-                    id
-                    image
-                }
-            }
-            comments_aggregate {
-                aggregate {
-                    count
-                }
-            }
-            text
-            images
-            link
+        posts(limit: 4, order_by: {time: desc}) {
+            ...postFragment
         }
         posts_aggregate {
             aggregate {
@@ -1137,34 +1143,15 @@ export const GET_DETAILED_GROUP = gql`
     }
   }
   ${DETAILED_CHAT}
+  ${POST_FRAGMENT}
 `;
 
 export const GET_GROUP_POSTS = gql`
-    query getGroupPosts($id: uuid!) {
-        group(id: $id) {
+    query getGroupPosts($groupId: uuid!) {
+        group(id: $groupId) {
             id
-            posts(limit: 4) {
-                id
-                user {
-                    id
-                    name
-                    image
-                }
-                time
-                comments(limit: 3) {
-                    user {
-                        id
-                        image
-                    }
-                }
-                comments_aggregate {
-                    aggregate {
-                        count
-                    }
-                }
-                text
-                images
-                link
+            posts(limit: 4, order_by: {time: desc}) {
+              ...postFragment 
             }
             posts_aggregate {
                 aggregate {
@@ -1173,6 +1160,19 @@ export const GET_GROUP_POSTS = gql`
             }
         }
     }
+    ${POST_FRAGMENT}
+`
+
+export const GET_GROUP_POSTS_PAGINATED = gql`
+    query getGroupPosts($groupId: uuid!, $offset: Int!) {
+        group(id: $groupId) {
+            id
+            posts(limit: 8, order_by: {time: desc}, offset: $offset ) {
+                ...postFragment
+            }
+        }
+    }
+    ${POST_FRAGMENT}
 `
 
 export const GET_GROUP_MEMBERS = gql`
@@ -1509,6 +1509,14 @@ export const GET_MESSAGE_SETTINGS = gql`
         user(id: $id) {
             id
             onlyFriendsCanMessage 
+        }
+    }
+`
+
+export const CREATE_POST = gql`
+    mutation createPost($userId: String!, $groupId: uuid!, $text: String!, $images: jsonb, $link: String) {
+        insert_post_one(object: {authorId: $userId, groupId: $groupId, text: $text, images: $images, link: $link }) {
+            id
         }
     }
 `

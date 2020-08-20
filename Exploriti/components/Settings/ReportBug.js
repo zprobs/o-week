@@ -48,7 +48,6 @@ export default function ReportBug() {
 
       <TextInput
         ref={inputRef}
-        autoCapitalize="none"
         style={styles.textStyle}
         activeLineWidth={1}
         onChangeText={onChangeText}
@@ -88,9 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 30,
     padding: 10,
-    borderColor: 'black',
-    borderWidth: 0,
-    elevation: 1,
+
   },
   titleTextStyle: {
     ...FontSizes.Label,
@@ -111,5 +108,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     height: 190,
     padding: 12,
+    textAlignVertical: 'top'
   },
 });

@@ -8,6 +8,7 @@ import EventScreen from '../Orientation/EventScreen';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from '../Orientation/Gallery';
 import AllPosts from '../Orientation/AllPosts';
+import CreatePost from '../Orientation/CreatePost';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +70,7 @@ export default function Messages() {
         options={{ headerTitle: '' }}
         component={AllPosts}
       />
+      <Stack.Screen name={'Create Post'} component={CreatePost} />
     </Stack.Navigator>
   );
 }

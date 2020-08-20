@@ -13,6 +13,7 @@ import ScheduleCarousel from './ScheduleCarousel';
 import { PostScreen } from '../ReusableComponents/Post';
 import Gallery from '../Orientation/Gallery';
 import AllPosts from '../Orientation/AllPosts';
+import CreatePost from '../Orientation/CreatePost';
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,7 @@ export default function Schedule() {
         options={{ headerTitle: '' }}
         component={AllPosts}
       />
+      <Stack.Screen name={'Create Post'} component={CreatePost} />
     </Stack.Navigator>
   );
 }
