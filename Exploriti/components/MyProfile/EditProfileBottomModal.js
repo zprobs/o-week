@@ -115,6 +115,8 @@ const EditProfileBottomModal = React.forwardRef(
         height: 400,
         cropping: true,
         cropperCircleOverlay: true,
+        cropperStatusBarColor: '#F6C60F',
+        cropperToolbarColor: 'white',
       })
         .then((selectedImage) => {
           setEditableImage(selectedImage.path);
@@ -233,6 +235,7 @@ const EditProfileBottomModal = React.forwardRef(
                       error={errors.name}
                       touched={touched.name}
                       onBlur={handleBlur('name')}
+                      autoCapitalize
                     />
                     <FormInput
                       ref={null}
@@ -244,6 +247,7 @@ const EditProfileBottomModal = React.forwardRef(
                       error={errors.description}
                       touched={touched.description}
                       onBlur={handleBlur('description')}
+                      autoCapitalize
                     />
                     <View style={{ height: 4 }} />
                     <Selection

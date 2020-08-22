@@ -310,6 +310,9 @@ export const NotificationTypes = {
   eventTimeChange: 'eventTimeChange',
   trophyAwarded: 'trophyAwarded',
   message: 'message',
+  newPost: 'newPost',
+  newComment: 'newComment',
+  newLike: 'newLike',
 };
 
 /**

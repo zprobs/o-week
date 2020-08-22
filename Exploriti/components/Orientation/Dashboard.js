@@ -58,7 +58,7 @@ export default function Dashboard() {
   const listData = useMemo(
     () => [
       {
-        title: 'Groups',
+        title: 'My Groups',
         data: data.user.member ? data.user.member : [],
       },
       // {
@@ -72,7 +72,7 @@ export default function Dashboard() {
     ({ item, section }) => {
       let screen, options;
 
-      if (section.title === 'Groups') {
+      if (section.title === 'My Groups') {
         screen = 'GroupScreen';
         options = { groupId: item.group.id };
       } else {

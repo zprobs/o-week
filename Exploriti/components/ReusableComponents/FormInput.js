@@ -41,7 +41,7 @@ const FormInput = React.forwardRef(
         <Text style={styles.labelTextStyle}>{`${label} ${isValid ? '' : `(${error})`}`}</Text>
         <TextInput
           ref={ref}
-          autoCapitalize={autoCapitalize ? 'words' : 'none'}
+          autoCapitalize={autoCapitalize ? 'sentences' : 'none'}
           style={[styles.textStyle, {...containerStyle}]}
           activeLineWidth={0}
           placeholder={placeholder}

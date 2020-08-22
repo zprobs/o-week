@@ -744,7 +744,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    borderRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18
   },
   smallPlayButton: {
     backgroundColor: 'white',

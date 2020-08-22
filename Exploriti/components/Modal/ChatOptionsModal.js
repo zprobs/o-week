@@ -78,6 +78,8 @@ const ChatOptionsModal = React.forwardRef(
         height: 400,
         cropping: true,
         cropperCircleOverlay: true,
+        cropperStatusBarColor: '#F6C60F',
+        cropperToolbarColor: 'white',
       })
         .then((selectedImage) => {
           setImage(selectedImage.path);
@@ -172,6 +174,7 @@ const ChatOptionsModal = React.forwardRef(
                   error={errors.name}
                   touched={touched.name}
                   onBlur={handleBlur('name')}
+                  autoCapitalize
                 />
 
                 <ButtonColour

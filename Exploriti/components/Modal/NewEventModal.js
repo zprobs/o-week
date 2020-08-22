@@ -146,7 +146,7 @@ const NewEventModal = React.forwardRef(
     const onDone = async () => {
       setIsUploading(true);
       const imageURL = imageSelection
-        ? await saveImage(imageSelection, null, 'event', eventId)
+        ? await saveImage(imageSelection, null, 'event', `${name}${Date.now().toString()}`)
         : image;
       const fields = {};
       fields.image = imageURL;
@@ -271,6 +271,8 @@ const NewEventModal = React.forwardRef(
         width: 300,
         height: 400,
         cropping: true,
+        cropperStatusBarColor: '#F6C60F',
+        cropperToolbarColor: 'white',
       })
         .then((selectedImage) => {
           setImage(selectedImage.path);
@@ -381,6 +383,7 @@ const NewEventModal = React.forwardRef(
               onChangeText={setName}
               placeholder={'example: Beach Day'}
               characterRestriction={60}
+              autoCapitalize
             />
             <FormInput
               ref={null}
@@ -390,6 +393,7 @@ const NewEventModal = React.forwardRef(
               onChangeText={setDescription}
               multiline
               characterRestriction={200}
+              autoCapitalize
             />
 
             <FormInput
@@ -398,6 +402,7 @@ const NewEventModal = React.forwardRef(
               placeholder="example: 321 Bloor St. (optional)"
               value={location}
               onChangeText={setLocation}
+              autoCapitalize
               characterRestriction={50}
             />
 
@@ -413,7 +418,7 @@ const NewEventModal = React.forwardRef(
             <FormInput
               ref={null}
               label={linkIndex === 0 ? "Zoom Link" : "Gather Link"}
-              placeholder={linkIndex === 0 ? "example: https://us02web.zoom.us/j/8246295407?pwd=b2FEdF" : "example: https://letsgather.app.link/UapAgGbE38"}
+              placeholder={linkIndex === 0 ? "example: https://us02web.zoom.us/j/824?pwd=123" : "example: https://letsgather.app.link/UapAgGbE38"}
               value={website}
               onChangeText={setWebsite}
               characterRestriction={190}

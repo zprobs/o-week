@@ -4,11 +4,18 @@ import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
-import { AuthContext, NotificationTypes, processWarning, refreshToken } from '../../context';
+import {
+  AuthContext,
+  NotificationTypes,
+  processWarning,
+  refreshToken,
+} from '../../context';
 
 import {
   EventNotificationCard,
-  SystemNotificationCard, TrophyNotificationCard,
+  PostNotificationCard,
+  SystemNotificationCard,
+  TrophyNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
 import { showMessage } from 'react-native-flash-message';
@@ -29,7 +36,7 @@ export default function Notifications() {
   }
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Server Error');
   }
 
   const renderItem = ({ item }) => {
@@ -59,27 +66,30 @@ export default function Notifications() {
           />
         );
       case NotificationTypes.eventTimeChange:
-        return  (
+        return (
           <EventNotificationCard
             item={item}
             message={'has updated the time of the event'}
           />
-        )
+        );
       case NotificationTypes.newEvent:
-        return  (
+        return (
           <EventNotificationCard
             item={item}
             message={'A new event has been created: '}
             titleLast={true}
-            />
-        )
+          />
+        );
       case NotificationTypes.trophyAwarded:
-        return (
-          <TrophyNotificationCard item={item} />
-        )
+        return <TrophyNotificationCard item={item} />;
+      case NotificationTypes.newPost:
+        return <PostNotificationCard item={item} />;
+      case NotificationTypes.newComment:
+        return <PostNotificationCard item={item} comment={true} />;
+      case NotificationTypes.newLike:
+        return <PostNotificationCard item={item} like={true} />;
       default:
-        return <SystemNotificationCard item={item} />
-
+        return <SystemNotificationCard item={item} />;
     }
   };
 

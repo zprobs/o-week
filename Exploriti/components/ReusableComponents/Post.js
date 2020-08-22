@@ -17,6 +17,8 @@ import { linkError } from './SocialMediaIcons';
 import { getHostnameFromRegex, parseTimeElapsed } from '../../context';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { log } from 'react-native-reanimated';
+import { useQuery } from '@apollo/react-hooks';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -54,19 +56,18 @@ const Post = ({ item, index }) => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.user}
-          onPress={() =>
-            navigation.navigate('Profile', { userId: user.id })
-          }>
+          onPress={() => navigation.navigate('Profile', { userId: user.id })}>
           <Image
             source={{
-              uri:
-                user.image,
+              uri: user.image,
             }}
             style={styles.image}
           />
           <View>
             <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.time}>{parseTimeElapsed(time).readableTime}</Text>
+            <Text style={styles.time}>
+              {parseTimeElapsed(time).readableTime}
+            </Text>
           </View>
         </TouchableOpacity>
         <Icon color={ThemeStatic.gold} name={'message-square'} size={26} />
@@ -78,7 +79,9 @@ const Post = ({ item, index }) => {
       </Text>
       {hasContent ? (
         <View>
-          {images && images.length > 0 ? renderImages(images) : renderLink(link)}
+          {images && images.length > 0
+            ? renderImages(images)
+            : renderLink(link)}
         </View>
       ) : null}
     </TouchableOpacity>
@@ -90,7 +93,7 @@ export const PostScreen = () => {
   const navigation = useNavigation();
   const { post } = route.params;
   const { images, link, text, user, time } = post;
-
+  if (link) console.log('link', link)
 
   const comments = [1, 2, 3];
 
@@ -105,27 +108,24 @@ export const PostScreen = () => {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.user}
-            onPress={() =>
-              navigation.navigate('Profile', { userId: user.id })
-            }>
+            onPress={() => navigation.navigate('Profile', { userId: user.id })}>
             <Image
               source={{
-                uri:
-                  user.image,
+                uri: user.image,
               }}
               style={styles.image}
             />
             <View>
               <Text style={styles.name}>{user.name}</Text>
-              <Text style={styles.time}>{parseTimeElapsed(time).readableTime}</Text>
+              <Text style={styles.time}>
+                {parseTimeElapsed(time).readableTime}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
-        <Text style={styles.body}>
-          {text}
-        </Text>
+        <Text style={styles.body}>{text}</Text>
         {images && images.length > 0 && renderImages(images)}
-        {link && renderLink(link)}
+        {renderLink(link)}
         <View style={styles.line} />
         <View style={[styles.postButton, { alignSelf: 'center' }]}>
           <Icon name={'plus'} color={'white'} size={24} />
@@ -191,6 +191,8 @@ const renderImages = (images) => {
     );
   }
 
+  console.log('imageComponenet', imageComponents);
+
   return (
     <TouchableOpacity
       style={styles.gallery}
@@ -201,6 +203,7 @@ const renderImages = (images) => {
 };
 
 const renderLink = (link) => {
+  if (!link) return null
   const hostname = getHostnameFromRegex(link);
 
   const goToLink = () => {

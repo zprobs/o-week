@@ -1521,6 +1521,27 @@ export const CREATE_POST = gql`
     }
 `
 
+export const GET_POST_NOTIFICATION = gql`
+    query getPostNotifications($id: Int!) {
+        post(where: {id: {_eq: $id}}) {
+            id
+            text
+            link
+            images
+            time
+            user {
+                id
+                image
+                name
+            }
+            group {
+                id
+                name
+            }
+        }
+    }
+`
+
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
  * @type {DocumentNode}

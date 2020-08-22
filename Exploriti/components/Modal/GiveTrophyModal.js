@@ -115,6 +115,7 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
           characterRestriction={30}
           placeholder={'example: Scavenger Hunt Champs'}
           ref={null}
+          autoCapitalize
         />
         <FormInput
           value={description}
@@ -123,6 +124,7 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
           characterRestriction={120}
           placeholder={'example: A record time of 5:22, Congrats!'}
           ref={null}
+          autoCapitalize
         />
         <Text style={styles.sliderTextStyle}>{`Score: ${score}`}</Text>
         <Slider

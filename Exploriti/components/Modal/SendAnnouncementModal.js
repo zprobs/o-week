@@ -68,6 +68,7 @@ const SendAnnouncementModal = React.forwardRef(({onClose}, ref) => {
           characterRestriction={100}
           placeholder={'example: The winner of the orientation competition is group A!'}
           ref={null}
+          autoCapitalize
         />
         <ButtonColour
           label={'Send'}

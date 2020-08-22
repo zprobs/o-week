@@ -125,6 +125,8 @@ const GroupEditModal = React.forwardRef(
         width: 300,
         height: 400,
         cropping: true,
+        cropperStatusBarColor: '#F6C60F',
+        cropperToolbarColor: 'white',
       })
         .then((selectedImage) => {
           setEditableImage(selectedImage.path);
@@ -218,7 +220,7 @@ const GroupEditModal = React.forwardRef(
           imageSelection,
           null,
           'group',
-          editableName + Math.random(),
+          `${editableName}${Date.now().toString()}`,
         );
       } else {
         fields.image = editableImage;
@@ -317,6 +319,7 @@ const GroupEditModal = React.forwardRef(
               label="Name"
               value={editableName}
               onChangeText={setEditableName}
+              autoCapitalize
             />
             <FormInput
               ref={null}
@@ -326,6 +329,7 @@ const GroupEditModal = React.forwardRef(
               onChangeText={setEditableDescription}
               multiline
               characterRestriction={950}
+              autoCapitalize
             />
 
             <Selection

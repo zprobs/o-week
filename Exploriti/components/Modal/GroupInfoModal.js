@@ -6,7 +6,7 @@ import {
   View,
   TouchableOpacity,
   Linking,
-  Button,
+  Button, ActivityIndicator,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -340,8 +340,8 @@ const GroupInfoModal = React.forwardRef(
 );
 
 const TabLoading = () => (
-  <View style={{marginTop: 30, width: '100%', flex: 1, height: 100}}>
-    <LoadingDots/>
+  <View style={{marginTop: 80, width: '100%', flex: 1, height: 200}}>
+    <ActivityIndicator size="large" />
   </View>
 )
 

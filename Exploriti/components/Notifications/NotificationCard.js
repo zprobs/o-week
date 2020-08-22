@@ -13,15 +13,23 @@ import { AuthContext, parseTimeElapsed } from '../../context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   GET_EVENT_IMAGE_NAME,
-  GET_USER_BY_ID, NOTIFICATION_FRAG, NOTIFICATION_SUBSCRIPTION_FRAG,
+  GET_POST_NOTIFICATION,
+  GET_USER_BY_ID,
+  NOTIFICATION_FRAG,
+  NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
-import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
+import {
+  Placeholder,
+  PlaceholderLine,
+  PlaceholderMedia,
+  Shine,
+} from 'rn-placeholder';
 import images from '../../assets/images';
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 import Trophy from '../../assets/svg/trophy.svg';
-import LinearGradient from "react-native-linear-gradient";
+import LinearGradient from 'react-native-linear-gradient';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -51,15 +59,13 @@ const NotificationCard = ({
   id,
   seen,
   nav,
-  SVG
+  SVG,
 }) => {
-  const {authState} = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
   const [seeNotification] = useMutation(SEE_NOTIFICATION, {
     variables: { id: id },
     update: (cache) => {
-
       try {
-
         const { notifications } = cache.readFragment({
           id: `user:${authState.user.uid}`,
           fragment: NOTIFICATION_FRAG,
@@ -71,44 +77,51 @@ const NotificationCard = ({
           fragment: NOTIFICATION_FRAG,
           data: { __typename: 'user', notifications: newNotifications },
         });
-
       } catch (e) {
         console.log(e);
       }
     },
   });
 
-  const [wasTapped, setWasTapped] = useState(false)
-
+  const [wasTapped, setWasTapped] = useState(false);
 
   const onPress = () => {
     if (!seen) {
-      setWasTapped(true)
+      setWasTapped(true);
       seeNotification();
     }
     nav && nav();
   };
 
-  console.log('seen', seen)
 
   return (
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: seen ? colours.placeholder : wasTapped ? colours.placeholder : colours.base },
+        {
+          backgroundColor: seen
+            ? colours.placeholder
+            : wasTapped
+            ? colours.placeholder
+            : colours.base,
+        },
       ]}
       onPress={onPress}>
       <View style={{ flexDirection: 'row', flex: 1 }}>
-        {
-          SVG ? <SVG/> :
-            <Image source={localImage ? localImage : { uri: image }} style={styles.image} />
-        }
+        {SVG ? (
+          <SVG />
+        ) : (
+          <Image
+            source={localImage ? localImage : { uri: image }}
+            style={styles.image}
+          />
+        )}
         <View style={styles.textContainer}>
           <Text style={styles.message}>
-            {titleLast ? `${message} `  : null}
+            {titleLast ? `${message} ` : null}
 
             <Text style={{ ...FontWeights.Bold }}>{title}</Text>
-            {titleLast ? null :` ${message}`}
+            {titleLast ? null : ` ${message}`}
           </Text>
         </View>
       </View>
@@ -119,17 +132,16 @@ const NotificationCard = ({
   );
 };
 
-
 const LoadingNotificationCard = () => (
   <Placeholder Animation={Shine}>
-  <View style={styles.container}>
-    <View style={styles.image}>
-      <PlaceholderMedia size={40} color={colours.placeholder} isRound />
+    <View style={styles.container}>
+      <View style={styles.image}>
+        <PlaceholderMedia size={40} color={colours.placeholder} isRound />
+      </View>
+      <PlaceholderLine width={90} style={{ alignSelf: 'center' }} />
     </View>
-      <PlaceholderLine width={90} style={{alignSelf: 'center'}}  />
-  </View>
   </Placeholder>
-)
+);
 
 export const SystemNotificationCard = ({ item }) => {
   return (
@@ -150,8 +162,7 @@ export const UserNotificationCard = ({ item, message }) => {
   });
   const navigation = useNavigation();
   if (loading) return <LoadingNotificationCard />;
-  if (error || !data.user)
-    return null
+  if (error || !data.user) return null;
   const nav = () => {
     navigation.navigate('Profile', { userId: item.typeId });
   };
@@ -173,9 +184,8 @@ export const EventNotificationCard = ({ item, message, titleLast }) => {
     variables: { id: item.typeId },
   });
   const navigation = useNavigation();
-  if (loading) return <LoadingNotificationCard />
-  if (error || !data.event)
-    return null
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.event) return null;
   const nav = () => {
     navigation.navigate('EventScreen', { eventId: item.typeId });
   };
@@ -193,7 +203,6 @@ export const EventNotificationCard = ({ item, message, titleLast }) => {
   );
 };
 
-
 export const TrophyNotificationCard = ({ item }) => {
   const navigation = useNavigation();
 
@@ -202,10 +211,15 @@ export const TrophyNotificationCard = ({ item }) => {
   };
 
   const SVG = () => (
-    <LinearGradient colors={['rgba(247,190,98,1)', 'rgba(244,167,6,1)']} style={[styles.image, {  alignItems: 'center', justifyContent: 'center',}]}>
+    <LinearGradient
+      colors={['rgba(247,190,98,1)', 'rgba(244,167,6,1)']}
+      style={[
+        styles.image,
+        { alignItems: 'center', justifyContent: 'center' },
+      ]}>
       <Trophy width={25} height={25} fill={'white'} />
     </LinearGradient>
-  )
+  );
 
   return (
     <NotificationCard
@@ -219,7 +233,52 @@ export const TrophyNotificationCard = ({ item }) => {
     />
   );
 };
+/**
+ *
+ * @param item
+ * @param comment {boolean} if true then the notification is a comment
+ * @param like {boolean} if true then it is a like
+ * @returns {JSX.Element|null}
+ * @constructor
+ */
+export const PostNotificationCard = ({ item, comment, like }) => {
+  const navigation = useNavigation();
 
+  const typeId = parseInt(item.typeId)
+
+  console.log('typeId', typeId );
+
+  const { data, loading, error } = useQuery(GET_POST_NOTIFICATION, {
+    variables: { id: typeId },
+  });
+
+  console.log('Notification Post', data);
+
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.post[0]) return null;
+
+  const nav = () => {
+    navigation.navigate('PostScreen', { post: data.post[0]});
+  };
+
+  const message = comment
+    ? 'commented on your post'
+    : like
+    ? 'liked your post'
+    : `made a post in ${data.post[0].group.name}`;
+
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={`${data.post[0].user.name}`}
+      message={message}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+      image={data.post[0].user.image}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
