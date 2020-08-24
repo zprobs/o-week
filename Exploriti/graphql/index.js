@@ -763,7 +763,7 @@ export const UPDATE_CALENDARS = gql`
 const EVENT_ATTENDANCE_FRAGMENT = gql`
   fragment EventAttendance on event {
     id
-    attendees( limit: 3) {
+    attendees(limit: 3) {
       user {
         image
         id
@@ -1552,53 +1552,53 @@ export const CREATE_POST = gql`
 `;
 
 export const GET_POST_NOTIFICATION = gql`
-    query getPostNotifications($id: Int!) {
-        post: post_by_pk(id: $id) {
-            id
-            text
-            link
-            images
-            time
-            user {
-                id
-                image
-                name
-            }
-            group {
-                id
-                name
-            }
-        }
+  query getPostNotifications($id: Int!) {
+    post: post_by_pk(id: $id) {
+      id
+      text
+      link
+      images
+      time
+      user {
+        id
+        image
+        name
+      }
+      group {
+        id
+        name
+      }
     }
   }
 `;
 
 export const ADD_COMMENT = gql`
-    mutation addComment($postId: Int!, $text: String!, $authorId: String!) {
-        insert_comment_one(object: {authorId: $authorId, postId: $postId, text: $text}) {
-            id
-        }
+  mutation addComment($postId: Int!, $text: String!, $authorId: String!) {
+    insert_comment_one(
+      object: { authorId: $authorId, postId: $postId, text: $text }
+    ) {
+      id
     }
-`
+  }
+`;
 
 export const GET_POST_COMMENTS = gql`
-    query getPostComments($postId: Int!, $offset: Int!) {
-        post: post_by_pk(id: $postId) {
-            id
-            comments(limit: 7, offset: $offset, order_by: {time: desc} ) {
-                id
-                text
-                time
-                user {
-                    id
-                    image
-                    name
-                }
-
-            }
+  query getPostComments($postId: Int!, $offset: Int!) {
+    post: post_by_pk(id: $postId) {
+      id
+      comments(limit: 7, offset: $offset, order_by: { time: desc }) {
+        id
+        text
+        time
+        user {
+          id
+          image
+          name
         }
+      }
     }
-`
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
