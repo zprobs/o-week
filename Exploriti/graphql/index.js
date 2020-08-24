@@ -18,9 +18,9 @@ export const DETAILED_USER_FRAGMENT = gql`
     }
     image
     year
-      onlyFriendsCanMessage
-      isLeader
-      isAdmin
+    onlyFriendsCanMessage
+    isLeader
+    isAdmin
     member_aggregate {
       aggregate {
         count
@@ -85,13 +85,13 @@ export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
 `;
 
 export const GET_UNREAD_NOTIFICATIONS_COUNT_QUERY = gql`
-    query getUnreadNotificationsCountQuery($id: String!) {
-        user(id: $id) {
-            id
-            ...notificationFrag
-        }
+  query getUnreadNotificationsCountQuery($id: String!) {
+    user(id: $id) {
+      id
+      ...notificationFrag
     }
-    ${NOTIFICATION_FRAG}
+  }
+  ${NOTIFICATION_FRAG}
 `;
 
 export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
@@ -126,6 +126,14 @@ export const SEE_ALL_NOTIFICATIONS = gql`
   }
 `;
 
+export const DELETE_NOTIFICATION = gql`
+  mutation deleteNotification($id: Int!) {
+    deleteNotification(id: $id) {
+      id
+    }
+  }
+`;
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
@@ -146,7 +154,7 @@ export const CHECK_USER_ADMIN = gql`
     user(id: $id) {
       id
       isAdmin
-        isLeader
+      isLeader
     }
   }
 `;
@@ -339,8 +347,8 @@ export const GET_USER_FRIENDS = gql`
           id
           image
           name
-            isLeader
-            isAdmin
+          isLeader
+          isAdmin
         }
       }
     }
@@ -394,7 +402,7 @@ export const REMOVE_FRIEND = gql`
 export const CHECK_FRIEND_REQUESTS = gql`
   query checkFriendRequests($currentUser: String!, $otherUser: String!) {
     user(id: $currentUser) {
-        id
+      id
       friendRequestsSent(where: { recipient: { _eq: $otherUser } }) {
         date
       }
@@ -498,7 +506,7 @@ export const GET_CHATS = gql`
         where: { chat: { messages: {} } }
       ) {
         seen
-          muted
+        muted
         _id: chatId
         chat {
           ...DetailedChat
@@ -510,16 +518,18 @@ export const GET_CHATS = gql`
 `;
 
 export const GET_UNREAD_CHAT_COUNT = gql`
-    subscription getUnreadChatCount($id: String!) {
-        user(id: $id) {
-            id
-            userChats(where: {_and: [{chat: {messages: {}}}, {seen: {_eq: false}}]}) {
-                chatId
-                _id: chatId
-                seen
-            }
-        }
+  subscription getUnreadChatCount($id: String!) {
+    user(id: $id) {
+      id
+      userChats(
+        where: { _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }] }
+      ) {
+        chatId
+        _id: chatId
+        seen
+      }
     }
+  }
 `;
 
 export const SEARCH_CHATS = gql`
@@ -670,7 +680,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     endDate
     isOfficial
     website
-      isZoom
+    isZoom
     attendees(where: { didAccept: { _eq: true } }, limit: 20) {
       user {
         image
@@ -703,27 +713,26 @@ export const GET_DETAILED_EVENT = gql`
 `;
 
 export const GET_EVENT_EDIT = gql`
-    query getEventEdit($id: uuid!) {
-        event(id: $id) {
-            description
-            id
-            image
-            location
-            name
-            startDate
-            endDate
-            isOfficial
-            website
-            isZoom
-            attendees {
-                user {
-                    id
-                }
-            }
-
+  query getEventEdit($id: uuid!) {
+    event(id: $id) {
+      description
+      id
+      image
+      location
+      name
+      startDate
+      endDate
+      isOfficial
+      website
+      isZoom
+      attendees {
+        user {
+          id
         }
+      }
     }
-`
+  }
+`;
 
 export const UPDATE_CALENDARS = gql`
   mutation updateCalendars(
@@ -1024,7 +1033,7 @@ export const GET_GROUP_IMAGE_NAME = gql`
       id
       name
       image
-        groupType
+      groupType
     }
   }
 `;
@@ -1044,9 +1053,9 @@ export const GET_ALL_GROUP_IDS = gql`
     groups {
       id
     }
-      users {
-          id
-      }
+    users {
+      id
+    }
   }
 `;
 
@@ -1061,30 +1070,30 @@ export const GET_ORIENTATION_GROUPS = gql`
 `;
 
 export const POST_FRAGMENT = gql`
-    fragment postFragment on post {
-        id
-        user {
-            id
-            name
-            image
-        }
-        time
-        comments(limit: 3) {
-            user {
-                id
-                image
-            }
-        }
-        comments_aggregate {
-            aggregate {
-                count
-            }
-        }
-        text
-        images
-        link 
+  fragment postFragment on post {
+    id
+    user {
+      id
+      name
+      image
     }
-`
+    time
+    comments(limit: 3) {
+      user {
+        id
+        image
+      }
+    }
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
+    text
+    images
+    link
+  }
+`;
 
 export const GET_DETAILED_GROUP = gql`
   query getDetailedGroup($id: uuid!) {
@@ -1125,21 +1134,21 @@ export const GET_DETAILED_GROUP = gql`
         }
       }
       unsubscribable
-        groupType
+      groupType
       phone
       groupChats {
         chat {
           ...DetailedChat
         }
       }
-        posts(limit: 4, order_by: {time: desc}) {
-            ...postFragment
+      posts(limit: 4, order_by: { time: desc }) {
+        ...postFragment
+      }
+      posts_aggregate {
+        aggregate {
+          count
         }
-        posts_aggregate {
-            aggregate {
-                count
-            }
-        }
+      }
     }
   }
   ${DETAILED_CHAT}
@@ -1147,33 +1156,33 @@ export const GET_DETAILED_GROUP = gql`
 `;
 
 export const GET_GROUP_POSTS = gql`
-    query getGroupPosts($groupId: uuid!) {
-        group(id: $groupId) {
-            id
-            posts(limit: 4, order_by: {time: desc}) {
-              ...postFragment 
-            }
-            posts_aggregate {
-                aggregate {
-                    count
-                }
-            }
+  query getGroupPosts($groupId: uuid!) {
+    group(id: $groupId) {
+      id
+      posts(limit: 4, order_by: { time: desc }) {
+        ...postFragment
+      }
+      posts_aggregate {
+        aggregate {
+          count
         }
+      }
     }
-    ${POST_FRAGMENT}
-`
+  }
+  ${POST_FRAGMENT}
+`;
 
 export const GET_GROUP_POSTS_PAGINATED = gql`
-    query getGroupPosts($groupId: uuid!, $offset: Int!) {
-        group(id: $groupId) {
-            id
-            posts(limit: 8, order_by: {time: desc}, offset: $offset ) {
-                ...postFragment
-            }
-        }
+  query getGroupPosts($groupId: uuid!, $offset: Int!) {
+    group(id: $groupId) {
+      id
+      posts(limit: 8, order_by: { time: desc }, offset: $offset) {
+        ...postFragment
+      }
     }
-    ${POST_FRAGMENT}
-`
+  }
+  ${POST_FRAGMENT}
+`;
 
 export const GET_GROUP_MEMBERS = gql`
   query getGroupMembers($groupId: uuid!) {
@@ -1187,14 +1196,14 @@ export const GET_GROUP_MEMBERS = gql`
 `;
 
 export const GET_GROUPS_MEMBERS = gql`
-    query getGroupsMembers($groupIds: [uuid!]!) {
-        groups(where: {id: {_in: $groupIds }}) {
-            id
-            members {
-                userId
-            }
-        }
+  query getGroupsMembers($groupIds: [uuid!]!) {
+    groups(where: { id: { _in: $groupIds } }) {
+      id
+      members {
+        userId
+      }
     }
+  }
 `;
 
 export const GET_GROUP_MEMBERS_PAGINATED = gql`
@@ -1461,86 +1470,107 @@ export const SET_TOKEN = gql`
 `;
 
 export const GET_LEADERBOARD = gql`
-    query getLeaderBoard {
-        groups(where: {groupType: {_eq: "orientation"}}, order_by: {trophies_aggregate: {sum: {score: desc}}} limit: 25) {
-            id
-            name
-            trophies_aggregate {
-                aggregate {
-                    sum {
-                        score
-                    }
-                }
-            }
+  query getLeaderBoard {
+    groups(
+      where: { groupType: { _eq: "orientation" } }
+      order_by: { trophies_aggregate: { sum: { score: desc } } }
+      limit: 25
+    ) {
+      id
+      name
+      trophies_aggregate {
+        aggregate {
+          sum {
+            score
+          }
         }
+      }
     }
-`
+  }
+`;
 
 export const GET_RANDOM_USERS = gql`
-    query getRandomUsers($userId: String!) {
-        getrandomusers(args: {userid: $userId}) {
-            id
-            image
-        }
+  query getRandomUsers($userId: String!) {
+    getrandomusers(args: { userid: $userId }) {
+      id
+      image
     }
-`
+  }
+`;
 
 export const MUTE_CHAT = gql`
-    mutation MyMutation($chatId: Int!, $userId: String!, $muted: Boolean!) {
-        update_userChat(where: {chatId: {_eq: $chatId}, userId: {_eq: $userId}}, _set: {muted: $muted}) {
-            affected_rows
-        }
+  mutation MyMutation($chatId: Int!, $userId: String!, $muted: Boolean!) {
+    update_userChat(
+      where: { chatId: { _eq: $chatId }, userId: { _eq: $userId } }
+      _set: { muted: $muted }
+    ) {
+      affected_rows
     }
-`
+  }
+`;
 
 export const GET_NOTIFICATION_SETTINGS = gql`
-    query user($id: String!) {
-        user(id: $id) {
-            id
-            muteMessages
-            muteEvents
-            muteGroups
-        }
+  query user($id: String!) {
+    user(id: $id) {
+      id
+      muteMessages
+      muteEvents
+      muteGroups
     }
-`
+  }
+`;
 
 export const GET_MESSAGE_SETTINGS = gql`
-    query user($id: String!) {
-        user(id: $id) {
-            id
-            onlyFriendsCanMessage 
-        }
+  query user($id: String!) {
+    user(id: $id) {
+      id
+      onlyFriendsCanMessage
     }
-`
+  }
+`;
 
 export const CREATE_POST = gql`
-    mutation createPost($userId: String!, $groupId: uuid!, $text: String!, $images: jsonb, $link: String) {
-        insert_post_one(object: {authorId: $userId, groupId: $groupId, text: $text, images: $images, link: $link }) {
-            id
-        }
+  mutation createPost(
+    $userId: String!
+    $groupId: uuid!
+    $text: String!
+    $images: jsonb
+    $link: String
+  ) {
+    insert_post_one(
+      object: {
+        authorId: $userId
+        groupId: $groupId
+        text: $text
+        images: $images
+        link: $link
+      }
+    ) {
+      id
     }
-`
+  }
+`;
 
 export const GET_POST_NOTIFICATION = gql`
-    query getPostNotifications($id: Int!) {
-        post(where: {id: {_eq: $id}}) {
-            id
-            text
-            link
-            images
-            time
-            user {
-                id
-                image
-                name
-            }
-            group {
-                id
-                name
-            }
-        }
+  query getPostNotifications($id: Int!) {
+    post(where: { id: { _eq: $id } }) {
+      id
+      text
+      link
+      images
+      time
+      user {
+        id
+        image
+        name
+      }
+      group {
+        id
+        name
+      }
     }
-`
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object
