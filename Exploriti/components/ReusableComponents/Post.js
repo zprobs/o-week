@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Linking,
   ScrollView,
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -19,6 +21,8 @@ import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { log } from 'react-native-reanimated';
 import { useQuery } from '@apollo/react-hooks';
+import AddCommentModal from '../Modal/AddCommentModal';
+import { GET_POST_COMMENTS } from '../../graphql';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -52,7 +56,9 @@ const Post = ({ item, index }) => {
   return (
     <TouchableOpacity
       style={{ ...styles.container, ...containerBorderRadius }}
-      onPress={() => navigation.push('PostScreen', { post: item })}>
+      onPress={() =>
+        navigation.push('PostScreen', { post: item, authorId: user.id })
+      }>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.user}
@@ -91,11 +97,66 @@ const Post = ({ item, index }) => {
 export const PostScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { post } = route.params;
+  const addCommentsRef = useRef();
+  const { post, authorId } = route.params;
+  const {
+    data: commentsData,
+    loading,
+    error,
+    refetch,
+  } = useQuery(GET_POST_COMMENTS, {
+    variables: { postId: post.id, offset: 0 },
+  });
   const { images, link, text, user, time } = post;
-  if (link) console.log('link', link)
+  if (link) console.log('link', link);
 
-  const comments = [1, 2, 3];
+  const Header = () => (
+    <>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.user}
+          onPress={() => navigation.navigate('Profile', { userId: user.id })}>
+          <Image
+            source={{
+              uri: user.image,
+            }}
+            style={styles.image}
+          />
+          <View>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.time}>
+              {parseTimeElapsed(time).readableTime}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.body}>{text}</Text>
+      {images && images.length > 0 && renderImages(images)}
+      {renderLink(link)}
+      <View style={styles.line} />
+      <TouchableOpacity style={[styles.postButton, { alignSelf: 'center' }]} onPress={()=>addCommentsRef.current.open()}>
+        <Icon name={'plus'} color={'white'} size={24} />
+        <Text style={styles.postText}>Add Comment</Text>
+      </TouchableOpacity>
+    </>
+  );
+
+  const EmptyComponent = () => {
+    if (loading)
+      return (
+        <View style={styles.commentEmptyView}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      );
+    if (error)
+      return (
+        <View style={styles.commentEmptyView}>
+          <Text style={styles.commentErrorText}>CANNOT LOAD COMMENTS</Text>
+        </View>
+      );
+    return null;
+  };
+
 
   return (
     <SafeAreaView
@@ -104,66 +165,40 @@ export const PostScreen = () => {
         backgroundColor: colours.placeholder,
         paddingHorizontal: 10,
       }}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.user}
-            onPress={() => navigation.navigate('Profile', { userId: user.id })}>
-            <Image
-              source={{
-                uri: user.image,
-              }}
-              style={styles.image}
-            />
-            <View>
-              <Text style={styles.name}>{user.name}</Text>
-              <Text style={styles.time}>
-                {parseTimeElapsed(time).readableTime}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.body}>{text}</Text>
-        {images && images.length > 0 && renderImages(images)}
-        {renderLink(link)}
-        <View style={styles.line} />
-        <View style={[styles.postButton, { alignSelf: 'center' }]}>
-          <Icon name={'plus'} color={'white'} size={24} />
-          <Text style={styles.postText}>Add Comment</Text>
-        </View>
-        {comments.map((c, i) => (
-          <Comment comment={c} key={i} />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={commentsData ? commentsData.post.comments : []}
+        ListEmptyComponent={EmptyComponent}
+        ListHeaderComponent={Header}
+        renderItem={renderComment}
+      />
+      <AddCommentModal postId={post.id} authorId={authorId} ref={addCommentsRef} />
     </SafeAreaView>
   );
 };
 
-const Comment = ({ comment }) => {
+const renderComment = ({item}) => {
+  const {user} = item
   return (
     <>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.user}
-          onPress={() => navigation.navigate('Profile', { userId: '123' })}>
+          onPress={() =>
+            navigation.navigate('Profile', { userId: user.id })
+          }>
           <Image
             source={{
-              uri:
-                'https://www.twoinchbrush.com/images/fanpaintings/fanpainting4294.jpg',
+              uri: user.image,
             }}
             style={styles.image}
           />
           <View>
-            <Text style={styles.name}>Lucas</Text>
-            <Text style={styles.time}>1m ago</Text>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.time}>{parseTimeElapsed(item.time).readableTime}</Text>
           </View>
         </TouchableOpacity>
       </View>
-      <Text style={styles.body}>
-        This is a comment linkes just to fill in the spacesssssss ss hello helll
-        brons basfd linkes just to fill in the spacesssssss ss hello helll brons
-        basfd
-      </Text>
+      <Text style={styles.body}>{item.text}</Text>
     </>
   );
 };
@@ -203,7 +238,7 @@ const renderImages = (images) => {
 };
 
 const renderLink = (link) => {
-  if (!link) return null
+  if (!link) return null;
   const hostname = getHostnameFromRegex(link);
 
   const goToLink = () => {
@@ -332,5 +367,15 @@ const styles = StyleSheet.create({
     color: ThemeStatic.white,
     marginVertical: 10,
     marginLeft: 5,
+  },
+  commentEmptyView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 35,
+  },
+  commentErrorText: {
+    ...FontSizes.Caption,
+    ...FontWeights.Bold,
+    color: colours.text02,
   },
 });

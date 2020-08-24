@@ -267,27 +267,27 @@ export const PostNotificationCard = ({ item, comment, like }) => {
   console.log('Notification Post', data);
 
   if (loading) return <LoadingNotificationCard />;
-  if (error || !data.post[0]) return null;
+  if (error || !data.post) return null;
 
   const nav = () => {
-    navigation.navigate('PostScreen', { post: data.post[0] });
+    navigation.navigate('PostScreen', { post: data.post});
   };
 
   const message = comment
     ? 'commented on your post'
     : like
     ? 'liked your post'
-    : `made a post in ${data.post[0].group.name}`;
+    : `made a post in ${data.post.group.name}`;
 
   return (
     <NotificationCard
       timestamp={item.timestamp}
-      title={`${data.post[0].user.name}`}
+      title={`${data.post.user.name}`}
       message={message}
       id={item.id}
       seen={item.seen}
       nav={nav}
-      image={data.post[0].user.image}
+      image={data.post.user.image}
     />
   );
 };
