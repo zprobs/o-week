@@ -15,7 +15,7 @@ import {
   Linking,
   ScrollView,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator, Alert,
 } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -25,14 +25,14 @@ import { linkError } from './SocialMediaIcons';
 import {
   AuthContext,
   getHostnameFromRegex,
-  parseTimeElapsed,
+  parseTimeElapsed, processError,
 } from '../../context';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { log } from 'react-native-reanimated';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
-import { GET_POST_COMMENTS } from '../../graphql';
+import { DELETE_POST, GET_GROUP_POSTS, GET_POST_COMMENTS } from '../../graphql';
 import LikeSVG from '../../assets/svg/LikeSVG';
 import OptionsIcon from '../Menu/OptionsIcon';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
@@ -142,6 +142,15 @@ export const PostScreen = () => {
   const [optionsCommentId, setOptionsCommentId] = useState();
   const { post, authorId, comment } = route.params;
   const { authState } = useContext(AuthContext);
+  const [deletePost, {error: deleteError}] = useMutation(DELETE_POST, {
+    variables: { id: post.id },
+    refetchQueries: [
+      { query: GET_GROUP_POSTS, variables: { groupId: post.groupId } },
+    ],
+    onCompleted: data => {
+      navigation.goBack();
+    }
+  });
   const { data: commentsData, loading, error, fetchMore } = useQuery(
     GET_POST_COMMENTS,
     {
@@ -149,21 +158,31 @@ export const PostScreen = () => {
     },
   );
   const { images, link, text, user, time } = post;
-  if (link) console.log('link', link);
+  if (deleteError) processError(deleteError, "Could not delete post")
 
   React.useLayoutEffect(() => {
-    if (user.id !== authState.user.uid) {
       navigation.setOptions({
         headerRight: () => (
           <OptionsIcon
             onPress={() => {
-              setOptionsId(user.id);
-              optionsRef.current.open();
+              if (user.id !== authState.user.uid) {
+                setOptionsId(user.id);
+                optionsRef.current.open();
+              } else {
+                Alert.alert(
+                  'Delete this post?',
+                  'This will permanently remove this post and all the comments',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Delete', onPress: deletePost},
+                  ],
+                  { cancelable: false },
+                );
+              }
             }}
           />
         ),
       });
-    }
   }, [navigation]);
 
   useEffect(() => {

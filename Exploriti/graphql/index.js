@@ -1072,6 +1072,7 @@ export const GET_ORIENTATION_GROUPS = gql`
 export const POST_FRAGMENT = gql`
     fragment postFragment on post {
         id
+        groupId
         user {
             id
             name
@@ -1618,6 +1619,14 @@ export const UNLIKE_POST = gql`
         }
     }
 
+`
+
+export const DELETE_POST = gql`
+    mutation deletePost($id: Int!) {
+        delete_post_by_pk(id: $id) {
+            id
+        }
+    }
 `
 
 /**
