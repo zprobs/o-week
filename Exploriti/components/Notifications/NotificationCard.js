@@ -18,6 +18,7 @@ import {
   NOTIFICATION_FRAG,
   NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
+  DELETE_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -30,6 +31,7 @@ import images from '../../assets/images';
 import gql from 'graphql-tag';
 import Trophy from '../../assets/svg/trophy.svg';
 import LinearGradient from 'react-native-linear-gradient';
+import CardWithDeleteAction from '../ReusableComponents/CardWithDeleteAction';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -82,6 +84,9 @@ const NotificationCard = ({
       }
     },
   });
+  const [deleteNotification] = useMutation(DELETE_NOTIFICATION, {
+    variables: { id: id },
+  });
 
   const [wasTapped, setWasTapped] = useState(false);
 
@@ -93,42 +98,49 @@ const NotificationCard = ({
     nav && nav();
   };
 
-
   return (
-    <TouchableOpacity
-      style={[
-        styles.container,
-        {
-          backgroundColor: seen
-            ? colours.placeholder
-            : wasTapped
-            ? colours.placeholder
-            : colours.base,
-        },
-      ]}
-      onPress={onPress}>
-      <View style={{ flexDirection: 'row', flex: 1 }}>
-        {SVG ? (
-          <SVG />
-        ) : (
-          <Image
-            source={localImage ? localImage : { uri: image }}
-            style={styles.image}
-          />
-        )}
-        <View style={styles.textContainer}>
-          <Text style={styles.message}>
-            {titleLast ? `${message} ` : null}
+    <CardWithDeleteAction
+      Card={
+        <View style={{ backgroundColor: '#FFFFFFFF' }}>
+          <TouchableOpacity
+            style={[
+              styles.container,
+              {
+                backgroundColor: seen
+                  ? colours.placeholder
+                  : wasTapped
+                  ? colours.placeholder
+                  : colours.base,
+              },
+            ]}
+            onPress={onPress}>
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              {SVG ? (
+                <SVG />
+              ) : (
+                <Image
+                  source={localImage ? localImage : { uri: image }}
+                  style={styles.image}
+                />
+              )}
+              <View style={styles.textContainer}>
+                <Text style={styles.message}>
+                  {titleLast ? `${message} ` : null}
 
-            <Text style={{ ...FontWeights.Bold }}>{title}</Text>
-            {titleLast ? null : ` ${message}`}
-          </Text>
+                  <Text style={{ ...FontWeights.Bold }}>{title}</Text>
+                  {titleLast ? null : ` ${message}`}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.timeStamp}>
+              {parseTimeElapsed(timestamp).readableTime}
+            </Text>
+          </TouchableOpacity>
         </View>
-      </View>
-      <Text style={styles.timeStamp}>
-        {parseTimeElapsed(timestamp).readableTime}
-      </Text>
-    </TouchableOpacity>
+      }
+      deleteFunction={deleteNotification}
+      cardHeight={60}
+    />
   );
 };
 
@@ -244,9 +256,9 @@ export const TrophyNotificationCard = ({ item }) => {
 export const PostNotificationCard = ({ item, comment, like }) => {
   const navigation = useNavigation();
 
-  const typeId = parseInt(item.typeId)
+  const typeId = parseInt(item.typeId);
 
-  console.log('typeId', typeId );
+  console.log('typeId', typeId);
 
   const { data, loading, error } = useQuery(GET_POST_NOTIFICATION, {
     variables: { id: typeId },
