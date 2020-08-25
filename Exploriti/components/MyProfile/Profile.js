@@ -114,7 +114,7 @@ export default function Profile({ route }) {
     <View style={{ backgroundColor: colours.base, flex: 1 }}>
       <SafeAreaView>
         {isMyProfilePage ? null : (
-          <GoBackHeader IconRight={OptionsIcon} IconRightOnPress={onOptions} />
+          <GoBackHeader IconRight={isCurrentUser ? null : OptionsIcon} IconRightOnPress={isCurrentUser ? null : onOptions} />
         )}
         <ProfileCard
           editable={isCurrentUser}

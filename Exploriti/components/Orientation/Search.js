@@ -123,7 +123,7 @@ export default function Search() {
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
         <BackIcon />
         <View style={{ width: '90%' }}>
           <SearchBar
