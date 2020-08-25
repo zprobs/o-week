@@ -15,7 +15,6 @@ import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
   BLOCK_USER,
   CHECK_USER_BLOCKED,
-  GET_USER_FRIENDS_ID,
   REPORT_USER,
   UNBLOCK_USER,
 } from '../../graphql';
@@ -30,12 +29,12 @@ const { colours } = Theme.light;
  * @param id {string} the id of user who can be reported or blocked
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}
  */
-const OptionsBottomModal = React.forwardRef(({ id }, ref) => {
+const OptionsBottomModal = React.forwardRef(({ id, commentId, postId }, ref) => {
   console.log('optionsID', id);
 
   const { authState } = useContext(AuthContext);
   const [reportUser, { error: reportError }] = useMutation(REPORT_USER, {
-    variables: { reported: id, reporter: authState.user.uid },
+    variables: { reported: id, reporter: authState.user.uid, commentId: commentId, postId: postId },
     onCompleted: () => {
       showMessage({
         message: 'Report Submitted',

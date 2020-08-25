@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -16,7 +22,11 @@ import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/Feather';
 import { linkError } from './SocialMediaIcons';
-import { getHostnameFromRegex, parseTimeElapsed } from '../../context';
+import {
+  AuthContext,
+  getHostnameFromRegex,
+  parseTimeElapsed,
+} from '../../context';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { log } from 'react-native-reanimated';
@@ -24,6 +34,8 @@ import { useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
 import { GET_POST_COMMENTS } from '../../graphql';
 import LikeSVG from '../../assets/svg/LikeSVG';
+import OptionsIcon from '../Menu/OptionsIcon';
+import OptionsBottomModal from '../Modal/OptionsBottomModal';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -78,26 +90,30 @@ const Post = ({ item, index }) => {
           </View>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <LikeSVG
-              style={{ marginRight: 10, alignItems: 'center' }}
-              postId={item.id}
-              authorId={user.id}
-            />
-          <View style={{alignItems: 'center'}}>
+          <LikeSVG
+            style={{ marginRight: 10, alignItems: 'center' }}
+            postId={item.id}
+            authorId={user.id}
+          />
+          <View style={{ alignItems: 'center' }}>
             <Icon
               color={ThemeStatic.gold}
               name={'message-square'}
               size={26}
-              style={{padding: 4}}
+              style={{ padding: 4 }}
               onPress={() =>
                 navigation.navigate('PostScreen', {
                   post: item,
                   authorId: user.id,
-                  comment: true
+                  comment: true,
                 })
               }
             />
-            <Text style={[styles.interactionText, {color: ThemeStatic.gold}]}>{item.comments_aggregate.aggregate.count > 99 ? '99+' : item.comments_aggregate.aggregate.count }</Text>
+            <Text style={[styles.interactionText, { color: ThemeStatic.gold }]}>
+              {item.comments_aggregate.aggregate.count > 99
+                ? '99+'
+                : item.comments_aggregate.aggregate.count}
+            </Text>
           </View>
         </View>
       </View>
@@ -121,7 +137,11 @@ export const PostScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const addCommentsRef = useRef();
+  const optionsRef = useRef();
+  const [optionsId, setOptionsId] = useState();
+  const [optionsCommentId, setOptionsCommentId] = useState();
   const { post, authorId, comment } = route.params;
+  const { authState } = useContext(AuthContext);
   const { data: commentsData, loading, error, fetchMore } = useQuery(
     GET_POST_COMMENTS,
     {
@@ -131,34 +151,46 @@ export const PostScreen = () => {
   const { images, link, text, user, time } = post;
   if (link) console.log('link', link);
 
-  useEffect(()=>{
+  React.useLayoutEffect(() => {
+    if (user.id !== authState.user.uid) {
+      navigation.setOptions({
+        headerRight: () => (
+          <OptionsIcon
+            onPress={() => {
+              setOptionsId(user.id);
+              optionsRef.current.open();
+            }}
+          />
+        ),
+      });
+    }
+  }, [navigation]);
+
+  useEffect(() => {
     if (comment && addCommentsRef.current) {
       addCommentsRef.current.open();
     }
-  }, [])
+  }, []);
 
-  const onEndReached = useCallback(
-    () => {
-      console.log('onEndReached data', commentsData.post.comments.length);
-      fetchMore({
-        variables: { postId: post.id, offset: commentsData.post.comments.length  },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          console.log('fetchMore', fetchMoreResult.post.comments);
-          if (!fetchMoreResult) return prev;
+  const onEndReached = useCallback(() => {
+    console.log('onEndReached data', commentsData.post.comments.length);
+    fetchMore({
+      variables: { postId: post.id, offset: commentsData.post.comments.length },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        console.log('fetchMore', fetchMoreResult.post.comments);
+        if (!fetchMoreResult) return prev;
 
-          console.log('prev', prev.post.comments);
+        console.log('prev', prev.post.comments);
 
-          return {
-            post: {
-              ...prev.post,
-              comments: [...prev.post.comments, ...fetchMoreResult.post.comments],
-            },
-          };
-        },
-      });
-    },
-    [commentsData]
-  );
+        return {
+          post: {
+            ...prev.post,
+            comments: [...prev.post.comments, ...fetchMoreResult.post.comments],
+          },
+        };
+      },
+    });
+  }, [commentsData]);
 
   const Header = () => (
     <>
@@ -225,23 +257,42 @@ export const PostScreen = () => {
         data={commentsData ? commentsData.post.comments : []}
         ListEmptyComponent={EmptyComponent}
         ListHeaderComponent={Header}
-        renderItem={renderComment}
+        renderItem={({ item }) =>
+          renderComment(
+            item,
+            setOptionsId,
+            optionsRef,
+            setOptionsCommentId,
+            authState.user.uid,
+          )
+        }
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         initialNumToRender={7}
-        keyExtractor={item => item.id.toString()}
-
+        keyExtractor={(item) => item.id.toString()}
       />
       <AddCommentModal
         postId={post.id}
         authorId={authorId}
         ref={addCommentsRef}
       />
+      <OptionsBottomModal
+        ref={optionsRef}
+        id={optionsId}
+        commentId={optionsCommentId}
+        postId={post.id}
+      />
     </SafeAreaView>
   );
 };
 
-const renderComment = ({ item }) => {
+const renderComment = (
+  item,
+  setOptionsId,
+  optionsRef,
+  setOptionsCommentId,
+  currentUser,
+) => {
   const { user } = item;
   return (
     <>
@@ -262,6 +313,16 @@ const renderComment = ({ item }) => {
             </Text>
           </View>
         </TouchableOpacity>
+        {user.id !== currentUser ? (
+          <OptionsIcon
+            size={20}
+            onPress={() => {
+              setOptionsId(user.id);
+              setOptionsCommentId(item.id);
+              optionsRef.current.open();
+            }}
+          />
+        ) : null}
       </View>
       <Text style={styles.body}>{item.text}</Text>
     </>
@@ -446,6 +507,5 @@ const styles = StyleSheet.create({
   interactionText: {
     ...FontSizes.SubText,
     ...FontWeights.Bold,
-
-  }
+  },
 });

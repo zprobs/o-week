@@ -92,7 +92,7 @@ export default function SettingsList() {
           {!loading && !error && data.user && data.user.isAdmin ? (
             <Button
               title={'Admin Console'}
-              onPress={() => navigation.push('Admin Console')}
+              onPress={() => navigation.navigate('Admin Console')}
               color={ThemeStatic.lightPurple}
             />
           ) : null}

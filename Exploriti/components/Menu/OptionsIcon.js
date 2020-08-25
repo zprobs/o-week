@@ -10,10 +10,10 @@ const { FontWeights } = Fonts;
  * A simple Icon to display more options. Uses an ASCII character instead of a third party library
  * @param onPress
  */
-const OptionsIcon = ({ onPress }) => {
+const OptionsIcon = ({ onPress, size }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-     <Icon name={'more-vertical'} size={26} />
+     <Icon name={'more-vertical'} size={size ? size : 26} />
     </TouchableOpacity>
   );
 };

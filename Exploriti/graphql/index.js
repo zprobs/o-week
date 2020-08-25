@@ -1432,11 +1432,11 @@ export const UNBLOCK_USER = gql`
 `;
 
 export const REPORT_USER = gql`
-  mutation ReportUser($reporter: String!, $reported: String!) {
-    insert_report(objects: { reporter: $reporter, reported: $reported }) {
-      affected_rows
+    mutation ReportUser($reporter: String!, $reported: String!, $postId: Int = null, $commentId: Int = null) {
+        insert_report(objects: { reporter: $reporter, reported: $reported, post: $postId, comment: $commentId }) {
+            affected_rows
+        }
     }
-  }
 `;
 
 export const REPORT_CHAT = gql`
