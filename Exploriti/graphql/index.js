@@ -1069,12 +1069,7 @@ export const POST_FRAGMENT = gql`
             image
         }
         time
-        comments(limit: 3) {
-            user {
-                id
-                image
-            }
-        }
+        
         comments_aggregate {
             aggregate {
                 count
@@ -1524,22 +1519,14 @@ export const CREATE_POST = gql`
 export const GET_POST_NOTIFICATION = gql`
     query getPostNotifications($id: Int!) {
         post: post_by_pk(id: $id) {
-            id
-            text
-            link
-            images
-            time
-            user {
-                id
-                image
-                name
-            }
+            ...postFragment 
             group {
                 id
                 name
             }
         }
     }
+    ${POST_FRAGMENT}
 `
 
 export const ADD_COMMENT = gql`
@@ -1567,6 +1554,39 @@ export const GET_POST_COMMENTS = gql`
             }
         }
     }
+`
+
+export const CHECK_USER_LIKED = gql`
+    query checkUserLiked($postId: Int!, $userId: String!) {
+        like: like_by_pk(userId: $userId, postId: $postId) {
+            userId
+        }
+        post: post_by_pk(id: $postId) {
+            id
+            likes_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
+`
+
+export const LIKE_POST = gql`
+    mutation LikePost($postId: Int!, $userId: String!) {
+        insert_like_one(object: {postId: $postId, userId: $userId}) {
+           postId 
+        }
+    }
+`
+
+export const UNLIKE_POST = gql`
+    mutation unLikePost($postId: Int!, $userId: String!) {
+        delete_like_by_pk(postId: $postId , userId: $userId) {
+           postId 
+        }
+    }
+
 `
 
 /**

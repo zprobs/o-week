@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -23,6 +23,7 @@ import { log } from 'react-native-reanimated';
 import { useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
 import { GET_POST_COMMENTS } from '../../graphql';
+import LikeSVG from '../../assets/svg/LikeSVG';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -57,7 +58,7 @@ const Post = ({ item, index }) => {
     <TouchableOpacity
       style={{ ...styles.container, ...containerBorderRadius }}
       onPress={() =>
-        navigation.push('PostScreen', { post: item, authorId: user.id })
+        navigation.navigate('PostScreen', { post: item, authorId: user.id })
       }>
       <View style={styles.header}>
         <TouchableOpacity
@@ -76,7 +77,29 @@ const Post = ({ item, index }) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <Icon color={ThemeStatic.gold} name={'message-square'} size={26} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <LikeSVG
+              style={{ marginRight: 10, alignItems: 'center' }}
+              postId={item.id}
+              authorId={user.id}
+            />
+          <View style={{alignItems: 'center'}}>
+            <Icon
+              color={ThemeStatic.gold}
+              name={'message-square'}
+              size={26}
+              style={{padding: 4}}
+              onPress={() =>
+                navigation.navigate('PostScreen', {
+                  post: item,
+                  authorId: user.id,
+                  comment: true
+                })
+              }
+            />
+            <Text style={[styles.interactionText, {color: ThemeStatic.gold}]}>{item.comments_aggregate.aggregate.count > 99 ? '99+' : item.comments_aggregate.aggregate.count }</Text>
+          </View>
+        </View>
       </View>
       <Text
         numberOfLines={hasContent ? (images && images.length > 0 ? 2 : 3) : 5}
@@ -98,17 +121,44 @@ export const PostScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const addCommentsRef = useRef();
-  const { post, authorId } = route.params;
-  const {
-    data: commentsData,
-    loading,
-    error,
-    refetch,
-  } = useQuery(GET_POST_COMMENTS, {
-    variables: { postId: post.id, offset: 0 },
-  });
+  const { post, authorId, comment } = route.params;
+  const { data: commentsData, loading, error, fetchMore } = useQuery(
+    GET_POST_COMMENTS,
+    {
+      variables: { postId: post.id, offset: 0 },
+    },
+  );
   const { images, link, text, user, time } = post;
   if (link) console.log('link', link);
+
+  useEffect(()=>{
+    if (comment && addCommentsRef.current) {
+      addCommentsRef.current.open();
+    }
+  }, [])
+
+  const onEndReached = useCallback(
+    () => {
+      console.log('onEndReached data', commentsData.post.comments.length);
+      fetchMore({
+        variables: { postId: post.id, offset: commentsData.post.comments.length  },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          console.log('fetchMore', fetchMoreResult.post.comments);
+          if (!fetchMoreResult) return prev;
+
+          console.log('prev', prev.post.comments);
+
+          return {
+            post: {
+              ...prev.post,
+              comments: [...prev.post.comments, ...fetchMoreResult.post.comments],
+            },
+          };
+        },
+      });
+    },
+    [commentsData]
+  );
 
   const Header = () => (
     <>
@@ -134,7 +184,9 @@ export const PostScreen = () => {
       {images && images.length > 0 && renderImages(images)}
       {renderLink(link)}
       <View style={styles.line} />
-      <TouchableOpacity style={[styles.postButton, { alignSelf: 'center' }]} onPress={()=>addCommentsRef.current.open()}>
+      <TouchableOpacity
+        style={[styles.postButton, { alignSelf: 'center' }]}
+        onPress={() => addCommentsRef.current.open()}>
         <Icon name={'plus'} color={'white'} size={24} />
         <Text style={styles.postText}>Add Comment</Text>
       </TouchableOpacity>
@@ -157,7 +209,6 @@ export const PostScreen = () => {
     return null;
   };
 
-
   return (
     <SafeAreaView
       style={{
@@ -170,22 +221,29 @@ export const PostScreen = () => {
         ListEmptyComponent={EmptyComponent}
         ListHeaderComponent={Header}
         renderItem={renderComment}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={7}
+        keyExtractor={item => item.id.toString()}
+
       />
-      <AddCommentModal postId={post.id} authorId={authorId} ref={addCommentsRef} />
+      <AddCommentModal
+        postId={post.id}
+        authorId={authorId}
+        ref={addCommentsRef}
+      />
     </SafeAreaView>
   );
 };
 
-const renderComment = ({item}) => {
-  const {user} = item
+const renderComment = ({ item }) => {
+  const { user } = item;
   return (
     <>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.user}
-          onPress={() =>
-            navigation.navigate('Profile', { userId: user.id })
-          }>
+          onPress={() => navigation.navigate('Profile', { userId: user.id })}>
           <Image
             source={{
               uri: user.image,
@@ -194,7 +252,9 @@ const renderComment = ({item}) => {
           />
           <View>
             <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.time}>{parseTimeElapsed(item.time).readableTime}</Text>
+            <Text style={styles.time}>
+              {parseTimeElapsed(item.time).readableTime}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -378,4 +438,9 @@ const styles = StyleSheet.create({
     ...FontWeights.Bold,
     color: colours.text02,
   },
+  interactionText: {
+    ...FontSizes.SubText,
+    ...FontWeights.Bold,
+
+  }
 });
