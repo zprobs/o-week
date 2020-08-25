@@ -179,6 +179,11 @@ export const PostScreen = () => {
             </Text>
           </View>
         </TouchableOpacity>
+        <LikeSVG
+          style={{ marginRight: 10, alignItems: 'center' }}
+          postId={post.id}
+          authorId={authorId}
+        />
       </View>
       <Text style={styles.body}>{text}</Text>
       {images && images.length > 0 && renderImages(images)}

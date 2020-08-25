@@ -85,7 +85,7 @@ const NotificationCard = ({
     },
   });
   const [deleteNotification] = useMutation(DELETE_NOTIFICATION, {
-    variables: { id: id },
+    variables: { notificationId: id, userId: authState.user.uid },
   });
 
   const [wasTapped, setWasTapped] = useState(false);

@@ -12,7 +12,7 @@ export const DETAILED_USER_FRAGMENT = gql`
     programs {
       programId
       program {
-        i
+        id
         name
       }
     }
@@ -127,10 +127,10 @@ export const SEE_ALL_NOTIFICATIONS = gql`
 `;
 
 export const DELETE_NOTIFICATION = gql`
-  mutation deleteNotification($id: Int!) {
-    deleteNotification(id: $id) {
-      id
-    }
+  mutation deleteNotification($notificationId: Int!, $userId: String!) {
+      delete_userNotification_by_pk(notificationId: $notificationId, userId: $userId) {
+          notificationId
+      }
   }
 `;
 
