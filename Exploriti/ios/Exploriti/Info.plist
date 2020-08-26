@@ -37,8 +37,8 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Requires access to the calendar to add app events</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Requires access to photo library to enable users to upload a profile picture</string>
 	<key>UIAppFonts</key>
