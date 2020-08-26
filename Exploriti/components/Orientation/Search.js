@@ -138,7 +138,7 @@ export default function Search() {
       </View>
       <SectionList
         sections={listData}
-        keyExtractor={(item, index) => item + index}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         renderSectionHeader={SectionHeader}
         style={{ backgroundColor: colours.white }}

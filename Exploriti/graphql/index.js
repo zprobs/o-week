@@ -807,6 +807,8 @@ export const GET_SCHEDULED_EVENTS = gql`
       image
       name
       startDate
+        endDate
+        location
       description
       ...EventAttendance
       hosts {

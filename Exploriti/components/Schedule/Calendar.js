@@ -14,9 +14,11 @@ import CircleBackIcon from '../Menu/CircleBackIcon';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import EventCard from '../ReusableComponents/EventCard';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
 import { AuthContext, processError } from '../../context';
+import RNCalendarEvents from "react-native-calendar-events";
+import { log } from 'react-native-reanimated';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -29,10 +31,82 @@ const HEIGHT = Dimensions.get('window').height;
  */
 const Calendar = () => {
   const { authState } = useContext(AuthContext);
-  const route = useRoute();
-  const { myCalendars } = route.params;
   const isFocused = useIsFocused();
+  const { data } = useQuery(GET_SCHEDULED_EVENTS, {
+    variables: {
+      userId: authState.user.uid,
+    },
+    fetchPolicy: 'cache-only',
+  });
   const [updateCalendars, {error}] = useMutation(UPDATE_CALENDARS);
+  const myCalendars  = data ? data.user.member : [];
+
+
+  const saveCalendar = async (calendar) => {
+    try {
+
+      const calendars = await RNCalendarEvents.findCalendars();
+
+      console.log({calendars});
+
+      const thisCalendar = calendars.find(cal => cal.title === calendar.group.name);
+
+      console.log({thisCalendar});
+
+      if (thisCalendar) {
+        const removed = await RNCalendarEvents.removeCalendar(thisCalendar.id);
+        console.log({removed});
+      }
+
+      RNCalendarEvents.saveCalendar({
+        title: calendar.group.name,
+        color: ThemeStatic.accent,
+        entityType: 'event',
+        name: calendar.group.name,
+        accessLevel: 'owner',
+        ownerAccount: authState.user.email,
+        source: {
+          name: authState.user.email,
+          type: 'LOCAL'
+        },
+      }).then((id) => {
+        const events = data.events.filter(evt => evt.hosts[0].groupId === calendar.group.id);
+        console.log({events});
+        events.map(evt => {
+          RNCalendarEvents.saveEvent(evt.name, {
+            calendarId: id,
+            startDate: new Date(evt.startDate).toISOString(),
+            endDate: new Date(evt.endDate).toISOString(),
+            location: evt.location,
+          })
+        });
+        showMessage({
+          message: 'Successfully Added to Calendar',
+          description: 'Please check your phone calendar to see the events',
+          autoHide: true,
+          type: 'success',
+          icon: 'auto',
+        });
+      }).catch(e => processError(e, 'Could not create calendar'))
+    } catch (e) {
+      processError(e, 'Could not save calendar');
+    }
+  }
+
+  const addToPhoneCalendar = (calendar) => {
+    console.log({calendar});
+    RNCalendarEvents.checkPermissions(false).then((result) => {
+      console.log(result);
+      if (result !== 'authorized') {
+        RNCalendarEvents.requestPermissions(false).then((result) => {
+          if (result === 'authorized') saveCalendar(calendar);
+        }).catch(e => console.log(e))
+      } else {
+        saveCalendar(calendar)
+      }
+
+    }).catch(e => console.log(e))
+  }
 
   const updateOnCalendar = (calendar, selected) => {
     updateCalendars({
@@ -58,7 +132,7 @@ const Calendar = () => {
     <ScrollView style={styles.container} bounces={false}>
       <LinearGradient
         colors={['#fc8c62', '#ed1b2f']}
-        style={{ height: HEIGHT }}>
+        style={styles.container}>
         <SafeAreaView>
           {isFocused ? <StatusBar barStyle="light-content" /> : null}
           <View style={styles.header}>
@@ -72,15 +146,16 @@ const Calendar = () => {
               <Text style={styles.dateText}>My Calendars</Text>
             ) : null}
 
-            {myCalendars.map((calendar, index) => (
+            {myCalendars.map((calendar) => (
               <EventCard
                 calendar={true}
                 name={calendar.group.name}
                 calendarType={calendar.group.groupType}
                 plus={false}
                 onPress={(selected) => updateOnCalendar(calendar, selected)}
+                addToPhoneCalendar={() => addToPhoneCalendar(calendar)}
                 isSelected={calendar.onCalendar}
-                key={index}
+                key={calendar.group.id}
                 isExpanded={true}
               />
             ))}

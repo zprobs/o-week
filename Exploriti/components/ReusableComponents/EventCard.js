@@ -39,6 +39,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param isExpanded {boolean} The initial state of the card
  * @param remove {function} a function for deleting this item using its key
  * @param onPress {function} a function for calendars when the icon is pressed
+ * @param addToPhoneCalendar {function} a function for adding this calendar to the local phone calendar
  * @returns {*}
  * @constructor
  */
@@ -59,6 +60,7 @@ export const EventCard = ({
   isExpanded,
   remove,
   onPress,
+  addToPhoneCalendar
 }) => {
   const navigation = useNavigation();
 
@@ -160,7 +162,8 @@ export const EventCard = ({
                     label={'Add to phone calendar'}
                     containerStyle={{ width: '70%' }}
                     labelStyle={{ color: ThemeStatic.accent }}
-                    onPress={remove}
+                    disabled={!selected}
+                    onPress={addToPhoneCalendar}
                   />
                 </View>
               ) : (

@@ -198,9 +198,7 @@ const ScheduleCarousel = () => {
             color={'white'}
             onPress={() => {
               if (data) {
-                navigation.navigate('Calendar', {
-                  myCalendars: data.user.member,
-                });
+                navigation.navigate('Calendar');
               }
             }}
           />

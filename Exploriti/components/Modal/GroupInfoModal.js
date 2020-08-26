@@ -138,7 +138,7 @@ const GroupInfoModal = React.forwardRef(
               spacing={0.01}
             />
           ) : (
-            posts.map((p, i) => <Post item={p} index={i} key={i} />)
+            posts.map((p, i) => <Post item={p} index={i} key={p.id} />)
           )}
           {count > 4 ? (
             <View style={styles.sectionView}>
