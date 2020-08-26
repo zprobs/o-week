@@ -18,7 +18,7 @@ import { split } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { setContext } from 'apollo-link-context';
-import { getMainDefinition } from 'apollo-utilities';
+import { getMainDefinition, toIdValue } from 'apollo-utilities';
 import { ApolloProvider, useMutation, useQuery } from '@apollo/react-hooks';
 import Schedule from './components/Schedule';
 import MyProfile from './components/MyProfile';
@@ -299,9 +299,20 @@ export default function App() {
     ),
   ]);
 
+  const cache = new InMemoryCache({
+    cacheRedirects: {
+      Query: {
+        post: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'post', id: args.id })),
+        group: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'group', id: args.id })),
+        event: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'event', id: args.id })),
+        user: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'user', id: args.id })),
+      },
+    },
+  });
+
   const client = new ApolloClient({
     link,
-    cache: new InMemoryCache(),
+    cache: cache
   });
 
   return (

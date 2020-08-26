@@ -104,7 +104,7 @@ export const getHostnameFromRegex = (url) => {
   const matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   // extract hostname (will be null if no match is found)
   return matches && matches[1];
-}
+};
 
 export function yearToInt(year: String) {
   switch (year) {
@@ -320,9 +320,9 @@ export const NotificationTypes = {
  * @param type {string} one of NotificationTypes
  * @param typeId {string}
  */
-export function notificationToRoute( type, typeId ) {
+export function notificationToRoute(type, typeId) {
   let tab, params;
-  console.log('type typeID', type, typeId)
+  console.log('type typeID', type, typeId);
   if (
     type === NotificationTypes.sendFriendRequest ||
     type === NotificationTypes.confirmFriendRequest
@@ -351,9 +351,20 @@ export function notificationToRoute( type, typeId ) {
   } else if (type === NotificationTypes.message) {
     tab = 'Messages';
     params = null;
-  }
-
-  else {
+  } else if (
+    type === NotificationTypes.newLike ||
+    type === NotificationTypes.newComment ||
+    type === NotificationTypes.newPost
+  ) {
+    tab = "Orientation";
+    params = {
+      screen: 'PostScreen',
+      params: {
+        postId: typeId
+      },
+      initial :false
+    }
+  } else {
     tab = 'MyProfile';
     params = { screen: 'Notifications' };
   }

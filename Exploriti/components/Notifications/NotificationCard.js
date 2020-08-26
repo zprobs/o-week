@@ -264,13 +264,14 @@ export const PostNotificationCard = ({ item, comment, like }) => {
     variables: { id: typeId },
   });
 
-  console.log('Notification Post', data);
+  console.log('Notification Post', error);
+
 
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.post) return null;
 
   const nav = () => {
-    navigation.navigate('PostScreen', { post: data.post});
+    navigation.navigate('PostScreen', { postId: typeId});
   };
 
   const message = comment

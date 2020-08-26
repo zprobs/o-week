@@ -15,7 +15,8 @@ import {
   Linking,
   ScrollView,
   FlatList,
-  ActivityIndicator, Alert,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -25,14 +26,20 @@ import { linkError } from './SocialMediaIcons';
 import {
   AuthContext,
   getHostnameFromRegex,
-  parseTimeElapsed, processError,
+  parseTimeElapsed,
+  processError,
 } from '../../context';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { log } from 'react-native-reanimated';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
-import { DELETE_POST, GET_GROUP_POSTS, GET_POST_COMMENTS } from '../../graphql';
+import {
+  DELETE_POST,
+  GET_DETAILED_POST,
+  GET_GROUP_POSTS,
+  GET_POST_COMMENTS,
+} from '../../graphql';
 import LikeSVG from '../../assets/svg/LikeSVG';
 import OptionsIcon from '../Menu/OptionsIcon';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
@@ -70,7 +77,7 @@ const Post = ({ item, index }) => {
     <TouchableOpacity
       style={{ ...styles.container, ...containerBorderRadius }}
       onPress={() =>
-        navigation.navigate('PostScreen', { post: item, authorId: user.id })
+        navigation.navigate('PostScreen', { postId: item.id, authorId: user.id })
       }>
       <View style={styles.header}>
         <TouchableOpacity
@@ -103,7 +110,7 @@ const Post = ({ item, index }) => {
               style={{ padding: 4 }}
               onPress={() =>
                 navigation.navigate('PostScreen', {
-                  post: item,
+                  postId: item.id,
                   authorId: user.id,
                   comment: true,
                 })
@@ -140,49 +147,56 @@ export const PostScreen = () => {
   const optionsRef = useRef();
   const [optionsId, setOptionsId] = useState();
   const [optionsCommentId, setOptionsCommentId] = useState();
-  const { post, authorId, comment } = route.params;
+  const { postId, comment } = route.params;
   const { authState } = useContext(AuthContext);
-  const [deletePost, {error: deleteError}] = useMutation(DELETE_POST, {
-    variables: { id: post.id },
+  const {
+    data: postData,
+    loading: postLoading,
+    error: postError,
+  } = useQuery(GET_DETAILED_POST, { variables: { postId: postId } });
+  const [deletePost, { error: deleteError }] = useMutation(DELETE_POST, {
+    variables: { id: postId },
     refetchQueries: [
-      { query: GET_GROUP_POSTS, variables: { groupId: post.groupId } },
+      { query: GET_GROUP_POSTS, variables: { groupId: postData.post.groupId } },
     ],
-    onCompleted: data => {
+    onCompleted: () => {
       navigation.goBack();
-    }
+    },
   });
   const { data: commentsData, loading, error, fetchMore } = useQuery(
     GET_POST_COMMENTS,
     {
-      variables: { postId: post.id, offset: 0 },
+      variables: { postId: postId, offset: 0 },
     },
   );
-  const { images, link, text, user, time } = post;
-  if (deleteError) processError(deleteError, "Could not delete post")
+  const { images, link, text, user, time } = postData ? postData.post : {};
+  if (deleteError) processError(deleteError, 'Could not delete post');
+  if (postError) processError(postError, 'Cannot load post');
 
   React.useLayoutEffect(() => {
-      navigation.setOptions({
-        headerRight: () => (
-          <OptionsIcon
-            onPress={() => {
-              if (user.id !== authState.user.uid) {
-                setOptionsId(user.id);
-                optionsRef.current.open();
-              } else {
-                Alert.alert(
-                  'Delete this post?',
-                  'This will permanently remove this post and all the comments',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Delete', onPress: deletePost},
-                  ],
-                  { cancelable: false },
-                );
-              }
-            }}
-          />
-        ),
-      });
+    if (postLoading || postError) return;
+    navigation.setOptions({
+      headerRight: () => (
+        <OptionsIcon
+          onPress={() => {
+            if (user.id !== authState.user.uid) {
+              setOptionsId(user.id);
+              optionsRef.current.open();
+            } else {
+              Alert.alert(
+                'Delete this post?',
+                'This will permanently remove this post and all the comments',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Delete', onPress: deletePost },
+                ],
+                { cancelable: false },
+              );
+            }
+          }}
+        />
+      ),
+    });
   }, [navigation]);
 
   useEffect(() => {
@@ -194,7 +208,7 @@ export const PostScreen = () => {
   const onEndReached = useCallback(() => {
     console.log('onEndReached data', commentsData.post.comments.length);
     fetchMore({
-      variables: { postId: post.id, offset: commentsData.post.comments.length },
+      variables: { postId: postId, offset: commentsData.post.comments.length },
       updateQuery: (prev, { fetchMoreResult }) => {
         console.log('fetchMore', fetchMoreResult.post.comments);
         if (!fetchMoreResult) return prev;
@@ -210,6 +224,8 @@ export const PostScreen = () => {
       },
     });
   }, [commentsData]);
+
+  if (postLoading || postError) return null
 
   const Header = () => (
     <>
@@ -232,8 +248,8 @@ export const PostScreen = () => {
         </TouchableOpacity>
         <LikeSVG
           style={{ marginRight: 10, alignItems: 'center' }}
-          postId={post.id}
-          authorId={authorId}
+          postId={postId}
+          authorId={user.id}
         />
       </View>
       <Text style={styles.body}>{text}</Text>
@@ -291,15 +307,15 @@ export const PostScreen = () => {
         keyExtractor={(item) => item.id.toString()}
       />
       <AddCommentModal
-        postId={post.id}
-        authorId={authorId}
+        postId={postId}
+        authorId={user.id}
         ref={addCommentsRef}
       />
       <OptionsBottomModal
         ref={optionsRef}
         id={optionsId}
         commentId={optionsCommentId}
-        postId={post.id}
+        postId={postId}
       />
     </SafeAreaView>
   );

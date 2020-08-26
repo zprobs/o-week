@@ -1546,10 +1546,24 @@ export const CREATE_POST = gql`
   }
 `;
 
+export const GET_DETAILED_POST = gql`
+    query getDetailedPost($postId: Int!) {
+        post: post_by_pk(id: $postId) {
+            ...postFragment
+        }
+    }
+    ${POST_FRAGMENT}
+`
+
 export const GET_POST_NOTIFICATION = gql`
     query getPostNotifications($id: Int!) {
         post: post_by_pk(id: $id) {
-            ...postFragment 
+            id
+            user {
+                id
+                name
+                image
+            }
             group {
                 id
                 name
