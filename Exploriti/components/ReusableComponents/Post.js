@@ -157,7 +157,7 @@ export const PostScreen = () => {
   const [deletePost, { error: deleteError }] = useMutation(DELETE_POST, {
     variables: { id: postId },
     refetchQueries: [
-      { query: GET_GROUP_POSTS, variables: { groupId: postData.post.groupId } },
+      { query: GET_GROUP_POSTS, variables: { groupId: postData ? postData.post.groupId : '' } },
     ],
     onCompleted: () => {
       navigation.goBack();
@@ -526,7 +526,6 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.Body,
     color: ThemeStatic.white,
-    marginVertical: 10,
     marginLeft: 5,
   },
   commentEmptyView: {

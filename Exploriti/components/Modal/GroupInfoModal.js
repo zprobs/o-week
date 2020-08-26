@@ -453,7 +453,6 @@ const styles = StyleSheet.create({
     ...FontWeights.Regular,
     ...FontSizes.Body,
     color: ThemeStatic.white,
-    marginVertical: 10,
     marginLeft: 5,
   },
 });

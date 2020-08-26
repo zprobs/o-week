@@ -57,20 +57,24 @@ export default function Messages() {
       />
       <Stack.Screen
         name={'PostScreen'}
-        options={{ headerTitle: '' }}
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
         component={PostScreen}
       />
       <Stack.Screen
         name={'Gallery'}
-        options={{ headerTitle: '' }}
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
         component={Gallery}
       />
       <Stack.Screen
         name={'AllPosts'}
-        options={{ headerTitle: '' }}
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
         component={AllPosts}
       />
-      <Stack.Screen name={'Create Post'} component={CreatePost} />
+      <Stack.Screen
+        name={'Create Post'}
+        component={CreatePost}
+        options={{ headerBackTitle: 'Back' }}
+      />
     </Stack.Navigator>
   );
 }
