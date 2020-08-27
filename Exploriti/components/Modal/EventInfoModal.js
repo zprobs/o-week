@@ -555,11 +555,11 @@ const EventInfoModal = React.forwardRef(
                 data.event.eventType === 'gather'
                   ? {
                       uri:
-                        'https://techcrunch.com/wp-content/uploads/2020/03/getty-video-call-chat.jpg?w=1390&crop=1',
+                        'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/gather.jpg?alt=media&token=db7f6f79-6218-45e6-877e-28f1562be019',
                     }
                   : {
                       uri:
-                        'https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg',
+                        'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/zoom.jpg?alt=media&token=8226be04-4df4-4a33-9fce-5be929a401a3',
                     }
               }
               style={styles.eventImage}
@@ -584,6 +584,10 @@ const EventInfoModal = React.forwardRef(
 
     const openLink = () => {
       const link = data.event.website;
+      if (!link) {
+        linkError('No link provided', 'Meeting');
+        return
+      }
       Linking.canOpenURL(link)
         .then((result) => {
           if (result) {

@@ -1627,7 +1627,7 @@ export const GET_POST_NOTIFICATION = gql`
 
 
 export const ADD_COMMENT = gql`
-  mutation addComment($postId: Int!, $text: String!, $authorId: String!) {
+  mutation insert_comment_one($postId: Int!, $text: String!, $authorId: String!) {
     insert_comment_one(
       object: { authorId: $authorId, postId: $postId, text: $text }
     ) {
@@ -1635,6 +1635,26 @@ export const ADD_COMMENT = gql`
     }
   }
 `;
+
+export const GET_COMMENT_NOTIFICATION = gql`
+    query getLikeNotification($id: Int!) {
+        comment: comment_by_pk(id: $id) {
+            id
+            post {
+                id
+                group {
+                    id
+                    name
+                }
+            }
+            user {
+                id
+                name
+                image
+            }
+        }
+    }
+`
 
 export const GET_POST_COMMENTS = gql`
   query getPostComments($postId: Int!, $offset: Int!) {
@@ -1671,9 +1691,9 @@ export const CHECK_USER_LIKED = gql`
 `
 
 export const LIKE_POST = gql`
-    mutation LikePost($postId: Int!, $userId: String!) {
+    mutation insert_like_one($postId: Int!, $userId: String!) {
         insert_like_one(object: {postId: $postId, userId: $userId}) {
-           postId 
+            id
         }
     }
 `
@@ -1684,7 +1704,26 @@ export const UNLIKE_POST = gql`
            postId 
         }
     }
+`
 
+export const GET_LIKE_NOTIFICATION = gql`
+    query getLikeNotification($id: Int!) {
+        like(where: {id: { _eq: $id}}) {
+            id
+            post {
+                id
+                group {
+                    id
+                    name
+                }
+            }
+            user {
+                id
+                name
+                image
+            }
+        }
+    }
 `
 
 export const DELETE_POST = gql`

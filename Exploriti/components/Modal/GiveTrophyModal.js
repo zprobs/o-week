@@ -59,6 +59,11 @@ const GiveTrophyModal = React.forwardRef(({ selected, onClose }, ref) => {
     );
     award({ variables: { objects: objects } })
       .then(() => {
+        showMessage({
+          message: 'You may have to restart the app to see the trophy on the group screen',
+          type: 'info',
+          icon: 'auto',
+        });
         setIsUploading(false);
         ref.current.close();
       })

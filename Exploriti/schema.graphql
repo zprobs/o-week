@@ -995,9 +995,15 @@ input chatUserView_variance_order_by {
 type comment {
   authorId: String!
   id: Int!
+
+  # An object relationship
+  post: post!
   postId: Int!
   text: String!
   time: timestamptz!
+
+  # An object relationship
+  user: user!
 }
 
 # aggregated selection of "comment"
@@ -1061,13 +1067,18 @@ input comment_bool_exp {
   _or: [comment_bool_exp]
   authorId: String_comparison_exp
   id: Int_comparison_exp
+  post: post_bool_exp
   postId: Int_comparison_exp
   text: String_comparison_exp
   time: timestamptz_comparison_exp
+  user: user_bool_exp
 }
 
 # unique or primary key constraints on table "comment"
 enum comment_constraint {
+  # unique or primary key constraint
+  comment_id_key
+
   # unique or primary key constraint
   comment_pkey
 }
@@ -1082,9 +1093,11 @@ input comment_inc_input {
 input comment_insert_input {
   authorId: String
   id: Int
+  post: post_obj_rel_insert_input
   postId: Int
   text: String
   time: timestamptz
+  user: user_obj_rel_insert_input
 }
 
 # aggregate max on columns
@@ -1149,9 +1162,11 @@ input comment_on_conflict {
 input comment_order_by {
   authorId: order_by
   id: order_by
+  post: post_order_by
   postId: order_by
   text: order_by
   time: order_by
+  user: user_order_by
 }
 
 # primary key columns input for table: "comment"
@@ -1332,6 +1347,7 @@ type event {
   description: String
   email: String!
   endDate: timestamptz!
+  eventType: String
   gallery(
     # JSON select path
     path: String
@@ -1467,6 +1483,7 @@ input event_bool_exp {
   description: String_comparison_exp
   email: String_comparison_exp
   endDate: timestamptz_comparison_exp
+  eventType: String_comparison_exp
   gallery: jsonb_comparison_exp
   hosts: groupEvent_bool_exp
   id: uuid_comparison_exp
@@ -1518,6 +1535,7 @@ input event_insert_input {
   description: String
   email: String
   endDate: timestamptz
+  eventType: String
   gallery: jsonb
   hosts: groupEvent_arr_rel_insert_input
   id: uuid
@@ -1537,6 +1555,7 @@ type event_max_fields {
   description: String
   email: String
   endDate: timestamptz
+  eventType: String
   id: uuid
   image: String
   name: String
@@ -1549,6 +1568,7 @@ input event_max_order_by {
   description: order_by
   email: order_by
   endDate: order_by
+  eventType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -1561,6 +1581,7 @@ type event_min_fields {
   description: String
   email: String
   endDate: timestamptz
+  eventType: String
   id: uuid
   image: String
   name: String
@@ -1573,6 +1594,7 @@ input event_min_order_by {
   description: order_by
   email: order_by
   endDate: order_by
+  eventType: order_by
   id: order_by
   image: order_by
   name: order_by
@@ -1608,6 +1630,7 @@ input event_order_by {
   description: order_by
   email: order_by
   endDate: order_by
+  eventType: order_by
   gallery: order_by
   hosts_aggregate: groupEvent_aggregate_order_by
   id: order_by
@@ -1646,6 +1669,9 @@ enum event_select_column {
   endDate
 
   # column name
+  eventType
+
+  # column name
   gallery
 
   # column name
@@ -1681,6 +1707,7 @@ input event_set_input {
   description: String
   email: String
   endDate: timestamptz
+  eventType: String
   gallery: jsonb
   id: uuid
   image: String
@@ -1703,6 +1730,9 @@ enum event_update_column {
 
   # column name
   endDate
+
+  # column name
+  eventType
 
   # column name
   gallery
@@ -4660,7 +4690,14 @@ input jsonb_comparison_exp {
 
 # columns and relationships of "like"
 type like {
+  id: Int!
+
+  # An object relationship
+  post: post!
   postId: Int!
+
+  # An object relationship
+  user: user!
   userId: String!
 }
 
@@ -4708,11 +4745,13 @@ input like_arr_rel_insert_input {
 
 # aggregate avg on columns
 type like_avg_fields {
+  id: Float
   postId: Float
 }
 
 # order by avg() on columns of table "like"
 input like_avg_order_by {
+  id: order_by
   postId: order_by
 }
 
@@ -4721,47 +4760,61 @@ input like_bool_exp {
   _and: [like_bool_exp]
   _not: like_bool_exp
   _or: [like_bool_exp]
+  id: Int_comparison_exp
+  post: post_bool_exp
   postId: Int_comparison_exp
+  user: user_bool_exp
   userId: String_comparison_exp
 }
 
 # unique or primary key constraints on table "like"
 enum like_constraint {
   # unique or primary key constraint
+  like_id_key
+
+  # unique or primary key constraint
   like_pkey
 }
 
 # input type for incrementing integer column in table "like"
 input like_inc_input {
+  id: Int
   postId: Int
 }
 
 # input type for inserting data into table "like"
 input like_insert_input {
+  id: Int
+  post: post_obj_rel_insert_input
   postId: Int
+  user: user_obj_rel_insert_input
   userId: String
 }
 
 # aggregate max on columns
 type like_max_fields {
+  id: Int
   postId: Int
   userId: String
 }
 
 # order by max() on columns of table "like"
 input like_max_order_by {
+  id: order_by
   postId: order_by
   userId: order_by
 }
 
 # aggregate min on columns
 type like_min_fields {
+  id: Int
   postId: Int
   userId: String
 }
 
 # order by min() on columns of table "like"
 input like_min_order_by {
+  id: order_by
   postId: order_by
   userId: order_by
 }
@@ -4790,7 +4843,10 @@ input like_on_conflict {
 
 # ordering options when selecting data from "like"
 input like_order_by {
+  id: order_by
+  post: post_order_by
   postId: order_by
+  user: user_order_by
   userId: order_by
 }
 
@@ -4803,6 +4859,9 @@ input like_pk_columns_input {
 # select columns of table "like"
 enum like_select_column {
   # column name
+  id
+
+  # column name
   postId
 
   # column name
@@ -4811,52 +4870,64 @@ enum like_select_column {
 
 # input type for updating data in table "like"
 input like_set_input {
+  id: Int
   postId: Int
   userId: String
 }
 
 # aggregate stddev on columns
 type like_stddev_fields {
+  id: Float
   postId: Float
 }
 
 # order by stddev() on columns of table "like"
 input like_stddev_order_by {
+  id: order_by
   postId: order_by
 }
 
 # aggregate stddev_pop on columns
 type like_stddev_pop_fields {
+  id: Float
   postId: Float
 }
 
 # order by stddev_pop() on columns of table "like"
 input like_stddev_pop_order_by {
+  id: order_by
   postId: order_by
 }
 
 # aggregate stddev_samp on columns
 type like_stddev_samp_fields {
+  id: Float
   postId: Float
 }
 
 # order by stddev_samp() on columns of table "like"
 input like_stddev_samp_order_by {
+  id: order_by
   postId: order_by
 }
 
 # aggregate sum on columns
 type like_sum_fields {
+  id: Int
   postId: Int
 }
 
 # order by sum() on columns of table "like"
 input like_sum_order_by {
+  id: order_by
   postId: order_by
 }
 
 # update columns of table "like"
 enum like_update_column {
+  # column name
+  id
+
   # column name
   postId
 
@@ -4866,31 +4937,37 @@ enum like_update_column {
 
 # aggregate var_pop on columns
 type like_var_pop_fields {
+  id: Float
   postId: Float
 }
 
 # order by var_pop() on columns of table "like"
 input like_var_pop_order_by {
+  id: order_by
   postId: order_by
 }
 
 # aggregate var_samp on columns
 type like_var_samp_fields {
+  id: Float
   postId: Float
 }
 
 # order by var_samp() on columns of table "like"
 input like_var_samp_order_by {
+  id: order_by
   postId: order_by
 }
 
 # aggregate variance on columns
 type like_variance_fields {
+  id: Float
   postId: Float
 }
 
 # order by variance() on columns of table "like"
 input like_variance_order_by {
+  id: order_by
   postId: order_by
 }
 
@@ -7365,6 +7442,9 @@ type post {
     # filter the rows returned
     where: comment_bool_exp
   ): comment_aggregate!
+
+  # An object relationship
+  group: group!
   groupId: uuid!
   id: Int!
   images(
@@ -7407,10 +7487,7 @@ type post {
     # filter the rows returned
     where: like_bool_exp
   ): like_aggregate!
-  links(
-    # JSON select path
-    path: String
-  ): jsonb
+  link: String
   text: String!
   time: timestamptz!
 
@@ -7457,7 +7534,6 @@ input post_aggregate_order_by {
 # append existing jsonb value of filtered columns with new jsonb value
 input post_append_input {
   images: jsonb
-  links: jsonb
 }
 
 # input type for inserting array relation for remote table "post"
@@ -7483,11 +7559,12 @@ input post_bool_exp {
   _or: [post_bool_exp]
   authorId: String_comparison_exp
   comments: comment_bool_exp
+  group: group_bool_exp
   groupId: uuid_comparison_exp
   id: Int_comparison_exp
   images: jsonb_comparison_exp
   likes: like_bool_exp
-  links: jsonb_comparison_exp
+  link: String_comparison_exp
   text: String_comparison_exp
   time: timestamptz_comparison_exp
   user: user_bool_exp
@@ -7496,26 +7573,26 @@ input post_bool_exp {
 # unique or primary key constraints on table "post"
 enum post_constraint {
   # unique or primary key constraint
+  post_id_key
+
+  # unique or primary key constraint
   post_pkey
 }
 
 # delete the field or element with specified path (for JSON arrays, negative integers count from the end)
 input post_delete_at_path_input {
   images: [String]
-  links: [String]
 }
 
 # delete the array element with specified index (negative integers count from the
 # end). throws an error if top level container is not an array
 input post_delete_elem_input {
   images: Int
-  links: Int
 }
 
 # delete key/value pair or string element. key/value pairs are matched based on their key value
 input post_delete_key_input {
   images: String
-  links: String
 }
 
 # input type for incrementing integer column in table "post"
@@ -7527,11 +7604,12 @@ input post_inc_input {
 input post_insert_input {
   authorId: String
   comments: comment_arr_rel_insert_input
+  group: group_obj_rel_insert_input
   groupId: uuid
   id: Int
   images: jsonb
   likes: like_arr_rel_insert_input
-  links: jsonb
+  link: String
   text: String
   time: timestamptz
   user: user_obj_rel_insert_input
@@ -7542,6 +7620,7 @@ type post_max_fields {
   authorId: String
   groupId: uuid
   id: Int
+  link: String
   text: String
   time: timestamptz
 }
@@ -7551,6 +7630,7 @@ input post_max_order_by {
   authorId: order_by
   groupId: order_by
   id: order_by
+  link: order_by
   text: order_by
   time: order_by
 }
@@ -7560,6 +7640,7 @@ type post_min_fields {
   authorId: String
   groupId: uuid
   id: Int
+  link: String
   text: String
   time: timestamptz
 }
@@ -7569,6 +7650,7 @@ input post_min_order_by {
   authorId: order_by
   groupId: order_by
   id: order_by
+  link: order_by
   text: order_by
   time: order_by
 }
@@ -7599,11 +7681,12 @@ input post_on_conflict {
 input post_order_by {
   authorId: order_by
   comments_aggregate: comment_aggregate_order_by
+  group: group_order_by
   groupId: order_by
   id: order_by
   images: order_by
   likes_aggregate: like_aggregate_order_by
-  links: order_by
+  link: order_by
   text: order_by
   time: order_by
   user: user_order_by
@@ -7617,7 +7700,6 @@ input post_pk_columns_input {
 # prepend existing jsonb value of filtered columns with new jsonb value
 input post_prepend_input {
   images: jsonb
-  links: jsonb
 }
 
 # select columns of table "post"
@@ -7635,7 +7717,7 @@ enum post_select_column {
   images
 
   # column name
-  links
+  link
 
   # column name
   text
@@ -7650,7 +7732,7 @@ input post_set_input {
   groupId: uuid
   id: Int
   images: jsonb
-  links: jsonb
+  link: String
   text: String
   time: timestamptz
 }
@@ -7710,7 +7792,7 @@ enum post_update_column {
   images
 
   # column name
-  links
+  link
 
   # column name
   text
@@ -9812,6 +9894,8 @@ input question_variance_order_by {
 # columns and relationships of "report"
 type report {
   chat: Int
+  comment: Int
+  post: Int
   reported: String
   reporter: String!
   time: timestamptz!
@@ -9861,11 +9945,15 @@ input report_arr_rel_insert_input {
 # aggregate avg on columns
 type report_avg_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by avg() on columns of table "report"
 input report_avg_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # Boolean expression to filter rows from the table "report". All fields are combined with a logical 'AND'.
@@ -9874,6 +9962,8 @@ input report_bool_exp {
   _not: report_bool_exp
   _or: [report_bool_exp]
   chat: Int_comparison_exp
+  comment: Int_comparison_exp
+  post: Int_comparison_exp
   reported: String_comparison_exp
   reporter: String_comparison_exp
   time: timestamptz_comparison_exp
@@ -9882,11 +9972,15 @@ input report_bool_exp {
 # input type for incrementing integer column in table "report"
 input report_inc_input {
   chat: Int
+  comment: Int
+  post: Int
 }
 
 # input type for inserting data into table "report"
 input report_insert_input {
   chat: Int
+  comment: Int
+  post: Int
   reported: String
   reporter: String
   time: timestamptz
@@ -9895,6 +9989,8 @@ input report_insert_input {
 # aggregate max on columns
 type report_max_fields {
   chat: Int
+  comment: Int
+  post: Int
   reported: String
   reporter: String
   time: timestamptz
@@ -9903,6 +9999,8 @@ type report_max_fields {
 # order by max() on columns of table "report"
 input report_max_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
   reported: order_by
   reporter: order_by
   time: order_by
@@ -9911,6 +10009,8 @@ input report_max_order_by {
 # aggregate min on columns
 type report_min_fields {
   chat: Int
+  comment: Int
+  post: Int
   reported: String
   reporter: String
   time: timestamptz
@@ -9919,6 +10019,8 @@ type report_min_fields {
 # order by min() on columns of table "report"
 input report_min_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
   reported: order_by
   reporter: order_by
   time: order_by
@@ -9941,6 +10043,8 @@ input report_obj_rel_insert_input {
 # ordering options when selecting data from "report"
 input report_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
   reported: order_by
   reporter: order_by
   time: order_by
@@ -9950,6 +10054,12 @@ input report_order_by {
 enum report_select_column {
   # column name
   chat
+
+  # column name
+  comment
+
+  # column name
+  post
 
   # column name
   reported
@@ -9964,6 +10074,8 @@ enum report_select_column {
 # input type for updating data in table "report"
 input report_set_input {
   chat: Int
+  comment: Int
+  post: Int
   reported: String
   reporter: String
   time: timestamptz
@@ -9972,71 +10084,99 @@ input report_set_input {
 # aggregate stddev on columns
 type report_stddev_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by stddev() on columns of table "report"
 input report_stddev_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate stddev_pop on columns
 type report_stddev_pop_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by stddev_pop() on columns of table "report"
 input report_stddev_pop_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate stddev_samp on columns
 type report_stddev_samp_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by stddev_samp() on columns of table "report"
 input report_stddev_samp_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate sum on columns
 type report_sum_fields {
   chat: Int
+  comment: Int
+  post: Int
 }
 
 # order by sum() on columns of table "report"
 input report_sum_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate var_pop on columns
 type report_var_pop_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by var_pop() on columns of table "report"
 input report_var_pop_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate var_samp on columns
 type report_var_samp_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by var_samp() on columns of table "report"
 input report_var_samp_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # aggregate variance on columns
 type report_variance_fields {
   chat: Float
+  comment: Float
+  post: Float
 }
 
 # order by variance() on columns of table "report"
 input report_variance_order_by {
   chat: order_by
+  comment: order_by
+  post: order_by
 }
 
 # columns and relationships of "review"

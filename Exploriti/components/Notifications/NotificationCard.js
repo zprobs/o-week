@@ -19,6 +19,7 @@ import {
   NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
   DELETE_NOTIFICATION,
+  GET_LIKE_NOTIFICATION, GET_COMMENT_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -253,7 +254,7 @@ export const TrophyNotificationCard = ({ item }) => {
  * @returns {JSX.Element|null}
  * @constructor
  */
-export const PostNotificationCard = ({ item, comment, like }) => {
+export const PostNotificationCard = ({ item }) => {
   const navigation = useNavigation();
 
   const typeId = parseInt(item.typeId);
@@ -266,19 +267,14 @@ export const PostNotificationCard = ({ item, comment, like }) => {
 
   console.log('Notification Post', error);
 
-
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.post) return null;
 
   const nav = () => {
-    navigation.navigate('PostScreen', { postId: typeId});
+    navigation.navigate('PostScreen', { postId: typeId });
   };
 
-  const message = comment
-    ? 'commented on your post'
-    : like
-    ? 'liked your post'
-    : `made a post in ${data.post.group.name}`;
+  const message = `made a post in ${data.post.group.name}`;
 
   return (
     <NotificationCard
@@ -289,6 +285,76 @@ export const PostNotificationCard = ({ item, comment, like }) => {
       seen={item.seen}
       nav={nav}
       image={data.post.user.image}
+    />
+  );
+};
+
+export const LikeNotificationCard = ({ item }) => {
+  const navigation = useNavigation();
+
+  const typeId = parseInt(item.typeId);
+
+  console.log('typeId', typeId);
+
+  const { data, loading, error } = useQuery(GET_LIKE_NOTIFICATION, {
+    variables: { id: typeId },
+  });
+
+  console.log('Notification Like', error, data);
+
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.like[0]) return null;
+
+  const nav = () => {
+    navigation.navigate('PostScreen', { postId: parseInt(data.like[0].post.id) });
+  };
+
+  const message = `liked your post in ${data.like[0].post.group.name}`;
+
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={`${data.like[0].user.name}`}
+      message={message}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+      image={data.like[0].user.image}
+    />
+  );
+};
+
+export const CommentNotificationCard = ({ item }) => {
+  const navigation = useNavigation();
+
+  const typeId = parseInt(item.typeId);
+
+  console.log('typeId', typeId);
+
+  const { data, loading, error } = useQuery(GET_COMMENT_NOTIFICATION, {
+    variables: { id: typeId },
+  });
+
+  console.log('Notification Comment', error, data);
+
+  if (loading) return <LoadingNotificationCard />;
+  if (error || !data.comment) return null;
+
+  const nav = () => {
+    navigation.navigate('PostScreen', { postId: data.comment.post.id });
+  };
+
+  const message = `commented on your post in ${data.comment.post.group.name}`;
+
+  return (
+    <NotificationCard
+      timestamp={item.timestamp}
+      title={`${data.comment.user.name}`}
+      message={message}
+      id={item.id}
+      seen={item.seen}
+      nav={nav}
+      image={data.comment.user.image}
     />
   );
 };

@@ -93,14 +93,17 @@ const AddCommentModal = React.forwardRef(({ postId, authorId }, ref) => {
       .catch(() => {
         setIsUploading(false);
       })
-      .then(() => {
-        sendNotification({
-          variables: {
-            type: NotificationTypes.newComment,
-            typeId: postId.toString(),
-            recipient: authorId,
-          },
-        });
+      .then((result) => {
+        console.log({result});
+        if (authorId !== authState.user.uid) {
+          sendNotification({
+            variables: {
+              type: NotificationTypes.newComment,
+              typeId: result.data.insert_comment_one.id.toString(),
+              recipient: authorId,
+            },
+          });
+        }
         setIsUploading(false);
         ref.current.close();
       });

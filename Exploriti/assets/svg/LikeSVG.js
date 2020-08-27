@@ -105,16 +105,18 @@ const LikeSVG = ({ postId, style, authorId }) => {
       unLikePost();
     } else {
       setLiked(true);
-      likePost().then(() => {
+      likePost().then((result) => {
         if (!hasLiked.current) {
           hasLiked.current = true;
-          sendNotification({
-            variables: {
-              type: NotificationTypes.newLike,
-              typeId: postId.toString(),
-              recipient: authorId,
-            },
-          }).catch((e) => console.log(e));
+          if (authorId !== authState.user.uid) {
+            sendNotification({
+              variables: {
+                type: NotificationTypes.newLike,
+                typeId: result.data.insert_like_one.id.toString(),
+                recipient: authorId,
+              },
+            }).catch((e) => console.log(e));
+          }
 
         }
       });

@@ -12,7 +12,8 @@ import {
 } from '../../context';
 
 import {
-  EventNotificationCard,
+  CommentNotificationCard,
+  EventNotificationCard, LikeNotificationCard,
   PostNotificationCard,
   SystemNotificationCard,
   TrophyNotificationCard,
@@ -85,9 +86,9 @@ export default function Notifications() {
       case NotificationTypes.newPost:
         return <PostNotificationCard item={item} />;
       case NotificationTypes.newComment:
-        return <PostNotificationCard item={item} comment={true} />;
+        return <CommentNotificationCard item={item}  />;
       case NotificationTypes.newLike:
-        return <PostNotificationCard item={item} like={true} />;
+        return <LikeNotificationCard item={item} />;
       default:
         return <SystemNotificationCard item={item} />;
     }
