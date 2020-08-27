@@ -24,7 +24,7 @@ const window05 = window * 0.05;
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const UsersBottomModal = React.forwardRef(
-  ({ name, type, onPress, query, variables, onClose }, ref) => {
+  ({ name, type, onPress, query, variables, onClose}, ref) => {
     // use Lazy Query so that it is not executed unless opened
     const [
       getUsers,
@@ -33,7 +33,8 @@ const UsersBottomModal = React.forwardRef(
 
     const insets = useSafeArea();
 
-    console.log('userDara', userData)
+    console.log('userDara', userData);
+
 
     if (error) {
       processWarning(error, 'Server Error');
@@ -57,8 +58,8 @@ const UsersBottomModal = React.forwardRef(
     } else if (type === 'chat') {
       heading = 'Chat Participants';
       subHeading = `Members of ${name ? name : 'this chat'}`;
-      keyExtractor = (item) => item.id;
-      if (userData) data = userData.users;
+      keyExtractor = (item) => item.user.id;
+      if (userData) data = userData.chat.users;
     } else if (type === 'event') {
       heading = 'Event Attendees';
       subHeading = `Users who ${
@@ -87,7 +88,7 @@ const UsersBottomModal = React.forwardRef(
 
       if (type === 'friends') {
         user = item.friend;
-      } else if (type === 'event' || type === 'group') {
+      } else if (type === 'event' || type === 'group' || type === 'chat') {
         user = item.user;
       } else {
         user = item;
@@ -116,75 +117,80 @@ const UsersBottomModal = React.forwardRef(
     };
 
     const onEndReached = () => {
-        console.log('onEndReached data', data.length)
-        fetchMore({
-          variables: {
-            ...variables,
-            offset: data.length,
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            console.log('fetchMore', fetchMoreResult);
-            if (!fetchMoreResult) return prev;
+      console.log('onEndReached data', data.length);
+      fetchMore({
+        variables: {
+          ...variables,
+          offset: data.length,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          console.log('fetchMore', fetchMoreResult);
+          if (!fetchMoreResult) return prev;
 
-            console.log('prev', prev);
+          console.log('prev', prev);
 
-
-            switch (type) {
-              case 'chat':
-                return { users: [...prev.users, ...fetchMoreResult.users] };
-              case 'friends':
-                return {
-                  user: {
-                    ...prev.user,
-                    friends: [
-                      ...prev.user.friends,
-                      ...fetchMoreResult.user.friends,
-                    ],
-                  },
-                };
-              case 'event':
-                return {
-                  event: {
-                    ...prev.event,
-                    attendees: [
-                      ...prev.event.attendees,
-                      ...fetchMoreResult.event.attendees
-                    ]
-                  }
-                };
-              case 'group':
-                return {
-                  group: {
-                    ...prev.group,
-                    members: [
-                      ...prev.group.members,
-                      ...fetchMoreResult.group.members
-                    ]
-                  }
-                }
-              default:
-                return null
-            }
-          },
-        });
-      }
+          switch (type) {
+            case 'chat':
+              return {
+                chat: {
+                  ...prev.chat,
+                  users: [...prev.chat.users, ...fetchMoreResult.chat.users],
+                },
+              };
+            case 'friends':
+              return {
+                user: {
+                  ...prev.user,
+                  friends: [
+                    ...prev.user.friends,
+                    ...fetchMoreResult.user.friends,
+                  ],
+                },
+              };
+            case 'event':
+              return {
+                event: {
+                  ...prev.event,
+                  attendees: [
+                    ...prev.event.attendees,
+                    ...fetchMoreResult.event.attendees,
+                  ],
+                },
+              };
+            case 'group':
+              return {
+                group: {
+                  ...prev.group,
+                  members: [
+                    ...prev.group.members,
+                    ...fetchMoreResult.group.members,
+                  ],
+                },
+              };
+            default:
+              return null;
+          }
+        },
+      });
+    };
 
     return (
       <Modalize
         ref={ref}
-        modalStyle={styles.container}
+        modalStyle={[styles.container, StyleSheet.absoluteFill ]}
+        modalTopOffset={100}
         flatListProps={{
           showsVerticalScrollIndicator: false,
           data: data,
           ListEmptyComponent: listEmptyComponent,
           keyExtractor: keyExtractor,
-          style: { flex: 1, marginBottom: 70 + insets.bottom },
+          style: { flex: 1, marginBottom: 80 + insets.bottom },
           renderItem: renderItem,
           ListHeaderComponent: header,
           bounces: false,
           onEndReachedThreshold: 0.5,
           initialNumToRender: 18,
-          onEndReached: onEndReached
+          onEndReached: onEndReached,
         }}
         onOpen={onOpen}
         onClose={onClose}

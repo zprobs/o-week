@@ -319,6 +319,21 @@ export const GET_USER_BY_ID = gql`
   }
 `;
 
+export const GET_USERS_IN_CHAT = gql`
+    query getUsersInChat($chatId: Int!, $offset: Int = 0) {
+        chat(id: $chatId)  {
+            id
+            users(limit: 20, offset: $offset) {
+                user {
+                    id
+                    name
+                    image
+                }
+            }
+        }
+    }
+`;
+
 export const GET_INTERESTS = gql`
   query GET_INTERESTS {
     interests(order_by: { name: asc }) {
@@ -566,6 +581,24 @@ export const SEARCH_CHATS = gql`
   ${DETAILED_CHAT}
 `;
 
+export const SEARCH_USERS_ADD_TO_CHAT = gql`
+    query searchUsersAddToChat($query: String!, $limit: Int = 25, $chatId: Int!) {
+        users(
+            where: {
+                _and: [
+                    { name: { _ilike: $query } }
+                    {_not: {userChats: {chatId: {_eq: $chatId}}}}
+                ]
+            }
+            limit: $limit
+        ) {
+            id
+            image
+            name
+        }
+    }
+`
+
 export const GET_CHAT_BY_ID = gql`
   query getChatById($id: Int!) {
     chat(id: $id) {
@@ -587,6 +620,22 @@ export const NEW_CHAT = gql`
   }
   ${DETAILED_CHAT}
 `;
+
+export const ADD_USERS_TO_CHAT = gql`
+    mutation insert_userChat($objects: [userChat_insert_input!]!) {
+        insert_userChat(objects: $objects) {
+            returning {
+                chat {
+                    id
+                    participants {
+                        id
+                        name
+                    }
+                }
+            } 
+        }
+    }
+`
 
 export const UNSUBSCRIBE_FROM_CHAT = gql`
   mutation unsubscribeFromChat($chatId: Int!, $userId: String!) {
@@ -1470,7 +1519,7 @@ export const GET_LEADERBOARD = gql`
   query getLeaderBoard {
     groups(
       where: { groupType: { _eq: "orientation" } }
-      order_by: { trophies_aggregate: { sum: { score: desc } } }
+      order_by: { trophies_aggregate: { sum: { score: desc_nulls_last } } }
       limit: 25
     ) {
       id

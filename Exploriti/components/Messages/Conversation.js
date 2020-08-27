@@ -32,7 +32,7 @@ import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
   GET_EARLIER_MESSAGES,
   GET_NEW_MESSAGES,
-  GET_USERS_BY_ID,
+  GET_USERS_BY_ID, GET_USERS_IN_CHAT,
   SEND_MESSAGE,
   UPDATE_MESSAGE_SEEN,
 } from '../../graphql';
@@ -263,6 +263,7 @@ const Conversation = () => {
     />
   );
 
+
   return (
     <SafeAreaView style={styles.container}>
       <GoBackHeader
@@ -275,25 +276,26 @@ const Conversation = () => {
       <UsersBottomModal
         type={'chat'}
         name={chatName}
-        query={GET_USERS_BY_ID}
-        variables={{ _in: participants.map((p) => p.id) }}
+        query={GET_USERS_IN_CHAT}
+        variables={{ chatId: chatId}}
         ref={usersRef}
       />
       {participants.length > 2 ? (
         <ChatOptionsModal
           id={chatId}
           prevName={nameState}
+          chatName={chatName}
           prevImage={image}
           ref={optionsRef}
           setName={setNameState}
           muted={muted}
         />
-      ) : (
+      ) : participants.length === 2 ?  (
         <OptionsBottomModal
           id={participants.find((p) => p.id !== authState.user.uid).id}
           ref={optionsRef}
         />
-      )}
+      ) : null}
     </SafeAreaView>
   );
 };

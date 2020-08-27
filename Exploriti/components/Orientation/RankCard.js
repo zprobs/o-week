@@ -42,7 +42,7 @@ const RankCard = ({ style, onPress, rank, gold, points, team }) => {
           <View style={{height:10}}/>
           <View>
             <Text style={styles(gold).label}>Points</Text>
-            <Text style={styles(gold).text}>{points.toLocaleString()}</Text>
+            <Text style={styles(gold).text}>{points ? points.toLocaleString() : 0}</Text>
           </View>
         </View>
       </View>

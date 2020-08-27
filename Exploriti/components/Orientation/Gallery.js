@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
     width: width - 50,
     height: width - 50,
     borderRadius: 12,
-    marginVertical: 10
+    marginVertical: 10,
+    backgroundColor: colours.placeholder
   },
   container: {
     flex: 1,

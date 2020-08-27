@@ -141,7 +141,7 @@ const GroupInfoModal = React.forwardRef(
             posts.map((p, i) => <Post item={p} index={i} key={p.id} />)
           )}
           {count > 4 ? (
-            <View style={styles.sectionView}>
+            <View style={{marginVertical: 20}}>
               <Button
                 title={'See All'}
                 onPress={() =>
@@ -251,7 +251,7 @@ const GroupInfoModal = React.forwardRef(
               </>
             ) : null}
           </>
-          {data.group.trophies.length > 0 ? (
+          {data.group.groupType === "orientation" ? (
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Leaderboard</Text>
@@ -264,13 +264,20 @@ const GroupInfoModal = React.forwardRef(
                 team={data.group.name}
                 points={data.group.trophies_aggregate.aggregate.sum.score}
               />
-              <View style={styles.sectionView}>
-                <Text style={styles.sectionText}>Trophies</Text>
-              </View>
-              <TrophyList
-                style={{ marginVertical: 25, marginBottom: 5 }}
-                data={data.group.trophies}
-              />
+              {
+                data.group.trophies.length > 0 ? (
+                  <>
+                    <View style={styles.sectionView}>
+                      <Text style={styles.sectionText}>Trophies</Text>
+                    </View>
+                  <TrophyList
+                    style={{ marginVertical: 25, marginBottom: 5 }}
+                    data={data.group.trophies}
+                  />
+                  </>
+                ) : null
+              }
+
             </>
           ) : null}
         </>
