@@ -37,12 +37,13 @@ import {
 } from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
-import { showMessage } from 'react-native-flash-message';
+import {eventTypes} from '../../context';
 import SegmentedControl from '@react-native-community/segmented-control';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
+
 
 /**
  * Modal for creating an event accessible only by Leaders through the Group page
@@ -90,8 +91,7 @@ const NewEventModal = React.forwardRef(
     const [linkIndex, setLinkIndex] = useState(0)
     const { authState, setAuthState } = useContext(AuthContext);
 
-    console.log('startDate', startDate.getTime());
-    if (data) console.log('event.startDate', new Date(data.event.startDate).getTime());
+    if (data) console.log('event.type', data.event.eventType);
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -124,7 +124,14 @@ const NewEventModal = React.forwardRef(
         if (event.location.constructor !== Object) setLocation(event.location);
         setStartDate(new Date(event.startDate));
         setEndDate(new Date(event.endDate));
-        if (!event.isZoom) setLinkIndex(1);
+        if (event.eventType === 'zoom') {
+          setLinkIndex(0);
+        } else if (event.eventType === 'gather') {
+          setLinkIndex(1);
+        } else {
+          setLinkIndex(2)
+        }
+
       }
     }, [data]);
 
@@ -185,7 +192,7 @@ const NewEventModal = React.forwardRef(
         })
         fields.hosts = { data: IDs };
         fields.attendees = { data: userEvent_insert_input };
-        fields.isZoom = linkIndex === 0;
+        fields.eventType = linkIndex === 0;
 
         console.log('Global event users', userIDs);
 
@@ -232,7 +239,7 @@ const NewEventModal = React.forwardRef(
         startChanged = true;
       }
       if (endDate.getTime() !== new Date(event.endDate).getTime()) fields.endDate = endDate;
-      if (linkIndex === 0 && !event.isZoom || linkIndex === 1 && event.isZoom) fields.isZoom = linkIndex === 0;
+      if (eventTypes[linkIndex] !== event.eventType) fields.eventType = eventTypes[linkIndex];
 
       console.log('fields', fields);
 
@@ -407,7 +414,7 @@ const NewEventModal = React.forwardRef(
             />
 
             <SegmentedControl
-              values={['Zoom', 'Gather']}
+              values={['Zoom', 'Gather', 'YouTube']}
               selectedIndex={linkIndex}
               onChange={(event) => {
                 setLinkIndex(event.nativeEvent.selectedSegmentIndex);
@@ -417,7 +424,7 @@ const NewEventModal = React.forwardRef(
 
             <FormInput
               ref={null}
-              label={linkIndex === 0 ? "Zoom Link" : "Gather Link"}
+              label={linkIndex === 0 ? "Zoom Link" : linkIndex === 1 ?  "Gather Link" : "Youtube Link"}
               placeholder={linkIndex === 0 ? "example: https://us02web.zoom.us/j/824?pwd=123" : "example: https://letsgather.app.link/UapAgGbE38"}
               value={website}
               onChangeText={setWebsite}

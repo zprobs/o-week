@@ -70,7 +70,7 @@ const Calendar = () => {
           type: 'LOCAL'
         },
       }).then((id) => {
-        const events = data.events.filter(evt => evt.hosts[0].groupId === calendar.group.id);
+        const events = data.events.filter(evt => evt.hosts.find(h => h.groupId === calendar.group.id) !== undefined);
         console.log({events});
         events.map(evt => {
           RNCalendarEvents.saveEvent(evt.name, {

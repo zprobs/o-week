@@ -543,7 +543,7 @@ const EventInfoModal = React.forwardRef(
             </View>
             <View style={{ marginLeft: 10 }}>
               <Text style={{ ...styles.iconLabel, color: colours.text01 }}>
-                {data.event.isZoom ? 'Join Zoom Meeting' : 'Join Gather Game'}
+                {data.event.eventType === 'zoom' ? 'Join Zoom Meeting' : data.event.eventType === 'gather' ? 'Join Gather Game' : 'Join Youtube Stream'}
               </Text>
               <Text style={styles.countdownText}>{timeString}</Text>
               {happeningNow ? <HappeningNow /> : null}
@@ -552,14 +552,14 @@ const EventInfoModal = React.forwardRef(
           <TouchableOpacity onPress={openLink}>
             <Image
               source={
-                data.event.isZoom
+                data.event.eventType === 'gather'
                   ? {
                       uri:
-                        'https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg',
+                        'https://techcrunch.com/wp-content/uploads/2020/03/getty-video-call-chat.jpg?w=1390&crop=1',
                     }
                   : {
                       uri:
-                        'https://techcrunch.com/wp-content/uploads/2020/03/getty-video-call-chat.jpg?w=1390&crop=1',
+                        'https://www.newhorizons.com/Portals/278/EasyDNNnews/162459/img-business-presentation-tips.jpg',
                     }
               }
               style={styles.eventImage}

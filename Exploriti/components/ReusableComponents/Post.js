@@ -38,6 +38,7 @@ import {
   DELETE_POST,
   GET_DETAILED_POST,
   GET_GROUP_POSTS,
+  GET_GROUP_POSTS_PAGINATED,
   GET_POST_COMMENTS,
 } from '../../graphql';
 import LikeSVG from '../../assets/svg/LikeSVG';
@@ -77,7 +78,10 @@ const Post = ({ item, index }) => {
     <TouchableOpacity
       style={{ ...styles.container, ...containerBorderRadius }}
       onPress={() =>
-        navigation.navigate('PostScreen', { postId: item.id, authorId: user.id })
+        navigation.navigate('PostScreen', {
+          postId: item.id,
+          authorId: user.id,
+        })
       }>
       <View style={styles.header}>
         <TouchableOpacity
@@ -157,7 +161,19 @@ export const PostScreen = () => {
   const [deletePost, { error: deleteError }] = useMutation(DELETE_POST, {
     variables: { id: postId },
     refetchQueries: [
-      { query: GET_GROUP_POSTS, variables: { groupId: postData && postData.post ? postData.post.groupId : '' } },
+      {
+        query: GET_GROUP_POSTS,
+        variables: {
+          groupId: postData && postData.post ? postData.post.groupId : '',
+        },
+      },
+      {
+        query: GET_GROUP_POSTS_PAGINATED,
+        variables: {
+          groupId: postData && postData.post ? postData.post.groupId : '',
+          offset: 0,
+        },
+      },
     ],
     onCompleted: () => {
       navigation.goBack();
@@ -225,7 +241,7 @@ export const PostScreen = () => {
     });
   }, [commentsData]);
 
-  if (postLoading || postError) return null
+  if (postLoading || postError) return null;
 
   const Header = () => (
     <>
@@ -482,7 +498,7 @@ const styles = StyleSheet.create({
     width: 52,
     borderRadius: 8,
     marginRight: 12,
-    backgroundColor: colours.white
+    backgroundColor: colours.white,
   },
   moreImagesText: {
     ...FontWeights.Regular,

@@ -729,7 +729,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     endDate
     isOfficial
     website
-    isZoom
+      eventType
     attendees(where: { didAccept: { _eq: true } }, limit: 20) {
       user {
         image
@@ -773,7 +773,7 @@ export const GET_EVENT_EDIT = gql`
       endDate
       isOfficial
       website
-      isZoom
+        eventType
       attendees {
         user {
           id
@@ -929,6 +929,7 @@ export const UPDATE_EVENT = gql`
       startDate
       endDate
       website
+        eventType
     }
   }
 `;
