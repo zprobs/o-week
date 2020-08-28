@@ -134,6 +134,14 @@ export const DELETE_NOTIFICATION = gql`
   }
 `;
 
+export const DELETE_NOTIFICATIONS = gql`
+    mutation DeleteNotifications($id: String!) {
+        delete_notification(where: {typeId: {_eq: $id}}) {
+            affected_rows
+        }
+    }
+`
+
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
     user(id: $id) {
@@ -271,6 +279,8 @@ export const SEND_NOTIFICATIONS = gql`
     }
   }
 `;
+
+
 
 export const SIGN_UP = gql`
   mutation SIGN_UP($data: user_insert_input!) {

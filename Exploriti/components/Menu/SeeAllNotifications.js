@@ -10,6 +10,7 @@ const SeeAllNotifications = () => {
 
   const [seeAll] = useMutation(SEE_ALL_NOTIFICATIONS, {
     variables: { id: authState.user.uid },
+    optimisticResponse: true,
     update: (cache) => {
 
 

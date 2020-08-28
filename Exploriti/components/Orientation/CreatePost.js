@@ -79,8 +79,9 @@ const CreatePost = () => {
 
     const userIDs = [];
     groupMembers.group.members.map(m => {
-      userIDs.push({userId: m.userId});
+      if (m.userId !== authState.user.uid) userIDs.push({userId: m.userId});
     })
+    console.log({userIDs })
 
     if (imageSelection.length > 0) {
       Promise.all(

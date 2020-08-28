@@ -54,6 +54,7 @@ const LikeSVG = ({ postId, style, authorId }) => {
   });
   const [likePost] = useMutation(LIKE_POST, {
     ...options,
+    optimisticResponse: true,
     update: (cache) => {
       try {
         const { likes_aggregate } = cache.readFragment({
@@ -75,6 +76,7 @@ const LikeSVG = ({ postId, style, authorId }) => {
   });
   const [unLikePost] = useMutation(UNLIKE_POST, {
     ...options,
+    optimisticResponse: true,
     update: (cache) => {
       try {
         const { likes_aggregate } = cache.readFragment({
@@ -156,9 +158,9 @@ const LikeSVG = ({ postId, style, authorId }) => {
           ...FontWeights.Bold,
           color: ThemeStatic.accent,
         }}>
-        {data && data.post.likes_aggregate.aggregate.count > 99
+        {data && data.post && data.post.likes_aggregate.aggregate.count > 99
           ? '99+'
-          : data ?  data.post.likes_aggregate.aggregate.count : '·'}
+          : data && data.post ?  data.post.likes_aggregate.aggregate.count : '·'}
       </Text>
     </TouchableOpacity>
   );

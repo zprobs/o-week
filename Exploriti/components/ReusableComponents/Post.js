@@ -35,6 +35,7 @@ import { log } from 'react-native-reanimated';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
 import {
+  DELETE_NOTIFICATIONS,
   DELETE_POST,
   GET_DETAILED_POST,
   GET_GROUP_POSTS,
@@ -158,6 +159,7 @@ export const PostScreen = () => {
     loading: postLoading,
     error: postError,
   } = useQuery(GET_DETAILED_POST, { variables: { postId: postId } });
+
   const [deletePost, { error: deleteError }] = useMutation(DELETE_POST, {
     variables: { id: postId },
     refetchQueries: [
@@ -176,7 +178,7 @@ export const PostScreen = () => {
       },
     ],
     onCompleted: () => {
-      navigation.goBack();
+          navigation.goBack();
     },
   });
   const { data: commentsData, loading, error, fetchMore } = useQuery(
@@ -204,16 +206,16 @@ export const PostScreen = () => {
                 'This will permanently remove this post and all the comments',
                 [
                   { text: 'Cancel', style: 'cancel' },
-                  { text: 'Delete', onPress: deletePost },
+                  { text: 'Delete', onPress: deletePost},
                 ],
-                { cancelable: false },
+                { cancelable: true },
               );
             }
           }}
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, postData]);
 
   useEffect(() => {
     if (comment && addCommentsRef.current) {

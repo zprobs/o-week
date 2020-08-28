@@ -6,7 +6,8 @@ import {
   View,
   TouchableOpacity,
   Linking,
-  Button, ActivityIndicator,
+  Button,
+  ActivityIndicator,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -57,17 +58,28 @@ const GroupInfoModal = React.forwardRef(
 
     const Tabs = () => {
       const [index, setIndex] = useState(0);
-      const [routes] = useState([
-        { key: 'first', title: 'Feed' },
-        { key: 'second', title: 'About' },
-        { key: 'third', title: 'Events' },
-      ]);
+      const initialRoutes = isMember
+        ? [
+            { key: 'first', title: 'Feed' },
+            { key: 'second', title: 'About' },
+            { key: 'third', title: 'Events' },
+          ]
+        : [
+            { key: 'first', title: 'About' },
+            { key: 'second', title: 'Events' },
+          ];
+      const [routes] = useState(initialRoutes);
 
-      const renderScene = SceneMap({
+      const sceneMap = isMember ? {
         first: Feed,
         second: About,
         third: Events,
-      });
+      } : {
+        first: About,
+        second: Events,
+      }
+
+      const renderScene = SceneMap(sceneMap);
 
       const renderTabBar = (props) => {
         return (
@@ -75,8 +87,8 @@ const GroupInfoModal = React.forwardRef(
             {...props}
             indicatorStyle={{
               backgroundColor: ThemeStatic.gold,
-              width: '16.66%',
-              marginLeft: WIDTH * 0.083,
+              width: isMember ? '16.66%' : '25%',
+              marginLeft: isMember ? WIDTH * 0.083 : WIDTH * 0.125,
             }}
             style={styles.tabBar}
             renderLabel={({ route, color }) => (
@@ -112,11 +124,9 @@ const GroupInfoModal = React.forwardRef(
         fetchPolicy: 'cache-and-network',
       });
 
-      if (loading || postsLoading) return (
-       <TabLoading/>
-      )
+      if (loading || postsLoading) return <TabLoading />;
 
-      if ( error  || postsError) return null;
+      if (error || postsError) return null;
 
       const count = postData.group.posts_aggregate.aggregate.count;
       const posts = postData.group.posts;
@@ -141,7 +151,7 @@ const GroupInfoModal = React.forwardRef(
             posts.map((p, i) => <Post item={p} index={i} key={p.id} />)
           )}
           {count > 4 ? (
-            <View style={{marginVertical: 20}}>
+            <View style={{ marginVertical: 20 }}>
               <Button
                 title={'See All'}
                 onPress={() =>
@@ -251,7 +261,7 @@ const GroupInfoModal = React.forwardRef(
               </>
             ) : null}
           </>
-          {data.group.groupType === "orientation" ? (
+          {data.group.groupType === 'orientation' ? (
             <>
               <View style={styles.sectionView}>
                 <Text style={styles.sectionText}>Leaderboard</Text>
@@ -264,20 +274,17 @@ const GroupInfoModal = React.forwardRef(
                 team={data.group.name}
                 points={data.group.trophies_aggregate.aggregate.sum.score}
               />
-              {
-                data.group.trophies.length > 0 ? (
-                  <>
-                    <View style={styles.sectionView}>
-                      <Text style={styles.sectionText}>Trophies</Text>
-                    </View>
+              {data.group.trophies.length > 0 ? (
+                <>
+                  <View style={styles.sectionView}>
+                    <Text style={styles.sectionText}>Trophies</Text>
+                  </View>
                   <TrophyList
                     style={{ marginVertical: 25, marginBottom: 5 }}
                     data={data.group.trophies}
                   />
-                  </>
-                ) : null
-              }
-
+                </>
+              ) : null}
             </>
           ) : null}
         </>
@@ -347,10 +354,10 @@ const GroupInfoModal = React.forwardRef(
 );
 
 const TabLoading = () => (
-  <View style={{marginTop: 80, width: '100%', flex: 1, height: 200}}>
+  <View style={{ marginTop: 80, width: '100%', flex: 1, height: 200 }}>
     <ActivityIndicator size="large" />
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   sectionView: {
