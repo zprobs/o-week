@@ -248,6 +248,7 @@ const EditProfileBottomModal = React.forwardRef(
                       touched={touched.description}
                       onBlur={handleBlur('description')}
                       autoCapitalize
+                      characterRestriction={201}
                     />
                     <View style={{ height: 4 }} />
                     <Selection
@@ -367,7 +368,7 @@ const styles = StyleSheet.create({
 
 const EditProfileSchema = Yup.object().shape({
   name: Yup.string().required('Required').max(60),
-  description: Yup.string().max(400),
+  description: Yup.string().max(200),
 });
 
 export default EditProfileBottomModal;
