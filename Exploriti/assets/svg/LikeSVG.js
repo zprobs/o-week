@@ -54,7 +54,6 @@ const LikeSVG = ({ postId, style, authorId }) => {
   });
   const [likePost] = useMutation(LIKE_POST, {
     ...options,
-    optimisticResponse: true,
     update: (cache) => {
       try {
         const { likes_aggregate } = cache.readFragment({
@@ -76,7 +75,6 @@ const LikeSVG = ({ postId, style, authorId }) => {
   });
   const [unLikePost] = useMutation(UNLIKE_POST, {
     ...options,
-    optimisticResponse: true,
     update: (cache) => {
       try {
         const { likes_aggregate } = cache.readFragment({
