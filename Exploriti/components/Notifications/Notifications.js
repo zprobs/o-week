@@ -1,29 +1,29 @@
 import React, { useContext } from 'react';
-import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import EmptyNotifications from '../../assets/svg/empty-notifications.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { useQuery, useSubscription } from '@apollo/react-hooks';
+import { useSubscription } from '@apollo/react-hooks';
 import { GET_NOTIFICATIONS } from '../../graphql';
-import {
-  AuthContext,
-  NotificationTypes,
-  processWarning,
-  refreshToken,
-} from '../../context';
+import { AuthContext, NotificationTypes, processWarning } from '../../context';
 
 import {
   CommentNotificationCard,
-  EventNotificationCard, LikeNotificationCard,
+  EventNotificationCard,
+  LikeNotificationCard,
   PostNotificationCard,
   SystemNotificationCard,
   TrophyNotificationCard,
   UserNotificationCard,
 } from './NotificationCard';
-import { showMessage } from 'react-native-flash-message';
 import NotificationsPlaceholder from '../Placeholders/NotificationsPlaceholder';
 
+/**
+ * List of users notifications found in MyProfile -> NotificationIcon
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Notifications() {
-  const { authState, setAuthState } = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
   const { data, loading, error } = useSubscription(GET_NOTIFICATIONS, {
     variables: { id: authState.user.uid },
   });
@@ -86,7 +86,7 @@ export default function Notifications() {
       case NotificationTypes.newPost:
         return <PostNotificationCard item={item} />;
       case NotificationTypes.newComment:
-        return <CommentNotificationCard item={item}  />;
+        return <CommentNotificationCard item={item} />;
       case NotificationTypes.newLike:
         return <LikeNotificationCard item={item} />;
       default:

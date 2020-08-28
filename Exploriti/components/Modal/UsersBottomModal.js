@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
@@ -14,27 +14,28 @@ const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
 const window05 = window * 0.05;
 
-/**
- * List modal of users
- * @param name {string} the name of user other than the current user. Do not include if current user
- * @param type {string} The type of data to be expected. One of : friends ,chat, group, event
- * @param data What is shown in the Flatlist. An array of Strings representing userIds
- * @param type {string} Type = Friends when the component is rendering the users that a user is friends with
- * @param onPress {function} an optional onPress() for if you don't want to navigate to profile
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
- */
 const UsersBottomModal = React.forwardRef(
-  ({ name, type, onPress, query, variables, onClose}, ref) => {
+  /**
+   * list of users paginated
+   * @param name {string} the name of user other than the current user. Do not include if current user
+   * @param type {string} The type of data to be expected. One of : friends ,chat, group, event
+   * @param onPress {function} an optional onPress() for if you don't want to navigate to profile
+   * @param query  Graphql query to get users
+   * @param variables for the query
+   * @param onClose {function}
+   * @param ref
+   * @returns {JSX.Element}
+   */
+  ({ name, type, onPress, query, variables, onClose }, ref) => {
     // use Lazy Query so that it is not executed unless opened
     const [
       getUsers,
-      { data: userData, loading, error, called, fetchMore },
+      { data: userData, error, called, fetchMore },
     ] = useLazyQuery(query, { variables: { ...variables, offset: 0 } });
 
     const insets = useSafeArea();
 
     console.log('userDara', userData);
-
 
     if (error) {
       processWarning(error, 'Server Error');
@@ -177,7 +178,7 @@ const UsersBottomModal = React.forwardRef(
     return (
       <Modalize
         ref={ref}
-        modalStyle={[styles.container, StyleSheet.absoluteFill ]}
+        modalStyle={[styles.container, StyleSheet.absoluteFill]}
         modalTopOffset={100}
         flatListProps={{
           showsVerticalScrollIndicator: false,

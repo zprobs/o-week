@@ -29,7 +29,7 @@ const ButtonColour = ({
   colour,
   light,
   loadColour,
-  disabled
+  disabled,
 }) => {
   const styles = StyleSheet.create({
     container: {

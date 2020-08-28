@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
-  Animated, Linking,
+  Animated,
+  Linking,
 } from 'react-native';
-import SegmentedControl from '@react-native-community/segmented-control';
 import Fonts from '../../theme/Fonts';
 import { ThemeStatic } from '../../theme/Colours';
 import TextLine from '../ReusableComponents/TextLine';
@@ -29,7 +29,6 @@ import {
   facultiesData,
   yearsData,
   yearToInt,
-  timeZoneData,
   saveImage,
   getDefaultImage,
 } from '../../context';
@@ -39,7 +38,6 @@ import Svg, { Path } from 'react-native-svg';
 import { Formik } from 'formik';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Yup from 'yup';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { linkError } from '../ReusableComponents/SocialMediaIcons';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -59,7 +57,6 @@ export default function Signup({ navigation }) {
   const [programsSelection, setProgramsSelection] = useState([]);
   const [year, setYear] = useState();
   const [faculty, setFaculty] = useState();
-  const [timeZone, setTimezone] = useState([]);
   const [interests, setInterests] = useState([]);
   const [interestsSelection, setInterestsSelection] = useState([]);
   const [image, setImage] = useState(getDefaultImage());
@@ -71,7 +68,6 @@ export default function Signup({ navigation }) {
   const programRef = useRef();
   const yearRef = useRef();
   const facultyRef = useRef();
-  const timeZoneRef = useRef();
   const interestRef = useRef();
   const scrollViewRef = useRef();
   const emailRef = useRef();
@@ -82,9 +78,7 @@ export default function Signup({ navigation }) {
   const onProgramRef = () => programRef.current.open();
   const onYearRef = () => yearRef.current.open();
   const onFacultyRef = () => facultyRef.current.open();
-  const onTimeZoneRef = () => timeZoneRef.current.open();
   const onInterestRef = () => interestRef.current.open();
-
 
   const programTitle = () => {
     const size = programs.length;
@@ -99,14 +93,6 @@ export default function Signup({ navigation }) {
       }
     }
     return string;
-  };
-
-  const timeZoneTitle = () => {
-    const size = timeZone.length;
-    if (size === 0) {
-      return 'Select your time zone';
-    }
-    return timeZone[0];
   };
 
   const interestsTitle = (interestIndex) => {
@@ -248,26 +234,31 @@ export default function Signup({ navigation }) {
     Alert.alert(
       'Accept our Terms of Use',
       'By continuing to use this application you accept our terms of use',
-      [{
-        text: 'View',
-        onPress: () => Linking.canOpenURL('https://www.arravon.com/termsofuse')
-          .then((result) => {
-            if (result) {
-              Linking.openURL('https://www.arravon.com/termsofuse').catch((e) => console.log(e));
-            } else {
-              linkError('', 'Link');
-            }
-          })
-          .catch((error) => {
-            linkError(error, 'Link');
-          })
-      },
+      [
+        {
+          text: 'View',
+          onPress: () =>
+            Linking.canOpenURL('https://www.arravon.com/termsofuse')
+              .then((result) => {
+                if (result) {
+                  Linking.openURL(
+                    'https://www.arravon.com/termsofuse',
+                  ).catch((e) => console.log(e));
+                } else {
+                  linkError('', 'Link');
+                }
+              })
+              .catch((error) => {
+                linkError(error, 'Link');
+              }),
+        },
         {
           text: 'Refuse',
           onPress: () => console.log('Cancel Pressed'),
-          style: 'destructive'
+          style: 'destructive',
         },
-        { text: 'I Accept', onPress: () => submit(values)}],
+        { text: 'I Accept', onPress: () => submit(values) },
+      ],
       { cancelable: true },
     );
   }
@@ -277,30 +268,26 @@ export default function Signup({ navigation }) {
     setIsLoading(true);
     const userData = {};
 
-
     const { email, password, name } = values;
 
     console.log('e, p, n', email, password, name);
-    const imageURL = imageSelection ? await saveImage(imageSelection, null, 'profile', email + Math.random() ) : image;
+    const imageURL = imageSelection
+      ? await saveImage(imageSelection, null, 'profile', email + Math.random())
+      : image;
 
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then( async (userCredential) => {
+      .then(async (userCredential) => {
         console.log(userCredential.user.uid);
         userData.name = name;
         userData.email = email;
         userData.id = userCredential.user.uid;
         userData.year = yearToInt(year);
-        userData.timezone =
-          timeZone && timeZone.length !== 0 ? timeZone[0] : null;
         userData.programs = graphqlify(programsSelection, 'program');
         userData.interests = graphqlify(interestsSelection, 'interest');
         userData.image = imageURL;
-
-        const orientationGroups = [
-          'ad1560ef-9b37-4f93-838f-8f8a3e98b570',
-        ];
+        const orientationGroups = ['ad1560ef-9b37-4f93-838f-8f8a3e98b570'];
 
         userData.member = graphqlify(orientationGroups, 'group');
 
@@ -466,10 +453,6 @@ export default function Signup({ navigation }) {
                         title={faculty || 'Select your college'}
                         onPress={onFacultyRef}
                       />
-                      <Selection
-                        title={timeZoneTitle()}
-                        onPress={onTimeZoneRef}
-                      />
                     </View>
                   </View>
                   <View style={styles.page}>
@@ -504,8 +487,8 @@ export default function Signup({ navigation }) {
                       <View>
                         <Text style={styles.title}>Finish Signing Up</Text>
                         <Text style={styles.caption}>
-                          Your account is ready to be created. Just
-                          add a profile picture and get started.
+                          Your account is ready to be created. Just add a
+                          profile picture and get started.
                         </Text>
                       </View>
                       <View>
@@ -568,19 +551,6 @@ export default function Signup({ navigation }) {
               aliased={true}
               max={4}
               min={1}
-              floatingButtonText={'Done'}
-              offset={40}
-            />
-            <SearchableFlatList
-              ref={timeZoneRef}
-              title={'time zone'}
-              data={timeZoneData}
-              setData={setTimezone}
-              setSelection={() => {}}
-              aliased={false}
-              max={1}
-              min={1}
-              query={undefined}
               floatingButtonText={'Done'}
               offset={40}
             />

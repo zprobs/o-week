@@ -1,9 +1,5 @@
 import gql from 'graphql-tag';
 
-/**
- * To get new Schema :
- * gq https://exploriti-backend.herokuapp.com/v1/graphql -H 'X-Hasura-Admin-Secret: Liv7RYcLeKFPFuW4pJHX' --introspect > schema.graphql
- **/
 export const DETAILED_USER_FRAGMENT = gql`
   fragment DetailedUser on user {
     id
@@ -94,16 +90,6 @@ export const GET_UNREAD_NOTIFICATIONS_COUNT_QUERY = gql`
   ${NOTIFICATION_FRAG}
 `;
 
-export const NOTIFICATIONS_COUNT_SUBSCRIPTION = gql`
-  subscription getUnreadNotificationsCount($id: String!) {
-    user(id: $id) {
-      id
-      ...notificationFrag
-    }
-  }
-  ${NOTIFICATION_FRAG}
-`;
-
 export const SEE_NOTIFICATION = gql`
   mutation seeNotification($id: Int!) {
     update_notification(where: { id: { _eq: $id } }, _set: { seen: true }) {
@@ -128,19 +114,14 @@ export const SEE_ALL_NOTIFICATIONS = gql`
 
 export const DELETE_NOTIFICATION = gql`
   mutation deleteNotification($notificationId: Int!, $userId: String!) {
-      delete_userNotification_by_pk(notificationId: $notificationId, userId: $userId) {
-          notificationId
-      }
+    delete_userNotification_by_pk(
+      notificationId: $notificationId
+      userId: $userId
+    ) {
+      notificationId
+    }
   }
 `;
-
-export const DELETE_NOTIFICATIONS = gql`
-    mutation DeleteNotifications($id: String!) {
-        delete_notification(where: {typeId: {_eq: $id}}) {
-            affected_rows
-        }
-    }
-`
 
 export const GET_CURRENT_USER = gql`
   query getCurrentUser($id: String!) {
@@ -280,8 +261,6 @@ export const SEND_NOTIFICATIONS = gql`
   }
 `;
 
-
-
 export const SIGN_UP = gql`
   mutation SIGN_UP($data: user_insert_input!) {
     createUser(object: $data) {
@@ -299,26 +278,6 @@ export const GET_ALL_USERS = gql`
   }
 `;
 
-export const GET_USERS_WHERE = gql`
-  query getUsersWhere($_nin: [String!]!, $limit: Int = 7) {
-    users(where: { id: { _nin: $_nin } }, limit: $limit) {
-      id
-      image
-      name
-    }
-  }
-`;
-
-export const GET_USERS_BY_ID = gql`
-  query getUsersById($_in: [String!]!, $offset: Int = 0) {
-    users(where: { id: { _in: $_in } }, offset: $offset) {
-      id
-      image
-      name
-    }
-  }
-`;
-
 export const GET_USER_BY_ID = gql`
   query getUserById($id: String!) {
     user(id: $id) {
@@ -330,18 +289,18 @@ export const GET_USER_BY_ID = gql`
 `;
 
 export const GET_USERS_IN_CHAT = gql`
-    query getUsersInChat($chatId: Int!, $offset: Int = 0) {
-        chat(id: $chatId)  {
-            id
-            users(limit: 20, offset: $offset) {
-                user {
-                    id
-                    name
-                    image
-                }
-            }
+  query getUsersInChat($chatId: Int!, $offset: Int = 0) {
+    chat(id: $chatId) {
+      id
+      users(limit: 20, offset: $offset) {
+        user {
+          id
+          name
+          image
         }
+      }
     }
+  }
 `;
 
 export const GET_INTERESTS = gql`
@@ -592,30 +551,21 @@ export const SEARCH_CHATS = gql`
 `;
 
 export const SEARCH_USERS_ADD_TO_CHAT = gql`
-    query searchUsersAddToChat($query: String!, $limit: Int = 25, $chatId: Int!) {
-        users(
-            where: {
-                _and: [
-                    { name: { _ilike: $query } }
-                    {_not: {userChats: {chatId: {_eq: $chatId}}}}
-                ]
-            }
-            limit: $limit
-        ) {
-            id
-            image
-            name
-        }
-    }
-`
-
-export const GET_CHAT_BY_ID = gql`
-  query getChatById($id: Int!) {
-    chat(id: $id) {
-      ...DetailedChat
+  query searchUsersAddToChat($query: String!, $limit: Int = 25, $chatId: Int!) {
+    users(
+      where: {
+        _and: [
+          { name: { _ilike: $query } }
+          { _not: { userChats: { chatId: { _eq: $chatId } } } }
+        ]
+      }
+      limit: $limit
+    ) {
+      id
+      image
+      name
     }
   }
-  ${DETAILED_CHAT}
 `;
 
 export const NEW_CHAT = gql`
@@ -632,20 +582,20 @@ export const NEW_CHAT = gql`
 `;
 
 export const ADD_USERS_TO_CHAT = gql`
-    mutation insert_userChat($objects: [userChat_insert_input!]!) {
-        insert_userChat(objects: $objects) {
-            returning {
-                chat {
-                    id
-                    participants {
-                        id
-                        name
-                    }
-                }
-            } 
+  mutation insert_userChat($objects: [userChat_insert_input!]!) {
+    insert_userChat(objects: $objects) {
+      returning {
+        chat {
+          id
+          participants {
+            id
+            name
+          }
         }
+      }
     }
-`
+  }
+`;
 
 export const UNSUBSCRIBE_FROM_CHAT = gql`
   mutation unsubscribeFromChat($chatId: Int!, $userId: String!) {
@@ -739,7 +689,7 @@ export const DETAILED_EVENT_FRAGMENT = gql`
     endDate
     isOfficial
     website
-      eventType
+    eventType
     attendees(where: { didAccept: { _eq: true } }, limit: 20) {
       user {
         image
@@ -783,7 +733,7 @@ export const GET_EVENT_EDIT = gql`
       endDate
       isOfficial
       website
-        eventType
+      eventType
       attendees {
         user {
           id
@@ -866,8 +816,8 @@ export const GET_SCHEDULED_EVENTS = gql`
       image
       name
       startDate
-        endDate
-        location
+      endDate
+      location
       description
       ...EventAttendance
       hosts {
@@ -939,7 +889,7 @@ export const UPDATE_EVENT = gql`
       startDate
       endDate
       website
-        eventType
+      eventType
     }
   }
 `;
@@ -1100,15 +1050,6 @@ export const GET_GROUP_IMAGE_NAME = gql`
   }
 `;
 
-export const GET_ALL_GROUPS = gql`
-  query getAllGroups {
-    groups {
-      id
-      name
-      image
-    }
-  }
-`;
 //todo: don't do this, use backend for this
 export const GET_ALL_GROUP_IDS = gql`
   query getAllGroupIds {
@@ -1132,24 +1073,24 @@ export const GET_ORIENTATION_GROUPS = gql`
 `;
 
 export const POST_FRAGMENT = gql`
-    fragment postFragment on post {
-        id
-        groupId
-        user {
-            id
-            name
-            image
-        }
-        time
-        comments_aggregate {
-            aggregate {
-                count
-            }
-        }
-        text
-        images
-        link
+  fragment postFragment on post {
+    id
+    groupId
+    user {
+      id
+      name
+      image
     }
+    time
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
+    text
+    images
+    link
+  }
 `;
 
 export const GET_DETAILED_GROUP = gql`
@@ -1495,11 +1436,23 @@ export const UNBLOCK_USER = gql`
 `;
 
 export const REPORT_USER = gql`
-    mutation ReportUser($reporter: String!, $reported: String!, $postId: Int = null, $commentId: Int = null) {
-        insert_report(objects: { reporter: $reporter, reported: $reported, post: $postId, comment: $commentId }) {
-            affected_rows
-        }
+  mutation ReportUser(
+    $reporter: String!
+    $reported: String!
+    $postId: Int = null
+    $commentId: Int = null
+  ) {
+    insert_report(
+      objects: {
+        reporter: $reporter
+        reported: $reported
+        post: $postId
+        comment: $commentId
+      }
+    ) {
+      affected_rows
     }
+  }
 `;
 
 export const REPORT_CHAT = gql`
@@ -1609,35 +1562,38 @@ export const CREATE_POST = gql`
 `;
 
 export const GET_DETAILED_POST = gql`
-    query getDetailedPost($postId: Int!) {
-        post: post_by_pk(id: $postId) {
-            ...postFragment
-        }
+  query getDetailedPost($postId: Int!) {
+    post: post_by_pk(id: $postId) {
+      ...postFragment
     }
-    ${POST_FRAGMENT}
-`
+  }
+  ${POST_FRAGMENT}
+`;
 
 export const GET_POST_NOTIFICATION = gql`
-    query getPostNotifications($id: Int!) {
-        post: post_by_pk(id: $id) {
-            id
-            user {
-                id
-                name
-                image
-            }
-            group {
-                id
-                name
-            }
-        }
+  query getPostNotifications($id: Int!) {
+    post: post_by_pk(id: $id) {
+      id
+      user {
+        id
+        name
+        image
+      }
+      group {
+        id
+        name
+      }
     }
-    ${POST_FRAGMENT}
-`
-
+  }
+  ${POST_FRAGMENT}
+`;
 
 export const ADD_COMMENT = gql`
-  mutation insert_comment_one($postId: Int!, $text: String!, $authorId: String!) {
+  mutation insert_comment_one(
+    $postId: Int!
+    $text: String!
+    $authorId: String!
+  ) {
     insert_comment_one(
       object: { authorId: $authorId, postId: $postId, text: $text }
     ) {
@@ -1647,24 +1603,24 @@ export const ADD_COMMENT = gql`
 `;
 
 export const GET_COMMENT_NOTIFICATION = gql`
-    query getLikeNotification($id: Int!) {
-        comment: comment_by_pk(id: $id) {
-            id
-            post {
-                id
-                group {
-                    id
-                    name
-                }
-            }
-            user {
-                id
-                name
-                image
-            }
+  query getLikeNotification($id: Int!) {
+    comment: comment_by_pk(id: $id) {
+      id
+      post {
+        id
+        group {
+          id
+          name
         }
+      }
+      user {
+        id
+        name
+        image
+      }
     }
-`
+  }
+`;
 
 export const GET_POST_COMMENTS = gql`
   query getPostComments($postId: Int!, $offset: Int!) {
@@ -1685,64 +1641,64 @@ export const GET_POST_COMMENTS = gql`
 `;
 
 export const CHECK_USER_LIKED = gql`
-    query checkUserLiked($postId: Int!, $userId: String!) {
-        like: like_by_pk(userId: $userId, postId: $postId) {
-            userId
-        }
-        post: post_by_pk(id: $postId) {
-            id
-            likes_aggregate {
-                aggregate {
-                    count
-                }
-            }
-        }
+  query checkUserLiked($postId: Int!, $userId: String!) {
+    like: like_by_pk(userId: $userId, postId: $postId) {
+      userId
     }
-`
+    post: post_by_pk(id: $postId) {
+      id
+      likes_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`;
 
 export const LIKE_POST = gql`
-    mutation insert_like_one($postId: Int!, $userId: String!) {
-        insert_like_one(object: {postId: $postId, userId: $userId}) {
-            id
-        }
+  mutation insert_like_one($postId: Int!, $userId: String!) {
+    insert_like_one(object: { postId: $postId, userId: $userId }) {
+      id
     }
-`
+  }
+`;
 
 export const UNLIKE_POST = gql`
-    mutation unLikePost($postId: Int!, $userId: String!) {
-        delete_like_by_pk(postId: $postId , userId: $userId) {
-           postId 
-        }
+  mutation unLikePost($postId: Int!, $userId: String!) {
+    delete_like_by_pk(postId: $postId, userId: $userId) {
+      postId
     }
-`
+  }
+`;
 
 export const GET_LIKE_NOTIFICATION = gql`
-    query getLikeNotification($id: Int!) {
-        like(where: {id: { _eq: $id}}) {
-            id
-            post {
-                id
-                group {
-                    id
-                    name
-                }
-            }
-            user {
-                id
-                name
-                image
-            }
+  query getLikeNotification($id: Int!) {
+    like(where: { id: { _eq: $id } }) {
+      id
+      post {
+        id
+        group {
+          id
+          name
         }
+      }
+      user {
+        id
+        name
+        image
+      }
     }
-`
+  }
+`;
 
 export const DELETE_POST = gql`
-    mutation deletePost($id: Int!) {
-        delete_post_by_pk(id: $id) {
-            id
-        }
+  mutation deletePost($id: Int!) {
+    delete_post_by_pk(id: $id) {
+      id
     }
-`
+  }
+`;
 
 /**
  * NULL is a useless query used for when we use the useQuery hook conditionally and need to pass in some sort of gql object

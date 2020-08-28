@@ -13,7 +13,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Linking,
-  ScrollView,
   FlatList,
   ActivityIndicator,
   Alert,
@@ -29,13 +28,10 @@ import {
   parseTimeElapsed,
   processError,
 } from '../../context';
-import GoBackHeader from '../Menu/GoBackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { log } from 'react-native-reanimated';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import AddCommentModal from '../Modal/AddCommentModal';
 import {
-  DELETE_NOTIFICATIONS,
   DELETE_POST,
   GET_DETAILED_POST,
   GET_GROUP_POSTS,
@@ -178,7 +174,7 @@ export const PostScreen = () => {
       },
     ],
     onCompleted: () => {
-          navigation.goBack();
+      navigation.goBack();
     },
   });
   const { data: commentsData, loading, error, fetchMore } = useQuery(
@@ -206,7 +202,7 @@ export const PostScreen = () => {
                 'This will permanently remove this post and all the comments',
                 [
                   { text: 'Cancel', style: 'cancel' },
-                  { text: 'Delete', onPress: deletePost},
+                  { text: 'Delete', onPress: deletePost },
                 ],
                 { cancelable: true },
               );

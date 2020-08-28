@@ -3,8 +3,6 @@ import {
   TransitionPresets,
 } from '@react-navigation/stack';
 import React from 'react';
-import { DrawerIcon } from '../Menu/DrawerIcon';
-import { MessagesIcon } from '../Menu/MessagesIcon';
 import Profile from '../MyProfile/Profile';
 import GroupScreen from '../Orientation/GroupScreen';
 import EventScreen from '../Orientation/EventScreen';
@@ -35,11 +33,7 @@ export default function Schedule() {
         name="ScheduleCarousel"
         component={ScheduleCarousel}
         options={{
-          // headerRight: () => <MessagesIcon white={true} />,
-          // headerTitle: '',
-          // headerStyle: { shadowColor: 'transparent' },
-          // headerTransparent: true,
-          headerShown: false
+          headerShown: false,
         }}
       />
       <Stack.Screen

@@ -11,6 +11,12 @@ import BlockedUsers from './BlockedUsers';
 import MessagePrivacy from './MessagePrivacy';
 import AdminConsole from './AdminConsole';
 
+/**
+ *
+ * @param navigation
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Settings({ navigation }) {
   const Stack = createStackNavigator();
 

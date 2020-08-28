@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import ModalHeader from './ModalHeader';
@@ -8,8 +8,7 @@ import EmptyConnections from '../../assets/svg/empty-connections.svg';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { GET_USER_GROUPS } from '../../graphql';
 import UserCard from '../ReusableComponents/UserCard';
-import { showMessage } from 'react-native-flash-message';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { processWarning } from '../../context';
 
 const { colours } = Theme.light;
 const window = Dimensions.get('window').height;
@@ -17,23 +16,28 @@ const window05 = window * 0.05;
 
 /**
  * List modal of groups
- * @param data What is shown in the FlatList
- * @param type {string} Type = Member when the component is rendering the groups that a user is a member of
- * @param name {string} The name of the user if it is not currentUser
- * @param onPress {function} optional function to replace navigation
+ * @param type
+ * @param name
+ * @param onPress
  * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly data?: *, readonly type?: *, readonly viewMode?: *, readonly handle?: *}> & React.RefAttributes<unknown>>}
  */
 const GroupBottomModal = React.forwardRef(
+  /**
+   *
+   * @param name {string} The name of the user if it is not currentUser
+   * @param type {string} = Member when the component is rendering the groups that a user is a member of
+   * @param userId {string}
+   * @param onPress {function} optional function to replace navigation
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ name, type, userId, onPress }, ref) => {
-    const [
-      getGroups,
-      { data, called, loading, error },
-    ] = useLazyQuery(GET_USER_GROUPS, { variables: { id: userId } });
-
-    const { authState, setAuthState } = useContext(AuthContext);
+    const [getGroups, { data, called, error }] = useLazyQuery(GET_USER_GROUPS, {
+      variables: { id: userId },
+    });
 
     if (error) {
-       processWarning(error, 'Server Error')
+      processWarning(error, 'Server Error');
     }
 
     let heading;

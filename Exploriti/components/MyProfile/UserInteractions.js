@@ -1,12 +1,18 @@
 import React, { useContext } from 'react';
-import { AuthContext, graphqlify, NotificationTypes, processError, processWarning, refreshToken } from '../../context';
+import {
+  AuthContext,
+  graphqlify,
+  NotificationTypes,
+  processError,
+  processWarning,
+} from '../../context';
 import gql from 'graphql-tag';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  CHECK_FRIEND_REQUESTS, CHECK_USER_ADMIN,
+  CHECK_FRIEND_REQUESTS,
+  CHECK_USER_ADMIN,
   CONFIRM_FRIEND_REQUEST,
   DELETE_FRIEND_REQUEST,
-  GET_USER_FRIENDS,
   GET_USER_FRIENDS_ID,
   NEW_CHAT,
   REMOVE_FRIEND,
@@ -34,8 +40,16 @@ const { colours } = Theme.light;
  * @returns {*}
  * @constructor
  */
-const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessage, isLeader, isAdmin }) => {
-  const { authState, setAuthState } = useContext(AuthContext);
+const UserInteractions = ({
+  userId,
+  navigation,
+  image,
+  name,
+  onlyFriendsCanMessage,
+  isLeader,
+  isAdmin,
+}) => {
+  const { authState } = useContext(AuthContext);
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
@@ -73,7 +87,9 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
 
   const [sendNotification] = useMutation(SEND_NOTIFICATION);
 
-  const {data: adminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}})
+  const { data: adminData } = useQuery(CHECK_USER_ADMIN, {
+    variables: { id: authState.user.uid },
+  });
 
   const [
     checkFriendRequests,
@@ -188,7 +204,9 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
       });
     },
     onCompleted: checkFriendRequests,
-    refetchQueries: [{query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid}}]
+    refetchQueries: [
+      { query: GET_USER_FRIENDS_ID, variables: { userId: authState.user.uid } },
+    ],
   });
 
   const [
@@ -299,7 +317,9 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
         },
       }).catch((e) => console.log(e));
     },
-    refetchQueries: [{query: GET_USER_FRIENDS_ID, variables: {userId: authState.user.uid}}]
+    refetchQueries: [
+      { query: GET_USER_FRIENDS_ID, variables: { userId: authState.user.uid } },
+    ],
   });
 
   const {
@@ -311,23 +331,23 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
   });
 
   if (newChatError) {
-    processError(newChatError, 'Cannot create Chat')
+    processError(newChatError, 'Cannot create Chat');
   }
 
   if (confirmError) {
-    processError(confirmError, 'Cannot confirm request')
+    processError(confirmError, 'Cannot confirm request');
   }
 
   if (removeError) {
-    processError(removeError, 'Cannot remove friend')
+    processError(removeError, 'Cannot remove friend');
   }
 
   if (deleteError) {
-    processError(deleteError, 'Cannot delete request')
+    processError(deleteError, 'Cannot delete request');
   }
 
   if (friendsError) {
-    processWarning(friendsError, 'Server Error')
+    processWarning(friendsError, 'Server Error');
   }
 
   let content;
@@ -340,7 +360,7 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
     isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
     });
-    console.log('isFriend', isFriend)
+    console.log('isFriend', isFriend);
     if (isFriend) {
       content = <Text style={styles.followInteractionText}>REMOVE FRIEND</Text>;
       friendInteraction = () => removeFriend();
@@ -375,7 +395,7 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
       requestsData.user.friendRequestsReceived.length !== 0
     ) {
       content = (
-        <Text  style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
+        <Text style={styles.followInteractionText}>ACCEPT FRIEND REQUEST</Text>
       );
       friendInteraction = () => confirmRequest();
     } else if (
@@ -394,10 +414,11 @@ const UserInteractions = ({ userId, navigation, image, name, onlyFriendsCanMessa
 
   const messageInteraction = async () => {
     if (isFriend || !onlyFriendsCanMessage) {
-      if (adminData && adminData.user.isLeader && (!isLeader && !isAdmin)) {
+      if (adminData && adminData.user.isLeader && !isLeader && !isAdmin) {
         showMessage({
           message: 'Cannot send message',
-          description: 'As a leader you may not send private messages to students',
+          description:
+            'As a leader you may not send private messages to students',
           autoHide: true,
           type: 'danger',
           icon: 'auto',

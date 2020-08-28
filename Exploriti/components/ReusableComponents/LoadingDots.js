@@ -12,7 +12,7 @@ const ANIMATION_SCALE = 1.4;
 
 /**
  * A simple animated loading Indicator. Parameters can be found in the defaultProps object inside of Dot.
- * @author ArtemKosiakevych It has been adapted to suppress unnecessary warnings.
+ * @author Artem Kosiakevych It has been adapted to suppress unnecessary warnings.
  */
 export default class LoadingDots extends React.Component {
   state = {
@@ -61,7 +61,7 @@ class Dot extends React.Component {
     if (this.props.active) this.scaleUp();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, _, __) {
     if (prevProps.active && !this.props.active) {
       this.scaleDown();
     }

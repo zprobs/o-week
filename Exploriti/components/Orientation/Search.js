@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useContext} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Text,
   View,
@@ -21,8 +21,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import BackIcon from '../Menu/BackIcon';
 import SearchUsers from '../../assets/svg/search-users.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { showMessage } from 'react-native-flash-message';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { processWarning } from '../../context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -33,7 +32,6 @@ const { FontWeights, FontSizes } = Fonts;
  * @constructor
  */
 export default function Search() {
-  const { authState, setAuthState } = useContext(AuthContext);
   const [query, setQuery] = useState(null);
   const debounceQuery = useDebounce(query, 300);
   const firstRenderRef = useRef(true);
@@ -45,19 +43,16 @@ export default function Search() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-
-  useEffect(()=>{
+  useEffect(() => {
     if (!isFocused && searchRef.current) {
       searchRef.current.blur();
     } else if (isFocused && searchRef.current) {
       searchRef.current.focus();
     }
-  }, [isFocused])
-
-
+  }, [isFocused]);
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Server Error');
   }
 
   const listData =
@@ -123,7 +118,8 @@ export default function Search() {
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
         <BackIcon />
         <View style={{ width: '90%' }}>
           <SearchBar
@@ -132,7 +128,7 @@ export default function Search() {
             placeholder="Search for users, groups or events..."
             hideBackground={true}
             ref={searchRef}
-            onSearchButtonPress={()=>searchRef.current.blur()}
+            onSearchButtonPress={() => searchRef.current.blur()}
           />
         </View>
       </View>

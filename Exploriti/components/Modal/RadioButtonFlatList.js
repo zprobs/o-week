@@ -7,14 +7,16 @@ import RadioButton from '../ReusableComponents/RadioButton';
 
 const { FontWeights, FontSizes } = Fonts;
 
-/**
- * @param data the String array intended to be displayed
- * @param title {string} Select your <<title>>
- * @param selectedData
- * @param setData A function to set the selected data after it has been picked
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}
- */
 const RadioButtonFlatList = React.forwardRef(
+  /**
+   * a list of radio buttons used to select string option
+   * @param data {[string]} the String array intended to be displayed
+   * @param title {string} Select your <<title>>
+   * @param selectedData {string}
+   * @param setData A function to set the selected data after it has been picked
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ data, title, selectedData, setData }, ref) => {
     const renderItem = ({ item }) => {
       const isSelected = selectedData === item;

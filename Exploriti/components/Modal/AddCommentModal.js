@@ -3,23 +3,15 @@ import { View, StyleSheet } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
-import Icon from 'react-native-vector-icons/EvilIcons';
 import ModalHeader from './ModalHeader';
 import FormInput from '../ReusableComponents/FormInput';
-import ImagePicker from 'react-native-image-crop-picker/index';
-import {
-  AuthContext,
-  NotificationTypes,
-  processError,
-  saveImage,
-} from '../../context';
+import { AuthContext, NotificationTypes, processError } from '../../context';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { useMutation } from '@apollo/react-hooks';
 import {
   ADD_COMMENT,
   GET_POST_COMMENTS,
   SEND_NOTIFICATION,
-  SEND_NOTIFICATIONS,
 } from '../../graphql';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -28,6 +20,12 @@ import gql from 'graphql-tag';
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * Adding comments to a post
+ * @param postId {int}
+ * @param authorId {String} The author of the post
+ * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly authorId?: *, readonly postId?: *}> & React.RefAttributes<unknown>>}
+ */
 const AddCommentModal = React.forwardRef(({ postId, authorId }, ref) => {
   const [isUploading, setIsUploading] = useState(false);
   const { authState } = useContext(AuthContext);
@@ -94,7 +92,7 @@ const AddCommentModal = React.forwardRef(({ postId, authorId }, ref) => {
         setIsUploading(false);
       })
       .then((result) => {
-        console.log({result});
+        console.log({ result });
         if (authorId !== authState.user.uid) {
           sendNotification({
             variables: {

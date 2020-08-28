@@ -1,32 +1,22 @@
 import React, { useContext, useRef, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ImageBackground,
-} from 'react-native';
-import { Theme, ThemeStatic } from '../../theme/Colours';
+import { View } from 'react-native';
+import { Theme } from '../../theme/Colours';
 import EditProfileBottomModal from './EditProfileBottomModal';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import GroupBottomModal from '../Modal/GroupBottomModal';
 import UserInteractions from './UserInteractions';
 import ProfileCard from './ProfileCard';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { AuthContext, processWarning } from '../../context';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_DETAILED_USER, GET_USER_FRIENDS } from '../../graphql';
-import Error from '../ReusableComponents/Error';
 import GoBackHeader from '../Menu/GoBackHeader';
 import OptionsIcon from '../Menu/OptionsIcon';
 import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 import OptionsBottomModal from '../Modal/OptionsBottomModal';
-import LoadingDots from '../ReusableComponents/LoadingDots';
 import SocialMediaAnimation from '../ReusableComponents/SocialMediaAnimation';
-import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import NewSocialMediaLinkBottomModal from '../Modal/NewSocialMediaLinkBottomModal';
 import { useNavigation } from '@react-navigation/native';
 import ProfilePlaceholder from '../Placeholders/ProfilePlaceholder';
-import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 
@@ -40,7 +30,7 @@ const { colours } = Theme.light;
 export default function Profile({ route }) {
   // used to determine which social media is to be added
   const [socialIndex, setSocialIndex] = useState(0);
-  const { authState, setAuthState } = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
   const insets = useSafeArea();
   const editProfileBottomModalRef = useRef();
   const optionsBottomModalRef = useRef();
@@ -57,7 +47,7 @@ export default function Profile({ route }) {
   });
 
   if (error) {
-    processWarning(error, 'Could not load Profile')
+    processWarning(error, 'Could not load Profile');
   }
 
   if (loading)
@@ -114,7 +104,10 @@ export default function Profile({ route }) {
     <View style={{ backgroundColor: colours.base, flex: 1 }}>
       <SafeAreaView>
         {isMyProfilePage ? null : (
-          <GoBackHeader IconRight={isCurrentUser ? null : OptionsIcon} IconRightOnPress={isCurrentUser ? null : onOptions} />
+          <GoBackHeader
+            IconRight={isCurrentUser ? null : OptionsIcon}
+            IconRightOnPress={isCurrentUser ? null : onOptions}
+          />
         )}
         <ProfileCard
           editable={isCurrentUser}
@@ -136,7 +129,7 @@ export default function Profile({ route }) {
         ref={usersBottomModalRef}
         type="friends"
         query={GET_USER_FRIENDS}
-        variables={{userId: userId}}
+        variables={{ userId: userId }}
         name={isCurrentUser ? null : name}
       />
       <GroupBottomModal

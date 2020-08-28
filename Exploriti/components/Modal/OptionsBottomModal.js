@@ -1,17 +1,11 @@
 import React, { useContext } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/Feather';
 import ModalHeader from './ModalHeader';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
   BLOCK_USER,
   CHECK_USER_BLOCKED,
@@ -24,91 +18,99 @@ import { showMessage } from 'react-native-flash-message';
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
-/**
- * Modal for displaying extra options. Currently setup for user options
- * @param id {string} the id of user who can be reported or blocked
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly selectedData?: *, readonly setData?: *, readonly title?: *, readonly data?: *}> & React.RefAttributes<unknown>>}
- */
-const OptionsBottomModal = React.forwardRef(({ id, commentId, postId }, ref) => {
-  console.log('optionsID', id);
+const OptionsBottomModal = React.forwardRef(
+  /**
+   * Modal for displaying extra options. Currently setup for user options
+   * @param id {string} the id of user who can be reported or blocked
+   * @param commentId {int} optional if reporting a comment
+   * @param postId {int} optional if reporting a post
+   * @param ref
+   * @returns {JSX.Element}
+   */
+  ({ id, commentId, postId }, ref) => {
+    const { authState } = useContext(AuthContext);
+    const [reportUser, { error: reportError }] = useMutation(REPORT_USER, {
+      variables: {
+        reported: id,
+        reporter: authState.user.uid,
+        commentId: commentId,
+        postId: postId,
+      },
+      onCompleted: () => {
+        showMessage({
+          message: 'Report Submitted',
+          description:
+            'Thank you for letting us know. We will examine this user as soon as possible',
+          autoHide: true,
+          duration: 4000,
+          type: 'success',
+          icon: 'auto',
+        });
+      },
+    });
 
-  const { authState } = useContext(AuthContext);
-  const [reportUser, { error: reportError }] = useMutation(REPORT_USER, {
-    variables: { reported: id, reporter: authState.user.uid, commentId: commentId, postId: postId },
-    onCompleted: () => {
-      showMessage({
-        message: 'Report Submitted',
-        description:
-          'Thank you for letting us know. We will examine this user as soon as possible',
-        autoHide: true,
-        duration: 4000,
-        type: 'success',
-        icon: 'auto',
-      });
-    },
-  });
+    if (reportError) processError(reportError, 'Report cannot be submitted');
 
-  if (reportError) processError(reportError, 'Report cannot be submitted');
+    const variables = { blockerId: authState.user.uid, blockedId: id };
+    const options = {
+      variables: variables,
+      refetchQueries: [{ query: CHECK_USER_BLOCKED, variables: variables }],
+    };
 
-  const variables = { blockerId: authState.user.uid, blockedId: id };
-  const options = {
-    variables: variables,
-    refetchQueries: [{ query: CHECK_USER_BLOCKED, variables: variables }],
-  };
+    const [block, { error: blockError }] = useMutation(BLOCK_USER, options);
+    const [unBlock, { error: unBlockError }] = useMutation(
+      UNBLOCK_USER,
+      options,
+    );
+    const [checkBlocked, { data, error }] = useLazyQuery(CHECK_USER_BLOCKED, {
+      variables: variables,
+      fetchPolicy: 'cache-and-network',
+    });
 
-  const [block, { error: blockError }] = useMutation(BLOCK_USER, options);
-  const [unBlock, { error: unBlockError }] = useMutation(UNBLOCK_USER, options);
-  const [
-    checkBlocked,
-    { data, loading, error },
-  ] = useLazyQuery(CHECK_USER_BLOCKED, {
-    variables: variables,
-    fetchPolicy: 'cache-and-network',
-  });
+    if (error) processWarning(error, 'Server Error');
+    if (unBlockError) processError(unBlockError, 'Could not unblock user');
+    if (blockError) processError(blockError, 'Could not block user');
 
-  if (error) processWarning(error, 'Server Error');
-  if (unBlockError) processError(unBlockError, 'Could not unblock user');
-  if (blockError) processError(blockError, 'Could not block user');
+    const isBlocked = data && data.block.length > 0;
 
-  const isBlocked = data && data.block.length > 0;
+    return (
+      <Modalize
+        ref={ref}
+        scrollViewProps={{ showsVerticalScrollIndicator: false }}
+        modalStyle={styles.container}
+        onOpen={checkBlocked}
+        adjustToContentHeight>
+        <ModalHeader heading="Options" subHeading="Tell us what you think" />
+        <View style={styles.content}>
+          {isBlocked ? (
+            <Option
+              label="Un Block"
+              iconName="plus-circle"
+              color={ThemeStatic.black}
+              onPress={unBlock}
+            />
+          ) : (
+            <Option
+              label="Block"
+              iconName="x-circle"
+              color={ThemeStatic.delete}
+              onPress={block}
+            />
+          )}
 
-  return (
-    <Modalize
-      ref={ref}
-      scrollViewProps={{ showsVerticalScrollIndicator: false }}
-      modalStyle={styles.container}
-      onOpen={checkBlocked}
-      adjustToContentHeight>
-      <ModalHeader heading="Options" subHeading="Tell us what you think" />
-      <View style={styles.content}>
-        {isBlocked ? (
+          <View style={{ height: 20 }} />
+
           <Option
-            label="Un Block"
-            iconName="plus-circle"
-            color={ThemeStatic.black}
-            onPress={unBlock}
-          />
-        ) : (
-          <Option
-            label="Block"
-            iconName="x-circle"
+            label="Report"
+            iconName="flag"
             color={ThemeStatic.delete}
-            onPress={block}
+            onPress={reportUser}
           />
-        )}
-
-        <View style={{height: 20}}/>
-
-        <Option
-          label="Report"
-          iconName="flag"
-          color={ThemeStatic.delete}
-          onPress={reportUser}
-        />
-      </View>
-    </Modalize>
-  );
-});
+        </View>
+      </Modalize>
+    );
+  },
+);
 
 const Option = ({ label, iconName, onPress, children, color }) => {
   if (children)

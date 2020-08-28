@@ -10,7 +10,7 @@ const { FontWeights, FontSizes } = Fonts;
 /**
  * Selection is a box used to trigger the open of a bottom modal to select some data
  * @param title {string}
- * @param onPress
+ * @param onPress {function}
  * @param accent {boolean} if true background color is accented else white
  * @returns {*}
  * @constructor

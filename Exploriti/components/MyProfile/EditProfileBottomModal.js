@@ -36,17 +36,17 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-/**
- * Modal for editing the logged in users data
- * @param image
- * @param name
- * @param programs
- * @param description
- * @param year
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly description?: *, readonly imageonly name?: *, readonly program?: *}> & React.RefAttributes<unknown>>}
- */
 const EditProfileBottomModal = React.forwardRef(
-  ({ image, name, programs, description, year }, ref) => {
+  /**
+   * Modal for editing the logged in users data
+   * @param image {string}
+   * @param name {string}
+   * @param description {String}
+   * @param year {int}
+   * @param ref
+   * @returns {JSX.Element}
+   */
+  ({ image, name, description, year }, ref) => {
     const { authState } = useContext(AuthContext);
     const [updateUser, { error: updateError }] = useMutation(UPDATE_USER);
     const [updateInterests, { interestError }] = useMutation(
@@ -88,7 +88,7 @@ const EditProfileBottomModal = React.forwardRef(
 
     const programTitle = () => {
       if (programsSelection && programsSelection.length > 0) {
-        if (editablePrograms[0] == undefined) editablePrograms.shift();
+        if (!editablePrograms[0]) editablePrograms.shift();
         return editablePrograms.join(', ');
       }
       return 'Change program';
@@ -96,7 +96,7 @@ const EditProfileBottomModal = React.forwardRef(
 
     const interestTitle = () => {
       if (interestsSelection && interestsSelection.length > 0) {
-        if (editableInterests[0] == undefined) editableInterests.shift();
+        if (!editableInterests[0]) editableInterests.shift();
         return editableInterests.join(', ');
       }
       return 'Change Interest';

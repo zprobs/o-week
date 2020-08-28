@@ -4,7 +4,7 @@ import firebase from '@react-native-firebase/app';
 import { AuthContext, ReloadContext } from '../../context';
 import { Theme } from '../../theme/Colours';
 
-const {colours} = Theme.light;
+const { colours } = Theme.light;
 
 /**
  * A page for showing server errors.
@@ -13,7 +13,7 @@ const {colours} = Theme.light;
  */
 export default function Error({ e }) {
   const { setAuthState } = React.useContext(AuthContext);
-  const {reload, setReload} = React.useContext(ReloadContext);
+  const { reload, setReload } = React.useContext(ReloadContext);
   return (
     <View
       style={{
@@ -21,18 +21,28 @@ export default function Error({ e }) {
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: 10,
-        backgroundColor: colours.base
-
+        backgroundColor: colours.base,
       }}>
       <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>
         Error
       </Text>
       <Text style={{ marginBottom: 5, width: '80%', textAlign: 'center' }}>
-        There was a problem handling your request. If the issue persists, please contact support@arravon.com
+        There was a problem handling your request. If the issue persists, please
+        contact support@arravon.com
       </Text>
       <Text style={{ color: '#808080', marginVertical: 10 }}>{e.message}</Text>
-      <View style={{flexDirection: 'row', marginTop: 10, width: '80%', justifyContent: 'space-around'}}>
-        <Button title={'Reload'} onPress={()=>setReload(!reload)} color={'green'} />
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 10,
+          width: '80%',
+          justifyContent: 'space-around',
+        }}>
+        <Button
+          title={'Reload'}
+          onPress={() => setReload(!reload)}
+          color={'green'}
+        />
 
         <Button
           onPress={() => {

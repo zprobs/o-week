@@ -1,5 +1,11 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { Theme, ThemeStatic } from '../../theme/Colours';
@@ -10,18 +16,18 @@ const { colours } = Theme.light;
 
 /**
  * Profile Card is the UI Component for a user's profile page.
- * @param image Profile picture
- * @param editable Weather or not a user can edit the page. Only true when it is the current user.
- * @param onEdit Opens the EditProfileBottomModal
- * @param onFriendsOpen Opens the UserBottomModal
- * @param onGroupsOpen Opens the GroupBottomModal
- * @param name
- * @param programs
- * @param description
- * @param renderInteractions Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
- * @param userId
- * @param groupCount Number of groups
- * @param friendCount Number of friends
+ * @param image {int} Profile picture
+ * @param editable {boolean} Weather or not a user can edit the page. Only true when it is the current user.
+ * @param onEdit {function} Opens the EditProfileBottomModal
+ * @param onFriendsOpen {function} Opens the UserBottomModal
+ * @param onGroupsOpen {function} Opens the GroupBottomModal
+ * @param name {string}
+ * @param programs {string}
+ * @param description {string}
+ * @param renderInteractions {function} Will render the ADD FRIEND and MESSAGE buttons if it exists. Should only be included when the profile is not the current user.
+ * @param userId {string}
+ * @param groupCount {int} Number of groups
+ * @param friendCount {int} Number of friends
  * @returns {*}
  * @constructor
  */
@@ -179,8 +185,6 @@ const styles = StyleSheet.create({
     color: colours.white,
     marginTop: 5,
   },
-
 });
 
-
-export default ProfileCard
+export default ProfileCard;

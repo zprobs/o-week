@@ -16,14 +16,12 @@ import GroupEditModal from '../Modal/GroupEditModal';
 import { useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_ADMIN,
-  GET_EVENT_ATTENDANCE,
   GET_GROUP_IMAGE_NAME,
   GET_GROUP_MEMBERS_PAGINATED,
   GET_USER_GROUPS,
 } from '../../graphql';
 import NewEventModal from '../Modal/NewEventModal';
-import { AuthContext, processWarning, refreshToken } from '../../context';
-import { showMessage } from 'react-native-flash-message';
+import { AuthContext, processWarning } from '../../context';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import { ImageBackgroundPlaceholder } from '../Placeholders/ImageBackgroundPlaceholder';
 
@@ -33,7 +31,7 @@ const HEIGHT = Dimensions.get('window').height;
 
 /**
  *
- * @param route The navigation route params, should contain an Object group
+ * @param route The navigation route params, should contain the groupId
  * @returns {*}
  * @constructor
  */
@@ -44,12 +42,12 @@ const GroupScreen = ({ route }) => {
   const allMembersRef = useRef();
   const creatEventRef = useRef();
   const { groupId } = route.params;
-  const { authState, setAuthState } = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
 
   const { data, loading, error } = useQuery(GET_GROUP_IMAGE_NAME, {
     variables: { id: groupId },
   });
-  const { data: isOwnerData, error: isOwnerError } = useQuery(GET_USER_GROUPS, {
+  const { data: isOwnerData } = useQuery(GET_USER_GROUPS, {
     variables: { id: authState.user.uid },
     fetchPolicy: 'cache-only',
   });
@@ -61,7 +59,7 @@ const GroupScreen = ({ route }) => {
 
   if (loading) {
     console.log('groupScreen Loading');
-    return <ImageBackgroundPlaceholder/>;
+    return <ImageBackgroundPlaceholder />;
   }
 
   if (error) {
@@ -96,33 +94,30 @@ const GroupScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-          <ImageBackground
-            source={{ uri: group.image }}
-            style={styles.backgroundImage}>
-            <View style={styles.header}>
-              <View style={styles.icons}>
-                <CircleBackIcon style={styles.circleBackIcon} />
-                {isAdminData.user.isAdmin || isOwner ? (
-                  <View>
-                    <CircleEditIcon
-                      style={styles.circleEditIcon}
-                      onPress={edit}
-                    />
-                    <CircleEditIcon
-                      style={styles.circleEditIcon}
-                      onPress={createEvent}
-                      icon={'calendar'}
-                    />
-                  </View>
-                ) : null}
+      <ImageBackground
+        source={{ uri: group.image }}
+        style={styles.backgroundImage}>
+        <View style={styles.header}>
+          <View style={styles.icons}>
+            <CircleBackIcon style={styles.circleBackIcon} />
+            {isAdminData.user.isAdmin || isOwner ? (
+              <View>
+                <CircleEditIcon style={styles.circleEditIcon} onPress={edit} />
+                <CircleEditIcon
+                  style={styles.circleEditIcon}
+                  onPress={createEvent}
+                  icon={'calendar'}
+                />
               </View>
-              <LinearGradient
-                colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
-                style={styles.titleContainer}>
-                <Text style={styles.title}>{group.name}</Text>
-              </LinearGradient>
-            </View>
-          </ImageBackground>
+            ) : null}
+          </View>
+          <LinearGradient
+            colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)']}
+            style={styles.titleContainer}>
+            <Text style={styles.title}>{group.name}</Text>
+          </LinearGradient>
+        </View>
+      </ImageBackground>
       <GroupInfoModal
         ref={modalRef}
         groupId={group.id}
@@ -184,7 +179,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    right: 0
+    right: 0,
   },
   circleBackIcon: {
     marginTop: 45,

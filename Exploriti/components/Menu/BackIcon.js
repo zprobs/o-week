@@ -13,11 +13,11 @@ const BackIcon = ({ iconColor, destination }) => {
   const { goBack, navigate } = useNavigation();
   const leave = () => {
     if (destination) {
-      navigate(destination)
+      navigate(destination);
     } else {
       goBack();
     }
-  }
+  };
   return (
     <Icon
       name="chevron-left"

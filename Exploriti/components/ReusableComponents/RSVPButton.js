@@ -10,12 +10,14 @@ const { colours } = Theme.light;
 
 /**
  * RSVP button used for events
- * @param onPress
  * @param style
  * @param selectedTitle {string} default title
  * @param unSelectedTitle {string} only include if you want a second selected state
  * @param plusIcon {boolean} if true, render 'user-plus' icon else 'user-check
  * @param isSelected {boolean} true if button starts off selected
+ * @param selectedOnPress {function}
+ * @param unSelectedOnPress {function}
+ * @param loading {boolean}
  * @returns {*}
  * @constructor
  */

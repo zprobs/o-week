@@ -164,7 +164,11 @@ const CardWithDeleteAction = ({ Card, deleteFunction, cardHeight }) => {
 
   const Animation = ({ x, deleteOpacity }) => {
     const size = cond(lessThan(x, cardHeight), x, add(x, sub(x, cardHeight)));
-    const translateX = cond(lessThan(x, cardHeight), 0, divide(sub(x, cardHeight), 2));
+    const translateX = cond(
+      lessThan(x, cardHeight),
+      0,
+      divide(sub(x, cardHeight), 2),
+    );
     const borderRadius = divide(size, 2);
     const scale = interpolate(size, {
       inputRange: [20, 30],

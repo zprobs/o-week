@@ -4,25 +4,27 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
-import { AuthContext, NotificationTypes, processError, processWarning, saveImage } from '../../context';
+import {
+  AuthContext,
+  NotificationTypes,
+  processError,
+  saveImage,
+} from '../../context';
 import FormInput from '../ReusableComponents/FormInput';
-import Selection from '../ReusableComponents/Selection';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CREATE_POST,
-  DETAILED_EVENT_FRAGMENT,
-  GET_GROUP_MEMBERS, GET_GROUP_POSTS,
-  GET_GROUPS_MEMBERS, GET_USER_FRIENDS_NOT_ATTENDING_EVENT,
+  GET_GROUP_MEMBERS,
+  GET_GROUP_POSTS,
   SEND_NOTIFICATIONS,
 } from '../../graphql';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -32,6 +34,11 @@ import ImagePicker from 'react-native-image-crop-picker/index';
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * User to create a new post. include groupId in route.params
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const CreatePost = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [images, setImages] = useState([]);
@@ -44,11 +51,11 @@ const CreatePost = () => {
 
   const [createPost, { error }] = useMutation(CREATE_POST);
   const [sendNotifications] = useMutation(SEND_NOTIFICATIONS);
-  const {data: groupMembers} = useQuery(GET_GROUP_MEMBERS, {variables: {groupId: groupId}})
+  const { data: groupMembers } = useQuery(GET_GROUP_MEMBERS, {
+    variables: { groupId: groupId },
+  });
 
   if (error) processError(error, 'Could not create post');
-
-
 
   const onRemove = (img) => {
     setImages(images.filter((image) => image !== img));
@@ -78,57 +85,58 @@ const CreatePost = () => {
     const { text, link } = values;
 
     const userIDs = [];
-    groupMembers.group.members.map(m => {
-      if (m.userId !== authState.user.uid) userIDs.push({userId: m.userId});
-    })
-    console.log({userIDs })
+    groupMembers.group.members.map((m) => {
+      if (m.userId !== authState.user.uid) userIDs.push({ userId: m.userId });
+    });
+    console.log({ userIDs });
 
     if (imageSelection.length > 0) {
       Promise.all(
         // Array of "Promises"
-        imageSelection
-          .map((img, index) => {
-              return saveImage(
-                img,
-                null,
-                'post',
-                `${authState.user.uid}${index}${Date.now().toString()}`,
-            );
+        imageSelection.map((img, index) => {
+          return saveImage(
+            img,
+            null,
+            'post',
+            `${authState.user.uid}${index}${Date.now().toString()}`,
+          );
+        }),
+      )
+        .then((results) => {
+          console.log('results', results);
+          createPost({
+            variables: {
+              userId: authState.user.uid,
+              groupId: groupId,
+              text: text,
+              link: link,
+              images: results,
+            },
+            refetchQueries: [
+              { query: GET_GROUP_POSTS, variables: { groupId: groupId } },
+            ],
           })
-      ).then(results => {
-        console.log('results', results);
-        createPost({
-          variables: {
-            userId: authState.user.uid,
-            groupId: groupId,
-            text: text,
-            link: link,
-            images: results,
-          },
-          refetchQueries: [{query: GET_GROUP_POSTS, variables: {groupId: groupId}}]
-
-        })
-          .then((createPostData) => {
-            sendNotifications({
-              variables: {
-                type: NotificationTypes.newPost,
-                typeId: createPostData.data.insert_post_one.id.toString(),
-                recipients: userIDs,
-              },
+            .then((createPostData) => {
+              sendNotifications({
+                variables: {
+                  type: NotificationTypes.newPost,
+                  typeId: createPostData.data.insert_post_one.id.toString(),
+                  recipients: userIDs,
+                },
+              });
+              setIsUploading(false);
+              goBack();
+            })
+            .catch((e) => {
+              setIsUploading(false);
+              processError(e, 'Could not upload post');
             });
-            setIsUploading(false);
-            goBack();
-          })
-          .catch((e) => {
-            setIsUploading(false);
-            processError(e, 'Could not upload post')
-          })
-      }).catch(e => {
-        processError(e, 'Could not upload image')
-        setIsUploading(false)
-        return null
-      })
-
+        })
+        .catch((e) => {
+          processError(e, 'Could not upload image');
+          setIsUploading(false);
+          return null;
+        });
     } else {
       createPost({
         variables: {
@@ -138,11 +146,16 @@ const CreatePost = () => {
           link: link,
           images: [],
         },
-        refetchQueries: [{query: GET_GROUP_POSTS, variables: {groupId: groupId}}]
+        refetchQueries: [
+          { query: GET_GROUP_POSTS, variables: { groupId: groupId } },
+        ],
       })
         .then((createPostData) => {
           console.log('createPostDAta', createPostData);
-          console.log('typeId', createPostData.data.insert_post_one.id.toString() );
+          console.log(
+            'typeId',
+            createPostData.data.insert_post_one.id.toString(),
+          );
           sendNotifications({
             variables: {
               type: NotificationTypes.newPost,
@@ -155,10 +168,9 @@ const CreatePost = () => {
         })
         .catch((e) => {
           setIsUploading(false);
-          processError(e, 'Could not upload post')
-        })
+          processError(e, 'Could not upload post');
+        });
     }
-
   };
 
   return (
@@ -255,7 +267,6 @@ const EditProfileSchema = Yup.object().shape({
   text: Yup.string().required('Required').max(360),
   link: Yup.string().max(2000),
 });
-
 
 export default CreatePost;
 

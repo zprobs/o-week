@@ -1,12 +1,5 @@
 import React, { useContext, useState } from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import { AuthContext, parseTimeElapsed } from '../../context';
@@ -16,10 +9,10 @@ import {
   GET_POST_NOTIFICATION,
   GET_USER_BY_ID,
   NOTIFICATION_FRAG,
-  NOTIFICATION_SUBSCRIPTION_FRAG,
   SEE_NOTIFICATION,
   DELETE_NOTIFICATION,
-  GET_LIKE_NOTIFICATION, GET_COMMENT_NOTIFICATION,
+  GET_LIKE_NOTIFICATION,
+  GET_COMMENT_NOTIFICATION,
 } from '../../graphql';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -29,7 +22,6 @@ import {
   Shine,
 } from 'rn-placeholder';
 import images from '../../assets/images';
-import gql from 'graphql-tag';
 import Trophy from '../../assets/svg/trophy.svg';
 import LinearGradient from 'react-native-linear-gradient';
 import CardWithDeleteAction from '../ReusableComponents/CardWithDeleteAction';
@@ -246,14 +238,7 @@ export const TrophyNotificationCard = ({ item }) => {
     />
   );
 };
-/**
- *
- * @param item
- * @param comment {boolean} if true then the notification is a comment
- * @param like {boolean} if true then it is a like
- * @returns {JSX.Element|null}
- * @constructor
- */
+
 export const PostNotificationCard = ({ item }) => {
   const navigation = useNavigation();
 
@@ -306,7 +291,9 @@ export const LikeNotificationCard = ({ item }) => {
   if (error || !data.like[0]) return null;
 
   const nav = () => {
-    navigation.navigate('PostScreen', { postId: parseInt(data.like[0].post.id) });
+    navigation.navigate('PostScreen', {
+      postId: parseInt(data.like[0].post.id),
+    });
   };
 
   const message = `liked your post in ${data.like[0].post.group.name}`;
@@ -392,5 +379,3 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
 });
-
-export default NotificationCard;

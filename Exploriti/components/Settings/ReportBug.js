@@ -5,13 +5,18 @@ import { Theme } from '../../theme/Colours';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useMutation } from '@apollo/react-hooks';
-import { REPORT_BUG, REPORT_USER } from '../../graphql';
+import { REPORT_BUG } from '../../graphql';
 import { showMessage } from 'react-native-flash-message';
 import { AuthContext } from '../../context';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * Used to report bugs to developers. Saved on backend database under bugs
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function ReportBug() {
   const [value, onChangeText] = useState('');
   const inputRef = useRef();
@@ -30,40 +35,39 @@ export default function ReportBug() {
         type: 'success',
         icon: 'auto',
       });
-      onChangeText('')
+      onChangeText('');
     },
   });
 
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView>
+        <View style={styles.viewStyle}>
+          <Text style={styles.titleTextStyle}>Something Isn't Working?</Text>
+          <Text style={styles.bodyTextStyle}>
+            Please explain the problem briefly, and describe how to reproduce
+            the bug
+          </Text>
+        </View>
 
-      <View style={styles.viewStyle}>
-        <Text style={styles.titleTextStyle}>Something Isn't Working?</Text>
-        <Text style={styles.bodyTextStyle}>
-          Please explain the problem briefly, and describe how to reproduce the
-          bug
-        </Text>
-      </View>
+        <TextInput
+          ref={inputRef}
+          style={styles.textStyle}
+          activeLineWidth={1}
+          onChangeText={onChangeText}
+          value={value}
+          multiline={true}
+          returnKeyType={'default'}
+          maxLength={600}
+        />
 
-      <TextInput
-        ref={inputRef}
-        style={styles.textStyle}
-        activeLineWidth={1}
-        onChangeText={onChangeText}
-        value={value}
-        multiline={true}
-        returnKeyType={'default'}
-        maxLength={600}
-      />
-
-      <ButtonColour
-        colour={colours.accent}
-        label={'Submit'}
-        light={true}
-        containerStyle={styles.button}
-        onPress={reportUser}
-      />
+        <ButtonColour
+          colour={colours.accent}
+          label={'Submit'}
+          light={true}
+          containerStyle={styles.button}
+          onPress={reportUser}
+        />
       </KeyboardAwareScrollView>
     </View>
   );
@@ -87,7 +91,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 30,
     padding: 10,
-
   },
   titleTextStyle: {
     ...FontSizes.Label,
@@ -107,6 +110,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     height: 190,
     padding: 12,
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
   },
 });

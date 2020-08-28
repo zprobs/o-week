@@ -12,11 +12,10 @@ const { FontWeights, FontSizes } = Fonts;
  * @param id
  * @param name {string}
  * @param image {string}
- * @param isLeader {boolean}
  * @returns {*}
  * @constructor
  */
-const HorizontalUserCard = ({ id, name, image, isLeader }) => {
+const HorizontalUserCard = ({ id, name, image }) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity

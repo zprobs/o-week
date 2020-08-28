@@ -19,6 +19,11 @@ import { CHECK_USER_ADMIN } from '../../graphql';
 import { linkError } from '../ReusableComponents/SocialMediaIcons';
 const { colours } = Theme.light;
 
+/**
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function SettingsList() {
   const navigation = useNavigation();
 

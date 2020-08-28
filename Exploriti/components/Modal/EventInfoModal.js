@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  Button,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import Fonts from '../../theme/Fonts';
@@ -28,12 +27,7 @@ import {
   REMOVE_USER_FROM_EVENT,
   SIGN_UP_USER_FOR_EVENT,
 } from '../../graphql';
-import {
-  AuthContext,
-  processError,
-  processWarning,
-  refreshToken,
-} from '../../context';
+import { AuthContext, processError, processWarning } from '../../context';
 import images from '../../assets/images';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -42,18 +36,22 @@ const { colours } = Theme.light;
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
-/**
- * @param eventId {string} the uuid for the event to be rendered
- * @param inviteRef {Ref} the reference to the usersBottomModal where users can invite their friends
- * @param initialIndex {int} the initial state of the tab index
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly event?: *}> & React.RefAttributes<unknown>>}
- */
 const EventInfoModal = React.forwardRef(
+  /**
+   *
+   * @param eventId {string} the uuid for the event to be rendered
+   * @param inviteRef {ref} the reference to the usersBottomModal where users can invite their friends
+   * @param initialIndex {int} the initial state of the tab index
+   * @param allAttendingRef {ref} the reference to open modal to see all users attending
+   * @param allInvitedRef {ref} see all invited
+   * @param ref
+   * @returns {JSX.Element}
+   */
   (
     { eventId, inviteRef, initialIndex, allAttendingRef, allInvitedRef },
     ref,
   ) => {
-    const { authState, setAuthState } = useContext(AuthContext);
+    const { authState } = useContext(AuthContext);
     const { loading, data, error } = useQuery(GET_DETAILED_EVENT, {
       variables: { id: eventId },
     });
@@ -543,7 +541,11 @@ const EventInfoModal = React.forwardRef(
             </View>
             <View style={{ marginLeft: 10 }}>
               <Text style={{ ...styles.iconLabel, color: colours.text01 }}>
-                {data.event.eventType === 'zoom' ? 'Join Zoom Meeting' : data.event.eventType === 'gather' ? 'Join Gather Game' : 'Join Youtube Stream'}
+                {data.event.eventType === 'zoom'
+                  ? 'Join Zoom Meeting'
+                  : data.event.eventType === 'gather'
+                  ? 'Join Gather Game'
+                  : 'Join Youtube Stream'}
               </Text>
               <Text style={styles.countdownText}>{timeString}</Text>
               {happeningNow ? <HappeningNow /> : null}
@@ -586,7 +588,7 @@ const EventInfoModal = React.forwardRef(
       const link = data.event.website;
       if (!link) {
         linkError('No link provided', 'Meeting');
-        return
+        return;
       }
       Linking.canOpenURL(link)
         .then((result) => {
@@ -749,7 +751,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 18
+    borderBottomRightRadius: 18,
   },
   smallPlayButton: {
     backgroundColor: 'white',

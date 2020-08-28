@@ -8,7 +8,7 @@ const { FontWeights, FontSizes } = Fonts;
 
 /**
  * render method for SectionList headers
- * @param title
+ * @param title {string}
  * @param data
  * @returns {*}
  * @constructor

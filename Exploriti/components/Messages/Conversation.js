@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   useIsFocused,
   useNavigation,
@@ -10,19 +10,10 @@ import {
   useSubscription,
   useLazyQuery,
 } from '@apollo/react-hooks';
-import {
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Keyboard,
-  StatusBar,
-  View,
-  Platform,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import GoBackHeader from '../Menu/GoBackHeader';
 import { Theme } from '../../theme/Colours';
-import ChatHeaderImage from './ChatHeaderImage';
 import CustomComposer from './CustomComposer';
 import CustomMessageText from './CustomMessageText';
 import CustomSend from './CustomSend';
@@ -32,11 +23,10 @@ import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
   GET_EARLIER_MESSAGES,
   GET_NEW_MESSAGES,
-  GET_USERS_BY_ID, GET_USERS_IN_CHAT,
+  GET_USERS_IN_CHAT,
   SEND_MESSAGE,
   UPDATE_MESSAGE_SEEN,
 } from '../../graphql';
-import Icon from 'react-native-vector-icons/Feather';
 import OptionsIcon from '../Menu/OptionsIcon';
 import UsersBottomModal from '../Modal/UsersBottomModal';
 import gql from 'graphql-tag';
@@ -263,7 +253,6 @@ const Conversation = () => {
     />
   );
 
-
   return (
     <SafeAreaView style={styles.container}>
       <GoBackHeader
@@ -277,7 +266,7 @@ const Conversation = () => {
         type={'chat'}
         name={chatName}
         query={GET_USERS_IN_CHAT}
-        variables={{ chatId: chatId}}
+        variables={{ chatId: chatId }}
         ref={usersRef}
       />
       {participants.length > 2 ? (
@@ -290,7 +279,7 @@ const Conversation = () => {
           setName={setNameState}
           muted={muted}
         />
-      ) : participants.length === 2 ?  (
+      ) : participants.length === 2 ? (
         <OptionsBottomModal
           id={participants.find((p) => p.id !== authState.user.uid).id}
           ref={optionsRef}

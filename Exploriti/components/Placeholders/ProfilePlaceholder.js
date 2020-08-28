@@ -1,9 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Placeholder, PlaceholderLine, PlaceholderMedia, Shine } from 'rn-placeholder';
+import {
+  Placeholder,
+  PlaceholderLine,
+  PlaceholderMedia,
+  Shine,
+} from 'rn-placeholder';
 import { Theme } from '../../theme/Colours';
 
-const {colours} = Theme.light
+const { colours } = Theme.light;
 
 /**
  * Loading Placeholder for fetching data on Profile Screen
@@ -12,7 +17,6 @@ const {colours} = Theme.light
  * @constructor
  */
 const ProfileScreenPlaceholder = ({ hasInteractions }) => {
-
   return (
     <View style={styles.container}>
       <Placeholder Animation={Shine}>
@@ -49,23 +53,24 @@ const ProfileScreenPlaceholder = ({ hasInteractions }) => {
             width={50}
             height={16}
           />
-          {hasInteractions &&
-          <View style={styles.interact}>
-            <PlaceholderLine
-              noMargin
-              color={colours.placeholder}
-              style={styles.interaction}
-              width={48}
-              height={32}
-            />
-            <PlaceholderLine
-              noMargin
-              color={colours.placeholder}
-              style={styles.interaction}
-              width={48}
-              height={32}
-            />
-          </View>}
+          {hasInteractions && (
+            <View style={styles.interact}>
+              <PlaceholderLine
+                noMargin
+                color={colours.placeholder}
+                style={styles.interaction}
+                width={48}
+                height={32}
+              />
+              <PlaceholderLine
+                noMargin
+                color={colours.placeholder}
+                style={styles.interaction}
+                width={48}
+                height={32}
+              />
+            </View>
+          )}
           <PlaceholderLine
             noMargin
             color={colours.placeholder}
@@ -89,39 +94,39 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   connectionsPlaceholder: {
     borderRadius: 10,
-    marginHorizontal: 18
+    marginHorizontal: 18,
   },
   infoPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
-    marginBottom: 10
+    marginBottom: 10,
   },
   namePlaceholder: {
-    borderRadius: 10
+    borderRadius: 10,
   },
   handlePlaceholder: {
     marginTop: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   interact: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 20
+    marginTop: 20,
   },
   interaction: {
-    borderRadius: 50
+    borderRadius: 50,
   },
   aboutPlaceholder: {
     marginTop: 16,
     marginBottom: 4,
-    borderRadius: 10
+    borderRadius: 10,
   },
 });
 

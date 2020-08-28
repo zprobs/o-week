@@ -1,11 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
-import {
-  Placeholder,
-  PlaceholderMedia,
-  PlaceholderLine,
-  Shine,
-} from 'rn-placeholder';
+import { View } from 'react-native';
+import { Placeholder, PlaceholderMedia, Shine } from 'rn-placeholder';
 import { Theme } from '../../theme/Colours';
 
 const { colours } = Theme.light;
@@ -24,4 +19,3 @@ export const ImageBackgroundPlaceholder = () => {
     </View>
   );
 };
-

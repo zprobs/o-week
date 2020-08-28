@@ -6,18 +6,25 @@ import { ThemeStatic } from '../../theme/Colours';
 
 const { FontWeights, FontSizes } = Fonts;
 
-/**
- * A custom Text Input with three possible states: 'emailAddress', 'name', and 'password'
- * @param style Any custom styles for the container
- * @param label {string} The label which will appear above the icon to the left of the text input
- * @param icon An icon which will appear to the left of the text input
- * @param placeholder {string}
- * @param color {string} The color of the text within the text input
- * @param type {string} State of the TextInput either 'emailAddress', 'password' or 'name'
- * @returns {*}
- * @constructor
- */
 const TextLine = React.forwardRef(
+  /**
+   *
+   * @param style Any custom styles for the container
+   * @param label {string} The label which will appear above the icon to the left of the text input
+   * @param icon An icon which will appear to the left of the text input
+   * @param placeholder {string}
+   * @param type {string} State of the TextInput either 'emailAddress', 'password' or 'name'
+   * @param value {string} value of text
+   * @param onChangeText {function}
+   * @param next {boolean} if true then done button text will be next
+   * @param onSubmit {function}
+   * @param blurOnSubmit {boolean} defaults to true
+   * @param onBlur {function}
+   * @param error {string} Formik error
+   * @param touched {boolean} Formik touched
+   * @param ref
+   * @returns {JSX.Element}
+   */
   (
     {
       style,

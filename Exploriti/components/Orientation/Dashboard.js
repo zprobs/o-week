@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { AuthContext, processWarning, refreshToken } from '../../context';
+import { AuthContext, processWarning } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_CURRENT_USER, GET_RANDOM_USERS, GET_USERS_WHERE } from '../../graphql';
+import { GET_CURRENT_USER, GET_RANDOM_USERS } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
 import Icon from 'react-native-vector-icons/Feather';
 import SectionHeader from '../ReusableComponents/SectionHeader';
@@ -41,12 +41,12 @@ async function requestUserPermission() {
 }
 
 /**
- * Dashboard is the main view where the user can see what is important and what they need to know for the near future
+ * Dashboard is the main view where the user can see what is important and view the groups they are in
  * @returns The UI view for Dashboard
  * @constructor
  */
 export default function Dashboard() {
-  const { authState, setAuthState } = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
   const navigation = useNavigation();
   const insets = useSafeArea();
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
@@ -89,7 +89,6 @@ export default function Dashboard() {
     [navigation],
   );
 
-
   const SearchIcon = () => (
     <Icon name={'search'} color={ThemeStatic.text01} size={26} />
   );
@@ -105,14 +104,14 @@ export default function Dashboard() {
     let count = 0;
 
     if (sayHiError) {
-      processWarning(sayHiError, 'Server Error')
+      processWarning(sayHiError, 'Server Error');
     }
 
-    console.log('randoms', sayHiData)
+    console.log('randoms', sayHiData);
 
     return (
       <>
-        <View style={{ marginHorizontal: 25}}>
+        <View style={{ marginHorizontal: 25 }}>
           {loading ? (
             <TitlePlaceholder />
           ) : (
@@ -131,30 +130,27 @@ export default function Dashboard() {
             <SayHiPlaceholder />
           ) : sayHiData ? (
             <>
-              {
-                sayHiData.getrandomusers.map((user) => {
-                  count++;
-                  return (
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('Profile', { userId: user.id })
-                      }
-                      key={user.id}>
-                      <Image
-                        source={{ uri: user.image }}
-                        style={{
-                          ...styles.userImage,
-                          marginTop: count % 2 === 0 ? 16 : 0,
-                        }}
-                        key={user.id}
-                      />
-                    </TouchableOpacity>
-                  );
-                })
-              }
-              <View style={{width: 15}}/>
+              {sayHiData.getrandomusers.map((user) => {
+                count++;
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('Profile', { userId: user.id })
+                    }
+                    key={user.id}>
+                    <Image
+                      source={{ uri: user.image }}
+                      style={{
+                        ...styles.userImage,
+                        marginTop: count % 2 === 0 ? 16 : 0,
+                      }}
+                      key={user.id}
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+              <View style={{ width: 15 }} />
             </>
-
           ) : null}
         </ScrollView>
 
@@ -185,7 +181,7 @@ export default function Dashboard() {
   }
 
   if (error) {
-    processWarning(error, 'Server Error')
+    processWarning(error, 'Server Error');
     return null;
   }
 
@@ -199,7 +195,7 @@ export default function Dashboard() {
         renderSectionHeader={SectionHeader}
         ListHeaderComponent={Header}
         showsVerticalScrollIndicator={false}
-        style={{marginTop: insets.top }}
+        style={{ marginTop: insets.top }}
       />
     </View>
   );
@@ -245,7 +241,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 24,
     paddingHorizontal: 15,
-
   },
   userImage: {
     width: 66,

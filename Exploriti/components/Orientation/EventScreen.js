@@ -38,7 +38,7 @@ import NewEventModal from '../Modal/NewEventModal';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import {ImageBackgroundPlaceholder} from '../Placeholders/ImageBackgroundPlaceholder';
+import { ImageBackgroundPlaceholder } from '../Placeholders/ImageBackgroundPlaceholder';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -81,7 +81,7 @@ const EventScreen = ({ route }) => {
 
   const insets = useSafeArea();
 
-  if (loading) return <ImageBackgroundPlaceholder/>;
+  if (loading) return <ImageBackgroundPlaceholder />;
   if (error) {
     processWarning(error, 'Server Error');
     return null;
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    right: 0
+    right: 0,
   },
   circleEditIcon: {
     marginTop: 45,

@@ -10,6 +10,11 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 const { colours } = Theme.light;
 
+/**
+ * Screen to view a groups posts in pagination. when navigating pass groupId in route.params
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const AllPosts = () => {
   const route = useRoute();
   const insets = useSafeArea();
@@ -23,32 +28,28 @@ const AllPosts = () => {
 
   const renderItem = ({ item, index }) => <Post index={index} item={item} />;
 
-  const onEndReached = useCallback(
-    () => {
-      console.log('onEndReached data', data.group.posts.length);
-      fetchMore({
-        variables: {
-          groupId: groupId,
-          offset: data.group.posts.length,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          console.log('fetchMore', fetchMoreResult);
-          if (!fetchMoreResult) return prev;
+  const onEndReached = useCallback(() => {
+    console.log('onEndReached data', data.group.posts.length);
+    fetchMore({
+      variables: {
+        groupId: groupId,
+        offset: data.group.posts.length,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        console.log('fetchMore', fetchMoreResult);
+        if (!fetchMoreResult) return prev;
 
-          console.log('prev', prev);
+        console.log('prev', prev);
 
-          return {
-            group: {
-              ...prev.group,
-              posts: [...prev.group.posts, ...fetchMoreResult.group.posts],
-            },
-          };
-        },
-      });
-    },
-    [data]
-  );
-
+        return {
+          group: {
+            ...prev.group,
+            posts: [...prev.group.posts, ...fetchMoreResult.group.posts],
+          },
+        };
+      },
+    });
+  }, [data]);
 
   const styles = StyleSheet.create({
     container: {
@@ -69,7 +70,7 @@ const AllPosts = () => {
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         initialNumToRender={7}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
       />
     </View>
   );

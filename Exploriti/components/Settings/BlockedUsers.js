@@ -1,28 +1,25 @@
 import React, { useContext } from 'react';
-import {
-  Text,
-  View,
-  Button,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-} from 'react-native';
+import { Text, View, StyleSheet, FlatList } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_USER_BLOCKS, UNBLOCK_USER } from '../../graphql';
-import { AuthContext, processWarning } from '../../context';
+import { AuthContext, processError, processWarning } from '../../context';
 import Icon from 'react-native-vector-icons/Feather';
-import query from 'apollo-cache-inmemory/lib/fragmentMatcherIntrospectionQuery';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
+/**
+ * component where users can unblock people they have blocked in the past. Accessible through Settings -> blocked users
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const BlockedUsers = () => {
   const { authState } = useContext(AuthContext);
-  const { data, loading, error } = useQuery(GET_USER_BLOCKS, {
-    variables: { id: authState.user.uid }, fetchPolicy: 'cache-and-network'
+  const { data, error } = useQuery(GET_USER_BLOCKS, {
+    variables: { id: authState.user.uid },
+    fetchPolicy: 'cache-and-network',
   });
 
   const [unBlock, { error: unBlockError }] = useMutation(UNBLOCK_USER);
@@ -30,6 +27,7 @@ const BlockedUsers = () => {
   console.log('blocksData', data);
 
   if (error) processWarning(error, 'Could not retrieve users');
+  if (unBlockError) processError(unBlockError, 'Could not unblock user');
 
   const emptyList = () => (
     <View style={styles.centerView}>

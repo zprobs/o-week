@@ -19,7 +19,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
   CREATE_EVENT,
   GET_ALL_GROUP_IDS,
-  GET_DETAILED_EVENT, GET_EVENT_EDIT,
+  GET_EVENT_EDIT,
   GET_GROUP_EVENTS,
   GET_GROUP_MEMBERS,
   SEND_NOTIFICATIONS,
@@ -32,34 +32,33 @@ import {
   NotificationTypes,
   processError,
   processWarning,
-  refreshToken,
   saveImage,
 } from '../../context';
 import Fonts from '../../theme/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
-import {eventTypes} from '../../context';
+import { eventTypes } from '../../context';
 import SegmentedControl from '@react-native-community/segmented-control';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
-
-/**
- * Modal for creating an event accessible only by Leaders through the Group page
- * @param groupId {string} the host of the event
- * @param onClose {function} a method executed onClose
- * @param groupName {string} The name of host group
- * @param eventId {string} used to update event
- * @param editMode {boolean} if true, then editing an existing event. If false then creating a new one.
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly groupName?: *, readonly onClose?: *}> & React.RefAttributes<unknown>>}
- */
 const NewEventModal = React.forwardRef(
+  /**
+   *
+   * @param groupId {string} the host of the event
+   * @param onClose {function} a method executed onClose
+   * @param groupName {string} The name of host group
+   * @param editMode {boolean} if true, then editing an existing event. If false then creating a new one.
+   * @param eventId {string} used to update event
+   * @param isOfficial {boolean} if official will render an additional little icon
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ groupId, onClose, groupName, editMode, eventId, isOfficial }, ref) => {
-    const [
-      createEvent,
-      { error: createEventError},
-    ] = useMutation(CREATE_EVENT);
+    const [createEvent, { error: createEventError }] = useMutation(
+      CREATE_EVENT,
+    );
     const [updateEvent, { error: updateEventError }] = useMutation(
       UPDATE_EVENT,
     );
@@ -88,8 +87,8 @@ const NewEventModal = React.forwardRef(
     const [endDate, setEndDate] = useState(new Date());
     const [showEndDate, setShowEndDate] = useState(false);
     const [minimumDate] = useState(new Date(Date.now() - 86400000));
-    const [linkIndex, setLinkIndex] = useState(0)
-    const { authState, setAuthState } = useContext(AuthContext);
+    const [linkIndex, setLinkIndex] = useState(0);
+    const { authState } = useContext(AuthContext);
 
     if (data) console.log('event.type', data.event.eventType);
 
@@ -129,9 +128,8 @@ const NewEventModal = React.forwardRef(
         } else if (event.eventType === 'gather') {
           setLinkIndex(1);
         } else {
-          setLinkIndex(2)
+          setLinkIndex(2);
         }
-
       }
     }, [data]);
 
@@ -153,7 +151,12 @@ const NewEventModal = React.forwardRef(
     const onDone = async () => {
       setIsUploading(true);
       const imageURL = imageSelection
-        ? await saveImage(imageSelection, null, 'event', `${name}${Date.now().toString()}`)
+        ? await saveImage(
+            imageSelection,
+            null,
+            'event',
+            `${name}${Date.now().toString()}`,
+          )
         : image;
       const fields = {};
       fields.image = imageURL;
@@ -171,9 +174,9 @@ const NewEventModal = React.forwardRef(
         fields.hosts = { data: [{ groupId: groupId }] };
         if (membersError) processError(membersError, 'Could not notify users');
         else {
-          membersData.group.members.forEach((m)=>{
-            userIDs.push({userId: m.userId});
-            userEvent_insert_input.push({ userId: m.userId, didAccept: false })
+          membersData.group.members.forEach((m) => {
+            userIDs.push({ userId: m.userId });
+            userEvent_insert_input.push({ userId: m.userId, didAccept: false });
           });
           console.log('userIDs of members', userIDs);
           console.log('userE insert', userEvent_insert_input);
@@ -187,9 +190,9 @@ const NewEventModal = React.forwardRef(
         const IDs = [];
         hostsData.groups.forEach((group) => IDs.push({ groupId: group.id }));
         hostsData.users.forEach((user) => {
-          userIDs.push({ userId: user.id })
-          userEvent_insert_input.push({ userId: user.id, didAccept: false })
-        })
+          userIDs.push({ userId: user.id });
+          userEvent_insert_input.push({ userId: user.id, didAccept: false });
+        });
         fields.hosts = { data: IDs };
         fields.attendees = { data: userEvent_insert_input };
         fields.eventType = linkIndex === 0;
@@ -238,8 +241,10 @@ const NewEventModal = React.forwardRef(
         fields.startDate = startDate;
         startChanged = true;
       }
-      if (endDate.getTime() !== new Date(event.endDate).getTime()) fields.endDate = endDate;
-      if (eventTypes[linkIndex] !== event.eventType) fields.eventType = eventTypes[linkIndex];
+      if (endDate.getTime() !== new Date(event.endDate).getTime())
+        fields.endDate = endDate;
+      if (eventTypes[linkIndex] !== event.eventType)
+        fields.eventType = eventTypes[linkIndex];
 
       console.log('fields', fields);
 
@@ -251,8 +256,7 @@ const NewEventModal = React.forwardRef(
             setIsUploading(false);
             ref.current.close();
             if (startChanged) {
-              const IDs = data.event.attendees
-                .map((a) => a.user.id)
+              const IDs = data.event.attendees.map((a) => a.user.id);
               console.log('Id', IDs);
               const recipients = [];
               IDs.forEach((id) => recipients.push({ userId: id }));
@@ -424,8 +428,18 @@ const NewEventModal = React.forwardRef(
 
             <FormInput
               ref={null}
-              label={linkIndex === 0 ? "Zoom Link" : linkIndex === 1 ?  "Gather Link" : "Youtube Link"}
-              placeholder={linkIndex === 0 ? "example: https://us02web.zoom.us/j/824?pwd=123" : "example: https://letsgather.app.link/UapAgGbE38"}
+              label={
+                linkIndex === 0
+                  ? 'Zoom Link'
+                  : linkIndex === 1
+                  ? 'Gather Link'
+                  : 'Youtube Link'
+              }
+              placeholder={
+                linkIndex === 0
+                  ? 'example: https://us02web.zoom.us/j/824?pwd=123'
+                  : 'example: https://letsgather.app.link/UapAgGbE38'
+              }
               value={website}
               onChangeText={setWebsite}
               characterRestriction={190}
@@ -523,8 +537,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   selector: {
-    marginVertical: 15
-  }
+    marginVertical: 15,
+  },
 });
 
 export default NewEventModal;

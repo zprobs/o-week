@@ -4,7 +4,7 @@ import { ThemeStatic } from '../../theme/Colours';
 
 /**
  * RadioButton for the RadioButtonFlatList
- * @param selected
+ * @param selected {boolean}
  * @returns {*}
  * @constructor
  */

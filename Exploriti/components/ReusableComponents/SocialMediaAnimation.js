@@ -748,7 +748,7 @@ export default class SocialMediaAnimation extends Component {
    * @param name {string} name of the icon
    * @param key {string}
    **/
-  renderSMIconAndroid( id, image, name, key ) {
+  renderSMIconAndroid(id, image, name, key) {
     let pushIcon, zoomIcon;
     switch (id) {
       case 1:
@@ -900,15 +900,13 @@ export default class SocialMediaAnimation extends Component {
               this.renderSMIcon(6, 'tiktok', 'TikTok', '6'),
             ]
           : [
-            this.renderSMIconAndroid(1, 'facebook', 'Facebook', '7'),
-            this.renderSMIconAndroid(2, 'instagram', 'Instagram', '8'),
-            this.renderSMIconAndroid(3, 'linkedin', 'LinkedIn', '9'),
-            this.renderSMIconAndroid(4, 'snapchat', 'Snapchat', '10'),
-            this.renderSMIconAndroid(5, 'twitter', 'Twitter', '11'),
-            this.renderSMIconAndroid(6, 'tiktok', 'TikTok', '12'),
-          ]
-
-        }
+              this.renderSMIconAndroid(1, 'facebook', 'Facebook', '7'),
+              this.renderSMIconAndroid(2, 'instagram', 'Instagram', '8'),
+              this.renderSMIconAndroid(3, 'linkedin', 'LinkedIn', '9'),
+              this.renderSMIconAndroid(4, 'snapchat', 'Snapchat', '10'),
+              this.renderSMIconAndroid(5, 'twitter', 'Twitter', '11'),
+              this.renderSMIconAndroid(6, 'tiktok', 'TikTok', '12'),
+            ]}
       </Animated.View>
     );
   }
@@ -932,10 +930,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.facebook}
-            />
+            <Image style={styles.imgIcon} source={images.facebook} />
           </Animated.View>
         ) : null}
 
@@ -950,10 +945,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.instagram}
-            />
+            <Image style={styles.imgIcon} source={images.instagram} />
           </Animated.View>
         ) : null}
 
@@ -968,10 +960,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.linkedin}
-            />
+            <Image style={styles.imgIcon} source={images.linkedin} />
           </Animated.View>
         ) : null}
 
@@ -986,10 +975,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.snapchat}
-            />
+            <Image style={styles.imgIcon} source={images.snapchat} />
           </Animated.View>
         ) : null}
 
@@ -1004,10 +990,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.twitter}
-            />
+            <Image style={styles.imgIcon} source={images.twitter} />
           </Animated.View>
         ) : null}
 
@@ -1022,10 +1005,7 @@ export default class SocialMediaAnimation extends Component {
               transform: [{ scale: this.zoomIconWhenRelease }],
               position: 'absolute',
             }}>
-            <Image
-              style={styles.imgIcon}
-              source={images.tiktok}
-            />
+            <Image style={styles.imgIcon} source={images.tiktok} />
           </Animated.View>
         ) : null}
       </View>

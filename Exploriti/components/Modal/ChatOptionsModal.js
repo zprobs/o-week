@@ -3,12 +3,9 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Text,
-  Platform,
   ImageBackground,
 } from 'react-native';
 import { Modalize } from 'react-native-modalize';
-import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import ModalHeader from './ModalHeader';
@@ -22,28 +19,29 @@ import {
   MUTE_CHAT,
   REPORT_CHAT,
   SEARCH_USERS_ADD_TO_CHAT,
-  SEARCH_USERS_IN_GROUP,
   UPDATE_CHAT,
 } from '../../graphql';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import gql from 'graphql-tag';
 import { showMessage } from 'react-native-flash-message';
 import SettingsSwitch from '../ReusableComponents/SettingsSwitch';
 import SearchableFlatList from './SearchableFlatList';
 import Selection from '../ReusableComponents/Selection';
 
-const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
 
-/**
- * @param prevImage {string} existing image
- * @param prevName {string} existing name
- * @param chatName {string} if the chat has a custom name then it is this
- * @param id {int}
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly image?: *, readonly id?: *, readonly name?: *}> & React.RefAttributes<unknown>>}
- */
 const ChatOptionsModal = React.forwardRef(
+  /**
+   *
+   * @param prevImage {string} existing image
+   * @param prevName {string} existing name
+   * @param chatName {string} if the chat has a custom name then it is this
+   * @param id {int}
+   * @param setName {function} used to update the current header of the conversation immediately
+   * @param muted {boolean} weather or not the current chat has notifications muted
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ prevImage, prevName, chatName, id, setName, muted }, ref) => {
     const [image, setImage] = useState(prevImage);
     const [imageSelection, setImageSelection] = useState();
@@ -78,7 +76,6 @@ const ChatOptionsModal = React.forwardRef(
     if (reportError) processError(reportError, 'Could not report chat');
     if (muteChatError) processError(muteChatError, 'Could not mute chat');
     if (addUserError) processError(addUserError, 'Could not add users to chat');
-
 
     const changeImage = () => {
       ImagePicker.openPicker({
@@ -134,7 +131,7 @@ const ChatOptionsModal = React.forwardRef(
       if (Object.keys(fields).length !== 0) {
         updateChat({
           variables: { id: id, _set: fields },
-          update: (proxy) => {
+          update: () => {
             setName(name);
           },
         })

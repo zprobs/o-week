@@ -4,25 +4,22 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
   ScrollView,
   StatusBar,
 } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
 import CircleBackIcon from '../Menu/CircleBackIcon';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import EventCard from '../ReusableComponents/EventCard';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
 import { AuthContext, processError } from '../../context';
-import RNCalendarEvents from "react-native-calendar-events";
-import { log } from 'react-native-reanimated';
+import RNCalendarEvents from 'react-native-calendar-events';
 import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
-const HEIGHT = Dimensions.get('window').height;
 
 /**
  * List of Calendars to be shown in the schedule or added to the phone's calendar
@@ -38,24 +35,24 @@ const Calendar = () => {
     },
     fetchPolicy: 'cache-only',
   });
-  const [updateCalendars, {error}] = useMutation(UPDATE_CALENDARS);
-  const myCalendars  = data ? data.user.member : [];
-
+  const [updateCalendars, { error }] = useMutation(UPDATE_CALENDARS);
+  const myCalendars = data ? data.user.member : [];
 
   const saveCalendar = async (calendar) => {
     try {
-
       const calendars = await RNCalendarEvents.findCalendars();
 
-      console.log({calendars});
+      console.log({ calendars });
 
-      const thisCalendar = calendars.find(cal => cal.title === calendar.group.name);
+      const thisCalendar = calendars.find(
+        (cal) => cal.title === calendar.group.name,
+      );
 
-      console.log({thisCalendar});
+      console.log({ thisCalendar });
 
       if (thisCalendar) {
         const removed = await RNCalendarEvents.removeCalendar(thisCalendar.id);
-        console.log({removed});
+        console.log({ removed });
       }
 
       RNCalendarEvents.saveCalendar({
@@ -67,46 +64,55 @@ const Calendar = () => {
         ownerAccount: authState.user.email,
         source: {
           name: authState.user.email,
-          type: 'LOCAL'
+          type: 'LOCAL',
         },
-      }).then((id) => {
-        const events = data.events.filter(evt => evt.hosts.find(h => h.groupId === calendar.group.id) !== undefined);
-        console.log({events});
-        events.map(evt => {
-          RNCalendarEvents.saveEvent(evt.name, {
-            calendarId: id,
-            startDate: new Date(evt.startDate).toISOString(),
-            endDate: new Date(evt.endDate).toISOString(),
-            location: evt.location,
-          })
-        });
-        showMessage({
-          message: 'Successfully Added to Calendar',
-          description: 'Please check your phone calendar to see the events',
-          autoHide: true,
-          type: 'success',
-          icon: 'auto',
-        });
-      }).catch(e => processError(e, 'Could not create calendar'))
+      })
+        .then((id) => {
+          const events = data.events.filter(
+            (evt) =>
+              evt.hosts.find((h) => h.groupId === calendar.group.id) !==
+              undefined,
+          );
+          console.log({ events });
+          events.map((evt) => {
+            RNCalendarEvents.saveEvent(evt.name, {
+              calendarId: id,
+              startDate: new Date(evt.startDate).toISOString(),
+              endDate: new Date(evt.endDate).toISOString(),
+              location: evt.location,
+            });
+          });
+          showMessage({
+            message: 'Successfully Added to Calendar',
+            description: 'Please check your phone calendar to see the events',
+            autoHide: true,
+            type: 'success',
+            icon: 'auto',
+          });
+        })
+        .catch((e) => processError(e, 'Could not create calendar'));
     } catch (e) {
       processError(e, 'Could not save calendar');
     }
-  }
+  };
 
   const addToPhoneCalendar = (calendar) => {
-    console.log({calendar});
-    RNCalendarEvents.checkPermissions(false).then((result) => {
-      console.log(result);
-      if (result !== 'authorized') {
-        RNCalendarEvents.requestPermissions(false).then((result) => {
-          if (result === 'authorized') saveCalendar(calendar);
-        }).catch(e => console.log(e))
-      } else {
-        saveCalendar(calendar)
-      }
-
-    }).catch(e => console.log(e))
-  }
+    console.log({ calendar });
+    RNCalendarEvents.checkPermissions(false)
+      .then((result) => {
+        console.log(result);
+        if (result !== 'authorized') {
+          RNCalendarEvents.requestPermissions(false)
+            .then((result) => {
+              if (result === 'authorized') saveCalendar(calendar);
+            })
+            .catch((e) => console.log(e));
+        } else {
+          saveCalendar(calendar);
+        }
+      })
+      .catch((e) => console.log(e));
+  };
 
   const updateOnCalendar = (calendar, selected) => {
     updateCalendars({
@@ -121,18 +127,16 @@ const Calendar = () => {
           variables: { userId: authState.user.uid },
         },
       ],
-    }).catch(e=>console.log(e));
+    }).catch((e) => console.log(e));
   };
 
   if (error) {
-    processError(error, 'Could not update Calendar changes')
+    processError(error, 'Could not update Calendar changes');
   }
 
   return (
     <ScrollView style={styles.container} bounces={false}>
-      <LinearGradient
-        colors={['#fc8c62', '#ed1b2f']}
-        style={styles.container}>
+      <LinearGradient colors={['#fc8c62', '#ed1b2f']} style={styles.container}>
         <SafeAreaView>
           {isFocused ? <StatusBar barStyle="light-content" /> : null}
           <View style={styles.header}>

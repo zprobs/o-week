@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
     ...FontWeights.Light,
     ...FontSizes.Body,
     color: ThemeStatic.black,
-    lineHeight: 24
+    lineHeight: 24,
   },
   right: {
     ...FontWeights.Light,
     ...FontSizes.Body,
     color: ThemeStatic.white,
-    lineHeight: 24
+    lineHeight: 24,
   },
 });
 

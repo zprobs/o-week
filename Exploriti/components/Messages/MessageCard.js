@@ -1,16 +1,9 @@
 import { useMutation } from '@apollo/react-hooks';
 import React, { useContext, useRef } from 'react';
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import { Theme, ThemeStatic } from '../../theme/Colours';
-import { AuthContext, parseTimeElapsed } from '../../context';
+import { AuthContext, parseTimeElapsed, processError } from '../../context';
 import { useNavigation } from '@react-navigation/native';
 import {
   UNSUBSCRIBE_FROM_CHAT,
@@ -35,7 +28,6 @@ const MessageCard = ({
   seen,
   time,
   isOnline,
-  onSwipe,
   chatName,
   muted,
 }) => {
@@ -43,12 +35,12 @@ const MessageCard = ({
   const { authState } = useContext(AuthContext);
   const { readableTime } = parseTimeElapsed(time);
   const navigation = useNavigation();
-  const [
-    unsubscribeFromChat,
-    { loading: unsubscribeLoading, error: unsubscribeError },
-  ] = useMutation(UNSUBSCRIBE_FROM_CHAT, {
-    variables: { chatId: chatId, userId: authState.user.uid },
-  });
+  const [unsubscribeFromChat, { error: unsubscribeError }] = useMutation(
+    UNSUBSCRIBE_FROM_CHAT,
+    {
+      variables: { chatId: chatId, userId: authState.user.uid },
+    },
+  );
 
   const [deleteChat] = useMutation(DELETE_CHAT, {
     variables: { chatId: chatId },
@@ -105,6 +97,8 @@ const MessageCard = ({
       }
     },
   });
+
+  if (unsubscribeError) processError(unsubscribeError, 'Cannot leave chat');
 
   const hasSetSeen = useRef(false);
 

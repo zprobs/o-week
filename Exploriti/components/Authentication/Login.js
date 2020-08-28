@@ -7,7 +7,8 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-  Alert, Linking,
+  Alert,
+  Linking,
 } from 'react-native';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -166,19 +167,22 @@ export default function Login({ navigation }) {
         </Formik>
 
         <TouchableOpacity style={styles.touchable}>
-          <TouchableOpacity onPress={()=>{
-            Linking.canOpenURL('https://www.arravon.com/verification')
-              .then((result) => {
-                if (result) {
-                  Linking.openURL('https://www.arravon.com/verification').catch((e) => console.log(e));
-                } else {
-                  linkError('', 'Reset Password');
-                }
-              })
-              .catch((error) => {
-                linkError(error, 'Reset Password');
-              });
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.canOpenURL('https://www.arravon.com/verification')
+                .then((result) => {
+                  if (result) {
+                    Linking.openURL(
+                      'https://www.arravon.com/verification',
+                    ).catch((e) => console.log(e));
+                  } else {
+                    linkError('', 'Reset Password');
+                  }
+                })
+                .catch((error) => {
+                  linkError(error, 'Reset Password');
+                });
+            }}>
             <Text style={styles.forgot}>Forgot your password?</Text>
           </TouchableOpacity>
         </TouchableOpacity>

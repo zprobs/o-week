@@ -7,9 +7,21 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import MessageCard from './MessageCard';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
-import { CHECK_USER_ADMIN, GET_CHATS, GET_USER_FRIENDS, NEW_CHAT, SEARCH_CHATS } from '../../graphql';
+import {
+  CHECK_USER_ADMIN,
+  GET_CHATS,
+  GET_USER_FRIENDS,
+  NEW_CHAT,
+  SEARCH_CHATS,
+} from '../../graphql';
 import EmptyMessages from '../../assets/svg/empty-messages.svg';
-import { AuthContext, getDefaultImage, graphqlify, processError, processWarning, refreshToken } from '../../context';
+import {
+  AuthContext,
+  getDefaultImage,
+  graphqlify,
+  processError,
+  processWarning,
+} from '../../context';
 import SearchableFlatList from '../Modal/SearchableFlatList';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
@@ -27,15 +39,15 @@ const { FontWeights, FontSizes } = Fonts;
  */
 export default function MessagesList() {
   const [chatSearch, setChatSearch] = useState('');
-  const [friendsSelection, setFriendsSelection] = useState([]);
   const navigation = useNavigation();
   const newMessageBottomModalRef = useRef();
   const headerHeight = useHeaderHeight();
   const insets = useSafeArea();
   const { authState } = useContext(AuthContext);
 
-  const {data: adminData} = useQuery(CHECK_USER_ADMIN, {variables: {id: authState.user.uid}})
-
+  const { data: adminData } = useQuery(CHECK_USER_ADMIN, {
+    variables: { id: authState.user.uid },
+  });
 
   const IconRight = () => (
     <Icon
@@ -47,7 +59,7 @@ export default function MessagesList() {
   );
 
   const renderItem = ({ item }) => {
-    const {seen, chat, muted} = item
+    const { seen, chat, muted } = item;
     const {
       _id: chatId,
       participants,
@@ -61,9 +73,10 @@ export default function MessagesList() {
     if (participants.length === 1) return null;
 
     if (participants.length === 2) {
-      image = participants.filter(user=>user.id !== authState.user.uid)[0].image;
+      image = participants.filter((user) => user.id !== authState.user.uid)[0]
+        .image;
     } else {
-      image = chat.image
+      image = chat.image;
     }
 
     const name =
@@ -73,7 +86,7 @@ export default function MessagesList() {
         .map((participant) => participant.name)
         .join(', ');
 
-    const senderId = messages[0].user._id
+    const senderId = messages[0].user._id;
 
     return (
       <MessageCard
@@ -94,9 +107,6 @@ export default function MessagesList() {
     );
   };
 
-
-
-
   const {
     data: chatsData,
     loading: chatsLoading,
@@ -107,23 +117,29 @@ export default function MessagesList() {
     },
   });
 
-
   if (chatsError) {
-    processWarning(chatsError, 'Could not load chat')
-    }
-
-  const {data: searchData, loading: searchLoading, error: searchError} = useQuery(SEARCH_CHATS, {variables: {user: authState.user.uid, query: `%${chatSearch}%`}, skip: chatSearch === ''})
-
-  if (searchError) {
-    processWarning(searchError, 'Could not complete search')
+    processWarning(chatsError, 'Could not load chat');
   }
 
-  console.log('searchData', searchData)
+  const {
+    data: searchData,
+    loading: searchLoading,
+    error: searchError,
+  } = useQuery(SEARCH_CHATS, {
+    variables: { user: authState.user.uid, query: `%${chatSearch}%` },
+    skip: chatSearch === '',
+  });
+
+  if (searchError) {
+    processWarning(searchError, 'Could not complete search');
+  }
+
+  console.log('searchData', searchData);
 
   //  Selection needs to reset if  one makes a chat and then decides to back
   // out of it
 
-  const [newChat, {error: newChatError}] = useMutation(NEW_CHAT, {
+  const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
       const {
         _id: chatId,
@@ -150,22 +166,28 @@ export default function MessagesList() {
         participants,
         numMessages,
         messages,
-        chatName
+        chatName,
       });
     },
   });
 
   if (newChatError) {
-   processError(newChatError, 'Cannot Create Chat')
+    processError(newChatError, 'Cannot Create Chat');
   }
 
   const newConversation = (participants) => {
     if (participants.length !== 0) {
-      if (participants.length === 1 && adminData && adminData.user.isLeader && !(participants[0].isLeader || participants[0].isAdmin)) {
-       // leaders cannot message students
+      if (
+        participants.length === 1 &&
+        adminData &&
+        adminData.user.isLeader &&
+        !(participants[0].isLeader || participants[0].isAdmin)
+      ) {
+        // leaders cannot message students
         showMessage({
           message: 'Cannot send message',
-          description: 'As a leader you may not send private messages to students',
+          description:
+            'As a leader you may not send private messages to students',
           autoHide: true,
           type: 'danger',
           icon: 'auto',
@@ -193,7 +215,15 @@ export default function MessagesList() {
   const content = (
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={ searchData ? searchData.user.userChats : chatsLoading ? [] : chatsError ? [] : chatsData.user.userChats}
+      data={
+        searchData
+          ? searchData.user.userChats
+          : chatsLoading
+          ? []
+          : chatsError
+          ? []
+          : chatsData.user.userChats
+      }
       ListEmptyComponent={listEmptyComponent}
       style={styles.messagesList}
       renderItem={renderItem}
@@ -220,7 +250,7 @@ export default function MessagesList() {
         query={GET_USER_FRIENDS}
         hasImage={true}
         variables={{ userId: authState.user.uid, offset: 0 }}
-        setSelection={setFriendsSelection}
+        setSelection={() => {}}
         aliased={false}
         floatingButtonText={'Next'}
         min={1}
@@ -236,11 +266,7 @@ export default function MessagesList() {
 }
 
 const listEmptyComponent = () => (
-  <ImgBanner
-    Img={EmptyMessages}
-    placeholder="No messages yet"
-    spacing={0.15}
-  />
+  <ImgBanner Img={EmptyMessages} placeholder="No messages yet" spacing={0.15} />
 );
 
 const styles = StyleSheet.create({

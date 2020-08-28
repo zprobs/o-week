@@ -1,8 +1,6 @@
 {
   "name": "Messages",
   "version": "1.0.0",
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "main": "Messages.js"
 }

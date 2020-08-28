@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
   Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import SearchBar from 'react-native-search-bar';
 import { Modalize } from 'react-native-modalize';
@@ -15,34 +15,36 @@ import Icon from 'react-native-vector-icons/EvilIcons';
 import { useQuery } from '@apollo/react-hooks';
 import { NULL } from '../../graphql';
 import ButtonColour from '../ReusableComponents/ButtonColour';
-import { processWarning, refreshToken, useKeyboard } from '../../context';
+import { processWarning, useKeyboard } from '../../context';
 import ImgBanner from '../ReusableComponents/ImgBanner';
 import SearchUsers from '../../assets/svg/search-users.svg';
-import { showMessage } from 'react-native-flash-message';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
 
-/**
- * A Vertical FlatList component with a search-bar at the top. Used for long lists
- * @param data an Array of data to be displayed in the List
- * @param query GraphQL query to execute to receive the data. Used instead of the data prop
- * @param title The word to be placed inside the search-bar placeholder in the form: Search for {title}...
- * @param setData The function which will set the strings of selected items
- * @param setSelection The function which will set the id's of selected items
- * @param max The maximum number of selections allowed to be made
- * @param min {int} an optional minimum number of selections before continuing
- * @param aliased Whether to filter with aliases
- * @param onPress
- * @param floatingButtonText {string} The label for the done button
- * @param offset A top offset for the modal
- * @param initialSelection The initially selected data of the list in the form of a Map(String, Bool). Try to avoid adding it on subsequent renders
- * @param clearOnClose {boolean} if true, will clear the selected data on close.
- * @param serverSearch {boolean} if true, The query data will be retrieved from the server when the user types.
- * @returns {*}
- * @constructor
- */
 const SearchableFlatList = React.forwardRef(
+  /**
+   *
+   * @param data an Array of data to be displayed in the List
+   * @param query GraphQL query to execute to receive the data. Used instead of the data prop.
+   * @param variables The variables to be used in query
+   * @param hasImage {boolean} if true will render items with image. Used for users
+   * @param title {string} The word to be placed inside the search-bar placeholder in the form: Search for <title>...
+   * @param setData {function}  will save the names of selected items.
+   * @param setSelection {function} will save the IDs of selected items. (not used with data)
+   * @param max {int} The maximum number of selections allowed to be made
+   * @param min {int} an optional minimum number of selections before continuing
+   * @param aliased {boolean} Whether to filter with aliases
+   * @param onPress {function} optional function to be executed when floating button is pressed. takes selected items as params
+   * @param floatingButtonText {string} The label for the done button
+   * @param floatingButtonOffset
+   * @param offset {int} A top offset for the modal
+   * @param initialSelection The initially selected data of the list in the form of a Map(String, Bool). Try to avoid adding it on subsequent renders
+   * @param clearOnClose {boolean} if true, will clear the selected data on close.
+   * @param serverSearch {boolean} if true, The query data will be retrieved from the server when the user types.
+   * @param ref
+   * @returns {JSX.Element}
+   */
   (
     {
       data,
@@ -82,41 +84,44 @@ const SearchableFlatList = React.forwardRef(
 
     console.log('btn show', buttonIsShowing);
 
-
-
-    const {data: QueryData, loading, error} = useQuery(verifiedQuery, {
-      skip: query == undefined || (serverSearch && searchQuery === ''),
-      variables: serverSearch ? { query: `%${searchQuery}%`, ...variables } : variables,
+    const { data: QueryData, loading, error } = useQuery(verifiedQuery, {
+      skip: !query || (serverSearch && searchQuery === ''),
+      variables: serverSearch
+        ? { query: `%${searchQuery}%`, ...variables }
+        : variables,
     });
 
     if (error) {
-      processWarning(error, 'Server Error')
+      processWarning(error, 'Server Error');
     }
 
     if (!loading && !didSetFirst.current && QueryData && !error) {
-      const listData = title === 'friends' ? QueryData.user.friends.map(f=>f.friend) : QueryData[title]
+      const listData =
+        title === 'friends'
+          ? QueryData.user.friends.map((f) => f.friend)
+          : QueryData[title];
       didSetFirst.current = true;
       if (!serverSearch) setUnfilteredList(listData);
       setFilteredList(listData);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
       if (initialSelection) {
         const newSelected = new Map();
         for (const entry of initialSelection.entries()) {
           if (entry[1]) {
-            const item = unfilteredList.filter((interest)=>interest.id===entry[0].id)
+            const item = unfilteredList.filter(
+              (interest) => interest.id === entry[0].id,
+            );
             if (item.length > 0) {
-              newSelected.set(item[0], true)
-              setCount(count+1);
+              newSelected.set(item[0], true);
+              setCount(count + 1);
             }
           }
         }
         setSelected(newSelected);
       }
-    }, [initialSelection, QueryData])
-
-
+    }, [initialSelection, QueryData]);
 
     function showButton() {
       Animated.parallel([
@@ -147,29 +152,28 @@ const SearchableFlatList = React.forwardRef(
           useNativeDriver: true,
         }),
       ]).start();
-      setButtonIsShowing(false)
+      setButtonIsShowing(false);
     }
 
     const onSelect = (item) => {
-
-        const newSelected = new Map(selected);
-        if (!!selected.get(item) === false) {
-          if (count >= max) {
-            return;
-          }
-          if (!buttonIsShowing && (!min || count + 1 >= min)) {
-            showButton();
-          }
-          setCount(count + 1);
-        } else {
-          if (buttonIsShowing && min && count <= min) {
-            hideButton()
-          }
-          setCount(count - 1);
+      const newSelected = new Map(selected);
+      if (!!selected.get(item) === false) {
+        if (count >= max) {
+          return;
         }
+        if (!buttonIsShowing && (!min || count + 1 >= min)) {
+          showButton();
+        }
+        setCount(count + 1);
+      } else {
+        if (buttonIsShowing && min && count <= min) {
+          hideButton();
+        }
+        setCount(count - 1);
+      }
       newSelected.set(item, !selected.get(item));
-        setSelected(newSelected);
-    }
+      setSelected(newSelected);
+    };
 
     useEffect(() => {
       // only do the local search if not a server search
@@ -233,7 +237,7 @@ const SearchableFlatList = React.forwardRef(
           hideBackground={true}
           showsCancelButton={false}
           showsCancelButtonWhileEditing={false}
-          onSearchButtonPress={()=>inputRef.current.blur()}
+          onSearchButtonPress={() => inputRef.current.blur()}
         />
       );
     }, [title, setSearchQuery]);
@@ -247,28 +251,30 @@ const SearchableFlatList = React.forwardRef(
               opacity,
               transform: [{ translateY: floatingOffset }],
 
-              bottom: keyboardHeight === 0 ? 0 : floatingButtonOffset
-                ? keyboardHeight - floatingButtonOffset
-                : keyboardHeight
-
+              bottom:
+                keyboardHeight === 0
+                  ? 0
+                  : floatingButtonOffset
+                  ? keyboardHeight - floatingButtonOffset
+                  : keyboardHeight,
             },
           ]}>
-            <ButtonColour
-              colour={ThemeStatic.accent}
-              light={true}
-              label={floatingButtonText}
-              containerStyle={styles.button}
-              onPress={onFloatingButtonPress}
-              disabled={!buttonIsShowing}
-            />
+          <ButtonColour
+            colour={ThemeStatic.accent}
+            light={true}
+            label={floatingButtonText}
+            containerStyle={styles.button}
+            onPress={onFloatingButtonPress}
+            disabled={!buttonIsShowing}
+          />
         </Animated.View>
       );
     };
 
     const onClose = () => {
-      console.log('ref', inputRef)
+      console.log('ref', inputRef);
       inputRef && inputRef.current && inputRef.current.blur();
-      hideButton()
+      hideButton();
       if (setData) {
         setData(mapToString(selected, query));
       }
@@ -282,7 +288,7 @@ const SearchableFlatList = React.forwardRef(
       }
     };
 
-    const Modal = React.useMemo(() => {
+    return React.useMemo(() => {
       return (
         <Modalize
           ref={ref}
@@ -303,8 +309,6 @@ const SearchableFlatList = React.forwardRef(
         />
       );
     }, [ref, offset, filteredList, selected, buttonIsShowing, keyboardHeight]);
-
-    return Modal;
   },
 );
 
@@ -373,15 +377,6 @@ export const useDebounce = (value: any, delay: number) => {
   }, [value, delay]);
 
   return debounceValue;
-};
-
-const useFocus = () => {
-  const htmlElRef = useRef(null);
-  const setFocus = () => {
-    htmlElRef.current && htmlElRef.current.focus();
-  };
-
-  return [htmlElRef, setFocus];
 };
 
 const styles = StyleSheet.create({

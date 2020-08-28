@@ -31,25 +31,26 @@ import {
   getDefaultImage,
   processError,
   processWarning,
-  refreshToken,
   saveImage,
 } from '../../context';
 import { showMessage } from 'react-native-flash-message';
 import Selection from '../ReusableComponents/Selection';
 import SearchableFlatList from './SearchableFlatList';
 import SegmentedControl from '@react-native-community/segmented-control';
-import query from 'apollo-cache-inmemory/lib/fragmentMatcherIntrospectionQuery';
 
 const HEIGHT = Dimensions.get('window').height;
 const { colours } = Theme.light;
-/**
- * @param groupId {string}
- * @param onClose {function}
- * @param create {boolean}
- * @param SFLOffset {Int} offset for searchable flatlist of users. Need more when there is tab bar
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly groupId?: *, readonly onClose?: *, readonly create?: *}> & React.RefAttributes<unknown>>}
- */
+
 const GroupEditModal = React.forwardRef(
+  /**
+   *
+   * @param groupId {string}
+   * @param onClose {function}
+   * @param create {boolean}
+   * @param SFLOffset {int} offset for searchable flatList of users. Need more when there is tab bar
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ groupId, onClose, create, SFLOffset }, ref) => {
     const [getGroup, { loading, data, error, called }] = useLazyQuery(
       create ? NULL : GET_DETAILED_GROUP,
@@ -76,7 +77,7 @@ const GroupEditModal = React.forwardRef(
     const [editableDescription, setEditableDescription] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0); // 0 = orientation group 1 = regular group
-    const { authState, setAuthState } = useContext(AuthContext);
+    const { authState } = useContext(AuthContext);
 
     console.log('newLeaders', newLeaders);
     console.log('newMembers', newMembers);
@@ -257,7 +258,7 @@ const GroupEditModal = React.forwardRef(
         },
       });
 
-      console.log('chatResult', chatResult)
+      console.log('chatResult', chatResult);
 
       const { _id: chatId } = chatResult.data.createChat;
 

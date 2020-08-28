@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
@@ -13,8 +7,6 @@ import Icon from 'react-native-vector-icons/Feather';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
-const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 /**
  * a card to show an orientation group's rank in competition.
@@ -27,38 +19,43 @@ const HEIGHT = Dimensions.get('window').height;
  * @returns {*}
  * @constructor
  */
-
 const RankCard = ({ style, onPress, rank, gold, points, team }) => {
   const Content = () => (
     <>
       <View style={styles(gold).ring} />
       <View style={[styles(gold).row]}>
         <Text style={styles(gold).place}>{rank}</Text>
-          <View style={{ position: 'absolute', left: 160, right: 20, top: 20, bottom: 20 }}>
-            <View style={{ flexDirection:'column'}}>
+        <View
+          style={{
+            position: 'absolute',
+            left: 160,
+            right: 20,
+            top: 20,
+            bottom: 20,
+          }}>
+          <View style={{ flexDirection: 'column' }}>
             <Text style={styles(gold).label}>Team</Text>
             <Text style={styles(gold).text}>{team}</Text>
           </View>
-          <View style={{height:10}}/>
+          <View style={{ height: 10 }} />
           <View>
             <Text style={styles(gold).label}>Points</Text>
-            <Text style={styles(gold).text}>{points ? points.toLocaleString() : 0}</Text>
+            <Text style={styles(gold).text}>
+              {points ? points.toLocaleString() : 0}
+            </Text>
           </View>
         </View>
       </View>
-      {
-        onPress ? (
-          <View style={styles(gold).moreInfo}>
-            <Text style={styles(gold).moreInfoText}>MORE INFO</Text>
-            <Icon
-              name={'chevron-right'}
-              color={gold ? colours.white : '#000'}
-              size={16}
-            />
-          </View>
-        ) : null
-      }
-
+      {onPress ? (
+        <View style={styles(gold).moreInfo}>
+          <Text style={styles(gold).moreInfoText}>MORE INFO</Text>
+          <Icon
+            name={'chevron-right'}
+            color={gold ? colours.white : '#000'}
+            size={16}
+          />
+        </View>
+      ) : null}
     </>
   );
 
@@ -85,7 +82,7 @@ const styles = (gold) =>
       borderRadius: 15,
       overflow: 'hidden',
       height: 150,
-      elevation: 4
+      elevation: 4,
     },
     ring: {
       position: 'absolute',
@@ -102,13 +99,13 @@ const styles = (gold) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       padding: 20,
-      height: '100%'
+      height: '100%',
     },
     place: {
       fontSize: 38,
       ...FontWeights.Bold,
       color: gold ? colours.white : '#000',
-      alignSelf: 'center'
+      alignSelf: 'center',
     },
     label: {
       ...FontWeights.Bold,

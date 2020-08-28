@@ -27,7 +27,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param image {string}
  * @param name {string}
  * @param startDate {string}
- * @param longDate {boolean} if true then display the date aswell as the time
+ * @param longDate {boolean} if true then display the date as well as the time
  * @param calendarType {string} To be used instead of startDate for a calendar event. Will display the text meant to show what kind of calendar it is
  * @param userImages {[string]}
  * @param count {int}
@@ -37,7 +37,6 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @param plus {boolean} true, icon = plus, false icon = check
  * @param isSelected {boolean} If it is a calendar, weather or not it is selected
  * @param isExpanded {boolean} The initial state of the card
- * @param remove {function} a function for deleting this item using its key
  * @param onPress {function} a function for calendars when the icon is pressed
  * @param addToPhoneCalendar {function} a function for adding this calendar to the local phone calendar
  * @returns {*}
@@ -58,9 +57,8 @@ export const EventCard = ({
   plus,
   isSelected,
   isExpanded,
-  remove,
   onPress,
-  addToPhoneCalendar
+  addToPhoneCalendar,
 }) => {
   const navigation = useNavigation();
 

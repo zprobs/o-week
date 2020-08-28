@@ -30,7 +30,6 @@ export const LoadingNotificationsCard = () => {
 };
 
 const NotificationsPlaceholder = () => {
-
   return (
     <View style={styles.container}>
       <Placeholder Animation={Shine}>

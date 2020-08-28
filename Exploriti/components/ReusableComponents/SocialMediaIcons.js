@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Linking,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_USER_LINKS } from '../../graphql';
@@ -87,7 +86,7 @@ function toLink(type, value) {
       case 3:
         return 'linkedin.com/in/';
       case 4:
-        return 'snapchat.com/add/'
+        return 'snapchat.com/add/';
       case 5:
         return 'twitter.com/';
       case 6:
@@ -118,7 +117,7 @@ export function linkError(error, title) {
     autoHide: true,
     type: 'danger',
     icon: 'danger',
-  })
+  });
 }
 
 const styles = StyleSheet.create({

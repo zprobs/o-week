@@ -10,19 +10,21 @@ import {
 } from 'react-native';
 import Fonts from '../../theme/Fonts';
 import SearchableFlatList from '../Modal/SearchableFlatList';
-import {
-  BAN_USER,
-  GET_ORIENTATION_GROUPS,
-  SEARCH_USERS,
-} from '../../graphql';
+import { BAN_USER, GET_ORIENTATION_GROUPS, SEARCH_USERS } from '../../graphql';
 import GiveTrophyModal from '../Modal/GiveTrophyModal';
 import NewEventModal from '../Modal/NewEventModal';
 import GroupEditModal from '../Modal/GroupEditModal';
 import { useMutation } from '@apollo/react-hooks';
 import SendAnnouncementModal from '../Modal/SendAnnouncementModal';
+import { processError } from '../../context';
 const { FontWeights, FontSizes } = Fonts;
 const { width } = Dimensions.get('window');
 
+/**
+ * Only accessible to admins via settings -> admin console. used to perform special mutations
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const AdminConsole = () => {
   const groupListRef = useRef();
   const groupEditRef = useRef();
@@ -35,7 +37,7 @@ const AdminConsole = () => {
   const [isAwardTrophies, setIsAwardTrophies] = useState(false); // award trophies and edit orientation group share searchable flatlist so this will differentiate which was tapped
   const [isCreateGroup, setIsCreateGroup] = useState(false); // similar to trophies one group edit modal for edit orientation group and create orientation group
 
-  const [banUser, { data: banData, error: banError }] = useMutation(BAN_USER);
+  const [banUser, { error: banError }] = useMutation(BAN_USER);
 
   console.log('groupSelected (AC)', groupSelected);
   console.log('userSelected (AC)', userSelected);
@@ -58,11 +60,11 @@ const AdminConsole = () => {
 
   const openAnnouncementModal = () => {
     announcementRef.current.open();
-  }
+  };
 
-  const openBanUserAlert = ({user}) => {
-    console.log('user', user)
-    console.log('user sleected', userSelected)
+  const openBanUserAlert = ({ user }) => {
+    console.log('user', user);
+    console.log('user sleected', userSelected);
     Alert.alert(
       'This ban is irreversible',
       'If you ban this user, all their data will be deleted and they will not be able to sign up again with their current email address. Restart the app to see changes.',
@@ -79,6 +81,8 @@ const AdminConsole = () => {
       { cancelable: false },
     );
   };
+
+  if (banError) processError(banError, 'Could not ban user');
 
   return (
     <>
@@ -105,13 +109,17 @@ const AdminConsole = () => {
             onPress={() => banUserRef.current.open()}>
             <Text style={styles.buttonText}>Ban User</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#6118c4' }]} onPress={openCreateGroupModal}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#6118c4' }]}
+            onPress={openCreateGroupModal}>
             <Text style={styles.buttonText}>Create Group</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.row}>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#b040c2' }]} onPress={openAnnouncementModal}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#b040c2' }]}
+            onPress={openAnnouncementModal}>
             <Text style={styles.buttonText}>Send Announcement</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -160,9 +168,7 @@ const AdminConsole = () => {
         min={1}
         serverSearch={true}
       />
-      <SendAnnouncementModal
-        ref={announcementRef}
-        />
+      <SendAnnouncementModal ref={announcementRef} />
     </>
   );
 };

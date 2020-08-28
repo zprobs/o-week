@@ -4,7 +4,7 @@ import Fonts from '../../theme/Fonts';
 import { Theme } from '../../theme/Colours';
 import CircleBackIcon from '../Menu/CircleBackIcon';
 import RankCard from './RankCard';
-import { processError, processWarning, rankData } from '../../context';
+import { processWarning, rankData } from '../../context';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_LEADERBOARD } from '../../graphql';
 import { useRoute } from '@react-navigation/native';
@@ -19,13 +19,12 @@ const { colours } = Theme.light;
  * @constructor
  */
 const LeaderBoard = () => {
-
   const route = useRoute();
-  const {data, loading, error} = useQuery(GET_LEADERBOARD);
-  const {groupId} = route.params
+  const { data, loading, error } = useQuery(GET_LEADERBOARD);
+  const { groupId } = route.params;
 
   if (error) processWarning(error, 'Cannot load leaderboard');
-  if (loading || error) return null
+  if (loading || error) return null;
 
   const renderItem = ({ item, index }) => (
     <RankCard
@@ -38,14 +37,19 @@ const LeaderBoard = () => {
   );
 
   return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <CircleBackIcon />
-          <Text style={styles.title}>Leaderboard</Text>
-          <View style={{ width: 44 }} />
-        </View>
-        <FlatList data={data.groups} renderItem={renderItem} style={styles.list} keyExtractor={item=>item.id} />
-      </SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <CircleBackIcon />
+        <Text style={styles.title}>Leaderboard</Text>
+        <View style={{ width: 44 }} />
+      </View>
+      <FlatList
+        data={data.groups}
+        renderItem={renderItem}
+        style={styles.list}
+        keyExtractor={(item) => item.id}
+      />
+    </SafeAreaView>
   );
 };
 
@@ -75,7 +79,7 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.6,
-    elevation: 3
+    elevation: 3,
   },
   list: {
     marginTop: 25,

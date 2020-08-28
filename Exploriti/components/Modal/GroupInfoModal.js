@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -28,10 +28,9 @@ import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { AuthContext, processWarning, rankData } from '../../context';
+import { processError, processWarning, rankData } from '../../context';
 import EmptyPosts from '../../assets/svg/empty-likes.svg';
 import Post from '../ReusableComponents/Post';
-import LoadingDots from '../ReusableComponents/LoadingDots';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -39,18 +38,21 @@ const { colours } = Theme.light;
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
-/**
- * @param group {object} An object of a group
- * @param isMember {boolean} true if the user is a member and can call / message the group
- * @type {React.ForwardRefExoticComponent<React.PropsWithoutRef<{readonly group?: *}> & React.RefAttributes<unknown>>}
- */
 const GroupInfoModal = React.forwardRef(
+  /**
+   *
+   * @param groupId {string} the uuid of the group in question
+   * @param isMember {boolean } true if the user is a member and can call / message the group
+   * @param allLeadersRef
+   * @param allMembersRef
+   * @param ref
+   * @returns {JSX.Element}
+   */
   ({ groupId, isMember, allLeadersRef, allMembersRef }, ref) => {
     const navigation = useNavigation();
     const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
       variables: { id: groupId },
     });
-    const { authState } = useContext(AuthContext);
 
     if (error) {
       processWarning(error, 'Server Error');
@@ -70,14 +72,16 @@ const GroupInfoModal = React.forwardRef(
           ];
       const [routes] = useState(initialRoutes);
 
-      const sceneMap = isMember ? {
-        first: Feed,
-        second: About,
-        third: Events,
-      } : {
-        first: About,
-        second: Events,
-      }
+      const sceneMap = isMember
+        ? {
+            first: Feed,
+            second: About,
+            third: Events,
+          }
+        : {
+            first: About,
+            second: Events,
+          };
 
       const renderScene = SceneMap(sceneMap);
 
@@ -189,7 +193,9 @@ const GroupInfoModal = React.forwardRef(
                 <TouchableOpacity
                   style={styles.contactView}
                   onPress={() => {
-                    Linking.openURL(`tel:${data.group.phone}`);
+                    Linking.openURL(`tel:${data.group.phone}`).catch((e) => {
+                      processError(e, 'Cannot call number');
+                    });
                   }}>
                   <Icon name={'phone'} size={18} style={styles.contactIcon} />
                   <Text style={styles.contactText}>Call</Text>

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -18,9 +17,7 @@ import EventCard from '../ReusableComponents/EventCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_SCHEDULED_EVENTS } from '../../graphql';
-import { AuthContext, processWarning, refreshToken } from '../../context';
-import SchedulePlaceholder from '../Placeholders/SchedulePlaceholder';
-import { showMessage } from 'react-native-flash-message';
+import { AuthContext, processWarning } from '../../context';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 const { FontWeights, FontSizes } = Fonts;
@@ -34,7 +31,7 @@ const ITEM_WIDTH = 0.75 * WIDTH;
  * @constructor
  */
 const ScheduleCarousel = () => {
-  const { authState, setAuthState } = useContext(AuthContext);
+  const { authState } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_SCHEDULED_EVENTS, {
     variables: {
       userId: authState.user.uid,
@@ -43,7 +40,7 @@ const ScheduleCarousel = () => {
   });
   const carouselRef = useRef();
   const [index, setIndex] = useState();
-  const [max, setMax] = useState(0)
+  const [max, setMax] = useState(0);
   const [titleOpacity] = useState(new Animated.Value(1));
   const [scheduleData] = useState([]);
   const navigation = useNavigation();
@@ -80,8 +77,8 @@ const ScheduleCarousel = () => {
         array.push(event);
       } else {
         scheduleData[i] = array;
-        if (array.length > max) max = array.length
-        console.log('max', max)
+        if (array.length > max) max = array.length;
+        console.log('max', max);
         i++;
         array = [];
         array.push(event);
@@ -91,8 +88,8 @@ const ScheduleCarousel = () => {
     // one more time to catch the last day which isn't handled in the for each loop
     if (array.length > 0) scheduleData[i] = array;
     if (array.length > max) max = array.length;
-    setMax(max)
-    setIndex(0) // to reload the title
+    setMax(max);
+    setIndex(0); // to reload the title
   }, [data]);
 
   if (error) {
@@ -143,7 +140,7 @@ const ScheduleCarousel = () => {
 
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.slide}>
+      <View>
         {item.map((event) => {
           return (
             <EventCard
@@ -204,21 +201,20 @@ const ScheduleCarousel = () => {
           />
         </View>
 
-        {loading ? (
-         null
-        ) : (
-          <>
-            <Carousel
-              ref={carouselRef}
-              data={scheduleData}
-              renderItem={renderItem}
-              sliderWidth={WIDTH}
-              itemWidth={ITEM_WIDTH}
-              containerCustomStyle={[styles.carousel, {height: 100 + (180*max)}]}
-              removeClippedSubviews={false}
-              onBeforeSnapToItem={onSwipe}
-            />
-          </>
+        {loading ? null : (
+          <Carousel
+            ref={carouselRef}
+            data={scheduleData}
+            renderItem={renderItem}
+            sliderWidth={WIDTH}
+            itemWidth={ITEM_WIDTH}
+            containerCustomStyle={[
+              styles.carousel,
+              { height: 100 + 180 * max },
+            ]}
+            removeClippedSubviews={false}
+            onBeforeSnapToItem={onSwipe}
+          />
         )}
       </ScrollView>
     </LinearGradient>
@@ -245,7 +241,6 @@ const styles = StyleSheet.create({
     color: ThemeStatic.placeholder,
     opacity: 0.8,
   },
-  slide: {},
   carousel: {
     marginTop: 30,
   },

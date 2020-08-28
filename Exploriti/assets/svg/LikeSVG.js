@@ -1,15 +1,14 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   CHECK_USER_LIKED,
-  GET_UNREAD_CHAT_COUNT,
-  LIKE_POST, SEND_NOTIFICATION,
+  LIKE_POST,
+  SEND_NOTIFICATION,
   UNLIKE_POST,
 } from '../../graphql';
 import { AuthContext, NotificationTypes } from '../../context';
-import { BadgeView } from './MyProfileSVG';
 import { ThemeStatic } from '../../theme/Colours';
 import { Text, TouchableOpacity, View } from 'react-native';
 import gql from 'graphql-tag';
@@ -42,8 +41,7 @@ const aggLikesData = (count) => {
 const LikeSVG = ({ postId, style, authorId }) => {
   const { authState } = useContext(AuthContext);
   const didSetFirst = useRef(false);
-  const hasLiked = useRef(false)
-  console.log('postId', postId);
+  const hasLiked = useRef(false);
   const [sendNotification] = useMutation(SEND_NOTIFICATION);
 
   const options = { variables: { postId: postId, userId: authState.user.uid } };
@@ -96,8 +94,6 @@ const LikeSVG = ({ postId, style, authorId }) => {
   });
   const [liked, setLiked] = useState(false);
 
-  console.log('didsetfrist', didSetFirst.current);
-
   const handlePress = () => {
     didSetFirst.current = true;
     if (liked) {
@@ -117,38 +113,35 @@ const LikeSVG = ({ postId, style, authorId }) => {
               },
             }).catch((e) => console.log(e));
           }
-
         }
       });
     }
   };
-
 
   useEffect(() => {
     if (!didSetFirst.current && data) {
       if (data.like) {
         setLiked(true);
       } else {
-        setLiked(false)
+        setLiked(false);
       }
     }
-
   }, [data, postId]);
 
   return (
     <TouchableOpacity onPress={handlePress} style={style}>
-      <View style={{padding: 4}}>
-      <Svg width={26} height={26} viewBox="0 0 24 24">
-        <Path
-          d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
-          stroke={ThemeStatic.accent}
-          strokeWidth={2}
-          fill={liked ? ThemeStatic.lightBlue : 'none'}
-          fillRule="evenodd"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </Svg>
+      <View style={{ padding: 4 }}>
+        <Svg width={26} height={26} viewBox="0 0 24 24">
+          <Path
+            d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+            stroke={ThemeStatic.accent}
+            strokeWidth={2}
+            fill={liked ? ThemeStatic.lightBlue : 'none'}
+            fillRule="evenodd"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
       </View>
       <Text
         style={{
@@ -158,7 +151,9 @@ const LikeSVG = ({ postId, style, authorId }) => {
         }}>
         {data && data.post && data.post.likes_aggregate.aggregate.count > 99
           ? '99+'
-          : data && data.post ?  data.post.likes_aggregate.aggregate.count : '·'}
+          : data && data.post
+          ? data.post.likes_aggregate.aggregate.count
+          : '·'}
       </Text>
     </TouchableOpacity>
   );

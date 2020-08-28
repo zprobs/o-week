@@ -1,29 +1,38 @@
 import React from 'react';
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import { Theme } from '../../theme/Colours';
-import { useRoute } from '@react-navigation/native'
+import { useRoute } from '@react-navigation/native';
 
-const {width} = Dimensions.get('window')
-const {colours} = Theme.light
+const { width } = Dimensions.get('window');
+const { colours } = Theme.light;
 
+/**
+ * used to show all images in a post. include images in route.params
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Gallery = () => {
   const route = useRoute();
-  const {images} = route.params
+  const { images } = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {
-          images.map((img, i) => (
-            <Image source={{uri: img}} style={styles.image} key={i}/>
-          ))
-        }
+        {images.map((img, i) => (
+          <Image source={{ uri: img }} style={styles.image} key={i} />
+        ))}
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Gallery
+export default Gallery;
 
 const styles = StyleSheet.create({
   image: {
@@ -31,13 +40,11 @@ const styles = StyleSheet.create({
     height: width - 50,
     borderRadius: 12,
     marginVertical: 10,
-    backgroundColor: colours.placeholder
+    backgroundColor: colours.placeholder,
   },
   container: {
     flex: 1,
     backgroundColor: colours.base,
     alignItems: 'center',
-
-  }
-
-})
+  },
+});
