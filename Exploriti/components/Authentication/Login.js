@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,7 +8,8 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
-  Linking,
+  Modal,
+  TextInput
 } from 'react-native';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -23,7 +24,7 @@ import Svg, { Path } from 'react-native-svg';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { linkError } from '../ReusableComponents/SocialMediaIcons';
+import {showMessage} from "react-native-flash-message";
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -39,6 +40,9 @@ const xMargin = width * 0.15;
  * @constructor
  */
 export default function Login({ navigation }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState('');
+
   const passwordRef = useRef();
 
   const LoginSchema = Yup.object().shape({
@@ -71,6 +75,12 @@ export default function Login({ navigation }) {
       );
     }
   };
+
+  const resetPassword = email => {
+    firebase.auth().sendPasswordResetEmail(email).then(() => {
+      showMessage()
+    })
+  }
 
   return (
     <LinearGradient
@@ -166,25 +176,41 @@ export default function Login({ navigation }) {
           )}
         </Formik>
 
-        <TouchableOpacity style={styles.touchable}>
-          <TouchableOpacity
-            onPress={() => {
-              Linking.canOpenURL('https://www.arravon.com/verification')
-                .then((result) => {
-                  if (result) {
-                    Linking.openURL(
-                      'https://www.arravon.com/verification',
-                    ).catch((e) => console.log(e));
-                  } else {
-                    linkError('', 'Reset Password');
-                  }
-                })
-                .catch((error) => {
-                  linkError(error, 'Reset Password');
-                });
-            }}>
-            <Text style={styles.forgot}>Forgot your password?</Text>
-          </TouchableOpacity>
+        <View style={styles.centeredView}>
+          <Modal
+              animationType="fade"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+              }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Password Reset</Text>
+                <TextInput
+                  style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                  onChangeText={text => setEmail(text)}
+                  value={email}
+                />
+                <TouchableOpacity
+                    style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                    onPress={() => {
+                      setModalVisible(!modalVisible);
+                    }}
+                >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+
+        <TouchableOpacity style={styles.touchable}
+                          onPress={() => {
+                            setModalVisible(true);
+                            }}>
+          <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
     </LinearGradient>
@@ -241,7 +267,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: width - xMargin,
   },
-
   forgot: {
     alignSelf: 'center',
     ...FontWeights.Regular,
@@ -266,5 +291,32 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 2,
+  },
+  centeredView: {
+    flex: 1,
+    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.4)'
+  },
+  modalView: {
+    marginTop: -40,
+    width: width - xMargin,
+    height: '30%',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
   },
 });
