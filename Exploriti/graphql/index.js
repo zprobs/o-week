@@ -34,9 +34,20 @@ export const GET_DETAILED_USER = gql`
   query getDetailedUser($id: String!, $currentUser: String!) {
     user(id: $id) {
       ...DetailedUser
-        blocker(where: {blockedId: {_eq: $currentUser}}) {
-            blockerId
+      blocker(
+        where: {blockedId: {_eq: $currentUser}}
+      ) {
+        blockerId
+      }
+      userChats(
+        where: {chat: {users: {userId: {_eq: $currentUser}}}}, 
+        limit: 1, 
+        order_by: {chat: {participants_aggregate: {count: asc}}}
+      ) {
+        chat {
+          id
         }
+      }
     }
   }
   ${DETAILED_USER_FRAGMENT}
