@@ -81,7 +81,6 @@ const GiveTrophyModal = React.forwardRef(
         .catch((e) => console.log(e));
       selected.forEach((id) => {
         const group = data.groups.find((g) => g.id === id);
-        console.log('group', group);
         let userIDs = [];
         group.members.forEach((m) => {
           userIDs.push({ userId: m.userId });

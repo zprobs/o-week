@@ -79,11 +79,6 @@ const GroupEditModal = React.forwardRef(
     const [selectedIndex, setSelectedIndex] = useState(0); // 0 = orientation group 1 = regular group
     const { authState } = useContext(AuthContext);
 
-    console.log('newLeaders', newLeaders);
-    console.log('newMembers', newMembers);
-    console.log('kickedUsers', kickedUsers);
-    console.log('create', create);
-
     const addMembersRef = useRef();
     const addLeadersRef = useRef();
     const kickUserRef = useRef();
@@ -110,7 +105,6 @@ const GroupEditModal = React.forwardRef(
         setNewLeaders([]);
         setKickedUsers([]);
       } else if (create) {
-        console.log('reset');
         setEditableName('');
         setEditableDescription('');
         setEditableImage(getDefaultImage());
@@ -167,7 +161,6 @@ const GroupEditModal = React.forwardRef(
           groupId,
         );
       }
-      console.log(fields);
 
       if (newLeaders.length > 0 || newMembers.length > 0) {
         const objects = [];
@@ -248,8 +241,6 @@ const GroupEditModal = React.forwardRef(
       const groupResult = await createGroup({
         variables: { object: fields },
       });
-      console.log('onCompleted', groupResult);
-
       const chatResult = await newChat({
         variables: {
           participants: { data: chatMembers },
@@ -257,8 +248,6 @@ const GroupEditModal = React.forwardRef(
           name: editableName,
         },
       });
-
-      console.log('chatResult', chatResult);
 
       const { _id: chatId } = chatResult.data.createChat;
 
@@ -275,8 +264,6 @@ const GroupEditModal = React.forwardRef(
       setIsUploading(false);
       ref.current.close();
     };
-
-    if (loading) console.log('should not see loading group');
 
     let content;
 

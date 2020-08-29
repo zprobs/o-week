@@ -148,7 +148,6 @@ const UserInteractions = ({
         let newFriends = friends.filter(
           (element) => element.friend.id !== userId,
         );
-        console.log('newFriends', newFriends);
 
         cache.writeFragment({
           id: `user:${authState.user.uid}`,
@@ -168,7 +167,6 @@ const UserInteractions = ({
         let newFriends = friends.filter(
           (element) => element.friend.id !== authState.user.uid,
         );
-        console.log('newFriends', newFriends);
 
         cache.writeFragment({
           id: `user:${userId}`,
@@ -248,7 +246,6 @@ const UserInteractions = ({
           id: `user:${userId}`,
           fragment: userFriendsFragment,
         });
-        console.log('friends', friends);
 
         if (friends) {
           const currentUser = cache.readFragment({
@@ -360,7 +357,6 @@ const UserInteractions = ({
     isFriend = friendsData.user.friends.some((e) => {
       return e.friend.id === userId;
     });
-    console.log('isFriend', isFriend);
     if (isFriend) {
       content = <Text style={styles.followInteractionText}>REMOVE FRIEND</Text>;
       friendInteraction = () => removeFriend();

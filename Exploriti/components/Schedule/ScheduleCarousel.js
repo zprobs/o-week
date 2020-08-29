@@ -78,7 +78,6 @@ const ScheduleCarousel = () => {
       } else {
         scheduleData[i] = array;
         if (array.length > max) max = array.length;
-        console.log('max', max);
         i++;
         array = [];
         array.push(event);
@@ -178,7 +177,7 @@ const ScheduleCarousel = () => {
   };
 
   return (
-    <LinearGradient colors={['#ed1b2f', '#fc8c62']} style={{ height: HEIGHT }}>
+    <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={{ height: HEIGHT }}>
       {isFocused ? <StatusBar barStyle="light-content" /> : null}
       <ScrollView bounces={false} style={{ marginTop: insets.top }}>
         <View style={styles.header}>

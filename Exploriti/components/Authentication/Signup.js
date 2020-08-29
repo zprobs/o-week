@@ -155,7 +155,6 @@ export default function Signup({ navigation }) {
   const BottomButton = ({ handleSubmit, values }) => {
     let title;
 
-    console.log('bottomBValues', values);
 
     if (page === 1) {
       title = 'Continue (1/4)';
@@ -220,7 +219,6 @@ export default function Signup({ navigation }) {
   }
 
   function nextPage(values) {
-    console.log('nextPAgeValues', values);
     if (page === 4) {
       viewTermsOfUse(values);
     } else {
@@ -264,13 +262,11 @@ export default function Signup({ navigation }) {
   }
 
   async function submit(values) {
-    console.log('submitValues', values);
     setIsLoading(true);
     const userData = {};
 
     const { email, password, name } = values;
 
-    console.log('e, p, n', email, password, name);
     const imageURL = imageSelection
       ? await saveImage(imageSelection, null, 'profile', email + Math.random())
       : image;
@@ -279,8 +275,7 @@ export default function Signup({ navigation }) {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async (userCredential) => {
-        console.log(userCredential.user.uid);
-        userData.name = name;
+        userData.name = name.trim();
         userData.email = email;
         userData.id = userCredential.user.uid;
         userData.year = yearToInt(year);

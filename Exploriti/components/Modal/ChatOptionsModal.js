@@ -106,7 +106,6 @@ const ChatOptionsModal = React.forwardRef(
           objects.push({ chatId: id, userId: userId }),
         );
         const addResult = await addUser({ variables: { objects: objects } });
-        console.log('addResult', addResult.data.insert_userChat.returning);
         if (addResult.data && !chatName) {
           setName(
             addResult.data.insert_userChat.returning[0].chat.participants

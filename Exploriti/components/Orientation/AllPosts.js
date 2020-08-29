@@ -29,17 +29,13 @@ const AllPosts = () => {
   const renderItem = ({ item, index }) => <Post index={index} item={item} />;
 
   const onEndReached = useCallback(() => {
-    console.log('onEndReached data', data.group.posts.length);
     fetchMore({
       variables: {
         groupId: groupId,
         offset: data.group.posts.length,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        console.log('fetchMore', fetchMoreResult);
         if (!fetchMoreResult) return prev;
-
-        console.log('prev', prev);
 
         return {
           group: {

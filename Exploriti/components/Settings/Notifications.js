@@ -29,7 +29,6 @@ function Notifications() {
   const [muteAll, setMuteAll] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
-  console.log('muteMsg', muteMessages);
 
   useEffect(() => {
     if (!data) return;
@@ -49,12 +48,10 @@ function Notifications() {
         muteEvents !== user.muteEvents ||
         muteGroups !== user.muteGroups
       ) {
-        console.log('mutation');
         const fields = {};
         fields.muteMessages = muteMessages;
         fields.muteEvents = muteEvents;
         fields.muteGroups = muteGroups;
-        console.log('fields', fields);
 
         updateUser({
           variables: { user: { id: authState.user.uid }, data: fields },
@@ -68,7 +65,6 @@ function Notifications() {
   if (loading || error) return null;
 
   const onMuteAll = (bool) => {
-    console.log('bool', bool);
     setMuteAll(bool);
     setMuteEvents(bool);
     setMuteGroups(bool);

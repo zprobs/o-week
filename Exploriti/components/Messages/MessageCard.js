@@ -80,12 +80,8 @@ const MessageCard = ({
           fragment: frag,
         });
 
-        console.log('userChats', userChats);
-        console.log('chatID', chatId);
-
         const newChats = userChats.filter((e) => e.chatId !== chatId);
 
-        console.log('newChats', newChats);
 
         cache.writeFragment({
           id: `user:${authState.user.uid}`,
@@ -103,8 +99,6 @@ const MessageCard = ({
   const hasSetSeen = useRef(false);
 
   const isHighlighted = senderId !== authState.user.uid && !seen;
-
-  console.log('msg seen', seen, chatId);
 
   if (senderId === authState.user.uid && !seen && !hasSetSeen.current) {
     hasSetSeen.current = true;
@@ -127,7 +121,7 @@ const MessageCard = ({
 
   const highlightStyle = isHighlighted
     ? {
-        ...FontWeights.Regular,
+        ...FontWeights.Bold,
         color: colours.text01,
       }
     : null;

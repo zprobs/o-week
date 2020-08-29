@@ -244,13 +244,10 @@ export const PostNotificationCard = ({ item }) => {
 
   const typeId = parseInt(item.typeId);
 
-  console.log('typeId', typeId);
-
   const { data, loading, error } = useQuery(GET_POST_NOTIFICATION, {
     variables: { id: typeId },
   });
 
-  console.log('Notification Post', error);
 
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.post) return null;
@@ -279,13 +276,11 @@ export const LikeNotificationCard = ({ item }) => {
 
   const typeId = parseInt(item.typeId);
 
-  console.log('typeId', typeId);
 
   const { data, loading, error } = useQuery(GET_LIKE_NOTIFICATION, {
     variables: { id: typeId },
   });
 
-  console.log('Notification Like', error, data);
 
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.like[0]) return null;
@@ -316,13 +311,9 @@ export const CommentNotificationCard = ({ item }) => {
 
   const typeId = parseInt(item.typeId);
 
-  console.log('typeId', typeId);
-
   const { data, loading, error } = useQuery(GET_COMMENT_NOTIFICATION, {
     variables: { id: typeId },
   });
-
-  console.log('Notification Comment', error, data);
 
   if (loading) return <LoadingNotificationCard />;
   if (error || !data.comment) return null;

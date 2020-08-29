@@ -88,7 +88,6 @@ const CreatePost = () => {
     groupMembers.group.members.map((m) => {
       if (m.userId !== authState.user.uid) userIDs.push({ userId: m.userId });
     });
-    console.log({ userIDs });
 
     if (imageSelection.length > 0) {
       Promise.all(
@@ -103,7 +102,6 @@ const CreatePost = () => {
         }),
       )
         .then((results) => {
-          console.log('results', results);
           createPost({
             variables: {
               userId: authState.user.uid,
@@ -151,11 +149,6 @@ const CreatePost = () => {
         ],
       })
         .then((createPostData) => {
-          console.log('createPostDAta', createPostData);
-          console.log(
-            'typeId',
-            createPostData.data.insert_post_one.id.toString(),
-          );
           sendNotifications({
             variables: {
               type: NotificationTypes.newPost,

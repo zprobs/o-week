@@ -43,11 +43,12 @@ export default function Profile({ route }) {
   const isCurrentUser = !(!isMyProfilePage && userId !== authState.user.uid);
 
   const { loading, error, data } = useQuery(GET_DETAILED_USER, {
-    variables: { id: userId },
+    variables: { id: userId, currentUser: authState.user.uid },
   });
 
   if (error) {
     processWarning(error, 'Could not load Profile');
+    return null;
   }
 
   if (loading)
@@ -74,6 +75,9 @@ export default function Profile({ route }) {
   const year = data.user.year;
   const friendCount = data.user.friends_aggregate.aggregate.count;
   const groupCount = data.user.member_aggregate.aggregate.count;
+
+
+  const isBlocked = data.user.blocker.length > 0;
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onOptions = () => optionsBottomModalRef.current.open();
@@ -122,6 +126,7 @@ export default function Profile({ route }) {
           userId={userId}
           groupCount={groupCount}
           friendCount={friendCount}
+          isBlocked={isBlocked}
         />
         {isCurrentUser ? <SocialMediaAnimation openModal={openModal} /> : null}
       </SafeAreaView>

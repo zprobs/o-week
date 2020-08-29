@@ -133,9 +133,6 @@ const EventInfoModal = React.forwardRef(
               fragment: DETAILED_EVENT_FRAGMENT,
               id: `event:${eventId}`,
             });
-            console.log('user, event', user);
-            console.log(event);
-            console.log('length', event.attendees.length);
             event.attendees = [
               {
                 __typename: 'attendee',
@@ -148,7 +145,6 @@ const EventInfoModal = React.forwardRef(
               },
               ...event.attendees,
             ];
-            console.log('length', event.attendees.length);
             cache.writeFragment({
               fragment: DETAILED_EVENT_FRAGMENT,
               id: `event:${eventId}`,
@@ -194,11 +190,9 @@ const EventInfoModal = React.forwardRef(
               id: `event:${eventId}`,
             });
 
-            console.log('length', event.invited.length);
             event.invited = event.invited.filter(
               (a) => a.user.id !== authState.user.uid,
             );
-            console.log('length', event.invited.length);
 
             event.attendees = [
               {
@@ -252,11 +246,9 @@ const EventInfoModal = React.forwardRef(
               fragment: DETAILED_EVENT_FRAGMENT,
               id: `event:${eventId}`,
             });
-            console.log('length', event.attendees.length);
             event.attendees = event.attendees.filter(
               (a) => a.user.id !== authState.user.uid,
             );
-            console.log('length', event.attendees.length);
             cache.writeFragment({
               fragment: DETAILED_EVENT_FRAGMENT,
               id: `event:${eventId}`,
@@ -479,8 +471,6 @@ const EventInfoModal = React.forwardRef(
       let minutes, hours, days, weeks, timeString;
       let happeningNow = false;
       const total = Date.parse(data.event.startDate) - Date.parse(now);
-      console.log('total', total);
-      console.log('startDate', new Date(data.event.startDate));
       if (total < 0) {
         const endTotal = Date.parse(data.event.endDate) - Date.parse(now);
         if (endTotal < 0) {
@@ -545,7 +535,7 @@ const EventInfoModal = React.forwardRef(
                   ? 'Join Zoom Meeting'
                   : data.event.eventType === 'gather'
                   ? 'Join Gather Game'
-                  : 'Join Youtube Stream'}
+                  : 'Join Twitch Stream'}
               </Text>
               <Text style={styles.countdownText}>{timeString}</Text>
               {happeningNow ? <HappeningNow /> : null}

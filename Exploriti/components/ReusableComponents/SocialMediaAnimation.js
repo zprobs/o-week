@@ -30,8 +30,6 @@ export default class SocialMediaAnimation extends Component {
     // method to open modal and enter information
     const { openModal } = props;
 
-    console.log('openModal', openModal);
-
     // Slow down speed animation here (1 = default)
     this.timeDilation = 1;
 
@@ -142,7 +140,6 @@ export default class SocialMediaAnimation extends Component {
         this.isDraggingOutside = false;
         this.isJustDragInside = true;
         this.previousIconFocus = 0;
-        console.log('cif', this.currentIconFocus);
         if (this.currentIconFocus !== 0) this.goToModal(this.currentIconFocus);
         this.currentIconFocus = 0;
         this.setState({});

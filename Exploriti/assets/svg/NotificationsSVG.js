@@ -9,7 +9,6 @@ Animated.addWhitelistedNativeProps({
 });
 
 const NotificationsSVG = ({ color, size }) => {
-  console.log(size);
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

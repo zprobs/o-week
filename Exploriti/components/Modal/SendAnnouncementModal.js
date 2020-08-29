@@ -34,8 +34,6 @@ const SendAnnouncementModal = React.forwardRef(
     const onSend = async () => {
       setIsUploading(true);
 
-      console.log('allUsers', data);
-
       const userIds = [];
       data.users.forEach((u) => userIds.push({ userId: u.id }));
 

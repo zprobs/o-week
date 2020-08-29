@@ -42,17 +42,12 @@ const Calendar = () => {
     try {
       const calendars = await RNCalendarEvents.findCalendars();
 
-      console.log({ calendars });
-
       const thisCalendar = calendars.find(
         (cal) => cal.title === calendar.group.name,
       );
 
-      console.log({ thisCalendar });
-
       if (thisCalendar) {
         const removed = await RNCalendarEvents.removeCalendar(thisCalendar.id);
-        console.log({ removed });
       }
 
       RNCalendarEvents.saveCalendar({
@@ -73,7 +68,6 @@ const Calendar = () => {
               evt.hosts.find((h) => h.groupId === calendar.group.id) !==
               undefined,
           );
-          console.log({ events });
           events.map((evt) => {
             RNCalendarEvents.saveEvent(evt.name, {
               calendarId: id,
@@ -97,10 +91,8 @@ const Calendar = () => {
   };
 
   const addToPhoneCalendar = (calendar) => {
-    console.log({ calendar });
     RNCalendarEvents.checkPermissions(false)
       .then((result) => {
-        console.log(result);
         if (result !== 'authorized') {
           RNCalendarEvents.requestPermissions(false)
             .then((result) => {
@@ -136,7 +128,7 @@ const Calendar = () => {
 
   return (
     <ScrollView style={styles.container} bounces={false}>
-      <LinearGradient colors={['#fc8c62', '#ed1b2f']} style={styles.container}>
+      <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={styles.container}>
         <SafeAreaView>
           {isFocused ? <StatusBar barStyle="light-content" /> : null}
           <View style={styles.header}>

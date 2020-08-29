@@ -90,8 +90,6 @@ const NewEventModal = React.forwardRef(
     const [linkIndex, setLinkIndex] = useState(0);
     const { authState } = useContext(AuthContext);
 
-    if (data) console.log('event.type', data.event.eventType);
-
     const [isUploading, setIsUploading] = useState(false);
 
     const startDateHasShown = useRef(!!editMode);
@@ -178,12 +176,7 @@ const NewEventModal = React.forwardRef(
             userIDs.push({ userId: m.userId });
             userEvent_insert_input.push({ userId: m.userId, didAccept: false });
           });
-          console.log('userIDs of members', userIDs);
-          console.log('userE insert', userEvent_insert_input);
-
           fields.attendees = { data: userEvent_insert_input };
-
-          console.log('attendees', fields.attendees);
         }
       } else {
         if (hostsError) return;
@@ -197,9 +190,6 @@ const NewEventModal = React.forwardRef(
         fields.attendees = { data: userEvent_insert_input };
         fields.eventType = linkIndex === 0;
 
-        console.log('Global event users', userIDs);
-
-        console.log(fields.hosts);
       }
       const createEventData = await createEvent({
         variables: { data: fields },
@@ -213,7 +203,6 @@ const NewEventModal = React.forwardRef(
       setIsUploading(false);
       ref.current.close();
       if (userIDs.length > 0) {
-        console.log('createEventData', createEventData);
         sendNotifications({
           variables: {
             type: NotificationTypes.newEvent,
@@ -246,8 +235,6 @@ const NewEventModal = React.forwardRef(
       if (eventTypes[linkIndex] !== event.eventType)
         fields.eventType = eventTypes[linkIndex];
 
-      console.log('fields', fields);
-
       if (Object.keys(fields).length !== 0) {
         updateEvent({
           variables: { id: eventId, data: fields },
@@ -257,10 +244,8 @@ const NewEventModal = React.forwardRef(
             ref.current.close();
             if (startChanged) {
               const IDs = data.event.attendees.map((a) => a.user.id);
-              console.log('Id', IDs);
               const recipients = [];
               IDs.forEach((id) => recipients.push({ userId: id }));
-              console.log('recips', recipients);
               sendNotifications({
                 variables: {
                   type: NotificationTypes.eventTimeChange,
@@ -418,7 +403,7 @@ const NewEventModal = React.forwardRef(
             />
 
             <SegmentedControl
-              values={['Zoom', 'Gather', 'YouTube']}
+              values={['Zoom', 'Gather', 'Twitch']}
               selectedIndex={linkIndex}
               onChange={(event) => {
                 setLinkIndex(event.nativeEvent.selectedSegmentIndex);
@@ -433,12 +418,14 @@ const NewEventModal = React.forwardRef(
                   ? 'Zoom Link'
                   : linkIndex === 1
                   ? 'Gather Link'
-                  : 'Youtube Link'
+                  : 'Twitch Stream'
               }
               placeholder={
                 linkIndex === 0
                   ? 'example: https://us02web.zoom.us/j/824?pwd=123'
-                  : 'example: https://letsgather.app.link/UapAgGbE38'
+                  : linkIndex === 1
+                  ? 'example: https://letsgather.app.link/UapAgGbE38'
+                  : 'example: https://www.twitch.tv/abc'
               }
               value={website}
               onChangeText={setWebsite}
@@ -446,8 +433,7 @@ const NewEventModal = React.forwardRef(
             />
 
             <Text style={styles.note}>
-              Note* Please use a password-less Invite Link as only users invited
-              to the event are able to join. Always check to see if your link
+              Note* Please include the password in the Invite Link as only users on the app are able to join. Always check to see if your link
               works after creating the event.
             </Text>
 

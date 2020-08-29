@@ -126,10 +126,9 @@ const EditProfileBottomModal = React.forwardRef(
     };
 
     const onDone = async (values) => {
-      console.log('name, desc', values.name, values.description);
       setIsUploading(true);
       const fields = {};
-      if (values.name !== name) fields.name = values.name;
+      if (values.name !== name) fields.name = values.name.trim();
       if (values.description !== description)
         fields.description = values.description;
       if (editableYear !== year) {

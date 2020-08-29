@@ -220,14 +220,10 @@ export const PostScreen = () => {
   }, []);
 
   const onEndReached = useCallback(() => {
-    console.log('onEndReached data', commentsData.post.comments.length);
     fetchMore({
       variables: { postId: postId, offset: commentsData.post.comments.length },
       updateQuery: (prev, { fetchMoreResult }) => {
-        console.log('fetchMore', fetchMoreResult.post.comments);
         if (!fetchMoreResult) return prev;
-
-        console.log('prev', prev.post.comments);
 
         return {
           post: {
@@ -400,8 +396,6 @@ const renderImages = (images) => {
       </View>,
     );
   }
-
-  console.log('imageComponenet', imageComponents);
 
   return (
     <TouchableOpacity

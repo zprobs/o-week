@@ -39,14 +39,12 @@ const ImageCard = ({ groupId, eventId }) => {
     item.members.map((member) => {
       images.push(member.user.image);
     });
-    console.log('images length', images.length);
     count = item.members_aggregate.aggregate.count;
   } else {
     item = eventData.event;
     item.attendees.map((attendee) => {
       images.push(attendee.user.image);
     });
-    console.log('images length', images.length);
     count = item.attendees_aggregate.aggregate.count;
   }
 

@@ -31,9 +31,12 @@ export const DETAILED_USER_FRAGMENT = gql`
 `;
 
 export const GET_DETAILED_USER = gql`
-  query getDetailedUser($id: String!) {
+  query getDetailedUser($id: String!, $currentUser: String!) {
     user(id: $id) {
       ...DetailedUser
+        blocker(where: {blockedId: {_eq: $currentUser}}) {
+            blockerId
+        }
     }
   }
   ${DETAILED_USER_FRAGMENT}
@@ -627,10 +630,9 @@ export const UPDATE_CHAT = gql`
 `;
 
 export const GET_NEW_MESSAGES = gql`
-  subscription getMessages($chatId: Int!) {
+  subscription getMessages($chatId: Int!, $max: Int!) {
     messages(
-      where: { _and: [{ chatId: { _eq: $chatId } }] }
-      limit: 1
+      where: { _and: [{ chatId: { _eq: $chatId } }, {id: { _gt: $max}}] }
       order_by: { date: desc }
     ) {
       ...DetailedMessage
@@ -1603,8 +1605,8 @@ export const ADD_COMMENT = gql`
 `;
 
 export const GET_COMMENT_NOTIFICATION = gql`
-  query getLikeNotification($id: Int!) {
-    comment: comment_by_pk(id: $id) {
+  query getCommentNotification($id: Int!) {
+    comment(id: $id) {
       id
       post {
         id
@@ -1674,7 +1676,7 @@ export const UNLIKE_POST = gql`
 
 export const GET_LIKE_NOTIFICATION = gql`
   query getLikeNotification($id: Int!) {
-    like(where: { id: { _eq: $id } }) {
+    like(where: { id: { _eq: $id } }, limit: 1) {
       id
       post {
         id

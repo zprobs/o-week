@@ -80,7 +80,6 @@ const AddCommentModal = React.forwardRef(({ postId, authorId }, ref) => {
 
   const onDone = async (values) => {
     setIsUploading(true);
-    console.log('values', values);
     addComment({
       variables: {
         text: values.text,
@@ -92,7 +91,6 @@ const AddCommentModal = React.forwardRef(({ postId, authorId }, ref) => {
         setIsUploading(false);
       })
       .then((result) => {
-        console.log({ result });
         if (authorId !== authState.user.uid) {
           sendNotification({
             variables: {

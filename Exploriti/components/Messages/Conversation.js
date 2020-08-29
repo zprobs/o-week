@@ -83,24 +83,26 @@ const Conversation = () => {
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
       chatId: chatId,
+      max: Math.max(
+        ...messages
+          .map((item) => item._id)
+          .filter((item) => Number.isInteger(item)),
+      ),
     },
     onSubscriptionData: ({ subscriptionData }) => {
-      const newMessage = subscriptionData.data.messages[0];
+      const newMessage = subscriptionData.data.messages;
 
-      if (didSetFirst.current) {
-        if (!newMessage) {
-          goBack();
-          return null;
-        }
-        if (newMessage.user._id !== authState.user.uid) {
-          setMessages(
-            GiftedChat.append(messages, subscriptionData.data.messages),
-          );
-        }
-        if (isFocused) setSeen();
-      } else {
-        didSetFirst.current = true;
+      if (!newMessage) {
+        goBack();
+        return null;
       }
+
+      const userId = authState.user.uid;
+      setMessages(GiftedChat.append(messages,
+        subscriptionData.data.messages.filter(msg => msg.user._id !== userId)
+      ));
+
+      if (isFocused) setSeen();
     },
   });
 
@@ -130,12 +132,7 @@ const Conversation = () => {
           fragment: frag,
         });
 
-        console.log('userChats', userChats);
-        console.log('chatID', chatId);
-
         const newChats = userChats.filter((e) => e.chatId !== chatId);
-
-        console.log('newChats', newChats);
 
         cache.writeFragment({
           id: `user:${authState.user.uid}`,
@@ -167,6 +164,7 @@ const Conversation = () => {
 
   const onSend = (updatedMessages) => {
     const [updatedMessage] = updatedMessages;
+    console.log({ updatedMessage });
     const userIds = participants
       .map((p) => p.id)
       .filter((p) => p.id !== authState.user.uid);
@@ -217,8 +215,6 @@ const Conversation = () => {
   const handleOptionsPress = () => {
     optionsRef.current && optionsRef.current.open();
   };
-
-  console.log('part', participants);
 
   // if (chatQueryCalled && !chatQueryLoading && !chatQueryError) {
   // const transform = transformMessages(messages);

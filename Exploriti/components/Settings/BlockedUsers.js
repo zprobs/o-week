@@ -62,6 +62,7 @@ const BlockedUsers = () => {
       data={data ? data.user.blocker : null}
       renderItem={renderItem}
       ListEmptyComponent={emptyList}
+      keyExtractor={item => item.userByBlockedid.name}
       style={styles.list}
       contentContainerStyle={
         data ? (data.user.blocker.length ? null : { flex: 1 }) : { flex: 1 }

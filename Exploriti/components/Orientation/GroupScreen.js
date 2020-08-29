@@ -58,7 +58,6 @@ const GroupScreen = ({ route }) => {
   });
 
   if (loading) {
-    console.log('groupScreen Loading');
     return <ImageBackgroundPlaceholder />;
   }
 

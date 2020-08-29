@@ -386,7 +386,7 @@ export function notificationToRoute(type, typeId) {
   };
 }
 
-export const eventTypes = ['zoom', 'gather', 'youtube'];
+export const eventTypes = ['zoom', 'gather', 'twitch'];
 
 export const yearsData = [
   'First Year',

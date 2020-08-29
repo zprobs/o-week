@@ -10,6 +10,7 @@ import SocialMediaIcons from '../ReusableComponents/SocialMediaIcons';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
+import { showMessage } from 'react-native-flash-message';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -28,6 +29,7 @@ const { colours } = Theme.light;
  * @param userId {string}
  * @param groupCount {int} Number of groups
  * @param friendCount {int} Number of friends
+ * @param isBlocked {boolean} if true then this user has blocked you
  * @returns {*}
  * @constructor
  */
@@ -44,15 +46,25 @@ const ProfileCard = ({
   userId,
   groupCount,
   friendCount,
+  isBlocked,
 }) => {
   const friendType = friendCount === 1 ? 'FRIEND' : 'FRIENDS';
   const groupType = groupCount === 1 ? 'GROUP' : 'GROUPS';
+
+  const showIsBlocked = () => {
+    showMessage({
+      message: 'This user has blocked you',
+      description: 'You may not view their information',
+      type: 'info',
+      icon: 'auto',
+    });
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.info}>
         <Connections
-          onPress={onFriendsOpen}
+          onPress={isBlocked ? showIsBlocked : onFriendsOpen }
           total={friendCount}
           type={friendType}
         />
@@ -63,7 +75,7 @@ const ProfileCard = ({
           {editable && <EditProfile onEdit={onEdit} />}
         </ImageBackground>
         <Connections
-          onPress={onGroupsOpen}
+          onPress={isBlocked ? showIsBlocked : onGroupsOpen }
           total={groupCount}
           type={groupType}
         />
@@ -72,12 +84,14 @@ const ProfileCard = ({
         <Text style={styles.usernameText}>{name}</Text>
         <Text style={styles.programText}>{programs}</Text>
       </View>
-      {renderInteractions && renderInteractions()}
+      {!isBlocked && renderInteractions && renderInteractions()}
       <View style={styles.description}>
-        <Text style={styles.descriptionTitle}>About</Text>
-        <Text style={styles.descriptionText}>{description}</Text>
+        <Text style={styles.descriptionTitle}>{isBlocked ? 'This user has blocked you' : 'About'}</Text>
+        <Text style={styles.descriptionText}>
+          {isBlocked ? null : description }
+        </Text>
       </View>
-      <SocialMediaIcons id={userId} />
+      {isBlocked ? null : <SocialMediaIcons id={userId} />}
     </View>
   );
 };

@@ -107,8 +107,6 @@ export default function Dashboard() {
       processWarning(sayHiError, 'Server Error');
     }
 
-    console.log('randoms', sayHiData);
-
     return (
       <>
         <View style={{ marginHorizontal: 25 }}>
@@ -171,7 +169,6 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    console.log('DashBoard Loading Current User');
     return (
       <View style={styles.container}>
         <Header />

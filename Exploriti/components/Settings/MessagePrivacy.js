@@ -53,7 +53,6 @@ function MessagePrivacy() {
       const fields = {
         onlyFriendsCanMessage: messagesIndex === 1,
       };
-      console.log('fields', fields);
 
       updateUser({
         variables: { user: { id: authState.user.uid }, data: fields },

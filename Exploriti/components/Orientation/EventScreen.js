@@ -123,12 +123,9 @@ const EventScreen = ({ route }) => {
   const parsedYear = year === '2020' ? '' : year;
 
   const inviteUserToEvent = (userIdArray) => {
-    console.log('userIdArray', userIdArray);
     const IDs = userIdArray.map((user) => user.id);
-    console.log('IdArray', IDs);
     setTabIndex(1);
     const objects = graphqlify_relationship(eventId, IDs, 'event', 'user');
-    console.log('object', objects);
     invite({
       variables: { objects: objects },
       update: (cache) => {
@@ -142,9 +139,6 @@ const EventScreen = ({ route }) => {
             fragment: DETAILED_EVENT_FRAGMENT,
             id: `event:${eventId}`,
           });
-          console.log('user, event', user);
-          console.log(event);
-
           const newInvites = [];
           user.friends.forEach((f) => {
             if (IDs.includes(f.friend.id)) {
@@ -160,10 +154,7 @@ const EventScreen = ({ route }) => {
             }
           });
 
-          console.log('newInvites length', newInvites.length);
-          console.log('length', event.invited.length);
           event.invited = [...newInvites, ...event.invited];
-          console.log('length', event.invited.length);
           cache.writeFragment({
             fragment: DETAILED_EVENT_FRAGMENT,
             id: `event:${eventId}`,
@@ -178,7 +169,6 @@ const EventScreen = ({ route }) => {
         inviteRef.current.close();
         const recipients = [];
         IDs.forEach((id) => recipients.push({ userId: id }));
-        console.log('recips', recipients);
         sendNotifications({
           variables: {
             type: NotificationTypes.eventInvite,

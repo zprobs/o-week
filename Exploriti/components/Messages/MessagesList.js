@@ -134,7 +134,6 @@ export default function MessagesList() {
     processWarning(searchError, 'Could not complete search');
   }
 
-  console.log('searchData', searchData);
 
   //  Selection needs to reset if  one makes a chat and then decides to back
   // out of it

@@ -20,7 +20,6 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
    * @returns {JSX.Element}
    */
   ({ type }, ref) => {
-    console.log('type', type, typeof type);
     const [value, setValue] = useState('');
     const { authState } = useContext(AuthContext);
     const { data, error } = useQuery(GET_USER_LINKS, {
@@ -29,8 +28,6 @@ const NewSocialMediaLinkBottomModal = React.forwardRef(
     let prevLinks = data ? data.user.links : {};
     const [updateLinks, { error: updateError }] = useMutation(UPDATE_USER);
     const [isUploading, setIsUploading] = useState(false);
-
-    console.log('prevLinks', prevLinks, data);
 
     const onOpen = () => {
       if (prevLinks[type.toString()]) {

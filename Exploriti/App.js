@@ -129,8 +129,6 @@ const MainStack = () => {
   const { authState } = useContext(AuthContext);
   const [setToken] = useMutation(SET_TOKEN);
 
-  console.log('authState', authState);
-
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
@@ -191,16 +189,10 @@ const HomeScreen = () => {
     // Assume a message-notification contains a "type" property in the data payloadof the screen to open
 
     messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage.notification,
-      );
-      console.log('remote msg data', remoteMessage.data);
       const { tab, params } = notificationToRoute(
         remoteMessage.data.notificationType,
         remoteMessage.data.typeId,
       );
-      console.log('tab params', tab, params);
       navigation.navigate(tab, params);
     });
 

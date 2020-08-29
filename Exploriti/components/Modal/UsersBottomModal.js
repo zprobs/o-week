@@ -35,8 +35,6 @@ const UsersBottomModal = React.forwardRef(
 
     const insets = useSafeArea();
 
-    console.log('userDara', userData);
-
     if (error) {
       processWarning(error, 'Server Error');
     }
@@ -118,17 +116,13 @@ const UsersBottomModal = React.forwardRef(
     };
 
     const onEndReached = () => {
-      console.log('onEndReached data', data.length);
       fetchMore({
         variables: {
           ...variables,
           offset: data.length,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
-          console.log('fetchMore', fetchMoreResult);
           if (!fetchMoreResult) return prev;
-
-          console.log('prev', prev);
 
           switch (type) {
             case 'chat':
