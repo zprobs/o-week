@@ -41,7 +41,6 @@ import {
 import Error from './components/ReusableComponents/Error';
 import { GET_CURRENT_USER, SET_TOKEN } from './graphql';
 import Messages from './components/Messages';
-import Notifications from './components/Notifications';
 import AnimatedTabBar from '@gorhom/animated-tabbar';
 import OrientationSVG from './assets/svg/OrientationSVG';
 import MessagesSVG from './assets/svg/MessagesSVG';
@@ -49,11 +48,11 @@ import MyProfileSVG from './assets/svg/MyProfileSVG';
 import { UIManager, Platform } from 'react-native';
 import ScheduleSVG from './assets/svg/ScheduleSVG';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import FlashMessage, { showMessage } from 'react-native-flash-message';
+import FlashMessage from 'react-native-flash-message';
 import messaging from '@react-native-firebase/messaging';
-import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { useNavigation } from '@react-navigation/native';
+import Unverified from './components/Authentication/Unverified';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -230,7 +229,7 @@ export default function App() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        refreshToken(user, setAuthState);
+          refreshToken(user, setAuthState);
       } else {
         setAuthState({ status: 'out' });
       }
@@ -294,17 +293,29 @@ export default function App() {
   const cache = new InMemoryCache({
     cacheRedirects: {
       Query: {
-        post: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'post', id: args.id })),
-        group: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'group', id: args.id })),
-        event: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'event', id: args.id })),
-        user: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'user', id: args.id })),
+        post: (_, args) =>
+          toIdValue(
+            cache.config.dataIdFromObject({ __typename: 'post', id: args.id }),
+          ),
+        group: (_, args) =>
+          toIdValue(
+            cache.config.dataIdFromObject({ __typename: 'group', id: args.id }),
+          ),
+        event: (_, args) =>
+          toIdValue(
+            cache.config.dataIdFromObject({ __typename: 'event', id: args.id }),
+          ),
+        user: (_, args) =>
+          toIdValue(
+            cache.config.dataIdFromObject({ __typename: 'user', id: args.id }),
+          ),
       },
     },
   });
 
   const client = new ApolloClient({
     link,
-    cache: cache
+    cache: cache,
   });
 
   return (
@@ -315,6 +326,8 @@ export default function App() {
             <NavigationContainer>
               {authState.status === 'loading' ? (
                 <Loading />
+              ) : authState.user && !authState.user.emailVerified ? (
+                <Unverified />
               ) : authState.status === 'in' ? (
                 <MainStack />
               ) : (

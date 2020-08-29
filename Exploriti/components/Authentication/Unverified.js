@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
-import { AuthContext, ReloadContext } from '../../context';
+import { AuthContext, processError } from '../../context';
 import { Theme, ThemeStatic } from '../../theme/Colours';
 import LinearGradient from 'react-native-linear-gradient';
 import Fonts from '../../theme/Fonts';
@@ -25,6 +25,39 @@ const svgSize = width * 0.45;
 const Unverified = () => {
   const { authState, setAuthState } = React.useContext(AuthContext);
 
+  function sendEmailVerification() {
+    firebase
+      .auth()
+      .currentUser.sendEmailVerification()
+      .then(() =>
+        showMessage({
+          message: 'Email Sent',
+          description: `check your inbox at ${authState.user.email} `,
+          autoHide: true,
+          type: 'success',
+          icon: 'auto',
+        }),
+      )
+      .catch((e) => {
+        console.log(e);
+        if (e.message.includes('unusual')) {
+          processError({message: 'Please wait before requesting another resend'}, 'Cannot send email')
+        } else {
+          processError(e, 'Could not send email verification');
+        }
+      })
+  }
+
+  useEffect(() => {
+    sendEmailVerification();
+  }, []);
+
+  useEffect(() => {
+    if (authState.user && authState.user.emailVerified) {
+
+    }
+  }, [authState])
+
   const logOut = () => {
     try {
       setAuthState({ status: 'loading' });
@@ -37,15 +70,26 @@ const Unverified = () => {
     }
   };
 
-  const emailSent = () => {
-    showMessage({
-      message: 'Email Sent',
-      description: `email sent to ${authState.user.email} `,
-      autoHide: true,
-      type: 'success',
-      icon: 'auto',
-    });
-  };
+  const onContinue = async () => {
+    try {
+       await firebase.auth().currentUser.reload();
+      const user = firebase.auth().currentUser;
+      console.log({user});
+      if (user.emailVerified === false) {
+        showMessage({
+          message: 'Not Verified Yet',
+          description: 'please click the link in your inbox to verify your account',
+          autoHide: true,
+          type: 'info',
+          icon: 'auto',
+        });
+      } else {
+        setAuthState({status: 'in', user})
+      }
+    } catch (e) {
+      processError(e, 'Could not check status')
+    }
+  }
 
   return (
     <LinearGradient
@@ -70,10 +114,10 @@ const Unverified = () => {
         <EmailVerify height={svgSize} width={svgSize} fill={'white'} />
 
         <View style={styles.buttons}>
-          <TouchableOpacity style={styles.continueButton}>
+          <TouchableOpacity style={styles.continueButton} onPress={onContinue}>
             <Text style={styles.continueText}>Continue</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={emailSent}>
+          <TouchableOpacity onPress={sendEmailVerification}>
             <Text style={styles.resend}>Resend Email</Text>
           </TouchableOpacity>
         </View>

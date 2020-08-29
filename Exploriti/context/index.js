@@ -74,6 +74,7 @@ export function refreshToken(user, setAuthState) {
           .then((result) => {
             console.log(result);
             if (result.claims['https://hasura.io/jwt/claims']) {
+              console.log('emailVerified', user);
               setAuthState({ status: 'in', user });
               return token;
             }
