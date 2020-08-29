@@ -1565,7 +1565,7 @@ export const CREATE_POST = gql`
 
 export const GET_DETAILED_POST = gql`
   query getDetailedPost($postId: Int!) {
-    post: post_by_pk(id: $postId) {
+    post(id: $postId) {
       ...postFragment
     }
   }
@@ -1574,7 +1574,7 @@ export const GET_DETAILED_POST = gql`
 
 export const GET_POST_NOTIFICATION = gql`
   query getPostNotifications($id: Int!) {
-    post: post_by_pk(id: $id) {
+    post(id: $id) {
       id
       user {
         id
@@ -1626,7 +1626,7 @@ export const GET_COMMENT_NOTIFICATION = gql`
 
 export const GET_POST_COMMENTS = gql`
   query getPostComments($postId: Int!, $offset: Int!) {
-    post: post_by_pk(id: $postId) {
+    post(id: $postId) {
       id
       comments(limit: 7, offset: $offset, order_by: { time: desc }) {
         id
@@ -1644,10 +1644,10 @@ export const GET_POST_COMMENTS = gql`
 
 export const CHECK_USER_LIKED = gql`
   query checkUserLiked($postId: Int!, $userId: String!) {
-    like: like_by_pk(userId: $userId, postId: $postId) {
+    like(userId: $userId, postId: $postId) {
       userId
     }
-    post: post_by_pk(id: $postId) {
+    post(id: $postId) {
       id
       likes_aggregate {
         aggregate {
@@ -1676,7 +1676,7 @@ export const UNLIKE_POST = gql`
 
 export const GET_LIKE_NOTIFICATION = gql`
   query getLikeNotification($id: Int!) {
-    like(where: { id: { _eq: $id } }, limit: 1) {
+    likes(where: { id: { _eq: $id } }, limit: 1) {
       id
       post {
         id

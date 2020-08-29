@@ -283,25 +283,25 @@ export const LikeNotificationCard = ({ item }) => {
 
 
   if (loading) return <LoadingNotificationCard />;
-  if (error || !data.like[0]) return null;
+  if (error || !data.likes[0]) return null;
 
   const nav = () => {
     navigation.navigate('PostScreen', {
-      postId: parseInt(data.like[0].post.id),
+      postId: parseInt(data.likes[0].post.id),
     });
   };
 
-  const message = `liked your post in ${data.like[0].post.group.name}`;
+  const message = `liked your post in ${data.likes[0].post.group.name}`;
 
   return (
     <NotificationCard
       timestamp={item.timestamp}
-      title={`${data.like[0].user.name}`}
+      title={`${data.likes[0].user.name}`}
       message={message}
       id={item.id}
       seen={item.seen}
       nav={nav}
-      image={data.like[0].user.image}
+      image={data.likes[0].user.image}
     />
   );
 };
