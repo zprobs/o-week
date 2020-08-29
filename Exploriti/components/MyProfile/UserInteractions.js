@@ -37,6 +37,7 @@ const { colours } = Theme.light;
  * @param onlyFriendsCanMessage {boolean} if true then you can't message unless friends
  * @param isLeader {boolean} affects weather leaders can message
  * @param isAdmin {boolean} affects weather leaders can message
+ * @param existingChatId {int} if present then message will open an existing chat.
  * @returns {*}
  * @constructor
  */
@@ -48,6 +49,7 @@ const UserInteractions = ({
   onlyFriendsCanMessage,
   isLeader,
   isAdmin,
+  existingChatId,
 }) => {
   const { authState } = useContext(AuthContext);
 
@@ -420,13 +422,23 @@ const UserInteractions = ({
           icon: 'auto',
         });
       } else {
-        const friendsSelection = [userId, authState.user.uid];
-        newChat({
-          variables: {
-            participants: graphqlify(friendsSelection, 'user'),
-            image: image,
-          },
-        });
+        if (existingChatId) {
+          navigation.navigate('Messages', {
+            screen: 'Conversation',
+            params: {
+              chatId: existingChatId,
+            },
+            initial: false,
+          });
+        } else {
+          const friendsSelection = [userId, authState.user.uid];
+          newChat({
+            variables: {
+              participants: graphqlify(friendsSelection, 'user'),
+              image: image,
+            },
+          });
+        }
       }
     } else {
       showMessage({

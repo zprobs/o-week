@@ -118,6 +118,7 @@ export default function MessagesList() {
   });
 
   if (chatsError) {
+    console.log(chatsError);
     processWarning(chatsError, 'Could not load chat');
   }
 

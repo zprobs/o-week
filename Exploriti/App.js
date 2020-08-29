@@ -309,6 +309,10 @@ export default function App() {
           toIdValue(
             cache.config.dataIdFromObject({ __typename: 'user', id: args.id }),
           ),
+        chat: (_, args) =>
+          toIdValue(
+            cache.config.dataIdFromObject({ __typename: 'chat', id: args.id }),
+          ),
       },
     },
   });

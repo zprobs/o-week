@@ -82,8 +82,6 @@ const SearchableFlatList = React.forwardRef(
     const [buttonIsShowing, setButtonIsShowing] = useState(false);
     const [keyboardHeight] = useKeyboard();
 
-    console.log('btn show', buttonIsShowing);
-
     const { data: QueryData, loading, error } = useQuery(verifiedQuery, {
       skip: !query || (serverSearch && searchQuery === ''),
       variables: serverSearch

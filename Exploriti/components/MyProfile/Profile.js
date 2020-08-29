@@ -76,8 +76,12 @@ export default function Profile({ route }) {
   const friendCount = data.user.friends_aggregate.aggregate.count;
   const groupCount = data.user.member_aggregate.aggregate.count;
 
-
   const isBlocked = data.user.blocker.length > 0;
+
+
+  const hasChat = data.user.userChats.length > 0 && data.user.userChats[0].chat.participants_aggregate.aggregate.count === 2;
+
+  console.log({hasChat});
 
   const onEdit = () => editProfileBottomModalRef.current.open();
   const onOptions = () => optionsBottomModalRef.current.open();
@@ -95,6 +99,7 @@ export default function Profile({ route }) {
         onlyFriendsCanMessage={data.user.onlyFriendsCanMessage}
         isAdmin={data.user.isAdmin}
         isLeader={data.user.isLeader}
+        existingChatId={hasChat ? data.user.userChats[0].chat.id : undefined}
       />
     );
   };

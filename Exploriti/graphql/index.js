@@ -45,7 +45,12 @@ export const GET_DETAILED_USER = gql`
         order_by: {chat: {participants_aggregate: {count: asc}}}
       ) {
         chat {
-          id
+            id
+            participants_aggregate {
+                aggregate {
+                    count
+                }
+            }
         }
       }
     }
@@ -487,12 +492,30 @@ export const DETAILED_CHAT = gql`
         count
       }
     }
-    messages(limit: 15, order_by: { date: desc }) {
-      ...DetailedMessage
-    }
+    
   }
-  ${MESSAGE_FRAGMENT}
 `;
+
+export const GET_CHAT = gql`
+    query getChat($chatId: Int!, $userId: String!) {
+        user(id: $userId) {
+            id
+            userChats(where: {_and: [{chatId: {_eq: $chatId}}, { chat: { messages: {} } }]}, limit: 1) {
+                seen
+                muted
+                _id: chatId
+                chat {
+                    ...DetailedChat
+                    messages(limit: 15, order_by: { date: desc }) {
+                        ...DetailedMessage
+                    }
+                }
+            }
+        }
+    }
+    ${DETAILED_CHAT}
+    ${MESSAGE_FRAGMENT}
+`
 
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
@@ -508,12 +531,33 @@ export const GET_CHATS = gql`
         _id: chatId
         chat {
           ...DetailedChat
+            messages(limit: 1, order_by: { date: desc }) {
+                ...DetailedMessage
+            }
         }
       }
     }
   }
   ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
 `;
+
+export const GET_CHAT_MESSAGES = gql`
+  query getChatMessages($chatId: Int!) {
+      chat(id: $chatId){ 
+          id
+          messages(limit: 15, order_by: { date: desc }) {
+              ...DetailedMessage
+          }
+          messagesAggregate: messages_aggregate {
+              aggregate {
+                  count
+              }
+          }
+      }
+  }
+  ${MESSAGE_FRAGMENT}
+`
 
 export const GET_UNREAD_CHAT_COUNT = gql`
   subscription getUnreadChatCount($id: String!) {

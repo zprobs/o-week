@@ -15,6 +15,7 @@ import Fonts from '../../theme/Fonts';
 import EmailVerify from '../../assets/svg/email-verify.svg';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/Feather';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -24,6 +25,7 @@ const svgSize = width * 0.45;
 
 const Unverified = () => {
   const { authState, setAuthState } = React.useContext(AuthContext);
+  const insets = useSafeArea();
 
   function sendEmailVerification() {
     firebase
@@ -89,12 +91,11 @@ const Unverified = () => {
   return (
     <LinearGradient
       colors={[ThemeStatic.accent, ThemeStatic.navyBlue]}
-      style={styles.container}>
-      <SafeAreaView style={styles.content}>
+      style={[styles.container, {paddingTop: 40 + insets.top, paddingBottom: 40 + insets.bottom}]}>
         <Icon
           name={'arrow-left'}
           size={32}
-          style={styles.backIcon}
+          style={[styles.backIcon, {top: insets.top + 10}]}
           color={colours.white}
           onPress={logOut}
         />
@@ -116,7 +117,6 @@ const Unverified = () => {
             <Text style={styles.resend}>Resend Email</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
     </LinearGradient>
   );
 };
@@ -126,12 +126,8 @@ export default Unverified;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 40,
   },
   titleView: {
     paddingHorizontal: 25,
@@ -174,7 +170,6 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     position: 'absolute',
-    top: 10,
     left: 10,
   },
 });
