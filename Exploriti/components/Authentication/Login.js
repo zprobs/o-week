@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  TextInput
+  TextInput, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
 import images from '../../assets/images';
 import Fonts from '../../theme/Fonts';
@@ -24,7 +24,8 @@ import Svg, { Path } from 'react-native-svg';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {showMessage} from "react-native-flash-message";
+import { showMessage } from 'react-native-flash-message';
+import { processError } from '../../context';
 
 const { colours } = Theme.light;
 const { FontWeights, FontSizes } = Fonts;
@@ -76,11 +77,32 @@ export default function Login({ navigation }) {
     }
   };
 
-  const resetPassword = email => {
-    firebase.auth().sendPasswordResetEmail(email).then(() => {
-      showMessage()
-    })
-  }
+  const resetPassword = () => {
+    if (email) {
+      firebase
+        .auth()
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          showMessage({
+            message: 'Success',
+            description: `please check ${email} for a link`,
+            autoHide: true,
+            type: 'success',
+            icon: 'auto',
+          });
+          setModalVisible(false);
+        }).catch(e => {
+          processError(e, 'Could not send email');
+      })
+    } else {
+      showMessage({
+        message: 'please enter your email first',
+        autoHide: true,
+        type: 'danger',
+        icon: 'auto',
+      })
+    }
+  };
 
   return (
     <LinearGradient
@@ -178,38 +200,48 @@ export default function Login({ navigation }) {
 
         <View style={styles.centeredView}>
           <Modal
-              animationType="fade"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-              }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+            }}>
+            <TouchableOpacity style={styles.centeredView} onPress={() => setModalVisible(false)} activeOpacity={1}>
+              <TouchableOpacity style={styles.modalView} activeOpacity={1}>
                 <Text style={styles.modalText}>Password Reset</Text>
                 <TextInput
-                  style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                  onChangeText={text => setEmail(text)}
+                  style={styles.resetInput}
+                  onChangeText={setEmail}
                   value={email}
+                  placeholder={'Your email address'}
+                  autoCapitalize={'none'}
+                  autoCompleteType={'email'}
+                  keyboardType={'email-address'}
                 />
-                <TouchableOpacity
-                    style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                    onPress={() => {
-                      setModalVisible(!modalVisible);
-                    }}
-                >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    style={{...styles.resetButton, backgroundColor: ThemeStatic.delete}}
+                    onPress={() => setModalVisible(false)}>
+                    <Text style={styles.resetButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <View style={{width: 20}}/>
+                  <TouchableOpacity
+                    style={styles.resetButton}
+                    onPress={resetPassword}>
+                    <Text style={styles.resetButtonText}>Send Reset Link</Text>
+                  </TouchableOpacity>
+                </View>
+
+              </TouchableOpacity>
+            </TouchableOpacity>
           </Modal>
         </View>
 
-        <TouchableOpacity style={styles.touchable}
-                          onPress={() => {
-                            setModalVisible(true);
-                            }}>
+        <TouchableOpacity
+          style={styles.touchable}
+          onPress={() => {
+            setModalVisible(true);
+          }}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -295,28 +327,47 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     width: '100%',
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-    backgroundColor: 'rgba(0, 0, 0, 0.4)'
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   modalView: {
+    zIndex: 2,
     marginTop: -40,
     width: width - xMargin,
-    height: '30%',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    height: 250,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
+    alignItems: 'center',
+    justifyContent: 'space-around'
   },
   modalText: {
+    ...FontSizes.Label,
+    ...FontWeights.Bold,
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: 'center',
   },
-  openButton: {
-    backgroundColor: "#F194FF",
+  resetButton: {
+    backgroundColor: ThemeStatic.accent,
     borderRadius: 20,
-    padding: 10,
-    elevation: 2
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    elevation: 2,
+    marginTop: 15,
+  },
+  resetButtonText: {
+    ...FontWeights.Regular,
+    ...FontSizes.Body,
+    color: colours.white,
+  },
+  resetInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: '90%',
+    paddingHorizontal: 12
   },
 });

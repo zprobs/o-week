@@ -52,12 +52,6 @@ const Unverified = () => {
     sendEmailVerification();
   }, []);
 
-  useEffect(() => {
-    if (authState.user && authState.user.emailVerified) {
-
-    }
-  }, [authState])
-
   const logOut = () => {
     try {
       setAuthState({ status: 'loading' });
@@ -84,6 +78,7 @@ const Unverified = () => {
           icon: 'auto',
         });
       } else {
+
         setAuthState({status: 'in', user})
       }
     } catch (e) {
