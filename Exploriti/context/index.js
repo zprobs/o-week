@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import storage from '@react-native-firebase/storage';
-import { Keyboard } from 'react-native';
+import { Keyboard, Image } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import { showMessage } from 'react-native-flash-message';
 
@@ -255,8 +255,6 @@ export const saveImage = (image, previous = null, type, id) => {
   const { path } = image;
   const filename = `${type}/${id}`;
   const storageReference = storage().ref(filename);
-
-  // console.log(Image.getSize(uri, success))
 
   if (previous && !defaultImages.includes(previous)) {
     storage()
