@@ -123,7 +123,7 @@ const NewEventModal = React.forwardRef(
         setEndDate(new Date(event.endDate));
         if (event.eventType === 'zoom') {
           setLinkIndex(0);
-        } else if (event.eventType === 'gather') {
+        } else if (event.eventType === 'netflix') {
           setLinkIndex(1);
         } else {
           setLinkIndex(2);
@@ -139,6 +139,8 @@ const NewEventModal = React.forwardRef(
       minute: 'numeric',
       dayPeriod: 'short',
     });
+
+    console.log('eventType', eventTypes[linkIndex]);
 
     const heading = editMode ? 'Edit Event' : 'Create Event';
     const displayName = groupName ? groupName : 'everyone';
@@ -166,6 +168,7 @@ const NewEventModal = React.forwardRef(
       fields.startDate = startDate;
       fields.endDate = endDate;
       fields.isOfficial = isOfficial;
+      fields.eventType = eventTypes[linkIndex];
       let userIDs = [];
       const userEvent_insert_input = [];
       if (groupId) {
@@ -188,7 +191,6 @@ const NewEventModal = React.forwardRef(
         });
         fields.hosts = { data: IDs };
         fields.attendees = { data: userEvent_insert_input };
-        fields.eventType = linkIndex === 0;
 
       }
       const createEventData = await createEvent({
@@ -403,7 +405,7 @@ const NewEventModal = React.forwardRef(
             />
 
             <SegmentedControl
-              values={['Zoom', 'Gather', 'Twitch']}
+              values={['Zoom', 'Netflix Party', 'Twitch']}
               selectedIndex={linkIndex}
               onChange={(event) => {
                 setLinkIndex(event.nativeEvent.selectedSegmentIndex);
@@ -417,14 +419,14 @@ const NewEventModal = React.forwardRef(
                 linkIndex === 0
                   ? 'Zoom Link'
                   : linkIndex === 1
-                  ? 'Gather Link'
+                  ? 'NP Link'
                   : 'Twitch Stream'
               }
               placeholder={
                 linkIndex === 0
                   ? 'example: https://us02web.zoom.us/j/824?pwd=123'
                   : linkIndex === 1
-                  ? 'example: https://letsgather.app.link/UapAgGbE38'
+                  ? 'example: https://www.netflix.com/watch/81307'
                   : 'example: https://www.twitch.tv/abc'
               }
               value={website}

@@ -533,8 +533,8 @@ const EventInfoModal = React.forwardRef(
               <Text style={{ ...styles.iconLabel, color: colours.text01 }}>
                 {data.event.eventType === 'zoom'
                   ? 'Join Zoom Meeting'
-                  : data.event.eventType === 'gather'
-                  ? 'Join Gather Game'
+                  : data.event.eventType === 'netflix'
+                  ? 'Join Netflix Party'
                   : 'Join Twitch Stream'}
               </Text>
               <Text style={styles.countdownText}>{timeString}</Text>
@@ -544,10 +544,10 @@ const EventInfoModal = React.forwardRef(
           <TouchableOpacity onPress={openLink}>
             <Image
               source={
-                data.event.eventType === 'gather'
+                data.event.eventType === 'netflix'
                   ? {
                       uri:
-                        'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/gather.jpg?alt=media&token=db7f6f79-6218-45e6-877e-28f1562be019',
+                        'https://firebasestorage.googleapis.com/v0/b/exploriti-rotman.appspot.com/o/netflix.jpg?alt=media&token=5ae655c9-7a10-4372-bdfc-12fe46946af4',
                     }
                   : {
                       uri:

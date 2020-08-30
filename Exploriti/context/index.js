@@ -387,7 +387,7 @@ export function notificationToRoute(type, typeId) {
   };
 }
 
-export const eventTypes = ['zoom', 'gather', 'twitch'];
+export const eventTypes = ['zoom', 'netflix', 'twitch'];
 
 export const yearsData = [
   'First Year',

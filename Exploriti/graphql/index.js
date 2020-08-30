@@ -587,6 +587,7 @@ export const SEARCH_CHATS = gql`
     }
   }
   ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
 `;
 
 export const SEARCH_USERS_ADD_TO_CHAT = gql`
@@ -1188,6 +1189,7 @@ export const GET_DETAILED_GROUP = gql`
     }
   }
   ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
   ${POST_FRAGMENT}
 `;
 
@@ -1336,6 +1338,7 @@ export const INSERT_GROUP_CHAT = gql`
     }
   }
   ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
 `;
 
 export const CREATE_EVENT = gql`
