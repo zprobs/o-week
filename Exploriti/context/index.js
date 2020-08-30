@@ -252,11 +252,11 @@ const defaultImages = [
  * @returns {Promise<R>}
  */
 export const saveImage = (image, previous = null, type, id) => {
-  console.log(image, previous);
   const { path } = image;
   const filename = `${type}/${id}`;
-  console.log('filename', filename);
   const storageReference = storage().ref(filename);
+
+  // console.log(Image.getSize(uri, success))
 
   if (previous && !defaultImages.includes(previous)) {
     storage()

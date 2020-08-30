@@ -131,7 +131,7 @@ const MainStack = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER, {
     variables: { id: authState.user.uid },
   });
-
+  console.log(error);
   async function saveTokenToDatabase(token) {
     // Assume user is already signed in
 
@@ -237,11 +237,11 @@ export default function App() {
   }, []);
 
   const httpLink = new HttpLink({
-    uri: 'https://vanier-backend.herokuapp.com/v1/graphql',
+    uri: 'http://134.122.36.7/v1/graphql',
   });
 
   const wsLink = new WebSocketLink({
-    uri: 'wss://vanier-backend.herokuapp.com/v1alpha1/graphql',
+    uri: 'ws://134.122.36.7/v1alpha1/graphql',
     options: {
       reconnect: true,
       connectionParams: async () => {
@@ -258,7 +258,7 @@ export default function App() {
   });
 
   const authLink = setContext((_, { headers }) => {
-    //it will always get unexpired version of the token
+    // it will always get unexpired version of the token
     if (authState.status === 'in') {
       return firebase
         .auth()
