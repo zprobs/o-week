@@ -237,11 +237,11 @@ export default function App() {
   }, []);
 
   const httpLink = new HttpLink({
-    uri: 'https://exploriti-backend.herokuapp.com/v1/graphql',
+    uri: 'https://vanier-backend.herokuapp.com/v1/graphql',
   });
 
   const wsLink = new WebSocketLink({
-    uri: 'wss://exploriti-backend.herokuapp.com/v1alpha1/graphql',
+    uri: 'wss://vanier-backend.herokuapp.com/v1alpha1/graphql',
     options: {
       reconnect: true,
       connectionParams: async () => {

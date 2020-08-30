@@ -305,7 +305,8 @@ const EventInfoModal = React.forwardRef(
       if (loading || acceptLoading) return null;
       if (error || acceptError) return null;
 
-      const date = new Date(data.event.startDate);
+      // const date = new Date(data.event.startDate);
+      const date = new Date();
       const end = new Date(data.event.endDate);
       const dateTimeFormat = new Intl.DateTimeFormat('en', {
         year: 'numeric',
@@ -328,6 +329,8 @@ const EventInfoModal = React.forwardRef(
         { value: minute },
         ,
         { value: dayPeriod },
+        ,
+        ,
       ] = dateTimeFormat.formatToParts(date);
       const [
         { value: endMonth },
@@ -341,6 +344,7 @@ const EventInfoModal = React.forwardRef(
         { value: endMinute },
         ,
         { value: endDayPeriod },
+        ,
       ] = dateTimeFormat.formatToParts(end);
       const parsedYear = year === '2020' ? '' : year;
 
