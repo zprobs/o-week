@@ -173,7 +173,7 @@ const GroupEditModal = React.forwardRef(
         insertUserGroups({
           variables: { objects: objects },
           refetchQueries: [
-            { query: GET_DETAILED_GROUP, variables: { id: groupId } },
+            { query: GET_DETAILED_GROUP, variables: { id: groupId, currentUser: authState.user.uid } },
           ],
         }).then(() => {
           setNewLeaders([]);
@@ -185,7 +185,7 @@ const GroupEditModal = React.forwardRef(
         kickUsers({
           variables: { groupId: groupId, _in: kickedUsers },
           refetchQueries: [
-            { query: GET_DETAILED_GROUP, variables: { id: groupId } },
+            { query: GET_DETAILED_GROUP, variables: { id: groupId, currentUser: authState.user.uid } },
           ],
         }).then(() => setKickedUsers([]));
       }

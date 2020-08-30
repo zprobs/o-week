@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,10 +17,12 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import Icon from 'react-native-vector-icons/Feather';
 import RankCard from '../Orientation/RankCard';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import {
+  ADD_USERS_TO_CHAT,
+  GET_CHAT,
   GET_DETAILED_GROUP,
-  GET_EVENTS_BY_ID,
+  GET_EVENTS_BY_ID, GET_GROUP_CHAT,
   GET_GROUP_POSTS,
   GET_LEADERBOARD,
 } from '../../graphql';
@@ -28,9 +30,10 @@ import EventCard from '../ReusableComponents/EventCard';
 import TrophyList from '../Orientation/TrophyList';
 import EmptyFeed from '../../assets/svg/empty-feed.svg';
 import ImgBanner from '../ReusableComponents/ImgBanner';
-import { processError, processWarning, rankData } from '../../context';
+import { AuthContext, processError, processWarning, rankData } from '../../context';
 import EmptyPosts from '../../assets/svg/empty-likes.svg';
 import Post from '../ReusableComponents/Post';
+import { log } from 'react-native-reanimated';
 
 const { FontWeights, FontSizes } = Fonts;
 const { colours } = Theme.light;
@@ -50,9 +53,11 @@ const GroupInfoModal = React.forwardRef(
    */
   ({ groupId, isMember, allLeadersRef, allMembersRef }, ref) => {
     const navigation = useNavigation();
+    const {authState} = useContext(AuthContext)
     const { loading, data, error } = useQuery(GET_DETAILED_GROUP, {
-      variables: { id: groupId },
+      variables: { id: groupId, currentUser: authState.user.uid },
     });
+    console.log({ error });
 
     if (error) {
       processWarning(error, 'Server Error');
@@ -175,10 +180,43 @@ const GroupInfoModal = React.forwardRef(
         error: scoreError,
       } = useQuery(GET_LEADERBOARD);
 
+      const [addToChat, {error: addToChatError}] = useMutation(ADD_USERS_TO_CHAT, {onCompleted: addToChatData => {
+          console.log({addToChatData});
+          console.log(addToChatData.insert_userChat.returning);
+          openGroupChat(addToChatData.insert_userChat.returning[0].chat)
+        }});
+
+      if (addToChatError) processError(addToChatError, 'Could not join chat')
+
       if (loading || scoreLoading || scoreError || error) return null;
 
-      const { _id: chatId, image, name, participants, numMessages, messages } =
-        data.group.groupChats.length > 0 ? data.group.groupChats[0].chat : {};
+
+      const openGroupChat = (chat) => {
+
+        console.log({chat});
+
+        const {
+          _id: chatId,
+          image,
+          name,
+          participants,
+          numMessages,
+          messages,
+        } = chat;
+
+        navigation.navigate('Messages', {
+          screen: 'Conversation',
+          params: {
+            chatId,
+            image,
+            name,
+            participants,
+            numMessages,
+            messages,
+          },
+          initial: false,
+        });
+      }
 
       const rank = scoreData.groups.findIndex((g) => g.id === groupId);
 
@@ -205,19 +243,19 @@ const GroupInfoModal = React.forwardRef(
               <TouchableOpacity
                 style={styles.contactView}
                 onPress={() => {
-                  if (chatId) {
-                    navigation.navigate('Messages', {
-                      screen: 'Conversation',
-                      params: {
-                        chatId,
-                        image,
-                        name,
-                        participants,
-                        numMessages,
-                        messages,
+                  if (data && data.group.groupChats[0])
+                      openGroupChat(data.group.groupChats[0].chat);
+                  else {
+                    addToChat({
+                      variables: {
+                        objects: [
+                          {
+                            chatId: data.group.allChats[0].chatId,
+                            userId: authState.user.uid,
+                          },
+                        ],
                       },
-                      initial: false,
-                    });
+                    }).catch((e) => log(e));
                   }
                 }}>
                 <Icon

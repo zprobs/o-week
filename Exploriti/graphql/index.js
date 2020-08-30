@@ -517,6 +517,16 @@ export const GET_CHAT = gql`
     ${MESSAGE_FRAGMENT}
 `
 
+export const GET_GROUP_CHAT = gql`
+    query getChat($chatId: Int!) {
+      chat(id: $chatId) {
+          ...DetailedChat
+      } 
+    }
+    ${DETAILED_CHAT}
+    ${MESSAGE_FRAGMENT}
+`
+
 export const GET_CHATS = gql`
   subscription getChats($user: String!) {
     user(id: $user) {
@@ -626,15 +636,13 @@ export const ADD_USERS_TO_CHAT = gql`
     insert_userChat(objects: $objects) {
       returning {
         chat {
-          id
-          participants {
-            id
-            name
-          }
+         ...DetailedChat 
         }
       }
     }
   }
+  ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
 `;
 
 export const UNSUBSCRIBE_FROM_CHAT = gql`
@@ -1133,7 +1141,7 @@ export const POST_FRAGMENT = gql`
 `;
 
 export const GET_DETAILED_GROUP = gql`
-  query getDetailedGroup($id: uuid!) {
+  query getDetailedGroup($id: uuid!, $currentUser: String!) {
     group(id: $id) {
       id
       name
@@ -1173,11 +1181,14 @@ export const GET_DETAILED_GROUP = gql`
       unsubscribable
       groupType
       phone
-      groupChats {
-        chat {
-          ...DetailedChat
+        groupChats(where: {chat: {users: {userId: {_eq: $currentUser}}}}) {
+            chat {
+                ...DetailedChat
+            } 
         }
-      }
+        allChats: groupChats {
+            chatId
+        }
       posts(limit: 4, order_by: { time: desc }) {
         ...postFragment
       }

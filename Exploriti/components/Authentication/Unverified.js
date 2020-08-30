@@ -93,9 +93,9 @@ const Unverified = () => {
       colors={[ThemeStatic.accent, ThemeStatic.navyBlue]}
       style={[styles.container, {paddingTop: 40 + insets.top, paddingBottom: 40 + insets.bottom}]}>
         <Icon
-          name={'arrow-left'}
+          name={'log-out'}
           size={32}
-          style={[styles.backIcon, {top: insets.top + 10}]}
+          style={[styles.backIcon, {top: insets.top + 11, transform: [{rotateY: '180deg'}]}]}
           color={colours.white}
           onPress={logOut}
         />
@@ -170,6 +170,6 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     position: 'absolute',
-    left: 10,
+    left: 20,
   },
 });
