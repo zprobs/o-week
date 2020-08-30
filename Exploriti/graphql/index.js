@@ -40,7 +40,7 @@ export const GET_DETAILED_USER = gql`
         blockerId
       }
       userChats(
-        where: {chat: {users: {userId: {_eq: $currentUser}}}}, 
+        where: {chat: { _and: [ {users: {userId: {_eq: $currentUser}}}, {messages: {}}  ] } }, 
         limit: 1, 
         order_by: {chat: {participants_aggregate: {count: asc}}}
       ) {
@@ -492,6 +492,9 @@ export const DETAILED_CHAT = gql`
         count
       }
     }
+      messages(limit: 15, order_by: { date: desc }) {
+          ...DetailedMessage
+      }
     
   }
 `;
@@ -506,9 +509,6 @@ export const GET_CHAT = gql`
                 _id: chatId
                 chat {
                     ...DetailedChat
-                    messages(limit: 15, order_by: { date: desc }) {
-                        ...DetailedMessage
-                    }
                 }
             }
         }
@@ -531,9 +531,6 @@ export const GET_CHATS = gql`
         _id: chatId
         chat {
           ...DetailedChat
-            messages(limit: 1, order_by: { date: desc }) {
-                ...DetailedMessage
-            }
         }
       }
     }
@@ -542,22 +539,6 @@ export const GET_CHATS = gql`
   ${MESSAGE_FRAGMENT}
 `;
 
-export const GET_CHAT_MESSAGES = gql`
-  query getChatMessages($chatId: Int!) {
-      chat(id: $chatId){ 
-          id
-          messages(limit: 15, order_by: { date: desc }) {
-              ...DetailedMessage
-          }
-          messagesAggregate: messages_aggregate {
-              aggregate {
-                  count
-              }
-          }
-      }
-  }
-  ${MESSAGE_FRAGMENT}
-`
 
 export const GET_UNREAD_CHAT_COUNT = gql`
   subscription getUnreadChatCount($id: String!) {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   useIsFocused,
   useNavigation,
@@ -9,7 +9,6 @@ import {
   useMutation,
   useSubscription,
   useLazyQuery,
-  useQuery,
 } from '@apollo/react-hooks';
 import { StyleSheet, SafeAreaView, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
@@ -22,8 +21,6 @@ import CustomScrollToBottom from './CustomScrollToBottom';
 import CustomInputToolbar from './CustomInputToolbar';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import {
-  GET_CHAT,
-  GET_CHAT_MESSAGES,
   GET_EARLIER_MESSAGES,
   GET_NEW_MESSAGES,
   GET_USERS_IN_CHAT,
@@ -45,35 +42,21 @@ const { colours } = Theme.light;
  */
 const Conversation = () => {
   const route = useRoute();
-  // chatId is always there but other ones are only there if navigating from message card. Name is used to tell if params have been supplied
-  var {
+  const {
     chatId,
     name,
     participants,
     numMessages,
+    messages: initialMessages,
     isHighlighted: notSeen,
     chatName,
     image,
     muted,
   } = route.params;
+  console.log({chatId});
   const { navigate, goBack } = useNavigation();
   const { authState } = useContext(AuthContext);
   const [sendMessage, { error: sendError }] = useMutation(SEND_MESSAGE);
-
-  // skip this query if you get chat data from parameters. It includes the initial messages aswell as chat name etc.
-  const { data: chatData, error: chatError, loading: chatLoading } = useQuery(GET_CHAT, {
-    variables: { userId: authState.user.uid, chatId: chatId },
-    skip: name,
-  });
-
-  console.log({chatData});
-
-  // skip this query if you didn't get chat data from parameters. You will already get messages form the query above
-  const { data: messageData, error: messageError, loading: messageLoading } = useQuery(
-    GET_CHAT_MESSAGES,
-    { variables: { chatId: chatId }, skip: !name },
-  );
-
   const [updateMessageSeen] = useMutation(UPDATE_MESSAGE_SEEN);
   const [getEarlierMessages, { error: earlierError }] = useLazyQuery(
     GET_EARLIER_MESSAGES,
@@ -86,59 +69,17 @@ const Conversation = () => {
       },
     },
   );
-  const [messages, setMessages] = useState([]);
-  const [messageOffset, setMessageOffset] = useState(0);
+  const [messages, setMessages] = useState(initialMessages);
+  const [messageOffset, setMessageOffset] = useState(initialMessages.length);
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [nameState, setNameState] = useState(name);
-  const [loadEarlier, setLoadEarlier] = useState(false);
+  const [loadEarlier, setLoadEarlier] = useState(messageOffset < numMessages);
+  const didSetFirst = useRef(false);
   const usersRef = useRef();
   const optionsRef = useRef();
   const numToLoad = 5;
 
   const isFocused = useIsFocused();
-
-  useEffect(() => {
-    // for when nav to conversation screen from profile
-    if (chatData) console.log('userChats',chatData.user.userChats);
-    if (chatData && chatData.user.userChats[0]) {
-      console.log('userEffect triggered');
-      const { chat } = chatData.user.userChats[0];
-      setMessages(chat.messages);
-      setMessageOffset(chat.messages.length);
-      chatName = chat.name;
-      name =
-        chatName ||
-        participants
-          .filter((participant) => participant._id !== authState.user.uid)
-          .map((participant) => participant.name)
-          .join(', ');
-      participants = chat.participants;
-      console.log('useEffect participants', participants);
-      if (participants.length === 2) {
-        image = participants.filter((user) => user.id !== authState.user.uid)[0]
-          .image;
-      } else {
-        image = chat.image;
-      }
-      muted = chatData.user.userChats[0].muted ;
-      notSeen = !chatData.user.userChats[0].seen;
-
-      console.log('chat length, agg count', chat.messages.length, chat.messagesAggregate.aggregate.count );
-
-      setLoadEarlier(chat.messages.length < chat.messagesAggregate.aggregate.count)
-
-    }
-  }, [chatData]);
-
-  useEffect(() => {
-    // for when nav to conversation screen from messages list
-    if (messageData) {
-      setMessages(messageData.chat.messages);
-      setMessageOffset(messageData.chat.messages.length);
-
-      setLoadEarlier(messageData.chat.messages.length < messageData.chat.messagesAggregate.aggregate.count)
-    }
-  }, [messageData]);
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {
@@ -158,14 +99,9 @@ const Conversation = () => {
       }
 
       const userId = authState.user.uid;
-      setMessages(
-        GiftedChat.append(
-          messages,
-          subscriptionData.data.messages.filter(
-            (msg) => msg.user._id !== userId,
-          ),
-        ),
-      );
+      setMessages(GiftedChat.append(messages,
+        subscriptionData.data.messages.filter(msg => msg.user._id !== userId)
+      ));
 
       if (isFocused) setSeen();
     },
@@ -179,16 +115,16 @@ const Conversation = () => {
     },
     update: (cache) => {
       const frag = gql`
-        fragment usersChats on user {
-          userChats(
-            where: {
-              _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }]
-            }
-          ) {
-            chatId
-            seen
+          fragment usersChats on user {
+              userChats(
+                  where: {
+                      _and: [{ chat: { messages: {} } }, { seen: { _eq: false } }]
+                  }
+              ) {
+                  chatId
+                  seen
+              }
           }
-        }
       `;
 
       try {
@@ -212,15 +148,6 @@ const Conversation = () => {
 
   const hasSetSeen = useRef(false);
 
-  if (chatError) {
-    processWarning(chatError, 'Cannot load conversation');
-    return null;
-  }
-
-  if (!chatData && !name) {
-    return null;
-  }
-
   if (isFocused && notSeen && !hasSetSeen.current) {
     hasSetSeen.current = true;
     setSeen();
@@ -234,10 +161,6 @@ const Conversation = () => {
 
   if (sendError) {
     processError(sendError, 'Could not send message');
-  }
-
-  if (messageError) {
-    processWarning(messageError, 'Cannot load messages');
   }
 
   const onSend = (updatedMessages) => {
@@ -280,7 +203,7 @@ const Conversation = () => {
   };
 
   const handleTitlePress = () => {
-    if (participants && participants.length === 2) {
+    if (participants.length === 2) {
       const userId = participants.filter(
         (participant) => participant._id !== authState.user.uid,
       )[0]._id;
@@ -343,7 +266,7 @@ const Conversation = () => {
         variables={{ chatId: chatId }}
         ref={usersRef}
       />
-      {participants && participants.length > 2 ? (
+      {participants.length > 2 ? (
         <ChatOptionsModal
           id={chatId}
           prevName={nameState}
@@ -353,7 +276,7 @@ const Conversation = () => {
           setName={setNameState}
           muted={muted}
         />
-      ) : participants && participants.length === 2 ? (
+      ) : participants.length === 2 ? (
         <OptionsBottomModal
           id={participants.find((p) => p.id !== authState.user.uid).id}
           ref={optionsRef}

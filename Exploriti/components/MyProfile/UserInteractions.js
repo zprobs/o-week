@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import {
   AuthContext,
   graphqlify,
@@ -12,7 +12,7 @@ import {
   CHECK_FRIEND_REQUESTS,
   CHECK_USER_ADMIN,
   CONFIRM_FRIEND_REQUEST,
-  DELETE_FRIEND_REQUEST,
+  DELETE_FRIEND_REQUEST, GET_CHAT,
   GET_USER_FRIENDS_ID,
   NEW_CHAT,
   REMOVE_FRIEND,
@@ -52,6 +52,11 @@ const UserInteractions = ({
   existingChatId,
 }) => {
   const { authState } = useContext(AuthContext);
+
+  const didPressMessage = useRef(false);
+
+
+  const [getChat, {data: chatData, error: chatError, called: chatCalled}] = useLazyQuery(GET_CHAT, {variables: {chatId: existingChatId ? existingChatId : 0, userId: authState.user.uid}})
 
   const [newChat, { error: newChatError }] = useMutation(NEW_CHAT, {
     onCompleted: ({ createChat }) => {
@@ -329,6 +334,47 @@ const UserInteractions = ({
     variables: { userId: authState.user.uid },
   });
 
+  const openExistingChat = () => {
+    const { chat } = chatData.user.userChats[0];
+    const {
+      _id: chatId,
+      participants,
+      messages,
+      name: chatName,
+      messagesAggregate,
+    } = chat;
+    const senderId = messages[0].user._id;
+    const name =
+      chatName ||
+      participants
+        .filter((participant) => participant._id !== authState.user.uid)
+        .map((participant) => participant.name)
+        .join(', ');
+    didPressMessage.current = false
+    navigation.navigate('Messages', {
+      screen: 'Conversation',
+      params: {
+        chatId: chatId,
+        name: name,
+        participants: participants,
+        messages: messages,
+        numMessages: messagesAggregate.aggregate.count,
+        chatName: chatName,
+        muted: chatData.user.userChats[0].muted,
+        isHighlighted: !chatData.user.userChats[0].seen && senderId !== authState.user.uid,
+        image: participants.filter((user) => user.id !== authState.user.uid)[0].image,
+      },
+      initial: false,
+    });
+  }
+
+  useEffect(() => {
+    if (didPressMessage.current && chatData && chatData.user.userChats[0]) {
+      openExistingChat();
+    }
+  }, [chatData])
+
+
   if (newChatError) {
     processError(newChatError, 'Cannot create Chat');
   }
@@ -347,6 +393,10 @@ const UserInteractions = ({
 
   if (friendsError) {
     processWarning(friendsError, 'Server Error');
+  }
+
+  if (chatError) {
+    processError(chatError, 'Cannot load chat')
   }
 
   let content;
@@ -423,13 +473,12 @@ const UserInteractions = ({
         });
       } else {
         if (existingChatId) {
-          navigation.navigate('Messages', {
-            screen: 'Conversation',
-            params: {
-              chatId: existingChatId,
-            },
-            initial: false,
-          });
+          didPressMessage.current = true;
+          if (!chatCalled) {
+            getChat();
+          } else {
+            openExistingChat()
+          }
         } else {
           const friendsSelection = [userId, authState.user.uid];
           newChat({
