@@ -139,7 +139,7 @@ const Calendar = () => {
 
   return (
     <ScrollView style={styles.container} bounces={false}>
-      <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={[styles.container, {height: height}]}>
+      <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={[styles.container, {minHeight: height}]}>
         <SafeAreaView>
           {isFocused ? <StatusBar barStyle="light-content" /> : null}
           <View style={styles.header}>
