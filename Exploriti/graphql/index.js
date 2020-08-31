@@ -629,6 +629,7 @@ export const NEW_CHAT = gql`
     }
   }
   ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
 `;
 
 export const ADD_USERS_TO_CHAT = gql`

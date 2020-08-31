@@ -80,6 +80,7 @@ const Conversation = () => {
   const numToLoad = 5;
 
   const isFocused = useIsFocused();
+  console.log({chatId});
 
   useSubscription(GET_NEW_MESSAGES, {
     variables: {

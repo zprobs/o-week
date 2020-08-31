@@ -57,8 +57,11 @@ const CreatePost = () => {
 
   if (error) processError(error, 'Could not create post');
 
+  console.log({imageSelection});
+
   const onRemove = (img) => {
     setImages(images.filter((image) => image !== img));
+    setImageSelection(imageSelection.filter((image) => image.path !== img))
   };
 
   const onAdd = () => {

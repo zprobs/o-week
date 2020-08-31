@@ -5,7 +5,7 @@ import {
   Text,
   View,
   ScrollView,
-  StatusBar,
+  StatusBar, Dimensions,
 } from 'react-native';
 import { ThemeStatic } from '../../theme/Colours';
 import Fonts from '../../theme/Fonts';
@@ -18,6 +18,8 @@ import { GET_SCHEDULED_EVENTS, UPDATE_CALENDARS } from '../../graphql';
 import { AuthContext, processError } from '../../context';
 import RNCalendarEvents from 'react-native-calendar-events';
 import { showMessage } from 'react-native-flash-message';
+
+const {height} = Dimensions.get('window')
 
 const { FontWeights, FontSizes } = Fonts;
 
@@ -39,12 +41,17 @@ const Calendar = () => {
   const myCalendars = data ? data.user.member : [];
 
   const saveCalendar = async (calendar) => {
+    console.log('start save cal');
     try {
       const calendars = await RNCalendarEvents.findCalendars();
+
+      console.log({calendars});
 
       const thisCalendar = calendars.find(
         (cal) => cal.title === calendar.group.name,
       );
+
+      console.log({thisCalendar});
 
       if (thisCalendar) {
         const removed = await RNCalendarEvents.removeCalendar(thisCalendar.id);
@@ -68,13 +75,15 @@ const Calendar = () => {
               evt.hosts.find((h) => h.groupId === calendar.group.id) !==
               undefined,
           );
+          console.log({events});
           events.map((evt) => {
+            console.log({evt});
             RNCalendarEvents.saveEvent(evt.name, {
               calendarId: id,
               startDate: new Date(evt.startDate).toISOString(),
               endDate: new Date(evt.endDate).toISOString(),
               location: evt.location,
-            });
+            }).catch(e => console.log(e));
           });
           showMessage({
             message: 'Successfully Added to Calendar',
@@ -91,8 +100,10 @@ const Calendar = () => {
   };
 
   const addToPhoneCalendar = (calendar) => {
+    console.log('add to phone');
     RNCalendarEvents.checkPermissions(false)
       .then((result) => {
+        console.log({result});
         if (result !== 'authorized') {
           RNCalendarEvents.requestPermissions(false)
             .then((result) => {
@@ -128,7 +139,7 @@ const Calendar = () => {
 
   return (
     <ScrollView style={styles.container} bounces={false}>
-      <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={styles.container}>
+      <LinearGradient colors={[ThemeStatic.accent, ThemeStatic.navyBlue]} style={[styles.container, {height: height}]}>
         <SafeAreaView>
           {isFocused ? <StatusBar barStyle="light-content" /> : null}
           <View style={styles.header}>
