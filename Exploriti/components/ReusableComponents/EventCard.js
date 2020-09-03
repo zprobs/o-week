@@ -96,6 +96,19 @@ export const EventCard = ({
     time = calendarType;
   }
 
+
+  // This part got replace by null on
+  // <View
+  //     style={{ flexDirection: 'row', justifyContent: 'center' }}>
+  //   <ButtonColour
+  //       label={'Add to phone calendar'}
+  //       containerStyle={{ width: '70%' }}
+  //       labelStyle={{ color: ThemeStatic.accent }}
+  //       disabled={!selected}
+  //       onPress={addToPhoneCalendar}
+  //   />
+  // </View>
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -153,18 +166,7 @@ export const EventCard = ({
               />
             </View>
             {expanded ? (
-              calendar ? (
-                <View
-                  style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  <ButtonColour
-                    label={'Add to phone calendar'}
-                    containerStyle={{ width: '70%' }}
-                    labelStyle={{ color: ThemeStatic.accent }}
-                    disabled={!selected}
-                    onPress={addToPhoneCalendar}
-                  />
-                </View>
-              ) : (
+              calendar ? null : (
                 <View>
                   <Text numberOfLines={4} style={styles.eventDescription}>
                     {description}
