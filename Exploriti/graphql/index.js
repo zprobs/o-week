@@ -1205,6 +1205,20 @@ export const GET_DETAILED_GROUP = gql`
   ${POST_FRAGMENT}
 `;
 
+export const GET_DETAILED_GROUP_EDIT = gql`
+    query getDetailedGroup($id: uuid!) {
+        group(id: $id) {
+            id
+            name
+            image
+            description
+            unsubscribable
+            groupType
+            phone
+        }
+    }
+`;
+
 export const GET_GROUP_POSTS = gql`
   query getGroupPosts($groupId: uuid!) {
     group(id: $groupId) {

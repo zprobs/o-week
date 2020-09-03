@@ -16,7 +16,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
   CREATE_GROUP,
   DELETE_USER_GROUPS,
-  GET_DETAILED_GROUP,
+  GET_DETAILED_GROUP, GET_DETAILED_GROUP_EDIT,
   INSERT_GROUP_CHAT,
   INSERT_USER_GROUPS,
   NEW_CHAT,
@@ -53,7 +53,7 @@ const GroupEditModal = React.forwardRef(
    */
   ({ groupId, onClose, create, SFLOffset }, ref) => {
     const [getGroup, { loading, data, error, called }] = useLazyQuery(
-      create ? NULL : GET_DETAILED_GROUP,
+      create ? NULL : GET_DETAILED_GROUP_EDIT,
       { variables: create ? null : { id: groupId } },
     );
     const [updateGroup, { error: updateError }] = useMutation(UPDATE_GROUP);
