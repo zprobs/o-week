@@ -260,7 +260,7 @@ const CreatePost = () => {
 };
 
 const EditProfileSchema = Yup.object().shape({
-  text: Yup.string().required('Required').max(360),
+  text: Yup.string().required('Required').max(860),
   link: Yup.string().max(2000),
 });
 
