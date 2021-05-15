@@ -237,11 +237,11 @@ export default function App() {
   }, []);
 
   const httpLink = new HttpLink({
-    uri: 'http://134.122.36.7/v1/graphql',
+    uri: 'http://143.110.208.133/v1/graphql',
   });
 
   const wsLink = new WebSocketLink({
-    uri: 'ws://134.122.36.7/v1alpha1/graphql',
+    uri: 'ws://143.110.208.133/v1alpha1/graphql',
     options: {
       reconnect: true,
       connectionParams: async () => {
