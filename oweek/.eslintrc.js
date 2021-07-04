@@ -4,4 +4,9 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
   },
+  settings: {
+    "import/resolver": {
+      "babel-module": {}
+    }
+  }
 };
