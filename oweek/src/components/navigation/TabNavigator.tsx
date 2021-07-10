@@ -4,10 +4,10 @@ import AnimatedTabBar, {
   BubbleTabBarItemConfig,
   TabsConfig,
 } from '@gorhom/animated-tabbar';
-import OrientationView from '@views/Orientation';
-import ScheduleView from '@views/Schedule';
-import ProfileView from '@views/Profile';
-import MessagesView from '@views/Messages';
+import OrientationView from '@views/orientation';
+import ScheduleView from '@views/schedule';
+import ProfileView from '@views/profile';
+import MessagesView from '@views/messages';
 import { useTheme } from '@material-ui/styles';
 import OrientationSVG from '@root/assets/svg/OrientationSVG';
 import ScheduleSVG from '@root/assets/svg/ScheduleSVG';

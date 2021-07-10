@@ -1,0 +1,2791 @@
+{
+  "version": 2,
+  "tables": [
+    {
+      "table": {
+        "schema": "public",
+        "name": "block"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "blockUser",
+          "delete": "unblockUser"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "blockerId"
+          }
+        },
+        {
+          "name": "userByBlockedid",
+          "using": {
+            "foreign_key_constraint_on": "blockedId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "blockerId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "blockerId",
+              "blockedId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "blockerId",
+              "blockedId"
+            ],
+            "filter": {
+              "_or": [
+                {
+                  "blockerId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "blockedId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              ]
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "blockedId",
+              "blockerId"
+            ],
+            "filter": {
+              "blockerId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": {
+              "blockerId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "blockerId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "bug"
+      },
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "reporter": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "reporter",
+              "time",
+              "description"
+            ],
+            "backend_only": false
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "chat"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "createChat",
+          "select_by_pk": "chat",
+          "select": "chats",
+          "delete_by_pk": "deleteChat"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "messages",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "chatId",
+              "table": {
+                "schema": "public",
+                "name": "message"
+              }
+            }
+          }
+        },
+        {
+          "name": "participants",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "chatUserView"
+              },
+              "column_mapping": {
+                "id": "chatId"
+              }
+            }
+          }
+        },
+        {
+          "name": "users",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "chatId",
+              "table": {
+                "schema": "public",
+                "name": "userChat"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "id",
+              "image",
+              "name"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "unsubscribable",
+              "id",
+              "image",
+              "name"
+            ],
+            "filter": {
+              "users": {
+                "userId": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "id",
+              "image",
+              "name"
+            ],
+            "filter": {
+              "users": {
+                "userId": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            },
+            "check": {
+              "users": {
+                "userId": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "_not": {
+                "users": {
+                  "userId": {
+                    "_ne": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "chatUserView"
+      },
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "chatId",
+              "college",
+              "description",
+              "email",
+              "id",
+              "image",
+              "isOfficial",
+              "links",
+              "name",
+              "year"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "comment"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select_by_pk": "comment",
+          "select": "comments"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "post",
+          "using": {
+            "foreign_key_constraint_on": "postId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "authorId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "authorId",
+              "id",
+              "postId",
+              "text",
+              "time"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "authorId",
+              "id",
+              "postId",
+              "text",
+              "time"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "authorId",
+              "id",
+              "postId",
+              "text",
+              "time"
+            ],
+            "filter": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "event"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "createEvent",
+          "select_by_pk": "event",
+          "select": "events",
+          "delete_by_pk": "deleteEvent",
+          "update_by_pk": "updateEvent"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "attendees",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "eventId",
+              "table": {
+                "schema": "public",
+                "name": "userEvent"
+              }
+            }
+          }
+        },
+        {
+          "name": "hosts",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "eventId",
+              "table": {
+                "schema": "public",
+                "name": "groupEvent"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "description",
+              "email",
+              "endDate",
+              "eventType",
+              "gallery",
+              "id",
+              "image",
+              "isOfficial",
+              "isZoom",
+              "links",
+              "location",
+              "name",
+              "startDate",
+              "website"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "email",
+              "image",
+              "isOfficial",
+              "description",
+              "id",
+              "website",
+              "links",
+              "gallery",
+              "location",
+              "startDate",
+              "endDate",
+              "isZoom",
+              "eventType"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "email",
+              "image",
+              "isOfficial",
+              "description",
+              "id",
+              "website",
+              "links",
+              "gallery",
+              "location",
+              "startDate",
+              "endDate",
+              "isZoom",
+              "eventType"
+            ],
+            "filter": {
+              "hosts": {
+                "group": {
+                  "members": {
+                    "_and": [
+                      {
+                        "userId": {
+                          "_eq": "X-Hasura-User-Id"
+                        }
+                      },
+                      {
+                        "isOwner": {
+                          "_eq": true
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "check": {
+              "hosts": {
+                "group": {
+                  "members": {
+                    "_and": [
+                      {
+                        "userId": {
+                          "_eq": "X-Hasura-User-Id"
+                        }
+                      },
+                      {
+                        "isOwner": {
+                          "_eq": true
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "hosts": {
+                "group": {
+                  "members": {
+                    "_and": [
+                      {
+                        "userId": {
+                          "_eq": "X-Hasura-User-Id"
+                        }
+                      },
+                      {
+                        "isOwner": {
+                          "_eq": true
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "friend"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "addFriend",
+          "delete_by_pk": "removeFriend"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "friend",
+          "using": {
+            "foreign_key_constraint_on": "friendId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "friendId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              ]
+            },
+            "columns": [
+              "userId",
+              "friendId",
+              "original"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "userId",
+              "friendId",
+              "original"
+            ],
+            "filter": {
+              "userId": {
+                "_is_null": true
+              }
+            },
+            "limit": 1,
+            "allow_aggregations": true
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "original",
+              "friendId",
+              "userId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "friendId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "friendRequest"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "sendFriendRequest",
+          "delete_by_pk": "deleteFriendRequest"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "sender"
+          }
+        },
+        {
+          "name": "userByRecipient",
+          "using": {
+            "foreign_key_constraint_on": "recipient"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "_and": [
+                {
+                  "sender": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "userByRecipient": {
+                    "_not": {
+                      "blocker": {
+                        "blockedId": {
+                          "_eq": "X-Hasura-User-Id"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "columns": [
+              "sender",
+              "recipient",
+              "date"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "recipient",
+              "sender",
+              "date"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "_or": [
+                {
+                  "recipient": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "sender": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "friendView"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select": "friends"
+        },
+        "custom_column_names": {}
+      },
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "userId",
+              "id",
+              "name",
+              "email",
+              "image",
+              "isOfficial",
+              "description",
+              "college",
+              "year",
+              "links"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "group"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "createGroup",
+          "select_by_pk": "group",
+          "select": "groups",
+          "delete_by_pk": "deleteGroup",
+          "update_by_pk": "updateGroup"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "events",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "groupEvent"
+              }
+            }
+          }
+        },
+        {
+          "name": "groupChats",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "groupChats"
+              }
+            }
+          }
+        },
+        {
+          "name": "groupTrophies",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "groupTrophy"
+              }
+            }
+          }
+        },
+        {
+          "name": "members",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "userGroup"
+              }
+            }
+          }
+        },
+        {
+          "name": "posts",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "post"
+              }
+            }
+          }
+        },
+        {
+          "name": "reviews",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "group",
+              "table": {
+                "schema": "public",
+                "name": "review"
+              }
+            }
+          }
+        },
+        {
+          "name": "tags",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "groupId",
+              "table": {
+                "schema": "public",
+                "name": "groupInterest"
+              }
+            }
+          }
+        },
+        {
+          "name": "trophies",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "trophyGroupView"
+              },
+              "column_mapping": {
+                "id": "groupId"
+              }
+            }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "email",
+              "image",
+              "website",
+              "unsubscribable",
+              "description",
+              "id",
+              "links",
+              "gallery",
+              "groupType",
+              "phone"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "groupChats"
+      },
+      "object_relationships": [
+        {
+          "name": "chat",
+          "using": {
+            "foreign_key_constraint_on": "chatId"
+          }
+        },
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "groupId",
+              "chatId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "groupEvent"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "addHostToEvent",
+          "delete_by_pk": "removeHostFromEvent"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "event",
+          "using": {
+            "foreign_key_constraint_on": "eventId"
+          }
+        },
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "group": {
+                "members": {
+                  "_and": [
+                    {
+                      "isOwner": {
+                        "_eq": true
+                      }
+                    },
+                    {
+                      "userId": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "columns": [
+              "eventId",
+              "groupId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "groupId",
+              "eventId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "group": {
+                "members": {
+                  "_and": [
+                    {
+                      "isOwner": {
+                        "_eq": true
+                      }
+                    },
+                    {
+                      "userId": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "groupInterest"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "addTagToGroup",
+          "delete_by_pk": "removeTagFromGroup"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        },
+        {
+          "name": "interest",
+          "using": {
+            "foreign_key_constraint_on": "interestId"
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "groupTrophy"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert": "awardTrophies",
+          "insert_one": "awardTrophy",
+          "select": "getTrophies",
+          "delete_by_pk": "removeTrophy"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        },
+        {
+          "name": "trophy",
+          "using": {
+            "foreign_key_constraint_on": "trophyId"
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "groupId",
+              "trophyId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "interest"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select_by_pk": "interest",
+          "select": "interests"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "groupInterests",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "interestId",
+              "table": {
+                "schema": "public",
+                "name": "groupInterest"
+              }
+            }
+          }
+        },
+        {
+          "name": "userInterests",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "interestId",
+              "table": {
+                "schema": "public",
+                "name": "userInterest"
+              }
+            }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "name",
+              "aliases",
+              "id"
+            ],
+            "filter": {}
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "aliases",
+              "id"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "like"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select_by_pk": "like",
+          "select": "likes"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "post",
+          "using": {
+            "foreign_key_constraint_on": "postId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "postId",
+              "userId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "id",
+              "postId",
+              "userId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "message"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "sendMessage",
+          "select_by_pk": "message",
+          "select": "messages"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "chat",
+          "using": {
+            "foreign_key_constraint_on": "chatId"
+          }
+        },
+        {
+          "name": "sender",
+          "using": {
+            "foreign_key_constraint_on": "senderId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "senderId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "date",
+              "id",
+              "body",
+              "chatId",
+              "senderId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "chatId",
+              "id",
+              "body",
+              "senderId",
+              "date"
+            ],
+            "filter": {
+              "chat": {
+                "participants": {
+                  "id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "event_triggers": [
+        {
+          "name": "sendMessageNotification",
+          "definition": {
+            "enable_manual": false,
+            "insert": {
+              "columns": "*"
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10,
+            "timeout_sec": 60
+          },
+          "webhook": "https://us-central1-exploriti-rotman.cloudfunctions.net/sendMessageNotification"
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "notification"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "sendNotification",
+          "select_by_pk": "notification",
+          "select": "notifications",
+          "delete_by_pk": "deleteNotification"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "userNotifications",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "notificationId",
+              "table": {
+                "schema": "public",
+                "name": "userNotification"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "seen",
+              "type",
+              "typeId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "seen",
+              "id",
+              "type",
+              "typeId",
+              "timestamp"
+            ],
+            "filter": {
+              "userNotifications": {
+                "userId": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "seen"
+            ],
+            "filter": {
+              "userNotifications": {
+                "userId": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            },
+            "check": null
+          }
+        }
+      ],
+      "event_triggers": [
+        {
+          "name": "sendNotification",
+          "definition": {
+            "enable_manual": false,
+            "insert": {
+              "columns": "*"
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10,
+            "timeout_sec": 60
+          },
+          "webhook": "https://us-central1-exploriti-rotman.cloudfunctions.net/sendNotification"
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "notificationTokenView"
+      }
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "post"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select_by_pk": "post",
+          "select": "posts"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "authorId"
+          }
+        }
+      ],
+      "array_relationships": [
+        {
+          "name": "comments",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "postId",
+              "table": {
+                "schema": "public",
+                "name": "comment"
+              }
+            }
+          }
+        },
+        {
+          "name": "likes",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "postId",
+              "table": {
+                "schema": "public",
+                "name": "like"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "authorId",
+              "groupId",
+              "id",
+              "images",
+              "link",
+              "text",
+              "time"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "id",
+              "images",
+              "authorId",
+              "link",
+              "text",
+              "time",
+              "groupId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "images",
+              "link",
+              "text"
+            ],
+            "filter": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": null
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "authorId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "program"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "select_by_pk": "program",
+          "select": "programs"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "users",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "programId",
+              "table": {
+                "schema": "public",
+                "name": "userProgram"
+              }
+            }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "name",
+              "id"
+            ],
+            "filter": {}
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "id"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "report"
+      },
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "reporter": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "reporter",
+              "reported",
+              "time",
+              "chat",
+              "post",
+              "comment",
+              "id"
+            ],
+            "backend_only": false
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "review"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "createReview",
+          "delete_by_pk": "deleteReview"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "groupByGroup",
+          "using": {
+            "foreign_key_constraint_on": "group"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "author"
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "trophy"
+      },
+      "array_relationships": [
+        {
+          "name": "groupTrophies",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "trophyId",
+              "table": {
+                "schema": "public",
+                "name": "groupTrophy"
+              }
+            }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "score",
+              "description",
+              "name",
+              "id"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "trophyGroupView"
+      },
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "groupId",
+              "id",
+              "score",
+              "description",
+              "name"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "user"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "createUser",
+          "select_by_pk": "user",
+          "select": "users",
+          "delete_by_pk": "deleteUser",
+          "update_by_pk": "updateUser"
+        },
+        "custom_column_names": {}
+      },
+      "array_relationships": [
+        {
+          "name": "blockedBy",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "blockedId",
+              "table": {
+                "schema": "public",
+                "name": "block"
+              }
+            }
+          }
+        },
+        {
+          "name": "blocker",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "blockerId",
+              "table": {
+                "schema": "public",
+                "name": "block"
+              }
+            }
+          }
+        },
+        {
+          "name": "events",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userEvent"
+              }
+            }
+          }
+        },
+        {
+          "name": "friendRequestsReceived",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "recipient",
+              "table": {
+                "schema": "public",
+                "name": "friendRequest"
+              }
+            }
+          }
+        },
+        {
+          "name": "friendRequestsSent",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "sender",
+              "table": {
+                "schema": "public",
+                "name": "friendRequest"
+              }
+            }
+          }
+        },
+        {
+          "name": "friends",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "friend"
+              }
+            }
+          }
+        },
+        {
+          "name": "friendsByFriendid",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "friendId",
+              "table": {
+                "schema": "public",
+                "name": "friend"
+              }
+            }
+          }
+        },
+        {
+          "name": "interests",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userInterest"
+              }
+            }
+          }
+        },
+        {
+          "name": "member",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userGroup"
+              }
+            }
+          }
+        },
+        {
+          "name": "messages",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "senderId",
+              "table": {
+                "schema": "public",
+                "name": "message"
+              }
+            }
+          }
+        },
+        {
+          "name": "notifications",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "userNotificationView"
+              },
+              "column_mapping": {
+                "id": "userId"
+              }
+            }
+          }
+        },
+        {
+          "name": "programs",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userProgram"
+              }
+            }
+          }
+        },
+        {
+          "name": "reviews",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "author",
+              "table": {
+                "schema": "public",
+                "name": "review"
+              }
+            }
+          }
+        },
+        {
+          "name": "userChats",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userChat"
+              }
+            }
+          }
+        },
+        {
+          "name": "userNotifications",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "userId",
+              "table": {
+                "schema": "public",
+                "name": "userNotification"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "id",
+              "name",
+              "email",
+              "image",
+              "isAdmin",
+              "description",
+              "college",
+              "year",
+              "links",
+              "notificationToken",
+              "timezone"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "college",
+              "description",
+              "email",
+              "id",
+              "image",
+              "isAdmin",
+              "isLeader",
+              "links",
+              "muteEvents",
+              "muteGroups",
+              "muteMessages",
+              "name",
+              "onlyFriendsCanMessage",
+              "timezone",
+              "year"
+            ],
+            "filter": {
+              "id": {
+                "_is_null": true
+              }
+            },
+            "limit": 1,
+            "allow_aggregations": true
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "college",
+              "description",
+              "email",
+              "id",
+              "image",
+              "isAdmin",
+              "isLeader",
+              "links",
+              "muteEvents",
+              "muteGroups",
+              "muteMessages",
+              "name",
+              "onlyFriendsCanMessage",
+              "timezone",
+              "year"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "college",
+              "description",
+              "email",
+              "image",
+              "links",
+              "muteEvents",
+              "muteGroups",
+              "muteMessages",
+              "name",
+              "notificationToken",
+              "onlyFriendsCanMessage",
+              "timezone",
+              "year"
+            ],
+            "filter": {
+              "id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": {
+              "id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userChat"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "subscribeToChat",
+          "delete_by_pk": "unsubscribeFromChat"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "chat",
+          "using": {
+            "foreign_key_constraint_on": "chatId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "userId",
+              "chatId"
+            ],
+            "backend_only": false
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "chatId",
+              "muted",
+              "seen",
+              "userId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [],
+            "filter": {
+              "userId": {
+                "_is_null": true
+              }
+            },
+            "limit": 1
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "muted",
+              "seen",
+              "chatId",
+              "userId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "muted",
+              "seen",
+              "chatId",
+              "userId"
+            ],
+            "filter": {},
+            "check": null
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {}
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userEvent"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert": "signUpUsersForEvent",
+          "insert_one": "signUpUserForEvent",
+          "delete_by_pk": "removeUserFromEvent",
+          "update_by_pk": "confirmEventInvite"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "event",
+          "using": {
+            "foreign_key_constraint_on": "eventId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "userId",
+              "eventId",
+              "didAccept"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "didAccept",
+              "userId",
+              "eventId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "didAccept"
+            ],
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": null
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {}
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userGroup"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "joinClub",
+          "delete_by_pk": "leaveClub",
+          "update_by_pk": "updateUserGroup"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "groupId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "groupId",
+              "userId"
+            ],
+            "backend_only": false
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "group": {
+                    "members": {
+                      "_and": [
+                        {
+                          "userId": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        },
+                        {
+                          "isOwner": {
+                            "_eq": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "columns": [
+              "groupId",
+              "isOwner",
+              "onCalendar",
+              "userId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "userId",
+              "groupId",
+              "onCalendar",
+              "isOwner"
+            ],
+            "filter": {
+              "userId": {
+                "_is_null": true
+              }
+            },
+            "limit": 1,
+            "allow_aggregations": true
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "isOwner",
+              "onCalendar",
+              "userId",
+              "groupId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "groupId",
+              "isOwner",
+              "onCalendar",
+              "userId"
+            ],
+            "filter": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "group": {
+                    "members": {
+                      "_and": [
+                        {
+                          "userId": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        },
+                        {
+                          "isOwner": {
+                            "_eq": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "check": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "group": {
+                    "members": {
+                      "_and": [
+                        {
+                          "userId": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        },
+                        {
+                          "isOwner": {
+                            "_eq": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "_or": [
+                {
+                  "userId": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "group": {
+                    "members": {
+                      "_and": [
+                        {
+                          "userId": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        },
+                        {
+                          "isOwner": {
+                            "_eq": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userInterest"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "addInterestForUser",
+          "delete_by_pk": "removeInterestFromUser"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "interest",
+          "using": {
+            "foreign_key_constraint_on": "interestId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "userId",
+              "interestId"
+            ],
+            "backend_only": false
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "userId",
+              "interestId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "interestId",
+              "userId"
+            ],
+            "filter": {
+              "userId": {
+                "_is_null": true
+              }
+            },
+            "limit": 1
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "interestId",
+              "userId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "interestId",
+              "userId"
+            ],
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "check": null
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userNotification"
+      },
+      "object_relationships": [
+        {
+          "name": "notification",
+          "using": {
+            "foreign_key_constraint_on": "notificationId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {},
+            "columns": [
+              "userId",
+              "notificationId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "notificationId",
+              "userId"
+            ],
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userNotificationView"
+      },
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "userId",
+              "id",
+              "timestamp",
+              "type",
+              "typeId",
+              "seen"
+            ],
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "userProgram"
+      },
+      "configuration": {
+        "custom_root_fields": {
+          "insert_one": "registerUserForProgram",
+          "delete_by_pk": "removeUserFromProgram"
+        },
+        "custom_column_names": {}
+      },
+      "object_relationships": [
+        {
+          "name": "program",
+          "using": {
+            "foreign_key_constraint_on": "programId"
+          }
+        },
+        {
+          "name": "user",
+          "using": {
+            "foreign_key_constraint_on": "userId"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "userId",
+              "programId"
+            ],
+            "backend_only": false
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "userId",
+              "programId"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "userId",
+              "programId"
+            ],
+            "filter": {
+              "userId": {
+                "_is_null": true
+              }
+            },
+            "limit": 1
+          }
+        },
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "programId",
+              "userId"
+            ],
+            "filter": {},
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "userId": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "function": {
+        "schema": "public",
+        "name": "getrandomusers"
+      }
+    }
+  ],
+  "custom_types": {
+    "objects": [
+      {
+        "name": "ConfirmFriendRequestOutput",
+        "fields": [
+          {
+            "name": "recipient",
+            "type": "String!"
+          }
+        ]
+      }
+    ]
+  }
+}
