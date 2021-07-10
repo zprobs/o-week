@@ -1,6 +1,7 @@
 {
   "presets": ["module:metro-react-native-babel-preset"],
   "plugins": [
+    ["module:react-native-dotenv"],
     [
       "module-resolver",
       {
@@ -14,7 +15,7 @@
           ".tsx",
           ".jsx",
           ".js",
-          ".json",
+          ".json"
         ],
         "alias": {
           "@root": "./src",

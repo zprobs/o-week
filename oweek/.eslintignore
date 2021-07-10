@@ -3,3 +3,4 @@
 metro.config.js
 webpack.config.js
 __tests__
+.env
