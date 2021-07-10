@@ -2,3 +2,4 @@
 .babelrc
 metro.config.js
 webpack.config.js
+__tests__

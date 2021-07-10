@@ -9,6 +9,10 @@ import ScheduleView from '@views/Schedule';
 import ProfileView from '@views/Profile';
 import MessagesView from '@views/Messages';
 import { useTheme } from '@material-ui/styles';
+import OrientationSVG from '@root/assets/svg/OrientationSVG';
+import ScheduleSVG from '@root/assets/svg/ScheduleSVG';
+import MessagesSVG from '@root/assets/svg/MessagesSVG';
+import ProfileSVG from '@root/assets/svg/ProfileSVG';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +23,7 @@ enum Tabs {
   Profile = 'Profile',
 }
 
-const TabNavigation = () => {
+const TabNavigation: React.FC = () => {
   const [initialRoute] = useState(Tabs.Orientation);
   const theme = useTheme();
 
@@ -41,7 +45,7 @@ const TabNavigation = () => {
   const tabs: TabsConfig<BubbleTabBarItemConfig> = {
     Orientation: {
       icon: {
-        component: null,
+        component: OrientationSVG,
         ...iconColor,
       },
       ...tabStyles,
@@ -49,22 +53,22 @@ const TabNavigation = () => {
 
     Schedule: {
       icon: {
-        component: null,
+        component: ScheduleSVG,
         ...iconColor,
       },
       ...tabStyles,
     },
     Messages: {
       icon: {
-        component: null,
+        component: MessagesSVG,
         ...iconColor,
       },
       ...tabStyles,
     },
 
-    MyProfile: {
+    Profile: {
       icon: {
-        component: null,
+        component: ProfileSVG,
         ...iconColor,
       },
       ...tabStyles,

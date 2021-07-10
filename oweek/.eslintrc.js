@@ -4,6 +4,9 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
   },
+  rules: {
+    'react/jsx-props-no-spreading': 'off'
+  },
   settings: {
     "import/resolver": {
       "babel-module": {
@@ -11,6 +14,7 @@ module.exports = {
           ".ios.ts",
           ".android.ts",
           ".ts",
+          ".d.ts",
           ".ios.tsx",
           ".android.tsx",
           ".tsx",

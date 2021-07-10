@@ -1,18 +1,17 @@
 import { DefaultTheme } from '@material-ui/styles';
 import { Appearance } from 'react-native';
+import ColorTheme from './colorTheme.d';
 import dark from './dark';
 import light from './light';
 
+interface Palette extends ColorTheme {
+  accent: string;
+  black: string;
+}
+
 declare module '@material-ui/styles' {
   interface DefaultTheme {
-    palette: {
-      accent: string;
-      black: string;
-      background: string;
-      tabLabel: string;
-      tabActiveBackground: string;
-      tabInactiveBackground: string;
-    };
+    palette: Palette;
   }
 }
 
