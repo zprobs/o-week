@@ -25,7 +25,8 @@ module.exports = {
         "alias": {
           "@root": "./src",
           "@components": "./src/components",
-          "@views": "./src/views"
+          "@views": "./src/views",
+          "@resources": "./src/resources",
         }
       }
     }

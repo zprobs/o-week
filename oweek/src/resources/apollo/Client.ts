@@ -1,9 +1,8 @@
 import { ApolloClient, ApolloLink, HttpLink, split } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { WebSocketLink } from '@apollo/client/link/ws';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { DEV_TOKEN } from 'react-native-dotenv';
+// eslint-disable-next-line import/no-unresolved
+import { DEV_TOKEN } from '@env';
 import { getMainDefinition } from '@apollo/client/utilities';
 import Cache from './Cache';
 
