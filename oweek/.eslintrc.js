@@ -27,6 +27,8 @@ module.exports = {
           "@components": "./src/components",
           "@views": "./src/views",
           "@resources": "./src/resources",
+          "@types": "./src/types",
+          "@graphql": "./src/graphql"
         }
       }
     }

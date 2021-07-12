@@ -15,7 +15,6 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: async () => {
-      console.log(`web socket fetching token${DEV_TOKEN}`);
       return {
         headers: {
           Authorization: `Bearer ${DEV_TOKEN}`,
@@ -26,11 +25,10 @@ const wsLink = new WebSocketLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  console.log(`authLink fetching token${DEV_TOKEN}`);
   return {
     headers: {
       ...headers,
-      Authorization: `Bearer ${DEV_TOKEN}`,
+      'x-hasura-admin-secret': DEV_TOKEN,
     },
   };
 });

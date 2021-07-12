@@ -8,6 +8,8 @@ module.exports = {
       '@components': path.resolve(__dirname, 'src/components/'),
       '@views': path.resolve(__dirname, 'src/views/'),
       '@resources': path.resolve(__dirname, 'src/resources/'),
+      '@types': path.resolve(__dirname, 'src/types/'),
+      '@graphql': path.resolve(__dirname, 'src/graphql/'),
     },
   },
 };
