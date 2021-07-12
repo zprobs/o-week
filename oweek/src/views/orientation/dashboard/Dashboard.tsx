@@ -2,17 +2,20 @@ import React, { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_CURRENT_USER } from '@graphql/User';
 import { processWarning } from '@util/messages';
+import { CurrentUserData, DetailedUserVars } from '@types/user';
 
 const Dashboard: React.FC = () => {
-  const { loading, error, data } = useQuery(GET_CURRENT_USER, {
-    variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
+  const { loading, error, data } = useQuery<CurrentUserData, DetailedUserVars>(
+    GET_CURRENT_USER,
+    {
+      variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
   });
 
   const listData = useMemo(
     () => [
       {
         title: 'My Groups',
-        data: data.user.member ? data.user.member : [],
+        data: data?.user?.member ? data.user.member : [],
       },
     ],
     [data],
