@@ -10,6 +10,7 @@ module.exports = {
       '@resources': path.resolve(__dirname, 'src/resources/'),
       '@types': path.resolve(__dirname, 'src/types/'),
       '@graphql': path.resolve(__dirname, 'src/graphql/'),
+      '@util': path.resolve(__dirname, 'src/util/'),
     },
   },
 };

@@ -28,7 +28,8 @@ module.exports = {
           "@views": "./src/views",
           "@resources": "./src/resources",
           "@types": "./src/types",
-          "@graphql": "./src/graphql"
+          "@graphql": "./src/graphql",
+          "@util": "./src/util"
         }
       }
     }
