@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const DETAILED_USER_FRAGMENT = gql`
+export const DetailedUserFragment = gql`
   fragment DetailedUser on user {
     id
     name
@@ -30,12 +30,13 @@ export const DETAILED_USER_FRAGMENT = gql`
   }
 `;
 
-export const DETAILED_EVENT_FRAGMENT = gql`
+export const DetailedEventFragment = gql`
   fragment DetailedEvent on event {
     description
     id
     image
     location
+
     name
     startDate
     endDate

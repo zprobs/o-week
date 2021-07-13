@@ -1,14 +1,18 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_CURRENT_USER } from '@graphql/User';
+import { GetCurrentUser } from '@graphql/User';
 import { processWarning } from '@util/messages';
-import { CurrentUserData, DetailedUserVars } from '@types/user';
+import {
+  getCurrentUser,
+  getCurrentUserVariables,
+} from '@graphql/types/getCurrentUser';
 
 const Dashboard: React.FC = () => {
-  const { loading, error, data } = useQuery<CurrentUserData, DetailedUserVars>(
-    GET_CURRENT_USER,
-    {
-      variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
+  const { loading, error, data } = useQuery<
+    getCurrentUser,
+    getCurrentUserVariables
+  >(GetCurrentUser, {
+    variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
   });
 
   const listData = useMemo(
