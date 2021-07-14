@@ -7,6 +7,8 @@ import light from './light';
 interface Palette extends ColorTheme {
   accent: string;
   black: string;
+  white: string;
+  delete: string;
 }
 
 interface Font {
@@ -20,7 +22,7 @@ interface Size {
   heading: number;
   subHeading: number;
   label: number;
-  Body: number;
+  body: number;
   caption: number;
   subText: number;
 }
@@ -40,6 +42,8 @@ const getTheme = (): DefaultTheme => {
       ...(prefersDarkMode ? dark : light),
       accent: '#0088cc',
       black: 'rgba(0,0,0,1)',
+      white: '#FFFFFF',
+      delete: '#F44336',
     },
     font: {
       bold: 'SFProDisplay-Bold',
@@ -51,7 +55,7 @@ const getTheme = (): DefaultTheme => {
       heading: 32,
       subHeading: 24,
       label: 20,
-      Body: 16,
+      body: 16,
       caption: 14,
       subText: 12,
     },

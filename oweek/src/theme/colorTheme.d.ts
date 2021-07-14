@@ -3,6 +3,9 @@ interface ColorTheme {
   tabLabel: string;
   tabActiveBackground: string;
   tabInactiveBackground: string;
+  text01: string;
+  text02: string;
+  text03: string;
 }
 
 export = ColorTheme;
