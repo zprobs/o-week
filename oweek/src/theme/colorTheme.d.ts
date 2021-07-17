@@ -6,6 +6,7 @@ interface ColorTheme {
   text01: string;
   text02: string;
   text03: string;
+  base: string;
 }
 
 export = ColorTheme;

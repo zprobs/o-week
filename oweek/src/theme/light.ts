@@ -8,6 +8,7 @@ const light: ColorTheme = {
   text01: '#000000',
   text02: '#BBBBBB',
   text03: '#666666',
+  base: '#FFFFFF',
 };
 
 export default light;

@@ -1,4 +1,3 @@
-import { DefaultTheme } from '@material-ui/styles';
 import { Appearance } from 'react-native';
 import ColorTheme from './colorTheme.d';
 import dark from './dark';
@@ -27,12 +26,10 @@ interface Size {
   subText: number;
 }
 
-declare module '@material-ui/styles' {
-  interface DefaultTheme {
-    palette: Palette;
-    font: Font;
-    size: Size;
-  }
+export interface DefaultTheme {
+  palette: Palette;
+  font: Font;
+  size: Size;
 }
 
 const getTheme = (): DefaultTheme => {

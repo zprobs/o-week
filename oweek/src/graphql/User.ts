@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { DETAILED_USER_FRAGMENT } from './Fragments';
+import { DetailedUserFragment } from './Fragments';
 
 export const GetCurrentUser = gql`
   query getCurrentUser($id: String!) {
@@ -13,7 +13,7 @@ export const GetCurrentUser = gql`
       }
     }
   }
-  ${DETAILED_USER_FRAGMENT}
+  ${DetailedUserFragment}
 `;
 
 export const UpdateUser = gql`
@@ -22,5 +22,5 @@ export const UpdateUser = gql`
       ...DetailedUser
     }
   }
-  ${DETAILED_USER_FRAGMENT}
+  ${DetailedUserFragment}
 `;

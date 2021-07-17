@@ -8,13 +8,15 @@ import {
 } from '@graphql/types/getCurrentUser';
 import { SafeAreaView, SectionList, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import SectionHeader from '@components/list/SectionHeader';
+import useStyles from './Dashboard.styles';
 
 /**
  * Dashboard is the main view where the user can see what is important and view the groups they are in
  * */
 const Dashboard: React.FC = () => {
   const navigation = useNavigation();
+  const styles = useStyles();
   const { loading, error, data } = useQuery<
     getCurrentUser,
     getCurrentUserVariables
@@ -34,7 +36,8 @@ const Dashboard: React.FC = () => {
 
   const renderItem = React.useCallback(
     ({ item, section }) => {
-      let screen: string, options: any;
+      let screen: string;
+      let options: Record<string, unknown>;
 
       if (section.title === 'My Groups') {
         screen = 'GroupScreen';
@@ -65,7 +68,7 @@ const Dashboard: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <SectionList
-        bounces={true}
+        bounces
         sections={listData}
         keyExtractor={(item, index) => item.group.id + index}
         renderItem={renderItem}

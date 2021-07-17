@@ -5,7 +5,7 @@ import useStyles from './SectionHeader.styles';
 interface Props {
   section: {
     title: string;
-    data: any[];
+    data: Record<string, unknown>[];
   };
 }
 
@@ -17,11 +17,11 @@ const SectionHeader: React.FC<Props> = ({ section: { title, data } }) => {
   if (data.length === 0) return null;
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={styles.row}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.number}>{data.length}</Text>
       </View>
-      <View style={{ width: 10 }} />
+      <View style={styles.width} />
     </View>
   );
 };
