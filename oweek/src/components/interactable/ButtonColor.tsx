@@ -13,29 +13,29 @@ import LoadingDots from '@components/loading/LoadingDots';
 import useStyles from './ButtonColor.styles';
 
 interface Props {
-  Icon: React.ComponentType;
+  Icon?: React.ComponentType;
   label: string;
   onPress: (event: GestureResponderEvent) => void;
-  isLoading: boolean;
-  containerStyle: StyleProp<ViewStyle>;
-  labelStyle: StyleProp<TextStyle>;
+  isLoading?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   color: string;
-  isLight: boolean;
-  loadColor: string;
-  isDisabled: boolean;
+  isLight?: boolean;
+  loadColor?: string;
+  isDisabled?: boolean;
 }
 
 const ButtonColour: React.FC<Props> = ({
   Icon,
   label,
   onPress,
-  isLoading,
+  isLoading = false,
   containerStyle,
   labelStyle,
   color,
-  isLight,
+  isLight = false,
   loadColor,
-  isDisabled,
+  isDisabled = false,
 }) => {
   const styles = useStyles(!!Icon, isLight, color);
   const theme = getTheme();

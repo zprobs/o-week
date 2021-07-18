@@ -14,6 +14,8 @@ import {
 } from '@components/placeholders/DashboardPlaceholder';
 import { useNavigation } from '@react-navigation/native';
 import ButtonColour from '@components/interactable/ButtonColor';
+import getTheme from '@root/theme';
+import useStyles from './Header.styles';
 
 interface Props {
   name: string;
@@ -21,6 +23,8 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ name, loading }) => {
+  const styles = useStyles();
+  const theme = getTheme();
   const navigation = useNavigation();
   const {
     data,
@@ -54,37 +58,39 @@ const Header: React.FC<Props> = ({ name, loading }) => {
         showsHorizontalScrollIndicator={false}>
         {sayHiLoading ? (
           <SayHiPlaceholder />
-        ) : data ? (
-          <>
-            {data.getrandomusers.map((user) => {
-              count += 1;
-              return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('Profile', { userId: user.id })
-                  }
-                  key={user.id}>
-                  <Image
-                    source={{ uri: user.image }}
-                    style={{
-                      ...styles.userImage,
-                      marginTop: count % 2 === 0 ? 16 : 0,
-                    }}
-                    key={user.id}
-                  />
-                </TouchableOpacity>
-              );
-            })}
-            <View style={{ width: 15 }} />
-          </>
-        ) : null}
+        ) : (
+          data && (
+            <>
+              {data.getrandomusers.map((user) => {
+                count += 1;
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('Profile', { userId: user.id })
+                    }
+                    key={user.id}>
+                    <Image
+                      source={{ uri: user.image }}
+                      style={{
+                        ...styles.userImage,
+                        marginTop: count % 2 === 0 ? 16 : 0,
+                      }}
+                      key={user.id}
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+              <View style={{ width: 15 }} />
+            </>
+          )
+        )}
       </ScrollView>
 
       <View style={{ marginHorizontal: 25 }}>
         <ButtonColour
-          color={ThemeStatic.lightgray}
+          color={theme.palette.lightgray}
           label="Search The App"
-          Icon={SearchIcon}
+          // Icon={SearchIcon}
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
           onPress={() => {

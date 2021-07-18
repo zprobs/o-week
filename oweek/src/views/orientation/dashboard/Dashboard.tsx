@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import SectionHeader from '@components/list/SectionHeader';
 import useStyles from './Dashboard.styles';
 import DashboardSection from './DashboardSection';
+import Header from './Header';
 
 /**
  * Dashboard is the main view where the user can see what is important and view the groups they are in
@@ -30,8 +31,6 @@ const Dashboard: React.FC = () => {
   >(GetCurrentUser, {
     variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
   });
-
-
 
   const listData: DashboardSection[] = useMemo(
     () => [
