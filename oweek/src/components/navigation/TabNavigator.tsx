@@ -8,11 +8,11 @@ import OrientationView from '@views/orientation';
 import ScheduleView from '@views/schedule';
 import ProfileView from '@views/profile';
 import MessagesView from '@views/messages';
-import { useTheme } from '@material-ui/styles';
 import OrientationSVG from '@root/assets/svg/OrientationSVG';
 import ScheduleSVG from '@root/assets/svg/ScheduleSVG';
 import MessagesSVG from '@root/assets/svg/MessagesSVG';
 import ProfileSVG from '@root/assets/svg/ProfileSVG';
+import getTheme from '@root/theme';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,7 +25,7 @@ enum Tabs {
 
 const TabNavigation: React.FC = () => {
   const [initialRoute] = useState(Tabs.Orientation);
-  const theme = useTheme();
+  const theme = getTheme();
 
   const iconColor = {
     activeColor: theme.palette.accent,

@@ -82,7 +82,9 @@ const Dashboard: React.FC = () => {
         keyExtractor={(item, index) => item.group.id + index}
         renderItem={renderItem}
         renderSectionHeader={SectionHeader}
-        ListHeaderComponent={Header}
+        ListHeaderComponent={() => (
+          <Header name={data?.user?.name || 'there'} loading={loading} />
+        )}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
