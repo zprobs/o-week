@@ -64,3 +64,20 @@ export const DetailedEventFragment = gql`
     }
   }
 `;
+
+export const EventAttendanceFragment = gql`
+  fragment EventAttendance on event {
+    id
+    attendees(limit: 3) {
+      user {
+        image
+        id
+      }
+    }
+    attendees_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;

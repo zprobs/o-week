@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import SectionHeader from '@components/list/SectionHeader';
+import ImageCard from '@components/card/ImageCard';
 import useStyles from './Dashboard.styles';
 import DashboardSection from './DashboardSection';
 import Header from './Header';
@@ -59,7 +60,7 @@ const Dashboard: React.FC = () => {
 
     return (
       <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-        {/* <ImageCard groupId={item.group.id} /> */}
+        <ImageCard id={item.group.id} type="group" />
       </TouchableOpacity>
     );
   };

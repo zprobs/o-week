@@ -5,7 +5,8 @@ module.exports = {
     project: './tsconfig.json',
   },
   rules: {
-    'react/jsx-props-no-spreading': 'off'
+    'react/jsx-props-no-spreading': 'off',
+    'camelcase': 'off'
   },
   settings: {
     "import/resolver": {
