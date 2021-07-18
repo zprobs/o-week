@@ -1,12 +1,12 @@
 import getTheme from '@root/theme';
 import { StyleSheet, ViewStyle } from 'react-native';
 
-const makeStyles = () => {
-  const theme = getTheme();
+interface Styles {
+  container: ViewStyle;
+}
 
-  interface Styles {
-    container: ViewStyle;
-  }
+const makeStyles = (): Styles => {
+  const theme = getTheme();
 
   return StyleSheet.create<Styles>({
     container: {

@@ -9,6 +9,7 @@ const dark: ColorTheme = {
   text02: '#BBBBBB',
   text03: '#666666',
   base: '#FFFFFF',
+  placeholder: 'F4F4F4',
 };
 
 export default dark;

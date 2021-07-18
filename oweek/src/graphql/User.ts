@@ -24,3 +24,12 @@ export const UpdateUser = gql`
   }
   ${DetailedUserFragment}
 `;
+
+export const GetRandomUsers = gql`
+  query getRandomUsers($userId: String!) {
+    getrandomusers(args: { userid: $userId }) {
+      id
+      image
+    }
+  }
+`;

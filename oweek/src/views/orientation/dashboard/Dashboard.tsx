@@ -5,11 +5,18 @@ import { processWarning } from '@util/messages';
 import {
   getCurrentUser,
   getCurrentUserVariables,
+  getCurrentUser_user_member as Item,
 } from '@graphql/types/getCurrentUser';
-import { SafeAreaView, SectionList, TouchableOpacity } from 'react-native';
+import {
+  SafeAreaView,
+  SectionList,
+  SectionListRenderItem,
+  TouchableOpacity,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import SectionHeader from '@components/list/SectionHeader';
 import useStyles from './Dashboard.styles';
+import DashboardSection from './DashboardSection';
 
 /**
  * Dashboard is the main view where the user can see what is important and view the groups they are in
@@ -24,7 +31,9 @@ const Dashboard: React.FC = () => {
     variables: { id: 'MeacvK7z4gWhfkCC6jTNAfEKgXJ3' },
   });
 
-  const listData = useMemo(
+
+
+  const listData: DashboardSection[] = useMemo(
     () => [
       {
         title: 'My Groups',
@@ -34,27 +43,27 @@ const Dashboard: React.FC = () => {
     [data],
   );
 
-  const renderItem = React.useCallback(
-    ({ item, section }) => {
-      let screen: string;
-      let options: Record<string, unknown>;
+  const renderItem: SectionListRenderItem<Item, DashboardSection> = ({
+    item,
+    section,
+  }) => {
+    let screen: string;
+    let options: Record<string, unknown>;
 
-      if (section.title === 'My Groups') {
-        screen = 'GroupScreen';
-        options = { groupId: item.group.id };
-      } else {
-        screen = 'EventScreen';
-        options = { event: item };
-      }
+    if (section.title === 'My Groups') {
+      screen = 'GroupScreen';
+      options = { groupId: item.group.id };
+    } else {
+      screen = 'EventScreen';
+      options = { event: item };
+    }
 
-      return (
-        <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
-          {/*<ImageCard groupId={item.group.id} />*/}
-        </TouchableOpacity>
-      );
-    },
-    [navigation],
-  );
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate(screen, options)}>
+        {/* <ImageCard groupId={item.group.id} /> */}
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return null;
@@ -67,7 +76,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <SectionList
+      <SectionList<Item, DashboardSection>
         bounces
         sections={listData}
         keyExtractor={(item, index) => item.group.id + index}
