@@ -7,7 +7,7 @@ import {
 } from '@graphql/types/getRandomUsers';
 import { processWarning } from '@util/messages';
 import { Image, ScrollView, TouchableOpacity, View, Text } from 'react-native';
-
+import Icon from 'react-native-vector-icons/Feather';
 import {
   SayHiPlaceholder,
   TitlePlaceholder,
@@ -38,6 +38,10 @@ const Header: React.FC<Props> = ({ name, loading }) => {
   if (error) {
     processWarning(error, 'Server Error');
   }
+
+  const SearchIcon = () => (
+    <Icon name="search" color={theme.palette.text01} size={26} />
+  );
 
   return (
     <>
@@ -90,7 +94,7 @@ const Header: React.FC<Props> = ({ name, loading }) => {
         <ButtonColour
           color={theme.palette.lightgray}
           label="Search The App"
-          // Icon={SearchIcon}
+          Icon={SearchIcon}
           labelStyle={styles.buttonText}
           containerStyle={styles.scheduleButton}
           onPress={() => {

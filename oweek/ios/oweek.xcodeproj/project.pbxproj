@@ -14,6 +14,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		955364DB973665BED1B52D36 /* libPods-oweek.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 683256457D0848FE4D97F15C /* libPods-oweek.a */; };
 		A6D26F32A0B1686112326A29 /* libPods-oweek-oweekTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04E6F90E91245C8FF339E97A /* libPods-oweek-oweekTests.a */; };
+		BB1ACD8D26A469C8001970BF /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1ACD8C26A469C8001970BF /* Feather.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +43,7 @@
 		683256457D0848FE4D97F15C /* libPods-oweek.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-oweek.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F2FB0FF01D33E09C956360 /* Pods-oweek-oweekTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-oweek-oweekTests.release.xcconfig"; path = "Target Support Files/Pods-oweek-oweekTests/Pods-oweek-oweekTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = oweek/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BB1ACD8C26A469C8001970BF /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F7D89A72C4F78A182060744D /* Pods-oweek.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-oweek.debug.xcconfig"; path = "Target Support Files/Pods-oweek/Pods-oweek.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +88,7 @@
 		13B07FAE1A68108700A75B9A /* oweek */ = {
 			isa = PBXGroup;
 			children = (
+				BB1ACD8B26A4692A001970BF /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -114,7 +117,6 @@
 				5F2473425E6F661D8CF72944 /* Pods-oweek-oweekTests.debug.xcconfig */,
 				76F2FB0FF01D33E09C956360 /* Pods-oweek-oweekTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -147,6 +149,14 @@
 				00E356EE1AD99517003FC87E /* oweekTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB1ACD8B26A4692A001970BF /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				BB1ACD8C26A469C8001970BF /* Feather.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,6 +255,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				BB1ACD8D26A469C8001970BF /* Feather.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
