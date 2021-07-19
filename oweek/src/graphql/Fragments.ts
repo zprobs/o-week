@@ -81,3 +81,63 @@ export const EventAttendanceFragment = gql`
     }
   }
 `;
+
+export const DetailedChat = gql`
+  fragment DetailedChat on chat {
+    id
+    _id: id
+    name
+    image
+    participants {
+      id
+      _id: id
+      name
+      image
+    }
+    messagesAggregate: messages_aggregate {
+      aggregate {
+        count
+      }
+    }
+      messages(limit: 15, order_by: { date: desc }) {
+          ...DetailedMessage
+      }
+    
+  }
+`;
+
+export const MessageFragment = gql`
+  fragment DetailedMessage on message {
+    id
+    _id: id
+    text: body
+    createdAt: date
+    user: sender {
+      id
+      _id: id
+      name
+      avatar: image
+    }
+  }
+`;
+
+export const PostFragment = gql`
+  fragment postFragment on post {
+    id
+    groupId
+    user {
+      id
+      name
+      image
+    }
+    time
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
+    text
+    images
+    link
+  }
+`;

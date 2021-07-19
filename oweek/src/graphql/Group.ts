@@ -31,3 +31,86 @@ export const GetGroupImageName = gql`
     }
   }
 `;
+
+export const GetDetailedGroup = gql`
+  query getDetailedGroup($id: uuid!, $currentUser: String!) {
+    group(id: $id) {
+      id
+      name
+      image
+      description
+      members(where: { isOwner: { _eq: false } }, limit: 20) {
+        user {
+          id
+          image
+          name
+        }
+      }
+      owners: members(where: { isOwner: { _eq: true } }, limit: 20) {
+        user {
+          id
+          image
+          name
+        }
+      }
+      trophies {
+        id
+        name
+        score
+      }
+      trophies_aggregate {
+        aggregate {
+          sum {
+            score
+          }
+        }
+      }
+      events(limit: 50, order_by: { event: { startDate: desc } }) {
+        event {
+          id
+        }
+      }
+      unsubscribable
+      groupType
+      phone
+      groupChats(
+        where: { chat: { users: { userId: { _eq: $currentUser } } } }
+      ) {
+        chat {
+          ...DetailedChat
+        }
+      }
+      allChats: groupChats {
+        chatId
+      }
+      posts(limit: 4, order_by: { time: desc }) {
+        ...postFragment
+      }
+      posts_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+  ${DETAILED_CHAT}
+  ${MESSAGE_FRAGMENT}
+  ${POST_FRAGMENT}
+`;
+
+export const GetGroupPosts = gql`
+  query getGroupPosts($groupId: uuid!) {
+    group(id: $groupId) {
+      id
+      posts(limit: 4, order_by: { time: desc }) {
+        ...postFragment
+      }
+      posts_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+  ${POST_FRAGMENT}
+`;

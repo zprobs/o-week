@@ -9,6 +9,7 @@ interface Palette extends ColorTheme {
   white: string;
   delete: string;
   lightgray: string;
+  gold: string;
 }
 
 interface Font {
@@ -22,6 +23,7 @@ interface Size {
   heading: number;
   subHeading: number;
   label: number;
+  bodyLarge: number;
   body: number;
   caption: number;
   subText: number;
@@ -43,6 +45,7 @@ const getTheme = (): DefaultTheme => {
       white: '#FFFFFF',
       delete: '#F44336',
       lightgray: '#F1F1F1',
+      gold: 'rgba(244,192,4,1)',
     },
     font: {
       bold: 'SFProDisplay-Bold',
@@ -54,6 +57,7 @@ const getTheme = (): DefaultTheme => {
       heading: 32,
       subHeading: 24,
       label: 20,
+      bodyLarge: 18,
       body: 16,
       caption: 14,
       subText: 12,
