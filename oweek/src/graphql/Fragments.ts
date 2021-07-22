@@ -141,3 +141,13 @@ export const PostFragment = gql`
     link
   }
 `;
+
+export const LikesFragment = gql`
+  fragment likesFragment on post {
+    likes_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;

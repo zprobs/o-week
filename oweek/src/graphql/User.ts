@@ -33,3 +33,19 @@ export const GetRandomUsers = gql`
     }
   }
 `;
+
+export const CheckUserLiked = gql`
+  query checkUserLiked($postId: Int!, $userId: String!) {
+    like(userId: $userId, postId: $postId) {
+      userId
+    }
+    post(id: $postId) {
+      id
+      likes_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`;

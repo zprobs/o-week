@@ -10,6 +10,7 @@ interface Palette extends ColorTheme {
   delete: string;
   lightgray: string;
   gold: string;
+  lightBlue: string;
 }
 
 interface Font {
@@ -46,6 +47,7 @@ const getTheme = (): DefaultTheme => {
       delete: '#F44336',
       lightgray: '#F1F1F1',
       gold: 'rgba(244,192,4,1)',
+      lightBlue: '#3D9CE3',
     },
     font: {
       bold: 'SFProDisplay-Bold',
