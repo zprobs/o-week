@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, TextStyle } from 'react-native';
+import { Text, View, Dimensions, TextStyle } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 import useStyles from './ImgBanner.styles';
 
 const window = Dimensions.get('window').height;
@@ -10,7 +11,7 @@ interface ImgProps {
 }
 
 interface Props {
-  Img: React.ComponentType<ImgProps>;
+  Img: React.ComponentType<ImgProps> | React.FC<SvgProps>;
   placeholder: string;
   spacing?: number;
   textStyle?: TextStyle;

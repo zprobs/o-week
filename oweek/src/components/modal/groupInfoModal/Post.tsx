@@ -5,6 +5,9 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import parseTimeElapsed from '@root/util/parseTimeElapsed';
 import getTheme from '@root/theme';
+import LikeButton from '@components/interactable/LikeButton';
+import RenderImages from '@views/post/RenderImages';
+import RenderLink from '@views/post/RenderLink';
 import useStyles from './Post.styles';
 
 interface Props {
@@ -65,7 +68,7 @@ const Post: React.FC<Props> = ({ item, index }) => {
           </View>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <LikeSVG
+          <LikeButton
             style={{ marginRight: 10, alignItems: 'center' }}
             postId={item.id}
             authorId={user.id}
@@ -97,9 +100,11 @@ const Post: React.FC<Props> = ({ item, index }) => {
       </Text>
       {hasContent ? (
         <View>
-          {images && images.length > 0
-            ? renderImages(images)
-            : renderLink(link)}
+          {images && images.length > 0 ? (
+            <RenderImages images={images} />
+          ) : (
+            <RenderLink link={link} />
+          )}
         </View>
       ) : null}
     </TouchableOpacity>

@@ -36,3 +36,15 @@ export function processWarning(
     icon: 'warning',
   });
 }
+
+export function linkError(title: string, error?: Error): void {
+  showMessage({
+    message: `${title} Unavailable`,
+    description: error
+      ? error.toString()
+      : 'We apologize for the inconvenience',
+    autoHide: true,
+    type: 'danger',
+    icon: 'danger',
+  });
+}

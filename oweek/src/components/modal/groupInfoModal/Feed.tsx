@@ -15,7 +15,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import ImgBanner from '@components/list/ImgBanner';
-import EmptyPosts from '@root/assets/svg/empty-likes';
+import EmptyPosts from '@root/assets/svg/empty-likes.svg';
+import getTheme from '@root/theme';
+import useStyles from './Feed.styles';
+import Post from './Post';
 
 const TabLoading = () => (
   <View style={{ marginTop: 80, width: '100%', flex: 1, height: 200 }}>
@@ -31,6 +34,8 @@ interface Props {
 
 const Feed: React.FC<Props> = ({ groupId, groupLoading, groupError }) => {
   const navigation = useNavigation();
+  const styles = useStyles();
+  const theme = getTheme();
   const { data, loading, error } = useQuery<
     getGroupPosts,
     getGroupPostsVariables
@@ -47,11 +52,11 @@ const Feed: React.FC<Props> = ({ groupId, groupLoading, groupError }) => {
   const posts = data?.group?.posts || [];
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', paddingTop: 16 }}>
+    <View style={styles.container}>
       <TouchableOpacity
         style={styles.postButton}
         onPress={() => navigation.navigate('Create Post', { groupId })}>
-        <Icon name="plus" size={24} color={ThemeStatic.white} />
+        <Icon name="plus" size={24} color={theme.palette.white} />
         <Text style={styles.postText}>Post Something</Text>
       </TouchableOpacity>
       {count === 0 ? (
@@ -60,7 +65,7 @@ const Feed: React.FC<Props> = ({ groupId, groupLoading, groupError }) => {
         posts.map((p, i) => <Post item={p} index={i} key={p.id} />)
       )}
       {count > 4 ? (
-        <View style={{ marginVertical: 20 }}>
+        <View style={styles.seeAll}>
           <Button
             title="See All"
             onPress={() => navigation.navigate('AllPosts', { groupId })}
