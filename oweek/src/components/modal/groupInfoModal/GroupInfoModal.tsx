@@ -15,7 +15,7 @@ const HEIGHT = Dimensions.get('window').height;
 interface Props {
   groupId: string;
   isMember: boolean;
-  allLeadersRef: React.Ref<any>;
+  allLeadersRef: React.RefObject<Modalize>;
 }
 
 const GroupInfoModal = forwardRef<Modalize, Props>(

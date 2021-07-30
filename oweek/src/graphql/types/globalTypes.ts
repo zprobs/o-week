@@ -629,6 +629,16 @@ export interface chat_on_conflict {
 }
 
 /**
+ * input type for updating data in table "chat"
+ */
+export interface chat_set_input {
+  id?: number | null;
+  image?: string | null;
+  name?: string | null;
+  unsubscribable?: boolean | null;
+}
+
+/**
  * input type for inserting array relation for remote table "comment"
  */
 export interface comment_arr_rel_insert_input {

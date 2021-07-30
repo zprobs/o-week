@@ -1,4 +1,9 @@
 import { gql } from '@apollo/client';
+import {
+  DetailedChat,
+  MessageFragment,
+  PostFragment,
+} from '@graphql/Fragments';
 
 export const GetGroup = gql`
   query getGroup($id: uuid!) {
@@ -93,9 +98,9 @@ export const GetDetailedGroup = gql`
       }
     }
   }
-  ${DETAILED_CHAT}
-  ${MESSAGE_FRAGMENT}
-  ${POST_FRAGMENT}
+  ${DetailedChat}
+  ${MessageFragment}
+  ${PostFragment}
 `;
 
 export const GetGroupPosts = gql`
@@ -112,5 +117,25 @@ export const GetGroupPosts = gql`
       }
     }
   }
-  ${POST_FRAGMENT}
+  ${PostFragment}
+`;
+
+export const GetLeaderBoard = gql`
+  query getLeaderBoard {
+    groups(
+      where: { groupType: { _eq: "orientation" } }
+      order_by: { trophies_aggregate: { sum: { score: desc_nulls_last } } }
+      limit: 25
+    ) {
+      id
+      name
+      trophies_aggregate {
+        aggregate {
+          sum {
+            score
+          }
+        }
+      }
+    }
+  }
 `;

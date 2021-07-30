@@ -21,6 +21,7 @@ interface Font {
 
 interface Size {
   superHeading: number;
+  largeHeading: number;
   heading: number;
   subHeading: number;
   label: number;
@@ -56,6 +57,7 @@ const getTheme = (): DefaultTheme => {
     },
     size: {
       superHeading: 48,
+      largeHeading: 38,
       heading: 32,
       subHeading: 24,
       label: 20,
