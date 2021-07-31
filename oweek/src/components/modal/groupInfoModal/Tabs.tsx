@@ -8,18 +8,27 @@ import {
   TabView,
 } from 'react-native-tab-view';
 import getTheme from '@root/theme';
+import Feed from '@components/modal/groupInfoModal/Feed';
+import About from '@components/modal/groupInfoModal/About';
+import Events from '@components/modal/groupInfoModal/Events';
+import { ApolloError } from '@apollo/client';
 import useStyles from './Tabs.styles';
 
 const WIDTH = Dimensions.get('window').width;
 
 interface Props {
   isMember: boolean;
-  Feed: React.ComponentType;
-  About: React.ComponentType;
-  Events: React.ComponentType;
+  groupId: string;
+  groupLoading: boolean;
+  groupError: ApolloError;
 }
 
-const Tabs: React.FC<Props> = ({ isMember, Feed, About, Events }) => {
+const Tabs: React.FC<Props> = ({
+  isMember,
+  groupId,
+  groupLoading,
+  groupError,
+}) => {
   const styles = useStyles(isMember);
   const theme = getTheme();
   const [index, setIndex] = useState<number>(0);
@@ -34,6 +43,12 @@ const Tabs: React.FC<Props> = ({ isMember, Feed, About, Events }) => {
         { key: 'second', title: 'Events' },
       ];
   const [routes] = useState(initialRoutes);
+
+  const FeedScene = <Feed
+    groupId={groupId}
+    groupError={groupError}
+    groupLoading={groupLoading}
+  />
 
   const renderScene = isMember
     ? SceneMap({

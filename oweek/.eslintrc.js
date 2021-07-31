@@ -6,7 +6,8 @@ module.exports = {
   },
   rules: {
     'react/jsx-props-no-spreading': 'off',
-    'camelcase': 'off'
+    'camelcase': 'off',
+    'no-nested-ternary': 'off',
   },
   settings: {
     "import/resolver": {

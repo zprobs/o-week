@@ -26,3 +26,29 @@ export const GetEventImageCard = gql`
   }
   ${EventAttendanceFragment}
 `;
+
+export const GetEventsById = gql`
+  query getEventsById($_in: [uuid!]!) {
+    events(where: { id: { _in: $_in } }, order_by: { startDate: asc }) {
+      id
+      image
+      name
+      startDate
+      description
+      attendees(limit: 3) {
+        user {
+          id
+          image
+        }
+      }
+      attendees_aggregate {
+        aggregate {
+          count
+        }
+      }
+      hosts {
+        groupId
+      }
+    }
+  }
+`;

@@ -20,7 +20,6 @@ interface Props {
 
 const GroupInfoModal = forwardRef<Modalize, Props>(
   ({ groupId, isMember, allLeadersRef }, ref) => {
-    const navigation = useNavigation();
     const { loading, data, error } = useQuery<
       getDetailedGroup,
       getDetailedGroupVariables
