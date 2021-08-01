@@ -7,7 +7,7 @@ import {
   getDetailedGroupVariables,
 } from '@graphql/types/getDetailedGroup';
 import { processWarning } from '@util/messages';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import Tabs from '@views/group/groupInfoModal/Tabs';
 
 const HEIGHT = Dimensions.get('window').height;
@@ -40,17 +40,19 @@ const GroupInfoModal = forwardRef<Modalize, Props>(
           bounces: false,
         }}
         alwaysOpen={HEIGHT * 0.47}
-        modalTopOffset={110}
-        rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
-        <Tabs
-          isMember={isMember}
-          groupId={groupId}
-          groupLoading={loading}
-          groupError={error}
-          groupData={data}
-          allLeadersRef={allLeadersRef}
-          allMembersRef={allMembersRef}
-        />
+        modalTopOffset={110}>
+        {/* Must have a height defined for the component to render */}
+        <View style={{ minHeight: 1 }}>
+          <Tabs
+            isMember={isMember}
+            groupId={groupId}
+            groupLoading={loading}
+            groupError={error}
+            groupData={data}
+            allLeadersRef={allLeadersRef}
+            allMembersRef={allMembersRef}
+          />
+        </View>
       </Modalize>
     );
   },

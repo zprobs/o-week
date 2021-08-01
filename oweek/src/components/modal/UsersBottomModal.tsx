@@ -11,16 +11,16 @@ import ModalHeader from './ModalHeader';
 import useStyles from './UsersBottomModal.styles';
 
 interface Props {
-  name: string;
-  type: string;
+  name?: string;
+  type: 'friends' | 'chat' | 'event' | 'group';
   onPress?: () => void;
   query: DocumentNode;
   variables: Record<string, string | boolean | number>;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 const UsersBottomModal = React.forwardRef<Modalize, Props>(
-  ({ name, type, onPress, query, variables, onClose }, ref) => {
+  ({ name = 'this user', type, onPress, query, variables, onClose }, ref) => {
     const styles = useStyles();
     // use Lazy Query so that it is not executed unless opened
     const [getUsers, { data: userData, error, called, fetchMore }] =

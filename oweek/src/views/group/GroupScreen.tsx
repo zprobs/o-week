@@ -25,8 +25,8 @@ import {
 } from '@graphql/types/checkUserAdmin';
 import { Modalize } from 'react-native-modalize';
 import UsersBottomModal from '@components/modal/UsersBottomModal';
-import NewEventModal from '../Modal/NewEventModal';
-import GroupEditModal from '../Modal/GroupEditModal';
+// import NewEventModal from '../Modal/NewEventModal';
+// import GroupEditModal from '../Modal/GroupEditModal';
 import GroupInfoModal from './groupInfoModal';
 import useStyles from './GroupScreen.styles';
 
@@ -102,9 +102,9 @@ const GroupScreen: React.FC<Props> = ({ route }) => {
     creatEventRef.current?.open();
   };
 
-  const onCloseEdit = () => {
-    modalRef.current?.open();
-  };
+  // const onCloseEdit = () => {
+  //   modalRef.current?.open();
+  // };
 
   return (
     <View style={styles.container}>
@@ -147,28 +147,28 @@ const GroupScreen: React.FC<Props> = ({ route }) => {
       />
       <UsersBottomModal
         query={GetGroupMembersPaginated}
-        _
         variables={{ groupId, isOwner: false }}
         type="group"
         ref={allMembersRef}
       />
-      {isAdminData?.user?.isAdmin || isOwner ? (
-        <>
-          <GroupEditModal
-            ref={editRef}
-            groupId={group?.id}
-            onClose={onCloseEdit}
-            SFLOffset={100}
-          />
-          <NewEventModal
-            ref={creatEventRef}
-            groupId={group?.id}
-            onClose={onCloseEdit}
-            groupName={group?.name}
-            isOfficial={group?.groupType === 'admin'}
-          />
-        </>
-      ) : null}
+      {/* TODO: add edit modals */}
+      {/* {isAdminData?.user?.isAdmin || isOwner ? ( */}
+      {/*  <> */}
+      {/*    <GroupEditModal */}
+      {/*      ref={editRef} */}
+      {/*      groupId={group?.id} */}
+      {/*      onClose={onCloseEdit} */}
+      {/*      SFLOffset={100} */}
+      {/*    /> */}
+      {/*    <NewEventModal */}
+      {/*      ref={creatEventRef} */}
+      {/*      groupId={group?.id} */}
+      {/*      onClose={onCloseEdit} */}
+      {/*      groupName={group?.name} */}
+      {/*      isOfficial={group?.groupType === 'admin'} */}
+      {/*    /> */}
+      {/*  </> */}
+      {/* ) : null} */}
     </View>
   );
 };

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Dimensions, Text } from 'react-native';
+import { Text, useWindowDimensions } from 'react-native';
 import {
   NavigationState,
-  SceneMap,
   SceneRendererProps,
   TabBar,
   TabView,
@@ -15,8 +14,6 @@ import { ApolloError } from '@apollo/client';
 import { getDetailedGroup } from '@graphql/types/getDetailedGroup';
 import { Modalize } from 'react-native-modalize';
 import useStyles from './Tabs.styles';
-
-const WIDTH = Dimensions.get('window').width;
 
 interface Props {
   isMember: boolean;
@@ -39,51 +36,56 @@ const Tabs: React.FC<Props> = ({
 }) => {
   const styles = useStyles(isMember);
   const theme = getTheme();
+  const layout = useWindowDimensions();
   const [index, setIndex] = useState<number>(0);
-  const initialRoutes = isMember
-    ? [
-        { key: 'first', title: 'Feed' },
-        { key: 'second', title: 'About' },
-        { key: 'third', title: 'Events' },
-      ]
-    : [
-        { key: 'first', title: 'About' },
-        { key: 'second', title: 'Events' },
-      ];
-  const [routes] = useState(initialRoutes);
-
-  const FeedScene = () => (
-    <Feed
-      groupId={groupId}
-      groupError={groupError}
-      groupLoading={groupLoading}
-    />
+  const [routes] = useState(
+    isMember
+      ? [
+          { key: 'first', title: 'Feed' },
+          { key: 'second', title: 'About' },
+          { key: 'third', title: 'Events' },
+        ]
+      : [
+          { key: 'first', title: 'About' },
+          { key: 'second', title: 'Events' },
+        ],
   );
 
-  const AboutScene = () => (
-    <About
-      groupId={groupId}
-      groupData={groupData}
-      isMember={isMember}
-      allLeadersRef={allLeadersRef}
-      allMembersRef={allMembersRef}
-    />
-  );
-
-  const EventScene = () => (
-    <Events groupReady={!groupLoading && !groupError} groupData={groupData} />
-  );
-
-  const renderScene = isMember
-    ? SceneMap({
-        first: FeedScene,
-        second: AboutScene,
-        third: EventScene,
-      })
-    : SceneMap({
-        first: AboutScene,
-        second: EventScene,
-      });
+  const renderScene = ({
+    route,
+  }: SceneRendererProps & {
+    route: { key: string; title: string };
+  }): React.ReactNode => {
+    switch (route.key) {
+      case 'first':
+        return (
+          <Feed
+            groupId={groupId}
+            groupError={groupError}
+            groupLoading={groupLoading}
+          />
+        );
+      case 'second':
+        return (
+          <About
+            groupId={groupId}
+            groupData={groupData}
+            isMember={isMember}
+            allLeadersRef={allLeadersRef}
+            allMembersRef={allMembersRef}
+          />
+        );
+      case 'third':
+        return (
+          <Events
+            groupReady={!groupLoading && !groupError}
+            groupData={groupData}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const renderTabBar = (
     props: SceneRendererProps & {
@@ -109,7 +111,7 @@ const Tabs: React.FC<Props> = ({
       navigationState={{ index, routes }}
       renderScene={renderScene}
       onIndexChange={setIndex}
-      initialLayout={{ width: WIDTH }}
+      initialLayout={{ width: layout.width }}
       renderTabBar={renderTabBar}
       swipeEnabled={false}
     />
