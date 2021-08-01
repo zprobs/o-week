@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getGroupPosts_group_posts } from '@graphql/types/getGroupPosts';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import parseTimeElapsed from '@root/util/parseTimeElapsed';
+import parseTimeElapsed from '@util/parseTimeElapsed';
 import getTheme from '@root/theme';
 import LikeButton from '@components/interactable/LikeButton';
 import RenderImages from '@views/post/RenderImages';

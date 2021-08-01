@@ -66,7 +66,7 @@ export const SayHiPlaceholder: React.FC = () => {
   );
 };
 
-export const ListPlaceholder = () => {
+export const ListPlaceholder: React.FC = () => {
   const styles = useStyles();
   const theme = getTheme();
   return (

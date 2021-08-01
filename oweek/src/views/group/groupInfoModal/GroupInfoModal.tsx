@@ -1,6 +1,5 @@
 import React, { forwardRef } from 'react';
 import { Modalize } from 'react-native-modalize';
-import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
 import { GetDetailedGroup } from '@graphql/Group';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@graphql/types/getDetailedGroup';
 import { processWarning } from '@util/messages';
 import { Dimensions, StyleSheet } from 'react-native';
+import Tabs from '@views/group/groupInfoModal/Tabs';
 
 const HEIGHT = Dimensions.get('window').height;
 
@@ -16,10 +16,11 @@ interface Props {
   groupId: string;
   isMember: boolean;
   allLeadersRef: React.RefObject<Modalize>;
+  allMembersRef: React.RefObject<Modalize>;
 }
 
 const GroupInfoModal = forwardRef<Modalize, Props>(
-  ({ groupId, isMember, allLeadersRef }, ref) => {
+  ({ groupId, isMember, allLeadersRef, allMembersRef }, ref) => {
     const { loading, data, error } = useQuery<
       getDetailedGroup,
       getDetailedGroupVariables
@@ -40,8 +41,17 @@ const GroupInfoModal = forwardRef<Modalize, Props>(
         }}
         alwaysOpen={HEIGHT * 0.47}
         modalTopOffset={110}
-        rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}
-      />
+        rootStyle={[StyleSheet.absoluteFill, { minHeight: HEIGHT * 0.4 }]}>
+        <Tabs
+          isMember={isMember}
+          groupId={groupId}
+          groupLoading={loading}
+          groupError={error}
+          groupData={data}
+          allLeadersRef={allLeadersRef}
+          allMembersRef={allMembersRef}
+        />
+      </Modalize>
     );
   },
 );

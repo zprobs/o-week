@@ -99,10 +99,9 @@ export const DetailedChat = gql`
         count
       }
     }
-      messages(limit: 15, order_by: { date: desc }) {
-          ...DetailedMessage
-      }
-    
+    messages(limit: 15, order_by: { date: desc }) {
+      ...DetailedMessage
+    }
   }
 `;
 

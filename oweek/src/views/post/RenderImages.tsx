@@ -20,9 +20,7 @@ const RenderImages: React.FC<Props> = ({ images }) => {
   }
   if (images.length > 3) {
     imageComponents.push(
-      <View
-        style={styles.moreImages}
-        key={4}>
+      <View style={styles.moreImages} key={4}>
         <Text style={styles.moreImagesText}>{`+${images.length - 3}`}</Text>
       </View>,
     );

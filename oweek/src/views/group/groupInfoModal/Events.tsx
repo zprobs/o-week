@@ -14,7 +14,7 @@ import EventCard from '@components/card/EventCard';
 
 interface Props {
   groupReady: boolean;
-  groupData: getDetailedGroup;
+  groupData?: getDetailedGroup;
 }
 
 const Events: React.FC<Props> = ({ groupReady, groupData }) => {
@@ -24,7 +24,7 @@ const Events: React.FC<Props> = ({ groupReady, groupData }) => {
     error: eventsError,
   } = useQuery<getEventsById, getEventsByIdVariables>(GetEventsById, {
     variables: {
-      _in: groupData.group?.events.map((event) => event.event.id) || [],
+      _in: groupData?.group?.events.map((event) => event.event.id) || [],
     },
   });
 

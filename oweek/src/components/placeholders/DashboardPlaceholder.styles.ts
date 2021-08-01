@@ -9,7 +9,7 @@ interface DashboardPlaceholderStyles {
   placeholder: TextStyle;
 }
 
-const makeStyles = () => {
+const makeStyles = (): DashboardPlaceholderStyles => {
   const theme = getTheme();
 
   return StyleSheet.create<DashboardPlaceholderStyles>({

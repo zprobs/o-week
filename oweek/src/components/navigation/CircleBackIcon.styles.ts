@@ -27,8 +27,8 @@ const makeStyles = (): CircleBackIconStyles => {
       shadowOpacity: 0.7,
     },
     icon: {
-      marginTop: 3
-    }
+      marginTop: 3,
+    },
   });
 };
 

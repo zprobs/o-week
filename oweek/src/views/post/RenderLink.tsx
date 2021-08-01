@@ -20,7 +20,7 @@ const RenderLink: React.FC<Props> = ({ link }) => {
     Linking.canOpenURL(link)
       .then((result) => {
         if (result) {
-          Linking.openURL(link).catch((e) => console.log(e));
+          Linking.openURL(link).catch((e) => linkError('Link', e));
         } else {
           linkError('Link');
         }

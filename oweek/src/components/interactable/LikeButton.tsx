@@ -81,7 +81,6 @@ const LikeButton: React.FC<Props> = ({ postId, style, authorId }) => {
           }
         } catch (e) {
           processError(e, 'Could not like post');
-          console.log(e);
         }
       },
     },
@@ -114,14 +113,13 @@ const LikeButton: React.FC<Props> = ({ postId, style, authorId }) => {
           }
         } catch (e) {
           processError(e, 'Could not like post');
-          console.log(e);
         }
       },
     },
   );
   const [liked, setLiked] = useState(false);
 
-  const handlePress = () => {
+  const handlePress = (): void => {
     didSetFirst.current = true;
     if (liked) {
       setLiked(false);
@@ -141,7 +139,7 @@ const LikeButton: React.FC<Props> = ({ postId, style, authorId }) => {
                 typeId: result.data.insert_like_one.id.toString(),
                 recipient: authorId,
               },
-            }).catch((e) => console.log(e));
+            });
           }
         }
       });

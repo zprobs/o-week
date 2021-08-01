@@ -21,8 +21,7 @@ import { rankData } from '@root/constants';
 import useStyles from './About.styles';
 
 interface Props {
-  groupData: getDetailedGroup;
-  groupLoading: boolean;
+  groupData?: getDetailedGroup;
   groupId: string;
   isMember: boolean;
   allLeadersRef: React.RefObject<Modalize>;
@@ -31,7 +30,6 @@ interface Props {
 
 const About: React.FC<Props> = ({
   groupData,
-  groupLoading,
   groupId,
   isMember,
   allLeadersRef,
@@ -91,7 +89,7 @@ const About: React.FC<Props> = ({
 
   if (addToChatError) processError(addToChatError, 'Could not join chat');
 
-  if (groupLoading || scoreLoading || scoreError || !scoreData) return null;
+  if (!groupData || scoreLoading || scoreError || !scoreData) return null;
 
   const rank = scoreData.groups?.findIndex((g) => g.id === groupId) || 0;
   const leaders = groupData.group?.owners?.map((o) => o.user) || [];

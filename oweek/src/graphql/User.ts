@@ -49,3 +49,29 @@ export const CheckUserLiked = gql`
     }
   }
 `;
+
+export const CheckUserAdmin = gql`
+  query checkUserAdmin($id: String!) {
+    user(id: $id) {
+      id
+      isAdmin
+      isLeader
+    }
+  }
+`;
+
+export const GetUserGroups = gql`
+  query getUserGroups($id: String!) {
+    user(id: $id) {
+      id
+      member {
+        isOwner
+        group {
+          id
+          name
+          image
+        }
+      }
+    }
+  }
+`;

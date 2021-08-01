@@ -8,10 +8,12 @@ import {
   TabView,
 } from 'react-native-tab-view';
 import getTheme from '@root/theme';
-import Feed from '@components/modal/groupInfoModal/Feed';
-import About from '@components/modal/groupInfoModal/About';
-import Events from '@components/modal/groupInfoModal/Events';
+import Feed from '@views/group/groupInfoModal/Feed';
+import About from '@views/group/groupInfoModal/About';
+import Events from '@views/group/groupInfoModal/Events';
 import { ApolloError } from '@apollo/client';
+import { getDetailedGroup } from '@graphql/types/getDetailedGroup';
+import { Modalize } from 'react-native-modalize';
 import useStyles from './Tabs.styles';
 
 const WIDTH = Dimensions.get('window').width;
@@ -20,7 +22,10 @@ interface Props {
   isMember: boolean;
   groupId: string;
   groupLoading: boolean;
-  groupError: ApolloError;
+  groupError?: ApolloError;
+  groupData?: getDetailedGroup;
+  allLeadersRef: React.RefObject<Modalize>;
+  allMembersRef: React.RefObject<Modalize>;
 }
 
 const Tabs: React.FC<Props> = ({
@@ -28,6 +33,9 @@ const Tabs: React.FC<Props> = ({
   groupId,
   groupLoading,
   groupError,
+  groupData,
+  allLeadersRef,
+  allMembersRef,
 }) => {
   const styles = useStyles(isMember);
   const theme = getTheme();
@@ -44,21 +52,37 @@ const Tabs: React.FC<Props> = ({
       ];
   const [routes] = useState(initialRoutes);
 
-  const FeedScene = <Feed
-    groupId={groupId}
-    groupError={groupError}
-    groupLoading={groupLoading}
-  />
+  const FeedScene = () => (
+    <Feed
+      groupId={groupId}
+      groupError={groupError}
+      groupLoading={groupLoading}
+    />
+  );
+
+  const AboutScene = () => (
+    <About
+      groupId={groupId}
+      groupData={groupData}
+      isMember={isMember}
+      allLeadersRef={allLeadersRef}
+      allMembersRef={allMembersRef}
+    />
+  );
+
+  const EventScene = () => (
+    <Events groupReady={!groupLoading && !groupError} groupData={groupData} />
+  );
 
   const renderScene = isMember
     ? SceneMap({
-        first: Feed,
-        second: About,
-        third: Events,
+        first: FeedScene,
+        second: AboutScene,
+        third: EventScene,
       })
     : SceneMap({
-        first: About,
-        second: Events,
+        first: AboutScene,
+        second: EventScene,
       });
 
   const renderTabBar = (

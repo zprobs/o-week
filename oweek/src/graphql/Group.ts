@@ -139,3 +139,25 @@ export const GetLeaderBoard = gql`
     }
   }
 `;
+export const GetGroupMembersPaginated = gql`
+  query getGroupMembersPaginated(
+    $groupId: uuid!
+    $offset: Int!
+    $isOwner: Boolean!
+  ) {
+    group(id: $groupId) {
+      id
+      members(
+        where: { isOwner: { _eq: $isOwner } }
+        limit: 20
+        offset: $offset
+      ) {
+        user {
+          id
+          name
+          image
+        }
+      }
+    }
+  }
+`;
