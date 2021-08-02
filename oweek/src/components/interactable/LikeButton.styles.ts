@@ -16,6 +16,7 @@ const makeStyles = (): LikeButtonStyles => {
     countText: {
       fontFamily: theme.font.bold,
       fontSize: theme.size.subText,
+      color: theme.palette.accent,
     },
   });
 };

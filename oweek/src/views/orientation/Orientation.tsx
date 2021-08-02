@@ -26,6 +26,26 @@ const Orientation: React.FC = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="PostScreen"
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
+        component={PostScreen}
+      />
+      <Stack.Screen
+        name="Gallery"
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
+        component={Gallery}
+      />
+      <Stack.Screen
+        name="AllPosts"
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
+        component={AllPosts}
+      />
+      <Stack.Screen
+        name="CreatePost"
+        component={CreatePost}
+        options={{ headerBackTitle: 'Back' }}
+      />
     </Stack.Navigator>
   );
 };

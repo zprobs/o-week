@@ -19,7 +19,7 @@ const ModalHeader: React.FC<Props> = ({ heading, subHeading }) => {
     },
     heading: {
       fontFamily: theme.font.bold,
-      fontSizes: theme.size.label,
+      fontSize: theme.size.label,
       color: theme.palette.text01,
     },
     subHeading: {

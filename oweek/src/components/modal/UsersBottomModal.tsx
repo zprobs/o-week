@@ -86,7 +86,7 @@ const UsersBottomModal = React.forwardRef<Modalize, Props>(
         user = item;
       }
 
-      const { id, image, Username } = user;
+      const { id, image, name: Username } = user;
 
       return (
         <UserCard
@@ -112,7 +112,6 @@ const UsersBottomModal = React.forwardRef<Modalize, Props>(
       if (fetchMore) {
         fetchMore({
           variables: {
-            ...variables,
             offset: data.length,
           },
           updateQuery: (prev, { fetchMoreResult }) => {
@@ -174,7 +173,7 @@ const UsersBottomModal = React.forwardRef<Modalize, Props>(
           data,
           ListEmptyComponent: listEmptyComponent,
           keyExtractor,
-          style: { flex: 1, marginBottom: 80 + insets.bottom },
+          style: { flex: 1, paddingBottom: insets.bottom },
           renderItem,
           ListHeaderComponent: header,
           bounces: false,

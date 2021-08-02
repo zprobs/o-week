@@ -18,7 +18,7 @@ import ImgBanner from '@components/list/ImgBanner';
 import EmptyPosts from '@root/assets/svg/empty-likes.svg';
 import getTheme from '@root/theme';
 import useStyles from './Feed.styles';
-import Post from './Post';
+import Post from '../../post/Post';
 
 const TabLoading = () => (
   <View style={{ marginTop: 80, width: '100%', flex: 1, height: 200 }}>
