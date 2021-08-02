@@ -75,3 +75,53 @@ export const GetUserGroups = gql`
     }
   }
 `;
+
+export const BlockUser = gql`
+  mutation blockUser($blockedId: String!, $blockerId: String!) {
+    blockUser(object: { blockedId: $blockedId, blockerId: $blockerId }) {
+      blockedId
+      blockerId
+    }
+  }
+`;
+
+export const CheckUserBlocked = gql`
+  query checkUserBlocked($blockedId: String!, $blockerId: String!) {
+    block(
+      where: { blockedId: { _eq: $blockedId }, blockerId: { _eq: $blockerId } }
+    ) {
+      blockedId
+      blockerId
+    }
+  }
+`;
+
+export const ReportUser = gql`
+  mutation reportUser(
+    $reporter: String!
+    $reported: String!
+    $postId: Int = null
+    $commentId: Int = null
+  ) {
+    insert_report(
+      objects: {
+        reporter: $reporter
+        reported: $reported
+        post: $postId
+        comment: $commentId
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const UnblockUser = gql`
+  mutation unBlockUser($blockedId: String!, $blockerId: String!) {
+    unblockUser(
+      where: { blockedId: { _eq: $blockedId }, blockerId: { _eq: $blockerId } }
+    ) {
+      affected_rows
+    }
+  }
+`;

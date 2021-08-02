@@ -150,3 +150,13 @@ export const LikesFragment = gql`
     }
   }
 `;
+
+export const CommentsFrag = gql`
+  fragment commentsFrag on post {
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;

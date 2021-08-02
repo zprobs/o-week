@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  ColorValue,
 } from 'react-native';
 import getTheme from '@root/theme';
 import LoadingDots from '@components/loading/LoadingDots';
@@ -19,7 +20,7 @@ interface Props {
   isLoading?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  color: string;
+  color: string | ColorValue;
   isLight?: boolean;
   loadColor?: string;
   isDisabled?: boolean;

@@ -161,3 +161,15 @@ export const GetGroupMembersPaginated = gql`
     }
   }
 `;
+
+export const GetGroupPostsPaginated = gql`
+  query getGroupPostsPaginated($groupId: uuid!, $offset: Int!) {
+    group(id: $groupId) {
+      id
+      posts(limit: 8, order_by: { time: desc }, offset: $offset) {
+        ...postFragment
+      }
+    }
+  }
+  ${PostFragment}
+`;

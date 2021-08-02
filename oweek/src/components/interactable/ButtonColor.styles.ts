@@ -1,5 +1,5 @@
 import getTheme from '@root/theme';
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { ColorValue, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 interface ButtonColorStyles {
   container: ViewStyle;
@@ -10,7 +10,7 @@ interface ButtonColorStyles {
 const makeStyles = (
   isIcon: boolean,
   isLight: boolean,
-  colour: string,
+  colour: string | ColorValue,
 ): ButtonColorStyles => {
   const theme = getTheme();
 
