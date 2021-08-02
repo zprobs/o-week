@@ -4,6 +4,7 @@ import Dashboard from '@views/orientation/dashboard';
 import GroupScreen from '@views/group/GroupScreen';
 import PostScreen from '@views/post/PostScreen';
 import Gallery from '@views/gallery/Gallery';
+import AllPosts from '@views/post/AllPosts';
 import type { OrientationStackParamList } from './OrientationStackParamList';
 
 const Stack = createStackNavigator<OrientationStackParamList>();
@@ -38,11 +39,11 @@ const Orientation: React.FC = () => {
         options={{ headerTitle: '', headerBackTitle: 'Back' }}
         component={Gallery}
       />
-      {/* <Stack.Screen */}
-      {/*  name="AllPosts" */}
-      {/*  options={{ headerTitle: '', headerBackTitle: 'Back' }} */}
-      {/*  component={AllPosts} */}
-      {/* /> */}
+      <Stack.Screen
+        name="AllPosts"
+        options={{ headerTitle: '', headerBackTitle: 'Back' }}
+        component={AllPosts}
+      />
       {/* <Stack.Screen */}
       {/*  name="CreatePost" */}
       {/*  component={CreatePost} */}
