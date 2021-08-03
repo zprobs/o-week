@@ -14,7 +14,7 @@ import { LikesFragment } from '@graphql/Fragments';
 import { processError } from '@util/messages';
 import { unLikePost, unLikePostVariables } from '@graphql/types/unLikePost';
 import LikeSVG from '@root/assets/svg/LikeSVG';
-import { NotificationTypes } from '@root/types/constants';
+import { NotificationTypes } from '@root/constants';
 import useStyles from './LikeButton.styles';
 
 const aggLikesData = (count: number): likesFragment => {

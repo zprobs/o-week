@@ -8,7 +8,7 @@ interface Props {
   onChangeText: (e: string | ChangeEvent<any>) => void;
   onBlur: (e: any) => void;
   touched?: boolean; // used with Formik. Weather or not view has been touched yet
-  multiline: boolean;
+  multiline?: boolean;
   label: string; // The label rendered above the text input
   error?: string; // used with Formik.
   characterRestriction?: number; // char limit

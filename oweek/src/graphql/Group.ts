@@ -173,3 +173,14 @@ export const GetGroupPostsPaginated = gql`
   }
   ${PostFragment}
 `;
+
+export const GetGroupMembers = gql`
+  query getGroupMembers($groupId: uuid!) {
+    group(id: $groupId) {
+      id
+      members {
+        userId
+      }
+    }
+  }
+`;

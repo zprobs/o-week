@@ -25,7 +25,7 @@ const makeStyles = (): FormInputStyles => {
     },
     placeholderTextColor: {
       color: theme.palette.text02,
-    }
+    },
   });
 };
 

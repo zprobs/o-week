@@ -62,4 +62,24 @@ export const AddComment = gql`
   }
 `;
 
-
+export const CreatePost = gql`
+  mutation createPost(
+    $userId: String!
+    $groupId: uuid!
+    $text: String!
+    $images: jsonb
+    $link: String
+  ) {
+    insert_post_one(
+      object: {
+        authorId: $userId
+        groupId: $groupId
+        text: $text
+        images: $images
+        link: $link
+      }
+    ) {
+      id
+    }
+  }
+`;
