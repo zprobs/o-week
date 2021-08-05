@@ -83,7 +83,7 @@ const CreatePostPage: React.FC = () => {
       maxFiles: 16,
     })
       .then((selectedImages) => {
-        let preparedImages: ImageOrVideo[] = [];
+        let preparedImages: ImageOrVideo[] = selectedImages;
         if (selectedImages.length > 16)
           preparedImages = selectedImages.slice(16);
         setImages(images.concat(preparedImages.map((img) => img.path)));

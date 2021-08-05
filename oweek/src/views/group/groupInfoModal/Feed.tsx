@@ -55,7 +55,7 @@ const Feed: React.FC<Props> = ({ groupId, groupLoading, groupError }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.postButton}
-        onPress={() => navigation.navigate('Create Post', { groupId })}>
+        onPress={() => navigation.navigate('CreatePost', { groupId })}>
         <Icon name="plus" size={24} color={theme.palette.white} />
         <Text style={styles.postText}>Post Something</Text>
       </TouchableOpacity>
