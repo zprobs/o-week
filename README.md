@@ -19,7 +19,7 @@ npx react-native run-android
 
 ### Overview
 
-The frontend is built using react native while the backend and [database](http://exploriti-backend.herokuapp.com/console/api-explorer) is on Hasura / HeroKu
+The frontend is built using react native while the backend and is Hasura
 
 GraphQL is the primary API, managed on the client side with [Apollo](https://www.apollographql.com/)
 
