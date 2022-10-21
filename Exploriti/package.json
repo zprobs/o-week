@@ -53,7 +53,7 @@
     "react-native-modalize": "^2.0.3",
     "react-native-permissions": "^2.1.5",
     "react-native-push-notification": "^4.0.0",
-    "react-native-reanimated": "^1.8.0",
+    "react-native-reanimated": "^2.10.0",
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.7.0",
     "react-native-search-bar": "^3.5.1",
